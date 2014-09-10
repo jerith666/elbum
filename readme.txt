@@ -10,6 +10,8 @@ run sinb executable, giving it:
 it produces:
  - a directory of resized pictures
  - a JSON file describing the structure and contents of the albums
+
+and it copies in:
  - an index.html file to serve up the albums
  - ancillary css and js files to drive the album behaviour
 
