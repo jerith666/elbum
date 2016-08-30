@@ -18,7 +18,7 @@ type alias Model = List Image
 update msg model = model
 
 init = [[{ url = "http://mchenryfamily.org/montage-2016.jpg"
-         , x = 123
+         , x = 1234
          , y = 456 }]]
 
 view model = div []
@@ -35,4 +35,6 @@ renderImg ises = case ises of
                       [] -> div [] []
                       is1::_ -> render is1
 
-render i = img [src i.url] []
+render i = img [ src i.url
+               , width i.x
+               , height i.y] []
