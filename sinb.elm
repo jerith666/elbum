@@ -1,3 +1,4 @@
+import List exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.App exposing (..)
@@ -42,12 +43,24 @@ view model = div []
 renderImgs : List Image -> Int -> Html Model
 renderImgs imgs index = case imgs of
                              [] -> div [] []
-                             i::is -> if index == 0 then renderImg i else renderImgs is (index-1)
+                             i::is -> if index == 0 then
+                                          div [] ( [ renderImg i ]
+                                                 ++ (List.map renderThumb is)
+                                                 )
+                                      else
+                                          div [] [ renderThumb i
+                                                 , renderImgs is (index-1)
+                                                 ]
 
 renderImg : Image -> Html Model
 renderImg ises = case ises of
                       [] -> div [] []
                       is1::_ -> render is1
+
+renderThumb : Image -> Html Model
+renderThumb ises = case ises of
+                        [] -> div [] []
+                        is1::_ -> render {is1 | x = 40, y = 40}
 
 render i = img [ src i.url
                , width i.x
