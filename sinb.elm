@@ -21,7 +21,7 @@ type alias Model = { title: String
 update msg model = model
 
 init = { title = "The Album Title"
-       , index = 0
+       , index = 1
        , images = [ [ { url = "http://mchenryfamily.org/pics/2016/2016/08_August%2024-30%3A%20Eleanor%27s%2012th%20Week/DSC_7944_Med.jpg"
                       , x = 960
                       , y = 638
@@ -42,7 +42,7 @@ view model = div []
 renderImgs : List Image -> Int -> Html Model
 renderImgs imgs index = case imgs of
                              [] -> div [] []
-                             i::_ -> renderImg i
+                             i::is -> if index == 0 then renderImg i else renderImgs is (index-1)
 
 renderImg : Image -> Html Model
 renderImg ises = case ises of
