@@ -13,22 +13,36 @@ type alias ImageSize = { url: String
 
 type alias Image = List ImageSize
 
-type alias Model = List Image
+type alias Model = { title: String
+                   , index: Int
+                   , images: List Image
+                   }
 
 update msg model = model
 
-init = [[{ url = "http://mchenryfamily.org/montage-2016.jpg"
-         , x = 1234
-         , y = 456 }]]
+init = { title = "The Album Title"
+       , index = 0
+       , images = [ [ { url = "http://mchenryfamily.org/pics/2016/2016/08_August%2024-30%3A%20Eleanor%27s%2012th%20Week/DSC_7944_Med.jpg"
+                      , x = 960
+                      , y = 638
+                      }
+                    ]
+                  , [ { url = "http://mchenryfamily.org/pics/2016/2016/08_August%2024-30%3A%20Eleanor%27s%2012th%20Week/DSC_7949_Med.jpg"
+                      , x = 960
+                      , y = 638
+                      }
+                    ]
+                  ]
+       }
 
 view model = div []
-                 [ div [] [ text "hello world" ]
-                 , renderImgs model ]
+                 [ h1 [] [ text model.title ]
+                 , renderImgs model.images model.index ]
 
-renderImgs : List Image -> Html Model
-renderImgs imgs = case imgs of
-                       [] -> div [] []
-                       i::_ -> renderImg i
+renderImgs : List Image -> Int -> Html Model
+renderImgs imgs index = case imgs of
+                             [] -> div [] []
+                             i::_ -> renderImg i
 
 renderImg : Image -> Html Model
 renderImg ises = case ises of
