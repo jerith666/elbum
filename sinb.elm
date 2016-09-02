@@ -64,7 +64,14 @@ renderImg ises = case ises of
 renderThumb : Image -> Html Msg
 renderThumb ises = case ises of
                         [] -> div [] []
-                        is1::_ -> render {is1 | x = 40, y = 40}
+                        is1::_ -> render ( thumbScale is1 )
+
+thumbScale : ImageSize -> ImageSize
+thumbScale i = { i | x = tScale i.x
+                   , y = tScale i.y
+                   }
+
+tScale x = round (toFloat x * 0.2)
 
 render : ImageSize -> Html Msg
 render i = img [ src i.url
