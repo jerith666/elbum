@@ -9,6 +9,7 @@ import Html.App exposing (..)
 main = beginnerProgram { model = init, view = view, update = update }
 
 type Msg = Next
+         | Prev
 
 type alias ImageSize = { url: String
                        , x: Int
@@ -23,7 +24,12 @@ type alias Model = { title: String
                    }
 
 update msg model = case msg of
-                        Next -> { model | index = model.index + 1 }
+                        Next -> { model
+                                | index = Basics.min (model.index + 1)
+                                                     (length model.images - 1) }
+                        Prev -> { model
+                                | index = Basics.max (model.index - 1)
+                                                     0 }
 
 init = { title = "The Album Title"
        , index = 0
@@ -59,12 +65,12 @@ renderImgs imgs index = case imgs of
 renderImg : Image -> Html Msg
 renderImg ises = case ises of
                       [] -> div [] []
-                      is1::_ -> render is1
+                      is1::_ -> render is1 Next
 
 renderThumb : Image -> Html Msg
 renderThumb ises = case ises of
                         [] -> div [] []
-                        is1::_ -> render ( thumbScale is1 )
+                        is1::_ -> render ( thumbScale is1 ) Prev
 
 thumbScale : ImageSize -> ImageSize
 thumbScale i = { i | x = tScale i.x
@@ -73,9 +79,9 @@ thumbScale i = { i | x = tScale i.x
 
 tScale x = round (toFloat x * 0.2)
 
-render : ImageSize -> Html Msg
-render i = img [ src i.url
-               , width i.x
-               , height i.y
-               , onClick Next ]
-               []
+render : ImageSize -> Msg -> Html Msg
+render i msg = img [ src i.url
+                   , width i.x
+                   , height i.y
+                   , onClick msg ]
+                   []
