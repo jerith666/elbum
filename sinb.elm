@@ -43,6 +43,11 @@ init = { title = "The Album Title"
                       , y = 638
                       }
                     ]
+                  , [ { url = "http://mchenryfamily.org/pics/2016/2016/08_August%2024-30%3A%20Eleanor's%2012th%20Week/DSC_7950_Med.jpg"
+                      , x = 960
+                      , y = 638
+                      }
+                    ]
                   ]
        }
 
