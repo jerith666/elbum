@@ -3,6 +3,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.App exposing (..)
+import Keyboard exposing (..)
 
 -- MODEL
 
@@ -14,6 +15,7 @@ main = program { init = init
 
 type Msg = Next
          | Prev
+         | NoUpdate
 
 type alias ImageSize = { url: String
                        , x: Int
@@ -27,7 +29,10 @@ type alias Model = { title: String
                    , images: List Image
                    }
 
-subscriptions model = Sub.none
+subscriptions model = downs (\keycode -> case keycode of
+                                              39 -> Next {- right arrow -}
+                                              37 -> Prev {- left arrow -}
+                                              _ -> NoUpdate)
 
 update msg model = ( case msg of
                           Next -> { model
@@ -36,6 +41,7 @@ update msg model = ( case msg of
                           Prev -> { model
                                   | index = Basics.max (model.index - 1)
                                                        0 }
+                          NoUpdate -> model
                    , Cmd.none
                    )
 
