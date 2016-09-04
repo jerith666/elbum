@@ -6,7 +6,11 @@ import Html.App exposing (..)
 
 -- MODEL
 
-main = beginnerProgram { model = init, view = view, update = update }
+main = program { init = init
+               , view = view
+               , update = update
+               , subscriptions = subscriptions
+               }
 
 type Msg = Next
          | Prev
@@ -23,33 +27,39 @@ type alias Model = { title: String
                    , images: List Image
                    }
 
-update msg model = case msg of
-                        Next -> { model
-                                | index = Basics.min (model.index + 1)
-                                                     (length model.images - 1) }
-                        Prev -> { model
-                                | index = Basics.max (model.index - 1)
-                                                     0 }
+subscriptions model = Sub.none
 
-init = { title = "The Album Title"
-       , index = 0
-       , images = [ [ { url = "http://mchenryfamily.org/pics/2016/2016/08_August%2024-30%3A%20Eleanor%27s%2012th%20Week/DSC_7944_Med.jpg"
-                      , x = 960
-                      , y = 638
-                      }
-                    ]
-                  , [ { url = "http://mchenryfamily.org/pics/2016/2016/08_August%2024-30%3A%20Eleanor%27s%2012th%20Week/DSC_7949_Med.jpg"
-                      , x = 960
-                      , y = 638
-                      }
-                    ]
-                  , [ { url = "http://mchenryfamily.org/pics/2016/2016/08_August%2024-30%3A%20Eleanor's%2012th%20Week/DSC_7950_Med.jpg"
-                      , x = 960
-                      , y = 638
-                      }
-                    ]
-                  ]
-       }
+update msg model = ( case msg of
+                          Next -> { model
+                                  | index = Basics.min (model.index + 1)
+                                                       (length model.images - 1) }
+                          Prev -> { model
+                                  | index = Basics.max (model.index - 1)
+                                                       0 }
+                   , Cmd.none
+                   )
+
+testAlbumJson = { title = "The Album Title"
+                , index = 0
+                , images = [ [ { url = "http://mchenryfamily.org/pics/2016/2016/08_August%2024-30%3A%20Eleanor%27s%2012th%20Week/DSC_7944_Med.jpg"
+                               , x = 960
+                               , y = 638
+                               }
+                             ]
+                           , [ { url = "http://mchenryfamily.org/pics/2016/2016/08_August%2024-30%3A%20Eleanor%27s%2012th%20Week/DSC_7949_Med.jpg"
+                               , x = 960
+                               , y = 638
+                               }
+                             ]
+                           , [ { url = "http://mchenryfamily.org/pics/2016/2016/08_August%2024-30%3A%20Eleanor's%2012th%20Week/DSC_7950_Med.jpg"
+                               , x = 960
+                               , y = 638
+                               }
+                             ]
+                           ]
+                }
+
+init = (testAlbumJson, Cmd.none)
 
 view model = div []
                  [ h1 [] [ text model.title ]
