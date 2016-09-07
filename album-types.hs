@@ -6,19 +6,32 @@ import Elm.Module
 
 import Data.Proxy
 
-data ImageSize
-   = ImageSize
+data ImgSrc
+   = ImgSrc
    { url :: String
    , x :: Int
    , y :: Int
    } deriving (Show, Eq)
 
-type Picture = [ImageSize]
+data ImgSrcSet
+   = ImgSrcSet
+   { srcs :: [ImgSrc]
+   } deriving (Show, Eq)
 
-deriveBoth defaultOptions ''ImageSize
+data Image
+   = Image
+   { altText :: String
+   , srcSet :: ImgSrcSet
+   } deriving (Show, Eq)
+
+deriveBoth defaultOptions ''ImgSrc
+deriveBoth defaultOptions ''ImgSrcSet
+deriveBoth defaultOptions ''Image
 
 main :: IO ()
 main =
-    putStrLn $ makeElmModule "ImageSize"
-    [ DefineElm (Proxy :: Proxy ImageSize)
+    putStrLn $ makeElmModule "Image"
+    [ DefineElm (Proxy :: Proxy Image)
+    , DefineElm (Proxy :: Proxy ImgSrcSet)
+    , DefineElm (Proxy :: Proxy ImgSrc)
     ]
