@@ -1,2 +1,5 @@
 *~
+*.o
+*.hi
 elm-stuff
+gen-album
