@@ -9,6 +9,7 @@ import Codec.Picture hiding (Image)
 import Codec.Picture.Types hiding (Image)
 
 import Data.Aeson
+import qualified Data.ByteString.Lazy.Char8 as C
 
 import AlbumTypes
 
@@ -27,8 +28,7 @@ genAlbum src dest = do
   let afiles = map (\f -> src </> f) files
   imgs <- imgsOnly afiles
   pimgs <- sequence $ map procImage imgs
-  putStrLn ((show (length pimgs)) ++ " imgs in " ++ src ++ " to copy to " ++ dest)
-  putStrLn $ "first img is " ++ (show $ encode $ head pimgs)
+  mapM_ (C.putStrLn . encode) pimgs
 
 procImage :: (FilePath, DynamicImage) -> IO Image
 procImage (f,i) = do let w = dynamicMap imageWidth i
