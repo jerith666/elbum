@@ -6,6 +6,7 @@ import System.Directory
 import System.FilePath
 
 import Codec.Picture hiding (Image)
+import Codec.Picture.Types hiding (Image)
 
 import AlbumTypes
 
@@ -28,14 +29,21 @@ genAlbum src dest = do
   putStrLn $ "first img is " ++ (show $ head pimgs)
 
 procImage :: (FilePath, DynamicImage) -> IO Image
-procImage (f,i) = return Image { altText = "alt"
-                               , srcSet = ImgSrcSet { srcs = [ ImgSrc { url = f
-                                                                      , x = 123
-                                                                      , y = 456
-                                                                      }
-                                                             ]
-                                                    }
-                               }
+procImage (f,i) = do let w = dynamicMap imageWidth i
+                         h = dynamicMap imageHeight i
+                         t = takeBaseName f
+                     srcSet <- procSrcSet f i w h
+                     return Image { altText = t
+                                  , srcSet = srcSet
+                                  }
+
+procSrcSet :: FilePath -> DynamicImage -> Int -> Int -> IO ImgSrcSet
+procSrcSet f i w h = return ImgSrcSet { srcs = [ ImgSrc { url = f
+                                                        , x = w
+                                                        , y = h
+                                                        }
+                                               ]
+                                      }
 
 imgsOnly :: [FilePath] -> IO [(FilePath, DynamicImage)]
 imgsOnly [] = return []
