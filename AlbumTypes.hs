@@ -1,9 +1,9 @@
 -- nix-shell -p "haskellPackages.ghcWithPackages (pkgs: [pkgs.elm-bridge])"
 
 module AlbumTypes
-( ImgSrc
-, ImgSrcSet
-, Image
+( ImgSrc(..)
+, ImgSrcSet(..)
+, Image(..)
 ) where
 
 data ImgSrc

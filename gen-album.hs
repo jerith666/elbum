@@ -5,7 +5,9 @@ import System.Environment
 import System.Directory
 import System.FilePath
 
-import Codec.Picture
+import Codec.Picture hiding (Image)
+
+import AlbumTypes
 
 main = do
   args <- getArgs
@@ -21,12 +23,19 @@ genAlbum src dest = do
   files <- getDirectoryContents src
   let afiles = map (\f -> src </> f) files
   imgs <- imgsOnly afiles
-  -- sequence $ map procImage imgs
-  putStrLn ((show (length imgs)) ++ " imgs in " ++ src ++ " to copy to " ++ dest)
-  putStrLn $ "first img is " ++ (show $ fst $ head imgs)
+  pimgs <- sequence $ map procImage imgs
+  putStrLn ((show (length pimgs)) ++ " imgs in " ++ src ++ " to copy to " ++ dest)
+  putStrLn $ "first img is " ++ (show $ head pimgs)
 
--- procImage :: (FilePath, DynamicImage) -> IO [Image]
--- procImage f = do 
+procImage :: (FilePath, DynamicImage) -> IO Image
+procImage (f,i) = return Image { altText = "alt"
+                               , srcSet = ImgSrcSet { srcs = [ ImgSrc { url = f
+                                                                      , x = 123
+                                                                      , y = 456
+                                                                      }
+                                                             ]
+                                                    }
+                               }
 
 imgsOnly :: [FilePath] -> IO [(FilePath, DynamicImage)]
 imgsOnly [] = return []
