@@ -1,3 +1,5 @@
+--nix-shell -p "haskellPackages.ghcWithPackages (pkgs: [pkgs.ihaskell-juicypixels])"
+
 import System.Environment
 
 import System.Directory
