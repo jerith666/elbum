@@ -21,18 +21,21 @@ genAlbum src dest = do
   files <- getDirectoryContents src
   let afiles = map (\f -> src </> f) files
   imgs <- imgsOnly afiles
-  -- sequence $ map procImage $ imgs
+  -- sequence $ map procImage imgs
   putStrLn ((show (length imgs)) ++ " imgs in " ++ src ++ " to copy to " ++ dest)
-  putStrLn $ "first img is " ++ (show $ head imgs)
+  putStrLn $ "first img is " ++ (show $ fst $ head imgs)
 
-imgsOnly :: [FilePath] -> IO [FilePath]
+-- procImage :: (FilePath, DynamicImage) -> IO [Image]
+-- procImage f = do 
+
+imgsOnly :: [FilePath] -> IO [(FilePath, DynamicImage)]
 imgsOnly [] = return []
 imgsOnly (f:fs) = do fo <- imgOnly f
                      fos <- imgsOnly fs
                      return $ fo ++ fos
 
-imgOnly :: FilePath -> IO [FilePath]
+imgOnly :: FilePath -> IO [(FilePath, DynamicImage)]
 imgOnly f = do loadResult <- readImage f
                case loadResult of
                     Left err -> do return []
-                    Right img -> do return [f]
+                    Right img -> do return [(f, img)]
