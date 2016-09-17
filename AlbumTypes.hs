@@ -34,11 +34,3 @@ data Album
    { title :: String
    , images :: [Image]
    } deriving (Generic, Show, Eq)
-
-instance ToJSON ImgSrc
-
-instance ToJSON ImgSrcSet
-
-instance ToJSON Image
-
-instance ToJSON Album

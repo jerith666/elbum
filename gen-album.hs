@@ -13,6 +13,14 @@ import qualified Data.ByteString.Lazy.Char8 as C
 
 import AlbumTypes
 
+instance ToJSON ImgSrc
+
+instance ToJSON ImgSrcSet
+
+instance ToJSON Image
+
+instance ToJSON Album
+
 main = do
   args <- getArgs
   case args of
