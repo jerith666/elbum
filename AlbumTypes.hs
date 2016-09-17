@@ -28,8 +28,3 @@ data Image
    , srcSet :: ImgSrcSet
    } deriving (Generic, Show, Eq)
 
-instance ToJSON ImgSrc
-
-instance ToJSON ImgSrcSet
-
-instance ToJSON Image
