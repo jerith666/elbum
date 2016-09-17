@@ -36,7 +36,10 @@ genAlbum src dest = do
   let afiles = map (\f -> src </> f) files
   imgs <- imgsOnly afiles
   pimgs <- sequence $ map procImage imgs
-  mapM_ (C.putStrLn . encode) pimgs
+  let a = Album { title = last $ splitDirectories src
+                , images = pimgs
+                }
+  C.putStrLn $ encode a
 
 procImage :: (FilePath, DynamicImage) -> IO Image
 procImage (f,i) = do let w = dynamicMap imageWidth i
