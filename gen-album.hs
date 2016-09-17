@@ -33,7 +33,7 @@ usage = putStrLn "usage: gen-album <src> <dest>"
 
 genAlbum src dest = do
   files <- getDirectoryContents src
-  let afiles = map (\f -> src </> f) files
+  let afiles = map (\f -> makeRelative dest $ src </> f) files
   imgs <- imgsOnly afiles
   pimgs <- sequence $ map procImage imgs
   let a = Album { title = last $ splitDirectories src
