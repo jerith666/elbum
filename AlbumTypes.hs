@@ -5,6 +5,7 @@ module AlbumTypes
 ( ImgSrc(..)
 , ImgSrcSet(..)
 , Image(..)
+, Album(..)
 ) where
 
 import Data.Aeson
@@ -28,8 +29,16 @@ data Image
    , srcSet :: ImgSrcSet
    } deriving (Generic, Show, Eq)
 
+data Album
+   = Album
+   { title :: String
+   , images :: [Image]
+   } deriving (Generic, Show, Eq)
+
 instance ToJSON ImgSrc
 
 instance ToJSON ImgSrcSet
 
 instance ToJSON Image
+
+instance ToJSON Album
