@@ -4,6 +4,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.App exposing (..)
 import Keyboard exposing (..)
+import Task exposing (..)
+import Http exposing (..)
 
 import Album exposing (..)
 
@@ -18,6 +20,8 @@ main = program { init = init
 type Msg = Next
          | Prev
          | NoUpdate
+         | NoAlbum Http.Error
+         | YesAlbum Album
 
 type alias Model = { album: Maybe Album
                    , index: Int
@@ -30,26 +34,35 @@ subscriptions model = downs (\keycode -> case keycode of
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-  case model.album of
-       Nothing -> ( model
-                  , Cmd.none
-                  )
-       Just a ->
-         ( case msg of
-                Next -> { model
-                        | index = Basics.min (model.index + 1)
-                                             (length a.images - 1) }
-                Prev -> { model
-                        | index = Basics.max (model.index - 1)
-                                             0 }
-                NoUpdate -> model
-         , Cmd.none
-         )
+  case msg of
+       NoAlbum err -> ( model
+                      , Cmd.none
+                      )
+       YesAlbum album -> ( { model
+                           | album = Just album
+                           }
+                         , Cmd.none
+                         )
+       Next -> moveindex model (\i -> i + 1)
+       Prev -> moveindex model (\i -> i - 1)
+       NoUpdate -> moveindex model (\i -> i)
+
+moveindex model mover =
+  ( case model.album of
+         Nothing -> model
+         Just a -> let newi = mover model.index
+                   in { model
+                      | index = Basics.min (Basics.max newi
+                                                       0)
+                                           (length a.images - 1)
+                      }
+  , Cmd.none
+  )
 
 init = ( { album = Nothing
          , index = 0
          }
-       , Cmd.none
+       , Task.perform NoAlbum YesAlbum (Http.get jsonDecAlbum "album.json")
        )
 
 view : Model -> Html Msg
