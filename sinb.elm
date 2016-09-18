@@ -6,6 +6,7 @@ import Html.App exposing (..)
 import Keyboard exposing (..)
 import Task exposing (..)
 import Http exposing (..)
+import Window exposing (..)
 
 import Album exposing (..)
 
@@ -22,15 +23,19 @@ type Msg = Next
          | NoUpdate
          | NoAlbum Http.Error
          | YesAlbum Album
+         | Resize Size
 
 type alias Model = { album: Maybe Album
                    , index: Int
                    }
 
-subscriptions model = downs (\keycode -> case keycode of
-                                              39 -> Next {- right arrow -}
-                                              37 -> Prev {- left arrow -}
-                                              _ -> NoUpdate)
+subscriptions model =
+  Sub.batch [ downs (\keycode -> case keycode of
+                                      39 -> Next {- right arrow -}
+                                      37 -> Prev {- left arrow -}
+                                      _ -> NoUpdate)
+            , resizes Resize
+            ]
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -46,6 +51,7 @@ update msg model =
        Next -> moveindex model (\i -> i + 1)
        Prev -> moveindex model (\i -> i - 1)
        NoUpdate -> moveindex model (\i -> i)
+       Resize size -> ( model, Cmd.none )
 
 moveindex model mover =
   ( case model.album of
@@ -111,7 +117,7 @@ tScale x = round (toFloat x * 0.2)
 
 render : ImgSrc -> Msg -> Html Msg
 render i msg = img [ src i.url
-                   , width i.x
-                   , height i.y
+                   , Html.Attributes.width i.x
+                   , Html.Attributes.height i.y
                    , onClick msg ]
                    []
