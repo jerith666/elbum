@@ -5,6 +5,8 @@ import Html.Events exposing (..)
 import Html.App exposing (..)
 import Keyboard exposing (..)
 
+import Album exposing (..)
+
 -- MODEL
 
 main = program { init = init
@@ -17,16 +19,8 @@ type Msg = Next
          | Prev
          | NoUpdate
 
-type alias ImageSize = { url: String
-                       , x: Int
-                       , y: Int
-                       }
-
-type alias Image = List ImageSize
-
-type alias Model = { title: String
+type alias Model = { album: Maybe Album
                    , index: Int
-                   , images: List Image
                    }
 
 subscriptions model = downs (\keycode -> case keycode of
@@ -34,42 +28,39 @@ subscriptions model = downs (\keycode -> case keycode of
                                               37 -> Prev {- left arrow -}
                                               _ -> NoUpdate)
 
-update msg model = ( case msg of
-                          Next -> { model
-                                  | index = Basics.min (model.index + 1)
-                                                       (length model.images - 1) }
-                          Prev -> { model
-                                  | index = Basics.max (model.index - 1)
-                                                       0 }
-                          NoUpdate -> model
-                   , Cmd.none
-                   )
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+  case model.album of
+       Nothing -> ( model
+                  , Cmd.none
+                  )
+       Just a ->
+         ( case msg of
+                Next -> { model
+                        | index = Basics.min (model.index + 1)
+                                             (length a.images - 1) }
+                Prev -> { model
+                        | index = Basics.max (model.index - 1)
+                                             0 }
+                NoUpdate -> model
+         , Cmd.none
+         )
 
-testAlbumJson = { title = "The Album Title"
-                , index = 0
-                , images = [ [ { url = "http://mchenryfamily.org/pics/2016/2016/08_August%2024-30%3A%20Eleanor%27s%2012th%20Week/DSC_7944_Med.jpg"
-                               , x = 960
-                               , y = 638
-                               }
-                             ]
-                           , [ { url = "http://mchenryfamily.org/pics/2016/2016/08_August%2024-30%3A%20Eleanor%27s%2012th%20Week/DSC_7949_Med.jpg"
-                               , x = 960
-                               , y = 638
-                               }
-                             ]
-                           , [ { url = "http://mchenryfamily.org/pics/2016/2016/08_August%2024-30%3A%20Eleanor's%2012th%20Week/DSC_7950_Med.jpg"
-                               , x = 960
-                               , y = 638
-                               }
-                             ]
-                           ]
-                }
+init = ( { album = Nothing
+         , index = 0
+         }
+       , Cmd.none
+       )
 
-init = (testAlbumJson, Cmd.none)
-
-view model = div []
-                 [ h1 [] [ text model.title ]
-                 , renderImgs model.images model.index ]
+view : Model -> Html Msg
+view model =
+  case model.album of
+       Nothing -> div [] [ text "album loading ..." ]
+       Just a ->
+         div []
+             [ h1 [] [ text a.title ]
+             , renderImgs a.images model.index
+             ]
 
 renderImgs : List Image -> Int -> Html Msg
 renderImgs imgs index = case imgs of
@@ -84,23 +75,23 @@ renderImgs imgs index = case imgs of
                                                  ]
 
 renderImg : Image -> Html Msg
-renderImg ises = case ises of
+renderImg ises = case ises.srcSet.srcs of
                       [] -> div [] []
                       is1::_ -> render is1 Next
 
 renderThumb : Image -> Html Msg
-renderThumb ises = case ises of
+renderThumb ises = case ises.srcSet.srcs of
                         [] -> div [] []
                         is1::_ -> render ( thumbScale is1 ) Prev
 
-thumbScale : ImageSize -> ImageSize
+thumbScale : ImgSrc -> ImgSrc
 thumbScale i = { i | x = tScale i.x
                    , y = tScale i.y
                    }
 
 tScale x = round (toFloat x * 0.2)
 
-render : ImageSize -> Msg -> Html Msg
+render : ImgSrc -> Msg -> Html Msg
 render i msg = img [ src i.url
                    , width i.x
                    , height i.y
