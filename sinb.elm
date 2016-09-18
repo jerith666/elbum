@@ -76,16 +76,21 @@ view model =
              ]
 
 renderImgs : List Image -> Int -> Html Msg
-renderImgs imgs index = case imgs of
-                             [] -> div [] []
-                             i::is -> if index == 0 then
-                                          div [] ( [ renderImg i ]
-                                                 ++ (List.map renderThumb is)
-                                                 )
-                                      else
-                                          div [] [ renderThumb i
-                                                 , renderImgs is (index-1)
-                                                 ]
+renderImgs imgs index =
+  div []
+      ( [ renderMainImage ( head ( drop index imgs ) ) ]
+        ++ [ br [] [] ] ++
+        renderThumbs imgs index
+      )
+
+renderMainImage : Maybe Image -> Html Msg
+renderMainImage img =
+  case img of
+       Nothing -> div [] [text "no images in album"]
+       Just i -> renderImg i
+
+renderThumbs imgs index =
+  List.map renderThumb imgs
 
 renderImg : Image -> Html Msg
 renderImg ises = case ises.srcSet.srcs of
