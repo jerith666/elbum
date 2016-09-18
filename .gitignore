@@ -3,3 +3,6 @@
 *.hi
 elm-stuff
 gen-album
+Album.elm
+album.json
+index.html
