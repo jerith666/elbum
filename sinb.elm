@@ -41,6 +41,20 @@ type alias Model =
     }
 
 
+init : ( Model, Cmd Msg )
+init =
+    ( { album = Nothing
+      , index = 0
+      , winWidth = 0
+      , winHeight = 0
+      }
+    , Cmd.batch
+        [ Task.perform NoAlbum YesAlbum (Http.get jsonDecAlbum "album.json")
+        , Task.perform (\never -> NoUpdate) Resize Window.size
+        ]
+    )
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
@@ -65,6 +79,11 @@ subscriptions model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        NoUpdate ->
+            ( model
+            , Cmd.none
+            )
+
         NoAlbum err ->
             ( model
             , Cmd.none
@@ -82,9 +101,6 @@ update msg model =
 
         Prev ->
             moveindex model (\i -> i - 1)
-
-        NoUpdate ->
-            moveindex model (\i -> i)
 
         Resize size ->
             ( { model
@@ -114,20 +130,6 @@ moveindex model mover =
                             (length a.images - 1)
                 }
     , Cmd.none
-    )
-
-
-init : ( Model, Cmd Msg )
-init =
-    ( { album = Nothing
-      , index = 0
-      , winWidth = 0
-      , winHeight = 0
-      }
-    , Cmd.batch
-        [ Task.perform NoAlbum YesAlbum (Http.get jsonDecAlbum "album.json")
-        , Task.perform (\never -> NoUpdate) Resize Window.size
-        ]
     )
 
 
