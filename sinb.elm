@@ -124,7 +124,10 @@ init =
       , winWidth = 0
       , winHeight = 0
       }
-    , Task.perform NoAlbum YesAlbum (Http.get jsonDecAlbum "album.json")
+    , Cmd.batch
+        [ Task.perform NoAlbum YesAlbum (Http.get jsonDecAlbum "album.json")
+        , Task.perform (\never -> NoUpdate) Resize Window.size
+        ]
     )
 
 
