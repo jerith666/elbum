@@ -36,6 +36,8 @@ type Msg
 type alias Model =
     { album : Maybe Album
     , index : Int
+    , winWidth : Int
+    , winHeight : Int
     }
 
 
@@ -84,7 +86,12 @@ update msg model =
             moveindex model (\i -> i)
 
         Resize size ->
-            ( model, Cmd.none )
+            ( { model
+                | winWidth = size.width
+                , winHeight = size.height
+              }
+            , Cmd.none
+            )
 
 
 moveindex model mover =
@@ -112,6 +119,8 @@ moveindex model mover =
 init =
     ( { album = Nothing
       , index = 0
+      , winWidth = 0
+      , winHeight = 0
       }
     , Task.perform NoAlbum YesAlbum (Http.get jsonDecAlbum "album.json")
     )
@@ -126,41 +135,49 @@ view model =
         Just a ->
             div []
                 [ h1 [] [ text a.title ]
-                , renderImgs a.images model.index
+                , renderImgs a.images model.index model.winWidth model.winHeight
                 ]
 
 
-renderImgs : List Image -> Int -> Html Msg
-renderImgs imgs index =
+renderImgs : List Image -> Int -> Int -> Int -> Html Msg
+renderImgs imgs index winWidth winHeight =
     div []
-        ([ renderMainImage (head (drop index imgs)) ]
+        ([ renderMainImage (head (drop index imgs)) winWidth winHeight ]
             ++ [ br [] [] ]
             ++ renderThumbs imgs index
         )
 
 
-renderMainImage : Maybe Image -> Html Msg
-renderMainImage img =
+renderMainImage : Maybe Image -> Int -> Int -> Html Msg
+renderMainImage img winWidth winHeight =
     case img of
         Nothing ->
             div [] [ text "no images in album" ]
 
         Just i ->
-            renderImg i
+            renderImg i winWidth winHeight
 
 
 renderThumbs imgs index =
     List.map renderThumb imgs
 
 
-renderImg : Image -> Html Msg
-renderImg ises =
+renderImg : Image -> Int -> Int -> Html Msg
+renderImg ises winWidth winHeight =
     case ises.srcSet.srcs of
         [] ->
             div [] []
 
         is1 :: _ ->
-            render is1 Next
+            render (iScale is1 (fit is1 winWidth winHeight)) Next
+
+
+fit : ImgSrc -> Int -> Int -> Float
+fit i width height =
+    0.8
+        * (Basics.min ((toFloat width) / (toFloat i.x))
+            ((toFloat height) / (toFloat i.y))
+          )
 
 
 renderThumb : Image -> Html Msg
@@ -173,16 +190,20 @@ renderThumb ises =
             render (thumbScale is1) Prev
 
 
-thumbScale : ImgSrc -> ImgSrc
 thumbScale i =
+    iScale i 0.2
+
+
+iScale : ImgSrc -> Float -> ImgSrc
+iScale i s =
     { i
-        | x = tScale i.x
-        , y = tScale i.y
+        | x = scale i.x s
+        , y = scale i.y s
     }
 
 
-tScale x =
-    round (toFloat x * 0.2)
+scale x s =
+    round (toFloat x * s)
 
 
 render : ImgSrc -> Msg -> Html Msg
