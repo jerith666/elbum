@@ -169,7 +169,7 @@ renderImg ises winWidth winHeight =
             div [] []
 
         is1 :: _ ->
-            render (iScale is1 (fit is1 winWidth winHeight)) Next
+            render (iScale (fit is1 winWidth winHeight) is1) Next
 
 
 fit : ImgSrc -> Int -> Int -> Float
@@ -190,12 +190,12 @@ renderThumb ises =
             render (thumbScale is1) Prev
 
 
-thumbScale i =
-    iScale i 0.2
+thumbScale =
+    iScale 0.2
 
 
-iScale : ImgSrc -> Float -> ImgSrc
-iScale i s =
+iScale : Float -> ImgSrc -> ImgSrc
+iScale s i =
     { i
         | x = scale i.x s
         , y = scale i.y s
