@@ -13,9 +13,6 @@ import Window exposing (..)
 import Album exposing (..)
 
 
--- MODEL
-
-
 main =
     program
         { init = init
