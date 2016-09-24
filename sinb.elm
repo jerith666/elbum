@@ -151,7 +151,7 @@ renderImgs imgs index winWidth winHeight =
     div []
         ([ renderMainImage (head (drop index imgs)) winWidth winHeight ]
             ++ [ br [] [] ]
-            ++ renderThumbs imgs index
+            ++ renderThumbs imgs winWidth winHeight index
         )
 
 
@@ -165,8 +165,8 @@ renderMainImage img winWidth winHeight =
             renderImg i winWidth winHeight
 
 
-renderThumbs imgs index =
-    List.map renderThumb imgs
+renderThumbs imgs winWidth winHeight index =
+    List.map (renderThumb winWidth winHeight) imgs
 
 
 renderImg : Image -> Int -> Int -> Html Msg
@@ -176,29 +176,25 @@ renderImg ises winWidth winHeight =
             div [] []
 
         is1 :: _ ->
-            render (iScale (fit is1 winWidth winHeight) is1) Next
+            render (iScale (fit 0.75 is1 winWidth winHeight) is1) Next
 
 
-fit : ImgSrc -> Int -> Int -> Float
-fit i width height =
-    0.8
+fit : Float -> ImgSrc -> Int -> Int -> Float
+fit s i width height =
+    s
         * (Basics.min ((toFloat width) / (toFloat i.x))
             ((toFloat height) / (toFloat i.y))
           )
 
 
-renderThumb : Image -> Html Msg
-renderThumb ises =
+renderThumb : Int -> Int -> Image -> Html Msg
+renderThumb winWidth winHeight ises =
     case ises.srcSet.srcs of
         [] ->
             div [] []
 
         is1 :: _ ->
-            render (thumbScale is1) Prev
-
-
-thumbScale =
-    iScale 0.2
+            render (iScale (fit 0.15 is1 winWidth winHeight) is1) Prev
 
 
 iScale : Float -> ImgSrc -> ImgSrc
