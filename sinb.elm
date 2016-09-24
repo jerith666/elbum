@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import Basics.Extra exposing (..)
 import List exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -50,7 +51,7 @@ init =
       }
     , Cmd.batch
         [ Task.perform NoAlbum YesAlbum (Http.get jsonDecAlbum "album.json")
-        , Task.perform (\never -> NoUpdate) Resize Window.size
+        , Task.perform never Resize Window.size
         ]
     )
 
