@@ -41,6 +41,7 @@ type alias Model =
     }
 
 
+subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ downs
@@ -116,6 +117,7 @@ moveindex model mover =
     )
 
 
+init : ( Model, Cmd Msg )
 init =
     ( { album = Nothing
       , index = 0
