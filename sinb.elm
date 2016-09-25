@@ -138,8 +138,17 @@ view model =
             div [] [ text "album loading ..." ]
 
         Just a ->
-            div []
-                [ h1 [] [ text a.title ]
+            div
+                [ style
+                    [ ( "height"
+                      , "100%"
+                      )
+                    , ( "background-color"
+                      , "black"
+                      )
+                    ]
+                ]
+                [ h1 [ style [ ( "color", "white" ) ] ] [ text a.title ]
                 , renderImgs a.images model.index model.winWidth model.winHeight
                 ]
 
@@ -147,10 +156,9 @@ view model =
 renderImgs : List Image -> Int -> Int -> Int -> Html Msg
 renderImgs imgs index winWidth winHeight =
     div []
-        ([ renderMainImage (head (drop index imgs)) winWidth winHeight ]
-            ++ [ br [] [] ]
-            ++ renderThumbs imgs winWidth winHeight index
-        )
+        [ div [] [ renderMainImage (head (drop index imgs)) winWidth winHeight ]
+        , div [] (renderThumbs imgs winWidth winHeight index)
+        ]
 
 
 renderMainImage : Maybe Image -> Int -> Int -> Html Msg
@@ -210,7 +218,8 @@ scale x s =
 render : ImgSrc -> Msg -> Html Msg
 render i msg =
     img
-        [ src i.url
+        [ style [ ( "margin", "auto" ) ]
+        , src i.url
         , Html.Attributes.width i.x
         , Html.Attributes.height i.y
         , onClick msg
