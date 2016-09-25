@@ -218,7 +218,7 @@ scale x s =
 render : ImgSrc -> Msg -> Html Msg
 render i msg =
     img
-        [ style [ ( "margin", "auto" ) ]
+        [ style [ ( "display", "block" ), ("margin", "auto") ]
         , src i.url
         , Html.Attributes.width i.x
         , Html.Attributes.height i.y
