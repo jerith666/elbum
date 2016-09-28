@@ -182,7 +182,9 @@ renderImg ises winWidth winHeight =
             div [] []
 
         is1 :: _ ->
-            render (iScale (fit 0.75 is1 winWidth winHeight) is1) Next
+            render (iScale (fit 0.75 is1 winWidth winHeight) is1)
+                [ ( "display", "block" ), ( "margin", "auto" ) ]
+                Next
 
 
 fit : Float -> ImgSrc -> Int -> Int -> Float
@@ -200,7 +202,9 @@ renderThumb winWidth winHeight ises =
             div [] []
 
         is1 :: _ ->
-            render (iScale (fit 0.15 is1 winWidth winHeight) is1) Prev
+            render (iScale (fit 0.15 is1 winWidth winHeight) is1)
+                [ ( "margin", "auto" ) ]
+                Prev
 
 
 iScale : Float -> ImgSrc -> ImgSrc
@@ -215,10 +219,10 @@ scale x s =
     round (toFloat x * s)
 
 
-render : ImgSrc -> Msg -> Html Msg
-render i msg =
+render : ImgSrc -> List ( String, String ) -> Msg -> Html Msg
+render i s msg =
     img
-        [ style [ ( "display", "block" ), ("margin", "auto") ]
+        [ style s
         , src i.url
         , Html.Attributes.width i.x
         , Html.Attributes.height i.y
