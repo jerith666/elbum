@@ -157,7 +157,11 @@ renderImgs : List Image -> Int -> Int -> Int -> Html Msg
 renderImgs imgs index winWidth winHeight =
     div []
         [ div [] [ renderMainImage (head (drop index imgs)) winWidth winHeight ]
-        , div [] (renderThumbs imgs winWidth winHeight index)
+        , div [ style [ ("display", "flex")
+                      , ("justify-content", "space-around")
+                      , ("align-items", "center")
+                      ] ]
+              (renderThumbs imgs winWidth winHeight index)
         ]
 
 
@@ -183,7 +187,9 @@ renderImg ises winWidth winHeight =
 
         is1 :: _ ->
             render (iScale (fit 0.75 is1 winWidth winHeight) is1)
-                [ ( "display", "block" ), ( "margin", "auto" ) ]
+                [ ( "display", "block" )
+                , ( "margin", "auto" )
+                ]
                 Next
 
 
@@ -202,9 +208,7 @@ renderThumb winWidth winHeight ises =
             div [] []
 
         is1 :: _ ->
-            render (iScale (fit 0.15 is1 winWidth winHeight) is1)
-                [ ( "margin", "auto" ) ]
-                Prev
+            render (iScale (fit 0.15 is1 winWidth winHeight) is1) [] Prev
 
 
 iScale : Float -> ImgSrc -> ImgSrc
