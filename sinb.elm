@@ -157,11 +157,14 @@ renderImgs : List Image -> Int -> Int -> Int -> Html Msg
 renderImgs imgs index winWidth winHeight =
     div []
         [ div [] [ renderMainImage (head (drop index imgs)) winWidth winHeight ]
-        , div [ style [ ("display", "flex")
-                      , ("justify-content", "space-around")
-                      , ("align-items", "center")
-                      ] ]
-              (renderThumbs imgs winWidth winHeight index)
+        , div
+            [ style
+                [ ( "display", "flex" )
+                , ( "justify-content", "space-around" )
+                , ( "align-items", "center" )
+                ]
+            ]
+            (renderThumbs imgs winWidth winHeight index)
         ]
 
 
