@@ -8,7 +8,6 @@ import Data.Proxy
 import AlbumTypes
 
 deriveBoth defaultOptions ''ImgSrc
-deriveBoth defaultOptions ''ImgSrcSet
 deriveBoth defaultOptions ''Image
 deriveBoth defaultOptions ''Album
 
@@ -17,6 +16,5 @@ main =
     putStrLn $ makeElmModule "Album"
     [ DefineElm (Proxy :: Proxy Album)
     , DefineElm (Proxy :: Proxy Image)
-    , DefineElm (Proxy :: Proxy ImgSrcSet)
     , DefineElm (Proxy :: Proxy ImgSrc)
     ]

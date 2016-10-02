@@ -15,8 +15,6 @@ import AlbumTypes
 
 instance ToJSON ImgSrc
 
-instance ToJSON ImgSrcSet
-
 instance ToJSON Image
 
 instance ToJSON Album
@@ -50,13 +48,12 @@ procImage (f,i) = do let w = dynamicMap imageWidth i
                                   , srcSet = srcSet
                                   }
 
-procSrcSet :: FilePath -> DynamicImage -> Int -> Int -> IO ImgSrcSet
-procSrcSet f i w h = return ImgSrcSet { srcs = [ ImgSrc { url = f
-                                                        , x = w
-                                                        , y = h
-                                                        }
-                                               ]
-                                      }
+procSrcSet :: FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
+procSrcSet f i w h = return [ ImgSrc { url = f
+                                     , x = w
+                                     , y = h
+                                     }
+                            ]
 
 imgsOnly :: [FilePath] -> IO [(FilePath, DynamicImage)]
 imgsOnly [] = return []

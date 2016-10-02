@@ -184,7 +184,7 @@ renderThumbs imgs winWidth winHeight index =
 
 renderImg : Image -> Int -> Int -> Html Msg
 renderImg ises winWidth winHeight =
-    case ises.srcSet.srcs of
+    case ises.srcSet of
         [] ->
             div [] []
 
@@ -206,7 +206,7 @@ fit s i width height =
 
 renderThumb : Int -> Int -> Image -> Html Msg
 renderThumb winWidth winHeight ises =
-    case ises.srcSet.srcs of
+    case ises.srcSet of
         [] ->
             div [] []
 
