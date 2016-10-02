@@ -1,4 +1,3 @@
--- nix-shell -p "haskellPackages.ghcWithPackages (pkgs: [pkgs.elm-bridge])"
 {-# LANGUAGE DeriveGeneric #-}
 
 module AlbumTypes
