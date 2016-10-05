@@ -6,6 +6,9 @@ import System.FilePath
 import Codec.Picture hiding (Image)
 import Codec.Picture.Types hiding (Image)
 
+import Vision.Image hiding (Image, map)
+import Vision.Image.JuicyPixels
+
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as C
 
