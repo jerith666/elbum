@@ -5,6 +5,7 @@
 
 #fails building some other upstream haskell package (ghc-parser):
 #http://hydra.nixos.org/build/36519168
+#https://github.com/gibiansky/IHaskell/pull/686
 #nix-shell -I nixpkgs=/home/matt/git/nixos/nixpkgs -p "haskellPackages.ghcWithPackages (pkgs: with pkgs; [ihaskell-juicypixels elm-bridge])"
 
 nix-shell -p "haskellPackages.ghcWithPackages (pkgs: with pkgs; [ihaskell-juicypixels elm-bridge friday])"
