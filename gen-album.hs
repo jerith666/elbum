@@ -6,7 +6,10 @@ import System.FilePath
 import Codec.Picture hiding (Image)
 import Codec.Picture.Types hiding (Image)
 
+import Vision.Primitive
+import Vision.Primitive.Shape
 import Vision.Image hiding (Image, map)
+import Vision.Image.Transform
 import Vision.Image.JuicyPixels
 
 import Data.Aeson
@@ -50,11 +53,22 @@ procImage (f,i) = do let w = dynamicMap imageWidth i
                                   }
 
 procSrcSet :: FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
-procSrcSet f i w h = return [ ImgSrc { url = f
-                                     , x = w
-                                     , y = h
-                                     }
-                            ]
+procSrcSet f i w h = do let fi = toFridayRGB $ convertRGB8 i
+                            xsm = 200
+                            ysm = 200
+                            fism = resize NearestNeighbor (ix2 xsm ysm) fi
+                            ism = toJuicyRGB fism
+                            fsmpath = "/tmp/fsm.png"
+                        savePngImage fsmpath $ ImageRGB8 ism
+                        return [ ImgSrc { url = f
+                                        , x = w
+                                        , y = h
+                                        }
+                               , ImgSrc { url = fsmpath
+                                        , x = xsm
+                                        , y = ysm
+                                        }
+                               ]
 
 imgsOnly :: [FilePath] -> IO [(FilePath, DynamicImage)]
 imgsOnly [] = return []
