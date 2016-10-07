@@ -58,7 +58,7 @@ procSrcSet f i w h = do let fi = toFridayRGB $ convertRGB8 i
                             ysm = 200
                             fism = resize NearestNeighbor (ix2 xsm ysm) fi
                             ism = toJuicyRGB fism
-                            fsmpath = "/tmp/fsm.png"
+                            fsmpath = "/tmp/" ++ (takeFileName (dropExtension f)) ++ ".sm.png"
                         savePngImage fsmpath $ ImageRGB8 ism
                         return [ ImgSrc { url = f
                                         , x = w
