@@ -55,7 +55,7 @@ procImage (f,i) = do let w = dynamicMap imageWidth i
 procSrcSet :: FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
 procSrcSet f i w h = do let fi = toFridayRGB $ convertRGB8 i
                             (xsm, ysm) = shrink 200 w h
-                            fism = resize NearestNeighbor (ix2 ysm xsm) fi
+                            fism = resize Bilinear (ix2 ysm xsm) fi
                             ism = toJuicyRGB fism
                             fsmpath = "/tmp/" ++ (takeFileName (dropExtension f)) ++ ".sm.png"
                         savePngImage fsmpath $ ImageRGB8 ism
