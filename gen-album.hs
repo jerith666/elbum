@@ -71,8 +71,8 @@ procSrcSet f i w h = do let fi = toFridayRGB $ convertRGB8 i
 
 shrink :: Int -> Int -> Int -> (Int, Int)
 shrink maxdim w h = let factor = fromIntegral maxdim / fromIntegral (max w h)
-                        -- scale x = floor (x * factor)
-                    in (floor ((fromIntegral w) * factor), floor ((fromIntegral h) * factor))
+                        scale x = floor ((fromIntegral x) * factor)
+                    in (scale w, scale h)
 
 
 
