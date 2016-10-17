@@ -162,6 +162,7 @@ renderImgs imgs index winWidth winHeight =
                 [ ( "display", "flex" )
                 , ( "justify-content", "space-around" )
                 , ( "align-items", "center" )
+                , ( "overflow", "auto" )
                 ]
             ]
             (renderThumbs imgs winWidth winHeight index)
