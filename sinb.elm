@@ -7,6 +7,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.App exposing (..)
 import Css exposing (..)
+-- import Css.Mixin exposing (..)
+-- import Css.Preprocess.Mixin exposing (..)
 import Keyboard exposing (..)
 import Task exposing (..)
 import Http exposing (..)
@@ -135,6 +137,9 @@ moveindex model mover =
 styles =
     Css.asPairs >> Html.Attributes.style
 
+black = rgb 0 0 0
+white = rgb 255 255 255
+
 
 view : Model -> Html Msg
 view model =
@@ -144,25 +149,15 @@ view model =
 
         Just a ->
             div
-                [ style
-                    [ ( "height"
-                      , "100%"
-                      )
-                    , ( "background-color"
-                      , "black"
-                      )
-                    , ( "display"
-                      , "flex"
-                      )
-                    , ( "flex-direction"
-                      , "column"
-                      )
-                    , ( "padding-top"
-                      , "1px" -- prevent margin collapsing with nested h1
-                      )
+                [ styles
+                    [ Css.height (pct 100)
+                    , backgroundColor black
+                    , displayFlex
+                    , flexDirection column
+                    , paddingTop (px 1)
                     ]
                 ]
-                [ h1 [ style [ ( "color", "white" ) ] ] [ Html.text a.title ]
+                [ h1 [ styles [ color white ] ] [ Html.text a.title ]
                 , renderImgs a.images model.index model.winWidth model.winHeight
                 ]
 
@@ -176,11 +171,11 @@ renderImgs imgs index winWidth winHeight =
         ]
         [ renderMainImage (head (drop index imgs)) winWidth winHeight
         , div
-            [ style
-                [ ( "display", "flex" )
-                , ( "justify-content", "space-around" )
-                , ( "align-items", "center" )
-                , ( "overflow", "auto" )
+            [ styles
+                [ displayFlex
+                , Css.property "justify-content" "space-around"
+                , alignItems center
+                , overflow auto
                 ]
             ]
             (renderThumbs imgs winWidth winHeight index)
@@ -209,8 +204,8 @@ renderImg ises winWidth winHeight =
 
         is1 :: _ ->
             render (iScale (fit 0.75 is1 winWidth winHeight) is1)
-                [ ( "display", "block" )
-                , ( "margin", "auto" )
+                [ display block
+                , margin auto
                 ]
                 Next
 
@@ -245,10 +240,10 @@ scale x s =
     round (toFloat x * s)
 
 
-render : ImgSrc -> List ( String, String ) -> Msg -> Html Msg
+render : ImgSrc -> List Mixin -> Msg -> Html Msg
 render i s msg =
     img
-        [ style s
+        [ styles s
         , Html.Attributes.src i.url
         , Html.Attributes.width i.x
         , Html.Attributes.height i.y
