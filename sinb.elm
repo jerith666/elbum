@@ -146,6 +146,9 @@ view model =
                     , ( "background-color"
                       , "black"
                       )
+                    , ( "display"
+                      , "flex"
+                      )
                     , ( "padding-top"
                       , "1px" -- prevent margin collapsing with nested h1
                       )
@@ -158,8 +161,12 @@ view model =
 
 renderImgs : List Image -> Int -> Int -> Int -> Html Msg
 renderImgs imgs index winWidth winHeight =
-    div []
-        [ div [] [ renderMainImage (head (drop index imgs)) winWidth winHeight ]
+    div [ style [ ( "display", "flex" )
+                , ( "flex-direction", "column" )
+                , ( "align-items", "center" )
+                ]
+        ]
+        [ renderMainImage (head (drop index imgs)) winWidth winHeight
         , div
             [ style
                 [ ( "display", "flex" )
