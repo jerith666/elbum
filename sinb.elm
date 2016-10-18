@@ -157,7 +157,7 @@ view model =
                     , paddingTop (px 1)
                     ]
                 ]
-                [ h1 [ styles [ color white ] ] [ Html.text a.title ]
+                [ h1 [ styles [ color white, textAlign center ] ] [ Html.text a.title ]
                 , renderImgs a.images model.index model.winWidth model.winHeight
                 ]
 
