@@ -146,6 +146,9 @@ view model =
                     , ( "background-color"
                       , "black"
                       )
+                    , ( "padding-top"
+                      , "1px" -- prevent margin collapsing with nested h1
+                      )
                     ]
                 ]
                 [ h1 [ style [ ( "color", "white" ) ] ] [ text a.title ]
