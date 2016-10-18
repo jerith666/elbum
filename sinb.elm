@@ -206,6 +206,8 @@ renderImg ises winWidth winHeight =
             render (iScale (fit 0.75 is1 winWidth winHeight) is1)
                 [ display block
                 , margin auto
+                , Css.width (pct 100)
+                , Css.height (pct 100)
                 ]
                 Next
 
@@ -225,7 +227,9 @@ renderThumb winWidth winHeight ises =
             div [] []
 
         is1 :: _ ->
-            render (iScale (fit 0.15 is1 winWidth winHeight) is1) [] Prev
+            render (iScale (fit 0.15 is1 winWidth winHeight) is1)
+                   [ Css.width (pct 100), Css.height (pct 100) ]
+                   Prev
 
 
 iScale : Float -> ImgSrc -> ImgSrc
@@ -245,8 +249,6 @@ render i s msg =
     img
         [ styles s
         , Html.Attributes.src i.url
-        , Html.Attributes.width i.x
-        , Html.Attributes.height i.y
         , onClick msg
         ]
         []
