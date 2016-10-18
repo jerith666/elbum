@@ -6,6 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.App exposing (..)
+import Css exposing (..)
 import Keyboard exposing (..)
 import Task exposing (..)
 import Http exposing (..)
@@ -131,11 +132,15 @@ moveindex model mover =
     )
 
 
+styles =
+    Css.asPairs >> Html.Attributes.style
+
+
 view : Model -> Html Msg
 view model =
     case model.album of
         Nothing ->
-            div [] [ text "album loading ..." ]
+            div [] [ Html.text "album loading ..." ]
 
         Just a ->
             div
@@ -154,17 +159,17 @@ view model =
                       )
                     ]
                 ]
-                [ h1 [ style [ ( "color", "white" ) ] ] [ text a.title ]
+                [ h1 [ style [ ( "color", "white" ) ] ] [ Html.text a.title ]
                 , renderImgs a.images model.index model.winWidth model.winHeight
                 ]
 
 
 renderImgs : List Image -> Int -> Int -> Int -> Html Msg
 renderImgs imgs index winWidth winHeight =
-    div [ style [ ( "display", "flex" )
-                , ( "flex-direction", "column" )
-                , ( "align-items", "center" )
-                ]
+    div [ styles [ displayFlex
+                 , flexDirection column
+                 , alignItems center
+                 ]
         ]
         [ renderMainImage (head (drop index imgs)) winWidth winHeight
         , div
@@ -183,7 +188,7 @@ renderMainImage : Maybe Image -> Int -> Int -> Html Msg
 renderMainImage img winWidth winHeight =
     case img of
         Nothing ->
-            div [] [ text "no images in album" ]
+            div [] [ Html.text "no images in album" ]
 
         Just i ->
             renderImg i winWidth winHeight
@@ -241,7 +246,7 @@ render : ImgSrc -> List ( String, String ) -> Msg -> Html Msg
 render i s msg =
     img
         [ style s
-        , src i.url
+        , Html.Attributes.src i.url
         , Html.Attributes.width i.x
         , Html.Attributes.height i.y
         , onClick msg
