@@ -154,6 +154,9 @@ view model =
                     , ( "display"
                       , "flex"
                       )
+                    , ( "flex-direction"
+                      , "column"
+                      )
                     , ( "padding-top"
                       , "1px" -- prevent margin collapsing with nested h1
                       )
