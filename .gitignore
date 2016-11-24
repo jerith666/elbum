@@ -6,3 +6,4 @@ gen-album
 Album.elm
 album.json
 index.html
+node_modules/

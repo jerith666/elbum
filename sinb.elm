@@ -7,8 +7,11 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.App exposing (..)
 import Css exposing (..)
+
+
 -- import Css.Mixin exposing (..)
 -- import Css.Preprocess.Mixin exposing (..)
+
 import Keyboard exposing (..)
 import Task exposing (..)
 import Http exposing (..)
@@ -137,8 +140,13 @@ moveindex model mover =
 styles =
     Css.asPairs >> Html.Attributes.style
 
-black = rgb 0 0 0
-white = rgb 255 255 255
+
+black =
+    rgb 0 0 0
+
+
+white =
+    rgb 255 255 255
 
 
 view : Model -> Html Msg
@@ -164,10 +172,12 @@ view model =
 
 renderImgs : List Image -> Int -> Int -> Int -> Html Msg
 renderImgs imgs index winWidth winHeight =
-    div [ styles [ displayFlex
-                 , flexDirection column
-                 , alignItems center
-                 ]
+    div
+        [ styles
+            [ displayFlex
+            , flexDirection column
+            , alignItems center
+            ]
         ]
         [ renderMainImage (head (drop index imgs)) winWidth winHeight
         , div
@@ -228,8 +238,8 @@ renderThumb winWidth winHeight ises =
 
         is1 :: _ ->
             render (iScale (fit 0.15 is1 winWidth winHeight) is1)
-                   [ Css.width (pct 100), Css.height (pct 100) ]
-                   Prev
+                [ Css.width (pct 100), Css.height (pct 100) ]
+                Prev
 
 
 iScale : Float -> ImgSrc -> ImgSrc
