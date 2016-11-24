@@ -222,21 +222,13 @@ renderImg ises winWidth winHeight =
             div [] []
 
         is1 :: _ ->
-            render (iScale (fit 0.75 is1 winWidth winHeight) is1)
+            render is1
                 [ display block
                 , margin auto
                 , Css.width (pct 100)
                 , Css.height (pct 100)
                 ]
                 Next
-
-
-fit : Float -> ImgSrc -> Int -> Int -> Float
-fit s i width height =
-    s
-        * (Basics.min ((toFloat width) / (toFloat i.x))
-            ((toFloat height) / (toFloat i.y))
-          )
 
 
 renderThumb : Int -> Int -> Image -> Html Msg
@@ -246,21 +238,9 @@ renderThumb winWidth winHeight ises =
             div [] []
 
         is1 :: _ ->
-            render (iScale (fit 0.15 is1 winWidth winHeight) is1)
+            render is1
                 [ Css.width (pct 100), Css.height (pct 100) ]
                 Prev
-
-
-iScale : Float -> ImgSrc -> ImgSrc
-iScale s i =
-    { i
-        | x = scale i.x s
-        , y = scale i.y s
-    }
-
-
-scale x s =
-    Basics.round (toFloat x * s)
 
 
 render : ImgSrc -> List Mixin -> Msg -> Html Msg
