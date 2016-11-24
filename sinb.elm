@@ -5,7 +5,6 @@ import List exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Html.App exposing (..)
 import Css exposing (..)
 
 
