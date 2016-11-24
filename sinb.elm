@@ -222,7 +222,7 @@ renderImg ises winWidth winHeight =
             div [] []
 
         is1 :: _ ->
-            render is1
+            render is1 ises.srcSet
                 [ display block
                 , margin auto
                 , Css.width (pct 100)
@@ -238,16 +238,26 @@ renderThumb winWidth winHeight ises =
             div [] []
 
         is1 :: _ ->
-            render is1
+            render is1 ises.srcSet
                 [ Css.width (pct 100), Css.height (pct 100) ]
                 Prev
 
 
-render : ImgSrc -> List Mixin -> Msg -> Html Msg
-render i s msg =
+render : ImgSrc -> List ImgSrc -> List Mixin -> Msg -> Html Msg
+render idefault is s msg =
     img
         [ styles s
-        , Html.Attributes.src i.url
+        , Html.Attributes.src idefault.url
+        , attribute "srcset" (encodeSrcSet is)
         , onClick msg
         ]
         []
+
+
+encodeSrcSet : List ImgSrc -> String
+encodeSrcSet is =
+  String.join ", " (List.map encodeSrc is)
+
+
+encodeSrc : ImgSrc -> String
+encodeSrc is = "todo src"
