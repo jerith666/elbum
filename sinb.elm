@@ -250,7 +250,7 @@ iScale s i =
 
 
 scale x s =
-    round (toFloat x * s)
+    Basics.round (toFloat x * s)
 
 
 render : ImgSrc -> List Mixin -> Msg -> Html Msg
