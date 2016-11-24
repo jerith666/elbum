@@ -52,10 +52,20 @@ init =
       , winHeight = 0
       }
     , Cmd.batch
-        [ Task.perform NoAlbum YesAlbum (Http.get jsonDecAlbum "album.json")
-        , Task.perform never Resize Window.size
+        [ Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecAlbum))
+        , Task.perform Resize Window.size
         ]
     )
+
+
+decodeAlbumRequest : Result Http.Error Album -> Msg
+decodeAlbumRequest r =
+    case r of
+        Ok a ->
+            YesAlbum a
+
+        Err e ->
+            NoAlbum e
 
 
 subscriptions : Model -> Sub Msg
