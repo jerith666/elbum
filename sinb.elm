@@ -246,7 +246,7 @@ renderThumb winWidth winHeight ises =
 render : ImgSrc -> List ImgSrc -> List Mixin -> Msg -> Html Msg
 render idefault is s msg =
     img
-        [ styles (s ++ [Css.width (px (toFloat idefault.x)), Css.height (px (toFloat idefault.y))])
+        [ styles s
         , Html.Attributes.src idefault.url
         , attribute "srcset" (encodeSrcSet is)
         , onClick msg
