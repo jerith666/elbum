@@ -260,4 +260,5 @@ encodeSrcSet is =
 
 
 encodeSrc : ImgSrc -> String
-encodeSrc is = "todo src"
+encodeSrc is =
+  is.url ++ " " ++ (toString is.x) ++ "w"
