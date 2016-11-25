@@ -225,8 +225,8 @@ renderImg ises winWidth winHeight =
             render is1 ises.srcSet
                 [ display block
                 , margin auto
-                , Css.width (pct 100)
-                , Css.height (pct 100)
+                , Css.width auto
+                , Css.height (pct 80)
                 ]
                 Next
 
@@ -239,7 +239,7 @@ renderThumb winWidth winHeight ises =
 
         is1 :: _ ->
             render is1 ises.srcSet
-                [ Css.width (pct 100), Css.height (pct 100) ]
+                [ Css.width auto, Css.height (pct 20) ]
                 Prev
 
 
