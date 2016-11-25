@@ -249,6 +249,8 @@ render idefault is s msg =
         [ styles s
         , Html.Attributes.src idefault.url
         , attribute "srcset" (encodeSrcSet is)
+        , Html.Attributes.width idefault.x
+        , Html.Attributes.height idefault.y
         , onClick msg
         ]
         []
