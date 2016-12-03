@@ -245,6 +245,7 @@ renderImg ises winWidth winHeight =
 
         is1 :: _ ->
             render is1 ises.srcSet
+                -- note: need to swap 100% / auto axes based on room in browser window
                 [ Css.width auto
                 , Css.height (pct 100)
                 ]
