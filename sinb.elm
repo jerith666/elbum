@@ -173,6 +173,7 @@ view model =
                     [ position absolute
                     , Css.height (vh 100)
                     , Css.width (vw 100)
+                    , overflow auto
                     , backgroundColor black
                     , displayFlex
                     , flexDirection column
