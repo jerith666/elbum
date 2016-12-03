@@ -158,6 +158,9 @@ white =
     rgb 255 255 255
 
 
+titleHeight = 15
+
+
 view : Model -> Html Msg
 view model =
     case model.album of
@@ -168,30 +171,48 @@ view model =
             div
                 [ styles
                     [ Css.height (pct 100)
+                    , Css.width (pct 100)
                     , backgroundColor black
                     , displayFlex
                     , flexDirection column
                     , paddingTop (px 1)
                     ]
                 ]
-                [ h1 [ styles [ color white, textAlign center ] ] [ Html.text a.title ]
+                [ h1 [ styles
+                         [ color white
+                         , textAlign center
+                         , Css.height (pct titleHeight)
+                         ]
+                     ]
+                     [ Html.text a.title ]
                 , renderImgs a.images model.index model.winWidth model.winHeight
                 ]
+
+
+mainImgHeight = 80
 
 
 renderImgs : List Image -> Int -> Int -> Int -> Html Msg
 renderImgs imgs index winWidth winHeight =
     div
         [ styles
-            [ displayFlex
+            [ Css.height (pct (100 - titleHeight))
+            , Css.width (pct 100)
+            , displayFlex
             , flexDirection column
             , alignItems center
             ]
         ]
-        [ renderMainImage (head (drop index imgs)) winWidth winHeight
+        [ div
+            [ styles
+                [ Css.height (pct mainImgHeight)
+                ]
+            ]
+            [ renderMainImage (head (drop index imgs)) winWidth winHeight ]
         , div
             [ styles
-                [ displayFlex
+                [ Css.height (pct (100 - mainImgHeight))
+                , displayFlex
                 , Css.property "justify-content" "space-around"
                 , alignItems center
                 , overflow auto
