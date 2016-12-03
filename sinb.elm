@@ -170,12 +170,12 @@ view model =
         Just a ->
             div
                 [ styles
-                    [ Css.height (pct 100)
-                    , Css.width (pct 100)
+                    [ position absolute
+                    , Css.height (vh 100)
+                    , Css.width (vw 100)
                     , backgroundColor black
                     , displayFlex
                     , flexDirection column
-                    , paddingTop (px 1)
                     ]
                 ]
                 [ h1 [ styles
@@ -244,10 +244,8 @@ renderImg ises winWidth winHeight =
 
         is1 :: _ ->
             render is1 ises.srcSet
-                [ display block
-                , margin auto
-                , Css.width auto
-                , Css.height (pct 80)
+                [ Css.width auto
+                , Css.height (pct 100)
                 ]
                 Next
 
@@ -260,7 +258,7 @@ renderThumb winWidth winHeight ises =
 
         is1 :: _ ->
             render is1 ises.srcSet
-                [ Css.width auto, Css.height (pct 20) ]
+                [ Css.width auto, Css.height (pct 100) ]
                 Prev
 
 
