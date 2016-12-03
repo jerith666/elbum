@@ -214,8 +214,8 @@ renderImgs imgs index winWidth winHeight =
             [ styles
                 [ Css.height (pct (100 - mainImgHeight))
                 , displayFlex
-                , Css.property "justify-content" "space-around"
-                , alignItems center
+                -- , Css.property "justify-content" "space-around"
+                -- , alignItems center
                 , overflow auto
                 ]
             ]
@@ -260,7 +260,9 @@ renderThumb winWidth winHeight ises =
 
         is1 :: _ ->
             render is1 ises.srcSet
-                [ Css.width auto, Css.height (pct 100) ]
+                [ Css.width auto
+                , Css.height (pct 100)
+                , margin auto ]
                 Prev
 
 
