@@ -53,21 +53,31 @@ procImage (f,i) = do let w = dynamicMap imageWidth i
                                   }
 
 procSrcSet :: FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
-procSrcSet f i w h = do let fi = toFridayRGB $ convertRGB8 i
-                            (xsm, ysm) = shrink 200 w h
-                            fism = resize Bilinear (ix2 ysm xsm) fi
-                            ism = toJuicyRGB fism
-                            fsmpath = "/tmp/" ++ (takeFileName (dropExtension f)) ++ ".sm.png"
-                        savePngImage fsmpath $ ImageRGB8 ism
-                        return [ ImgSrc { url = f
-                                        , x = w
-                                        , y = h
-                                        }
-                               , ImgSrc { url = fsmpath
-                                        , x = xsm
-                                        , y = ysm
-                                        }
-                               ]
+procSrcSet f i w h = do
+    let rawImg = raw f w h
+    shrunken <- sequence $ map (shrinkImgSrc f i w h) sizes
+    return (shrunken ++ [rawImg])
+
+sizes :: [Int]
+sizes = [200, 400, 800, 1600]
+
+shrinkImgSrc :: FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
+shrinkImgSrc f i w h maxdim = do let fi = toFridayRGB $ convertRGB8 i
+                                     (xsm, ysm) = shrink maxdim w h
+                                     fism = resize Bilinear (ix2 ysm xsm) fi
+                                     ism = toJuicyRGB fism
+                                     fsmpath = "/tmp/" ++ (takeFileName (dropExtension f)) ++ (show maxdim) ++ ".png"
+                                 savePngImage fsmpath $ ImageRGB8 ism
+                                 return ImgSrc { url = f
+                                               , x = w
+                                               , y = h
+                                               }
+
+raw :: FilePath -> Int -> Int -> ImgSrc
+raw f w h = ImgSrc { url = f
+                   , x = w
+                   , y = h
+                   }
 
 shrink :: Int -> Int -> Int -> (Int, Int)
 shrink maxdim w h = let factor = fromIntegral maxdim / fromIntegral (max w h)
