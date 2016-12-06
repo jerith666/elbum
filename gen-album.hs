@@ -66,9 +66,9 @@ shrinkImgSrc f i w h maxdim = do let fi = toFridayRGB $ convertRGB8 i
                                      (xsm, ysm) = shrink maxdim w h
                                      fism = resize Bilinear (ix2 ysm xsm) fi
                                      ism = toJuicyRGB fism
-                                     fsmpath = "/tmp/" ++ (takeFileName (dropExtension f)) ++ (show maxdim) ++ ".png"
+                                     fsmpath = "/tmp/" ++ (takeFileName (dropExtension f)) ++ "." ++ (show maxdim) ++ ".png"
                                  savePngImage fsmpath $ ImageRGB8 ism
-                                 return ImgSrc { url = f
+                                 return ImgSrc { url = fsmpath
                                                , x = w
                                                , y = h
                                                }
