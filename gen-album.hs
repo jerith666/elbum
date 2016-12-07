@@ -62,7 +62,7 @@ procSrcSet f i w h = do
     return (shrunken ++ [rawImg])
 
 sizes :: [Int]
-sizes = [200, 400, 800, 1600]
+sizes = [200, 400] -- , 800, 1600]
 
 shrinkImgSrc :: FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
 shrinkImgSrc f i w h maxdim = do let fi = toFridayRGB $ convertRGB8 i
