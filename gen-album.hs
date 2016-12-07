@@ -56,7 +56,7 @@ procImage d (f,i) = do
 
 procSrcSet :: FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
 procSrcSet d f i w h = do
-    let rawImg = raw f w h
+    rawImg <- raw d f w h
     putStrSameLn $ "processing " ++ (show f) ++ " "
     shrunken <- sequence $ map (shrinkImgSrc d f i w h) sizes
     return (shrunken ++ [rawImg])
@@ -80,11 +80,16 @@ shrinkImgSrc d f i w h maxdim = do
                   , y = h
                   }
 
-raw :: FilePath -> Int -> Int -> ImgSrc
-raw f w h = ImgSrc { url = f
-                   , x = w
-                   , y = h
-                   }
+raw :: FilePath -> FilePath -> Int -> Int -> IO ImgSrc
+raw d fpath w h = do
+    let f = takeFileName fpath
+        dest = d </> f
+    copyFile fpath dest
+    putStrSameLn $ "copied " ++ f
+    return ImgSrc { url = f
+                  , x = w
+                  , y = h
+                  }
 
 shrink :: Int -> Int -> Int -> (Int, Int)
 shrink maxdim w h = let factor = fromIntegral maxdim / fromIntegral (max w h)
