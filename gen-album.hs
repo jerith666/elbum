@@ -59,10 +59,11 @@ procSrcSet d f i w h = do
     rawImg <- raw d f w h
     putStrSameLn $ "processing " ++ (show f) ++ " "
     shrunken <- sequence $ map (shrinkImgSrc d f i w h) sizes
-    return (shrunken ++ [rawImg])
+    return (rawImg : shrunken)
 
 sizes :: [Int]
-sizes = [200, 400] -- , 800, 1600]
+-- sizes = [1600, 800, 400, 200]
+sizes = [400, 200]
 
 shrinkImgSrc :: FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
 shrinkImgSrc d f i w h maxdim = do
