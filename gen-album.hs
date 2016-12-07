@@ -77,8 +77,8 @@ shrinkImgSrc d f i w h maxdim = do
     hFlush stdout
     savePngImage fsmpath $ ImageRGB8 ism
     return ImgSrc { url = fsm
-                  , x = w
-                  , y = h
+                  , x = xsm
+                  , y = ysm
                   }
 
 raw :: FilePath -> FilePath -> Int -> Int -> IO ImgSrc
