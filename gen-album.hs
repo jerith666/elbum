@@ -1,4 +1,5 @@
 import System.Environment
+import System.IO
 
 import System.Directory
 import System.FilePath
@@ -55,7 +56,9 @@ procImage (f,i) = do let w = dynamicMap imageWidth i
 procSrcSet :: FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
 procSrcSet f i w h = do
     let rawImg = raw f w h
+    putStr $ "processing " ++ (show f) ++ " "
     shrunken <- sequence $ map (shrinkImgSrc f i w h) sizes
+    putStrLn ""
     return (shrunken ++ [rawImg])
 
 sizes :: [Int]
@@ -67,6 +70,8 @@ shrinkImgSrc f i w h maxdim = do let fi = toFridayRGB $ convertRGB8 i
                                      fism = resize Bilinear (ix2 ysm xsm) fi
                                      ism = toJuicyRGB fism
                                      fsmpath = "/tmp/" ++ (takeFileName (dropExtension f)) ++ "." ++ (show maxdim) ++ ".png"
+                                 putStr $ show maxdim ++ "w "
+                                 hFlush stdout
                                  savePngImage fsmpath $ ImageRGB8 ism
                                  return ImgSrc { url = fsmpath
                                                , x = w
@@ -93,7 +98,9 @@ imgsOnly (f:fs) = do fo <- imgOnly f
                      return $ fo ++ fos
 
 imgOnly :: FilePath -> IO [(FilePath, DynamicImage)]
-imgOnly f = do loadResult <- readImage f
-               case loadResult of
-                    Left err -> do return []
-                    Right img -> do return [(f, img)]
+imgOnly f = do
+    putStrLn $ "loading " ++ (show f)
+    loadResult <- readImage f
+    case loadResult of
+         Left err -> do return []
+         Right img -> do return [(f, img)]
