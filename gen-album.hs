@@ -36,46 +36,48 @@ usage = putStrLn "usage: gen-album <src> <dest>"
 
 genAlbum src dest = do
   files <- getDirectoryContents src
-  let afiles = map (\f -> makeRelative dest $ src </> f) files
+  let afiles = map (\f -> src </> f) files
   imgs <- imgsOnly afiles
-  pimgs <- sequence $ map procImage imgs
+  pimgs <- sequence $ map (procImage dest) imgs
   let a = Album { title = last $ splitDirectories src
                 , images = pimgs
                 }
   C.putStrLn $ encode a
 
-procImage :: (FilePath, DynamicImage) -> IO Image
-procImage (f,i) = do let w = dynamicMap imageWidth i
-                         h = dynamicMap imageHeight i
-                         t = takeBaseName f
-                     srcSet <- procSrcSet f i w h
-                     return Image { altText = t
-                                  , srcSet = srcSet
-                                  }
+procImage :: FilePath -> (FilePath, DynamicImage) -> IO Image
+procImage d (f,i) = do
+    let w = dynamicMap imageWidth i
+        h = dynamicMap imageHeight i
+        t = takeBaseName f
+    srcSet <- procSrcSet d f i w h
+    return Image { altText = t
+                 , srcSet = srcSet
+                 }
 
-procSrcSet :: FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
-procSrcSet f i w h = do
+procSrcSet :: FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
+procSrcSet d f i w h = do
     let rawImg = raw f w h
     putStrSameLn $ "processing " ++ (show f) ++ " "
-    shrunken <- sequence $ map (shrinkImgSrc f i w h) sizes
+    shrunken <- sequence $ map (shrinkImgSrc d f i w h) sizes
     return (shrunken ++ [rawImg])
 
 sizes :: [Int]
 sizes = [200, 400] -- , 800, 1600]
 
-shrinkImgSrc :: FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
-shrinkImgSrc f i w h maxdim = do let fi = toFridayRGB $ convertRGB8 i
-                                     (xsm, ysm) = shrink maxdim w h
-                                     fism = resize Bilinear (ix2 ysm xsm) fi
-                                     ism = toJuicyRGB fism
-                                     fsmpath = "/tmp/" ++ (takeFileName (dropExtension f)) ++ "." ++ (show maxdim) ++ ".png"
-                                 putStr $ show maxdim ++ "w "
-                                 hFlush stdout
-                                 savePngImage fsmpath $ ImageRGB8 ism
-                                 return ImgSrc { url = fsmpath
-                                               , x = w
-                                               , y = h
-                                               }
+shrinkImgSrc :: FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
+shrinkImgSrc d f i w h maxdim = do
+    let fi = toFridayRGB $ convertRGB8 i
+        (xsm, ysm) = shrink maxdim w h
+        fism = resize Bilinear (ix2 ysm xsm) fi
+        ism = toJuicyRGB fism
+        fsmpath = d </> (takeFileName (dropExtension f)) ++ "." ++ (show maxdim) ++ ".png"
+    putStr $ show maxdim ++ "w "
+    hFlush stdout
+    savePngImage fsmpath $ ImageRGB8 ism
+    return ImgSrc { url = fsmpath
+                  , x = w
+                  , y = h
+                  }
 
 raw :: FilePath -> Int -> Int -> ImgSrc
 raw f w h = ImgSrc { url = f
