@@ -7,3 +7,5 @@ Album.elm
 album.json
 index.html
 node_modules/
+*.png
+*.JPG
