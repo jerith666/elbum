@@ -70,11 +70,12 @@ shrinkImgSrc d f i w h maxdim = do
         (xsm, ysm) = shrink maxdim w h
         fism = resize Bilinear (ix2 ysm xsm) fi
         ism = toJuicyRGB fism
-        fsmpath = d </> (takeFileName (dropExtension f)) ++ "." ++ (show maxdim) ++ ".png"
+        fsm = (takeFileName (dropExtension f)) ++ "." ++ (show maxdim) ++ ".png"
+        fsmpath = d </> fsm
     putStr $ show maxdim ++ "w "
     hFlush stdout
     savePngImage fsmpath $ ImageRGB8 ism
-    return ImgSrc { url = fsmpath
+    return ImgSrc { url = fsm
                   , x = w
                   , y = h
                   }
