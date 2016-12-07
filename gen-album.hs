@@ -56,9 +56,8 @@ procImage (f,i) = do let w = dynamicMap imageWidth i
 procSrcSet :: FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
 procSrcSet f i w h = do
     let rawImg = raw f w h
-    putStr $ "processing " ++ (show f) ++ " "
+    putStrSameLn $ "processing " ++ (show f) ++ " "
     shrunken <- sequence $ map (shrinkImgSrc f i w h) sizes
-    putStrLn ""
     return (shrunken ++ [rawImg])
 
 sizes :: [Int]
@@ -99,8 +98,17 @@ imgsOnly (f:fs) = do fo <- imgOnly f
 
 imgOnly :: FilePath -> IO [(FilePath, DynamicImage)]
 imgOnly f = do
-    putStrLn $ "loading " ++ (show f)
     loadResult <- readImage f
     case loadResult of
          Left err -> do return []
-         Right img -> do return [(f, img)]
+         Right img ->
+             do
+                 putStrSameLn $ "loaded " ++ (show f)
+                 return [(f, img)]
+
+putStrSameLn :: String -> IO ()
+putStrSameLn s = do
+    putStr "\r                                                              "
+    putStr "\r"
+    putStr s
+    hFlush stdout
