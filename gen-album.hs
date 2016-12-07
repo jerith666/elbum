@@ -42,7 +42,7 @@ genAlbum src dest = do
   let a = Album { title = last $ splitDirectories src
                 , images = pimgs
                 }
-  C.putStrLn $ encode a
+  C.writeFile (dest </> "album.json") $ encode a
 
 procImage :: FilePath -> (FilePath, DynamicImage) -> IO Image
 procImage d (f,i) = do
