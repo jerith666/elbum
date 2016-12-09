@@ -230,7 +230,22 @@ renderMainImage img winWidth winHeight =
             div [] [ Html.text "no images in album" ]
 
         Just i ->
-            renderImg i winWidth winHeight
+            div
+                [ styles
+                    [ Css.height (pct 100)
+                    , displayFlex
+                    , flexDirection column
+                    ]
+                ]
+                [ renderImg i winWidth winHeight
+                , p [ styles
+                        [ Css.height (pct titleHeight)
+                        , color white
+                        , textAlign center
+                        ]
+                    ]
+                    [ Html.text i.altText ]
+                ]
 
 
 renderThumbs imgs winWidth winHeight index =
@@ -247,7 +262,7 @@ renderImg ises winWidth winHeight =
             render is1 ises.srcSet
                 -- note: need to swap 100% / auto axes based on room in browser window
                 [ Css.width auto
-                , Css.height (pct 100)
+                , Css.height (pct (100 - titleHeight))
                 ]
                 Next
 
