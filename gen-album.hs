@@ -4,6 +4,8 @@ import System.IO
 import System.Directory
 import System.FilePath
 
+import Data.List
+
 import Codec.Picture hiding (Image)
 import Codec.Picture.Types hiding (Image)
 
@@ -36,7 +38,7 @@ usage = putStrLn "usage: gen-album <src> <dest>"
 
 genAlbum src dest = do
   files <- getDirectoryContents src
-  let afiles = map (\f -> src </> f) files
+  let afiles = map (\f -> src </> f) (sort files)
   imgs <- imgsOnly afiles
   pimgs <- sequence $ map (procImage dest) imgs
   let a = Album { title = last $ splitDirectories src
