@@ -281,10 +281,7 @@ render idefault is s msg =
 
 encodeSrcSet : List ImgSrc -> String
 encodeSrcSet is =
-  case tail is of
-      Nothing -> ""
-      Just iss -> 
-          String.join ", " (List.map encodeSrc iss)
+  String.join ", " (List.map encodeSrc is)
 
 
 encodeSrc : ImgSrc -> String
