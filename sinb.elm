@@ -6,9 +6,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Css exposing (..)
-import Element exposing (..)
-import Text exposing (..)
-import Color exposing (..)
 
 
 -- import Css.Mixin exposing (..)
@@ -154,11 +151,11 @@ styles =
 
 
 black =
-    Css.rgb 0 0 0
+    rgb 0 0 0
 
 
 white =
-    Css.rgb 255 255 255
+    rgb 255 255 255
 
 
 titleHeight = 15
@@ -171,37 +168,9 @@ view model =
             div [] [ Html.text "album loading ..." ]
 
         Just a ->
-            viewa model a
-
-viewa : Model -> Album -> Html Msg
-viewa model album =
-    div
-        [ styles
-            [ position Css.absolute
-            , Css.height (vh 100)
-            , Css.width (vw 100)
-            , backgroundColor black
-            ]
-        ]
-        [ viewg model album ]
-
-viewg model album =
-    toHtml <| viewtitle album
-
-
-viewtitle album =
-    centered <| Text.color Color.white <| fromString album.title
-
-
-viewhtml model =
-    case model.album of
-        Nothing ->
-            div [] [ Html.text "album loading ..." ]
-
-        Just a ->
             div
                 [ styles
-                    [ position Css.absolute
+                    [ position absolute
                     , Css.height (vh 100)
                     , Css.width (vw 100)
                     , overflow auto
@@ -211,7 +180,7 @@ viewhtml model =
                     ]
                 ]
                 [ h1 [ styles
-                         [ Css.color white
+                         [ color white
                          , textAlign center
                          , Css.height (pct titleHeight)
                          ]
@@ -271,7 +240,7 @@ renderMainImage img winWidth winHeight =
                 [ renderImg i winWidth winHeight
                 , p [ styles
                         [ Css.height (pct titleHeight)
-                        , Css.color white
+                        , color white
                         , textAlign center
                         ]
                     ]
