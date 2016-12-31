@@ -43,12 +43,7 @@ type AlbumBootstrap
 
 type AlbumPage
     = Thumbs Album WinSize
-    | FullImage Album Int WinSize
-
-type alias WinSize =
-    { width : Int
-    , height : Int
-    }
+    | FullImage Album Int
 
 type alias Model =
     { album : Maybe Album
