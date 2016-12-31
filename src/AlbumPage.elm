@@ -4,13 +4,14 @@ import Html exposing (..)
 
 type AlbumPage
     = Thumbs Album WinSize
-    | FullImage Album Int
+    | FullImage Album Int WinSize
 
 type AlbumPageMsg
     = View Int
     | Prev
     | Next
     | BackToThumbs
+
 
 view : AlbumPage -> Html AlbumPageMsg
 view albumPage =
