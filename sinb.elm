@@ -41,10 +41,6 @@ type AlbumBootstrap
     | LoadError Http.Error
     | Loaded AlbumPage
 
-type AlbumPage
-    = Thumbs Album WinSize
-    | FullImage Album Int
-
 type alias Model =
     { album : Maybe Album
     , index : Int
