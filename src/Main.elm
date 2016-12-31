@@ -1,4 +1,11 @@
+import WinSize exposing (..)
 import Album exposing (..)
+import AlbumPage exposing (..)
+
+import Task exposing (..)
+import Html exposing (..)
+import Http exposing (..)
+import Window exposing (..)
 
 type AlbumBootstrap
     = Sizing
@@ -10,6 +17,7 @@ type AlbumBootstrapMsg
     = Resize Size
     | YesAlbum Album
     | NoAlbum Http.Error
+    | PageMsg AlbumPage.AlbumPageMsg
 
 main =
     program
@@ -47,35 +55,44 @@ update msg model =
                 Loaded albumPage ->
                     case albumPage of
                         Thumbs album oldSize ->
-                            ( Thumbs album size
+                            ( Loaded (Thumbs album size)
                             , Cmd.none
                             )
 
                         FullImage album index oldSize ->
-                            ( FullImage album index size
+                            ( Loaded (FullImage album index size)
                             , Cmd.none
                             )
 
         YesAlbum album ->
             case model of
                 Loading winSize ->
-                    ( Loaded Thumbs album winSize
+                    ( Loaded (Thumbs album winSize)
                     , Cmd.none
                     )
 
                 _ -> ( model, Cmd.none )
 
         NoAlbum err ->
-                ( LoadError err
-                , Cmd.none
-                )
+            ( LoadError err
+            , Cmd.none
+            )
+
+        PageMsg pageMsg ->
+            case model of
+                Loaded oldPage ->
+                    ( Loaded (AlbumPage.update pageMsg oldPage)
+                    , Cmd.none
+                    )
+
+                _ -> ( model, Cmd.none )
 
 
-subscriptions = Sub.none --TODO FullImagePage.prevNextSubscriptions?
+subscriptions model = Sub.none --TODO FullImagePage.prevNextSubscriptions?
 
 
 view : AlbumBootstrap -> Html AlbumBootstrapMsg
-view albumBoostrap =
+view albumBootstrap =
     case albumBootstrap of
         Sizing ->
             text "Album Starting"
@@ -84,8 +101,8 @@ view albumBoostrap =
             text "Album Loading ..."
 
         LoadError e ->
-            text "Error Loading Album: " ++ (toString e)
+            text ("Error Loading Album: " ++ (toString e))
 
         Loaded albumPage ->
-            AlbumPage.view albumPage
+            Html.map PageMsg (AlbumPage.view albumPage)
 

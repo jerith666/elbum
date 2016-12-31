@@ -1,3 +1,5 @@
+module FullImagePage exposing (FullImagePageModel, view)
+
 import Album exposing (..)
 import WinSize exposing (..)
 
@@ -10,5 +12,5 @@ type alias FullImagePageModel =
 
 view : msg -> msg -> msg -> FullImagePageModel -> Html prevNextMsg
 view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
-    div [] [ Html.text ("Full Image Page for " ++ fullImagePageModel.album.title ++ " image " ++ fullImagePageModel.index) ]
+    div [] [ Html.text ("Full Image Page for " ++ fullImagePageModel.album.title ++ " image " ++ (toString fullImagePageModel.index)) ]
 
