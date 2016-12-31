@@ -35,12 +35,6 @@ type Msg
     | YesAlbum Album
     | Resize Size
 
-type AlbumBootstrap
-    = Sizing
-    | Loading WinSize
-    | LoadError Http.Error
-    | Loaded AlbumPage
-
 type alias Model =
     { album : Maybe Album
     , index : Int
