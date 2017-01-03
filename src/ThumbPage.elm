@@ -36,12 +36,10 @@ insertImage spanWidth maxImgWidth nextImg alreadySpreadImages =
     if (1 + List.length alreadySpreadImages) * maxImgWidth <= spanWidth then
         alreadySpreadImages ++ [[nextImg]]
     else
-        alreadySpreadImages
-        {-let
+        let
             iShortest = findShortest alreadySpreadImages
         in
-            (take (iShortest-1) alreadySpreadImages)
-            ++ -}
+            mapI (Tuple.second iShortest) (\x -> x ++ [nextImg]) alreadySpreadImages
 
 
 shorterBaseCase : (Int, Int)
