@@ -42,7 +42,7 @@ update msg model =
             case model of
                 Sizing ->
                     ( Loading size
-                    , Cmd.none --TODO get album.json
+                    , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecAlbum))
                     )
 
                 Loading oldSize ->
@@ -86,6 +86,16 @@ update msg model =
                     )
 
                 _ -> ( model, Cmd.none )
+
+
+decodeAlbumRequest : Result Http.Error Album -> AlbumBootstrapMsg
+decodeAlbumRequest r =
+    case r of
+        Ok a ->
+            YesAlbum a
+
+        Err e ->
+            NoAlbum e
 
 
 subscriptions model = Sub.none --TODO FullImagePage.prevNextSubscriptions?
