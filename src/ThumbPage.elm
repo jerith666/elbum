@@ -31,7 +31,38 @@ viewThumbs i imgChosenMsgr thumbPageModel =
 
 
 viewThumb : msg -> Image -> Html msg
-viewThumb selectedMsg img = Html.text "TODO view"
+viewThumb selectedMsg img =
+    case img.srcSet of
+        [] ->
+             div [] []
+
+        is1 :: _ ->
+            render is1 img.srcSet [] selectedMsg
+
+--
+
+render : ImgSrc -> List ImgSrc -> List Mixin -> msg -> Html msg
+render idefault is s msg =
+    img
+        [ styles s
+        , Html.Attributes.src idefault.url
+        , attribute "srcset" (encodeSrcSet is)
+        , Html.Attributes.width idefault.x
+        , Html.Attributes.height idefault.y
+        , onClick msg
+        ]
+        []
+
+
+encodeSrcSet : List ImgSrc -> String
+encodeSrcSet is =
+  String.join ", " (List.map encodeSrc is)
+
+
+encodeSrc : ImgSrc -> String
+encodeSrc is =
+  is.url ++ " " ++ (toString is.x) ++ "w"
+
 
 -- TODO move below to utils file
 
