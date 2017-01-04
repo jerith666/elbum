@@ -76,7 +76,7 @@ findShortest imageLists =
     List.foldr
         shorter
         shorterBaseCase
-        (List.indexedMap (,) (List.map (List.sum << (List.map (imgHeight << Tuple.first))) imageLists))
+        (Debug.log "heights" (List.indexedMap (,) (List.map (List.sum << (List.map (imgHeight << Tuple.first))) imageLists)))
 
 --TODO would be nice to have maxBy, minBy
 shorter : (Int,Int) -> (Int,Int) -> (Int,Int)
