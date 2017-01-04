@@ -45,7 +45,7 @@ insertImage spanWidth maxImgWidth nextImg alreadySpreadImages =
 shorterBaseCase : (Int, Int)
 shorterBaseCase = (0,0)
 
-
+-- TODO account for shrinking of portrait images
 findShortest : List (List Image) -> (Int,Int)
 findShortest imageLists =
     List.foldr
