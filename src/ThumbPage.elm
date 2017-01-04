@@ -45,7 +45,6 @@ insertImage spanWidth maxImgWidth nextImg alreadySpreadImages =
 shorterBaseCase : (Int, Int)
 shorterBaseCase = (0,0)
 
--- TODO account for shrinking of portrait images
 findShortest : List (List Image) -> (Int,Int)
 findShortest imageLists =
     List.foldr
@@ -63,8 +62,10 @@ shorter (i1, h1) (i2, h2) =
 
 imgHeight img =
     case img.srcSet of
-        [] -> 0
-        is1 :: _ -> is1.y
+        [] ->
+            0
+        is1 :: _ ->
+            Basics.round <| (toFloat is1.y) * (1000 / toFloat is1.x)
 
 viewThumbs : Int -> (Int -> msg) -> ThumbPageModel -> List (Html msg)
 viewThumbs i imgChosenMsgr thumbPageModel =
