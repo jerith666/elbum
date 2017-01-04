@@ -65,7 +65,7 @@ insertImage spanWidth maxImgWidth i nextImg alreadySpreadImages =
                 is = findShortest alreadySpreadImages
                 iShortest = Debug.log ("image " ++ (toString i) ++ " goes in (col,height) ") is
             in
-                mapI (Tuple.second iShortest) (\x -> x ++ [(nextImg, i)]) alreadySpreadImages
+                mapI (Tuple.first iShortest) (\x -> x ++ [(nextImg, i)]) alreadySpreadImages
 
 
 shorterBaseCase : (Int, Int)
