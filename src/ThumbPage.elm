@@ -13,7 +13,7 @@ type alias ThumbPageModel =
     , winSize : WinSize
     }
 
-maxThumbWidth = 400
+maxThumbWidth = 600
 
 view : (Int -> msg) -> ThumbPageModel -> Html msg
 view imgChosenMsgr thumbPageModel =
