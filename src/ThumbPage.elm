@@ -22,7 +22,7 @@ view imgChosenMsgr thumbPageModel =
         <| viewThumbs 0 imgChosenMsgr thumbPageModel
 
 
-spreadThumbs : Int -> Int -> List Image -> List (List Image) -> List (List Image)
+spreadThumbs : Int -> Int -> List Image -> List (List (Image,Int)) -> List (List (Image,Int))
 spreadThumbs spanWidth maxImgWidth images alreadySpreadImages =
     case List.head images of
         Just nextImg ->
@@ -31,26 +31,29 @@ spreadThumbs spanWidth maxImgWidth images alreadySpreadImages =
         Nothing ->
             alreadySpreadImages
 
-insertImage : Int -> Int -> Image -> List (List Image) -> List (List Image)
+insertImage : Int -> Int -> Image -> List (List (Image,Int)) -> List (List (Image,Int))
 insertImage spanWidth maxImgWidth nextImg alreadySpreadImages =
-    if (1 + List.length alreadySpreadImages) * maxImgWidth <= spanWidth then
-        alreadySpreadImages ++ [[nextImg]]
-    else
-        let
-            iShortest = findShortest alreadySpreadImages
-        in
-            mapI (Tuple.second iShortest) (\x -> x ++ [nextImg]) alreadySpreadImages
+    let
+        i = 1 + List.length alreadySpreadImages
+    in
+        if i * maxImgWidth <= spanWidth then
+            alreadySpreadImages ++ [[(nextImg, i)]]
+        else
+            let
+                iShortest = findShortest alreadySpreadImages
+            in
+                mapI (Tuple.second iShortest) (\x -> x ++ [(nextImg, i)]) alreadySpreadImages
 
 
 shorterBaseCase : (Int, Int)
 shorterBaseCase = (0,0)
 
-findShortest : List (List Image) -> (Int,Int)
+findShortest : List (List (Image, Int)) -> (Int,Int)
 findShortest imageLists =
     List.foldr
         shorter
         shorterBaseCase
-        (List.indexedMap (,) (List.map (List.sum << (List.map imgHeight)) imageLists))
+        (List.indexedMap (,) (List.map (List.sum << (List.map (imgHeight << Tuple.first))) imageLists))
 
 --TODO would be nice to have maxBy, minBy
 shorter : (Int,Int) -> (Int,Int) -> (Int,Int)
