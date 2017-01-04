@@ -17,10 +17,29 @@ maxThumbWidth = 400
 
 view : (Int -> msg) -> ThumbPageModel -> Html msg
 view imgChosenMsgr thumbPageModel =
-    rootDivFlexCol
+    rootDivFlexRow
         [ backgroundColor black ]
-        <| viewThumbs 0 imgChosenMsgr thumbPageModel
+        <| viewThumbs imgChosenMsgr thumbPageModel
 
+
+viewThumbs : (Int -> msg) -> ThumbPageModel -> List (Html msg)
+viewThumbs imgChosenMsgr thumbPageModel =
+    List.map (viewThumbColumn imgChosenMsgr)
+    <| spreadThumbs thumbPageModel.winSize.width maxThumbWidth thumbPageModel.album.images []
+
+
+viewThumbColumn : (Int -> msg) -> List (Image,Int) -> Html msg
+viewThumbColumn imgChosenMsgr images =
+    let
+        viewThumbTuple (img,i) = viewThumb (imgChosenMsgr i) img
+    in
+        div
+            [ styles
+                [ displayFlex
+                , flexDirection column
+                ]
+            ]
+            <| List.map viewThumbTuple images
 
 spreadThumbs : Int -> Int -> List Image -> List (List (Image,Int)) -> List (List (Image,Int))
 spreadThumbs spanWidth maxImgWidth images alreadySpreadImages =
@@ -46,7 +65,7 @@ insertImage spanWidth maxImgWidth nextImg alreadySpreadImages =
 
 
 shorterBaseCase : (Int, Int)
-shorterBaseCase = (0,0)
+shorterBaseCase = (0,999999)
 
 findShortest : List (List (Image, Int)) -> (Int,Int)
 findShortest imageLists =
@@ -70,12 +89,12 @@ imgHeight img =
         is1 :: _ ->
             Basics.round <| (toFloat is1.y) * (1000 / toFloat is1.x)
 
-viewThumbs : Int -> (Int -> msg) -> ThumbPageModel -> List (Html msg)
-viewThumbs i imgChosenMsgr thumbPageModel =
+viewThumbs2 : Int -> (Int -> msg) -> ThumbPageModel -> List (Html msg)
+viewThumbs2 i imgChosenMsgr thumbPageModel =
     case List.head <| List.drop i thumbPageModel.album.images of
         Just nextImg ->
             viewThumb (imgChosenMsgr i) nextImg
-            :: viewThumbs (i+1) imgChosenMsgr thumbPageModel
+            :: viewThumbs2 (i+1) imgChosenMsgr thumbPageModel
 
         Nothing ->
             []
@@ -135,10 +154,10 @@ rootDiv extraStyles =
             ++ extraStyles
         ]
 
-rootDivFlexCol extraStyles =
+rootDivFlexRow extraStyles =
     rootDiv <|
         [ displayFlex
-        , flexDirection column
+        , flexDirection row
         ]
         ++ extraStyles
 
