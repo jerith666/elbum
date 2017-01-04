@@ -13,7 +13,7 @@ type alias ThumbPageModel =
     , winSize : WinSize
     }
 
-maxThumbWidth = 400
+maxThumbWidth = 600
 
 view : (Int -> msg) -> ThumbPageModel -> Html msg
 view imgChosenMsgr thumbPageModel =
@@ -43,25 +43,25 @@ viewThumbColumn imgChosenMsgr images =
 
 spreadThumbs : Int -> Int -> List Image -> List (List (Image,Int)) -> List (List (Image,Int))
 spreadThumbs spanWidth maxImgWidth images alreadySpreadImages =
-    case List.head images of
-        Just nextImg ->
-            insertImage spanWidth maxImgWidth nextImg alreadySpreadImages
-            |> spreadThumbs spanWidth maxImgWidth (List.drop 1 images)
+    case List.head (List.reverse images) of
+        Just lastImg ->
+            insertImage spanWidth maxImgWidth lastImg alreadySpreadImages
+            |> spreadThumbs spanWidth maxImgWidth (List.take (List.length images - 1) images)
         Nothing ->
             alreadySpreadImages
 
 insertImage : Int -> Int -> Image -> List (List (Image,Int)) -> List (List (Image,Int))
-insertImage spanWidth maxImgWidth nextImg alreadySpreadImages =
+insertImage spanWidth maxImgWidth img alreadySpreadImages =
     let
         i = 1 + List.length alreadySpreadImages
     in
         if i * maxImgWidth <= spanWidth then
-            alreadySpreadImages ++ [[(nextImg, i)]]
+            alreadySpreadImages ++ [[(img, i)]]
         else
             let
                 iShortest = findShortest alreadySpreadImages
             in
-                mapI (Tuple.second iShortest) (\x -> x ++ [(nextImg, i)]) alreadySpreadImages
+                mapI (Tuple.second iShortest) (\x -> x ++ [(img, i)]) alreadySpreadImages
 
 
 shorterBaseCase : (Int, Int)
