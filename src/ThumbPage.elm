@@ -45,21 +45,25 @@ spreadThumbs : Int -> Int -> List Image -> List (List (Image,Int)) -> List (List
 spreadThumbs spanWidth maxImgWidth images alreadySpreadImages =
     case List.head images of
         Just nextImg ->
-            insertImage spanWidth maxImgWidth nextImg alreadySpreadImages
+            insertImage spanWidth maxImgWidth (List.sum <| List.map List.length alreadySpreadImages) nextImg alreadySpreadImages
             |> spreadThumbs spanWidth maxImgWidth (List.drop 1 images)
         Nothing ->
             alreadySpreadImages
 
-insertImage : Int -> Int -> Image -> List (List (Image,Int)) -> List (List (Image,Int))
-insertImage spanWidth maxImgWidth nextImg alreadySpreadImages =
+insertImage : Int -> Int -> Int -> Image -> List (List (Image,Int)) -> List (List (Image,Int))
+insertImage spanWidth maxImgWidth i nextImg alreadySpreadImages =
     let
-        i = 1 + List.length alreadySpreadImages
+        col = 1 + List.length alreadySpreadImages
     in
-        if i * maxImgWidth <= spanWidth then
-            alreadySpreadImages ++ [[(nextImg, i)]]
+        if col * maxImgWidth <= spanWidth then
+            alreadySpreadImages ++ [[(
+            Debug.log ("start column " ++ (toString col) ++ " with image " ++ (toString i))
+            nextImg
+            , i)]]
         else
             let
-                iShortest = findShortest alreadySpreadImages
+                is = findShortest alreadySpreadImages
+                iShortest = Debug.log ("image " ++ (toString i) ++ " goes in (col,height) ") is
             in
                 mapI (Tuple.second iShortest) (\x -> x ++ [(nextImg, i)]) alreadySpreadImages
 
