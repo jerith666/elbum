@@ -116,10 +116,10 @@ viewThumb width selectedMsg img =
         is1 :: _ ->
             let
                 scale = (toFloat width) / (toFloat is1.x)
-                xScaled = scale * (toFloat is1.x)
-                yScaled = scale * (toFloat is1.y)
+                xScaled = Basics.round <| scale * (toFloat is1.x)
+                yScaled = Basics.round <| scale * (toFloat is1.y)
             in
-                render is1 img.srcSet [Css.width (px xScaled), Css.height (px yScaled)] selectedMsg
+                renderPresized xScaled yScaled img.srcSet [] selectedMsg
 
 -- TODO move below to utils file
 

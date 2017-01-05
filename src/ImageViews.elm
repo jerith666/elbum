@@ -1,4 +1,4 @@
-module ImageViews exposing (render)
+module ImageViews exposing (renderPresized, render)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -7,6 +7,14 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Css exposing (..)
+
+renderPresized : Int -> Int -> List ImgSrc -> List Mixin -> msg -> Html msg
+renderPresized w h is s msg =
+    case List.head <| List.sortBy (\is -> is.x) <| List.filter (\is -> is.x > w && is.y > h) is of
+        Nothing ->
+            div [] []
+        Just sizedIs ->
+            render sizedIs [] [Css.width (px (toFloat w)), Css.height (px (toFloat h))] msg
 
 render : ImgSrc -> List ImgSrc -> List Mixin -> msg -> Html msg
 render idefault is s msg =
