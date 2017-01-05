@@ -2,6 +2,8 @@ module ThumbPage exposing (ThumbPageModel, view)
 
 import Album exposing (..)
 import WinSize exposing (..)
+import ImageViews exposing (..)
+import AlbumStyles exposing (..)
 
 import Html exposing (..)
 import Html.Events exposing (..)
@@ -119,60 +121,7 @@ viewThumb width selectedMsg img =
             in
                 render is1 img.srcSet [Css.width (px xScaled), Css.height (px yScaled)] selectedMsg
 
---
-
-render : ImgSrc -> List ImgSrc -> List Mixin -> msg -> Html msg
-render idefault is s msg =
-    img
-        [ styles s
-        , Html.Attributes.src idefault.url
-        , attribute "srcset" (encodeSrcSet is)
-        , Html.Attributes.width idefault.x
-        , Html.Attributes.height idefault.y
-        , onClick msg
-        ]
-        []
-
-
-encodeSrcSet : List ImgSrc -> String
-encodeSrcSet is =
-  String.join ", " (List.map encodeSrc is)
-
-
-encodeSrc : ImgSrc -> String
-encodeSrc is =
-  is.url ++ " " ++ (toString is.x) ++ "w"
-
-
 -- TODO move below to utils file
-
-black =
-    rgb 0 0 0
-
-styles =
-    Css.asPairs >> Html.Attributes.style
-
-rootDiv extraStyles =
-    div
-        [ styles <|
-            [ position absolute
-            , Css.height (vh 100)
-            , Css.width (vw 100)
-            -- , overflow auto
-            , backgroundColor black
-            ]
-            ++ extraStyles
-        ]
-
-rootDivFlexRow extraStyles =
-    rootDiv <|
-        [ displayFlex
-        , flexDirection row
-        , overflowX Css.hidden
-        ]
-        ++ extraStyles
-
---
 
 mapI : Int -> (a -> a) -> List a -> List a
 mapI i map l =
@@ -180,6 +129,3 @@ mapI i map l =
         ifmap (j, a) = if i == j then (map a) else a
     in
         List.map ifmap <| List.indexedMap (,) l
-
--- div [onClick (imgChosenMsgr 1)] [ Html.text ("Thumb Page for " ++ thumbPageModel.album.title ++ " at " ++ (toString thumbPageModel.winSize.width) ++ "x" ++ (toString thumbPageModel.winSize.height)) ]
-
