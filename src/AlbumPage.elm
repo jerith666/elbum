@@ -32,14 +32,14 @@ update msg model =
         Prev ->
             case model of
                 FullImage album index winSize ->
-                    FullImage album (index + 1) winSize
+                    FullImage album (index - 1) winSize
 
                 _ -> model
 
         Next ->
             case model of
                 FullImage album index winSize ->
-                    FullImage album (index - 1) winSize
+                    FullImage album (index + 1) winSize
 
                 _ -> model
 
