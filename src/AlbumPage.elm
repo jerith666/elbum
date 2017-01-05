@@ -57,5 +57,5 @@ view albumPage =
             ThumbPage.view View { album = album, winSize = winSize }
 
         FullImage album index winSize ->
-            FullImagePage.view Prev Next BackToThumbs { album = album, index = index }
+            FullImagePage.view Prev Next BackToThumbs { album = album, index = index, winSize = winSize }
 
