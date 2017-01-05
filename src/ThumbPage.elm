@@ -111,7 +111,12 @@ viewThumb selectedMsg img =
              div [] []
 
         is1 :: _ ->
-            render is1 img.srcSet [] selectedMsg
+            let
+                scale = (toFloat maxThumbWidth) / (toFloat is1.x)
+                xScaled = scale * (toFloat is1.x)
+                yScaled = scale * (toFloat is1.y)
+            in
+                render is1 img.srcSet [Css.width (px xScaled), Css.height (px yScaled)] selectedMsg
 
 --
 
