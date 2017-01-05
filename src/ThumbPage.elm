@@ -13,7 +13,7 @@ type alias ThumbPageModel =
     , winSize : WinSize
     }
 
-maxThumbWidth = 600
+maxThumbWidth = 300
 
 view : (Int -> msg) -> ThumbPageModel -> Html msg
 view imgChosenMsgr thumbPageModel =
@@ -24,14 +24,18 @@ view imgChosenMsgr thumbPageModel =
 
 viewThumbs : (Int -> msg) -> ThumbPageModel -> List (Html msg)
 viewThumbs imgChosenMsgr thumbPageModel =
-    List.map (viewThumbColumn imgChosenMsgr)
-    <| spreadThumbs (Debug.log "window width" thumbPageModel.winSize.width) maxThumbWidth thumbPageModel.album.images []
-
-
-viewThumbColumn : (Int -> msg) -> List (Image,Int) -> Html msg
-viewThumbColumn imgChosenMsgr images =
     let
-        viewThumbTuple (img,i) = viewThumb (imgChosenMsgr i) img
+        maxCols = Debug.log "maxCols" <| thumbPageModel.winSize.width // maxThumbWidth
+        thumbWidth = Debug.log "thumbWidth" <| thumbPageModel.winSize.width // maxCols
+    in
+        List.map (viewThumbColumn thumbWidth imgChosenMsgr)
+        <| spreadThumbs maxCols thumbPageModel.album.images []
+
+
+viewThumbColumn : Int -> (Int -> msg) -> List (Image,Int) -> Html msg
+viewThumbColumn thumbWidth imgChosenMsgr images =
+    let
+        viewThumbTuple (img,i) = viewThumb thumbWidth (imgChosenMsgr i) img
     in
         div
             [ styles
@@ -41,31 +45,28 @@ viewThumbColumn imgChosenMsgr images =
             ]
             <| List.map viewThumbTuple images
 
-spreadThumbs : Int -> Int -> List Image -> List (List (Image,Int)) -> List (List (Image,Int))
-spreadThumbs spanWidth maxImgWidth images alreadySpreadImages =
+spreadThumbs : Int -> List Image -> List (List (Image,Int)) -> List (List (Image,Int))
+spreadThumbs maxCols images alreadySpreadImages =
     case List.head images of
         Just nextImg ->
-            insertImage spanWidth maxImgWidth (List.sum <| List.map List.length alreadySpreadImages) nextImg alreadySpreadImages
-            |> spreadThumbs spanWidth maxImgWidth (List.drop 1 images)
+            insertImage maxCols (List.sum <| List.map List.length alreadySpreadImages) nextImg alreadySpreadImages
+            |> spreadThumbs maxCols (List.drop 1 images)
         Nothing ->
             alreadySpreadImages
 
-insertImage : Int -> Int -> Int -> Image -> List (List (Image,Int)) -> List (List (Image,Int))
-insertImage spanWidth maxImgWidth i nextImg alreadySpreadImages =
-    let
-        col = 1 + List.length alreadySpreadImages
-    in
-        if (Debug.log ("width with added column " ++ (toString col)) (col * maxImgWidth)) <= spanWidth then
-            alreadySpreadImages ++ [[(
-            Debug.log ("start column " ++ (toString col) ++ " with image " ++ (toString i))
-            nextImg
-            , i)]]
-        else
-            let
-                is = findShortest alreadySpreadImages
-                iShortest = Debug.log ("image " ++ (toString i) ++ " goes in (col,height) ") is
-            in
-                mapI (Tuple.first iShortest) (\x -> x ++ [(nextImg, i)]) alreadySpreadImages
+insertImage : Int -> Int -> Image -> List (List (Image,Int)) -> List (List (Image,Int))
+insertImage maxCols i nextImg alreadySpreadImages =
+    if List.length alreadySpreadImages < maxCols then
+        alreadySpreadImages ++ [[(
+        Debug.log ("start column " ++ (toString col) ++ " with image " ++ (toString i))
+        nextImg
+        , i)]]
+    else
+        let
+            is = findShortest alreadySpreadImages
+            iShortest = Debug.log ("image " ++ (toString i) ++ " goes in (col,height) ") is
+        in
+            mapI (Tuple.first iShortest) (\x -> x ++ [(nextImg, i)]) alreadySpreadImages
 
 
 shorterBaseCase : (Int, Int)
@@ -97,22 +98,22 @@ viewThumbs2 : Int -> (Int -> msg) -> ThumbPageModel -> List (Html msg)
 viewThumbs2 i imgChosenMsgr thumbPageModel =
     case List.head <| List.drop i thumbPageModel.album.images of
         Just nextImg ->
-            viewThumb (imgChosenMsgr i) nextImg
+            viewThumb 300 (imgChosenMsgr i) nextImg
             :: viewThumbs2 (i+1) imgChosenMsgr thumbPageModel
 
         Nothing ->
             []
 
 
-viewThumb : msg -> Image -> Html msg
-viewThumb selectedMsg img =
+viewThumb : Int -> msg -> Image -> Html msg
+viewThumb width selectedMsg img =
     case img.srcSet of
         [] ->
              div [] []
 
         is1 :: _ ->
             let
-                scale = (toFloat maxThumbWidth) / (toFloat is1.x)
+                scale = (toFloat width) / (toFloat is1.x)
                 xScaled = scale * (toFloat is1.x)
                 yScaled = scale * (toFloat is1.y)
             in
@@ -167,6 +168,7 @@ rootDivFlexRow extraStyles =
     rootDiv <|
         [ displayFlex
         , flexDirection row
+        , overflowX Css.hidden
         ]
         ++ extraStyles
 
