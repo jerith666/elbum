@@ -27,7 +27,7 @@ view imgChosenMsgr thumbPageModel =
 viewThumbs : (Int -> msg) -> ThumbPageModel -> List (Html msg)
 viewThumbs imgChosenMsgr thumbPageModel =
     let
-        maxCols = Debug.log "maxCols" <| thumbPageModel.winSize.width // maxThumbWidth
+        maxCols = Debug.log "maxCols" <| Basics.max (thumbPageModel.winSize.width // maxThumbWidth) 2
         thumbWidth = Debug.log "thumbWidth" <| thumbPageModel.winSize.width // maxCols
     in
         List.map (viewThumbColumn thumbWidth imgChosenMsgr)
