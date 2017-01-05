@@ -41,12 +41,12 @@ update msg model =
         Resize size ->
             case model of
                 Sizing ->
-                    ( Loading size
+                    ( Loading <| Debug.log "window size set" size
                     , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecAlbum))
                     )
 
                 Loading oldSize ->
-                    ( Loading size
+                    ( Loading <| Debug.log "window size updated during load" size
                     , Cmd.none
                     )
 
@@ -55,12 +55,12 @@ update msg model =
                 Loaded albumPage ->
                     case albumPage of
                         Thumbs album oldSize ->
-                            ( Loaded (Thumbs album size)
+                            ( Loaded (Thumbs album <| Debug.log "window size updated for thumbs" size)
                             , Cmd.none
                             )
 
                         FullImage album index oldSize ->
-                            ( Loaded (FullImage album index size)
+                            ( Loaded (FullImage album index <| Debug.log "window size updated for full" size)
                             , Cmd.none
                             )
 

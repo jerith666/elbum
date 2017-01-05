@@ -25,7 +25,7 @@ view imgChosenMsgr thumbPageModel =
 viewThumbs : (Int -> msg) -> ThumbPageModel -> List (Html msg)
 viewThumbs imgChosenMsgr thumbPageModel =
     List.map (viewThumbColumn imgChosenMsgr)
-    <| spreadThumbs thumbPageModel.winSize.width maxThumbWidth thumbPageModel.album.images []
+    <| spreadThumbs (Debug.log "window width" thumbPageModel.winSize.width) maxThumbWidth thumbPageModel.album.images []
 
 
 viewThumbColumn : (Int -> msg) -> List (Image,Int) -> Html msg
@@ -55,7 +55,7 @@ insertImage spanWidth maxImgWidth i nextImg alreadySpreadImages =
     let
         col = 1 + List.length alreadySpreadImages
     in
-        if col * maxImgWidth <= spanWidth then
+        if (Debug.log ("width with added column " ++ (toString col)) (col * maxImgWidth)) <= spanWidth then
             alreadySpreadImages ++ [[(
             Debug.log ("start column " ++ (toString col) ++ " with image " ++ (toString i))
             nextImg
