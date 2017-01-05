@@ -98,7 +98,7 @@ decodeAlbumRequest r =
             NoAlbum e
 
 
-subscriptions model = Sub.none --TODO FullImagePage.prevNextSubscriptions?
+subscriptions model = resizes Resize -- Sub.none --TODO FullImagePage.prevNextSubscriptions?
 
 
 view : AlbumBootstrap -> Html AlbumBootstrapMsg
