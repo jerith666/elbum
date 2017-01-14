@@ -32,20 +32,22 @@ viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img =
 
         is1 :: _ ->
             let
-                (wStyle, hStyle) = aspectStyles fullImagePageModel is1
+                (w, h) = fitImage is1 fullImagePageModel.winSize.width fullImagePageModel.winSize.height
             in
-                render is1 img.srcSet [wStyle, hStyle] nextMsg
+                renderPresized w h img.srcSet [] nextMsg
 
 
-aspectStyles : FullImagePageModel -> ImgSrc -> (Mixin, Mixin) -- (Css.LengthOrAuto compatible, Css.LengthOrAuto compatible)
-aspectStyles fullImagePageModel is1 =
+fitImage : ImgSrc -> Int -> Int -> (Int, Int)
+fitImage is winWidth winHeight =
     let
-        winAspect = (toFloat fullImagePageModel.winSize.width) / (toFloat fullImagePageModel.winSize.height)
-        imgAspect = (toFloat is1.x) / (toFloat is1.y)
-        wStyle = if winAspect > imgAspect then Css.width auto else Css.width (pct 100)
-        hStyle = if winAspect > imgAspect then Css.height (pct 100) else Css.height auto
+        winAspect = (toFloat winWidth) / (toFloat winHeight)
+        imgAspect = (toFloat is.x) / (toFloat is.y)
+        scale =
+            if winAspect <= imgAspect then
+                (toFloat winWidth) / (toFloat is.x)
+            else
+                (toFloat winHeight) / (toFloat is.y)
     in
-        (wStyle, hStyle)
-
--- div [] [ Html.text ("Full Image Page for " ++ fullImagePageModel.album.title ++ " image " ++ (toString fullImagePageModel.index)) ]
-
+        ( Basics.round <| (toFloat is.x) * scale
+        , Basics.round <| (toFloat is.y) * scale
+        )
