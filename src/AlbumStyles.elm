@@ -4,11 +4,14 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Css exposing (..)
 
+
 black =
     rgb 0 0 0
 
+
 styles =
     Css.asPairs >> Html.Attributes.style
+
 
 rootDiv extraStyles =
     div
@@ -16,11 +19,12 @@ rootDiv extraStyles =
             [ position absolute
             , Css.height (vh 100)
             , Css.width (vw 100)
-            -- , overflow auto
+              -- , overflow auto
             , backgroundColor black
             ]
-            ++ extraStyles
+                ++ extraStyles
         ]
+
 
 rootDivFlexRow extraStyles =
     rootDiv <|
@@ -28,4 +32,4 @@ rootDivFlexRow extraStyles =
         , flexDirection row
         , overflowX Css.hidden
         ]
-        ++ extraStyles
+            ++ extraStyles

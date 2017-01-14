@@ -1,11 +1,13 @@
+module Main exposing (..)
+
 import WinSize exposing (..)
 import Album exposing (..)
 import AlbumPage exposing (..)
-
 import Task exposing (..)
 import Html exposing (..)
 import Http exposing (..)
 import Window exposing (..)
+
 
 type AlbumBootstrap
     = Sizing
@@ -13,11 +15,13 @@ type AlbumBootstrap
     | LoadError Http.Error
     | Loaded AlbumPage
 
+
 type AlbumBootstrapMsg
     = Resize Size
     | YesAlbum Album
     | NoAlbum Http.Error
     | PageMsg AlbumPage.AlbumPageMsg
+
 
 main =
     program
@@ -50,7 +54,8 @@ update msg model =
                     , Cmd.none
                     )
 
-                LoadError _ -> ( model, Cmd.none )
+                LoadError _ ->
+                    ( model, Cmd.none )
 
                 Loaded albumPage ->
                     case albumPage of
@@ -71,7 +76,8 @@ update msg model =
                     , Cmd.none
                     )
 
-                _ -> ( model, Cmd.none )
+                _ ->
+                    ( model, Cmd.none )
 
         NoAlbum err ->
             ( LoadError err
@@ -85,7 +91,8 @@ update msg model =
                     , Cmd.none
                     )
 
-                _ -> ( model, Cmd.none )
+                _ ->
+                    ( model, Cmd.none )
 
 
 decodeAlbumRequest : Result Http.Error Album -> AlbumBootstrapMsg
@@ -98,7 +105,12 @@ decodeAlbumRequest r =
             NoAlbum e
 
 
-subscriptions model = resizes Resize -- Sub.none --TODO FullImagePage.prevNextSubscriptions?
+subscriptions model =
+    resizes Resize
+
+
+
+-- Sub.none --TODO FullImagePage.prevNextSubscriptions?
 
 
 view : AlbumBootstrap -> Html AlbumBootstrapMsg
@@ -115,4 +127,3 @@ view albumBootstrap =
 
         Loaded albumPage ->
             Html.map PageMsg (AlbumPage.view albumPage)
-

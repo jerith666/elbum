@@ -4,15 +4,16 @@ import Album exposing (..)
 import WinSize exposing (..)
 import ImageViews exposing (..)
 import AlbumStyles exposing (..)
-
 import Html exposing (..)
 import Css exposing (..)
+
 
 type alias FullImagePageModel =
     { album : Album
     , index : Int
     , winSize : WinSize
     }
+
 
 view : msg -> msg -> msg -> FullImagePageModel -> Html msg
 view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
@@ -21,7 +22,7 @@ view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
             div [] []
 
         Just img ->
-            rootDiv [overflow hidden] [viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img]
+            rootDiv [ overflow hidden ] [ viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img ]
 
 
 viewImg : msg -> msg -> msg -> FullImagePageModel -> Image -> Html msg
@@ -32,16 +33,21 @@ viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img =
 
         is1 :: _ ->
             let
-                (w, h) = fitImage is1 fullImagePageModel.winSize.width fullImagePageModel.winSize.height
+                ( w, h ) =
+                    fitImage is1 fullImagePageModel.winSize.width fullImagePageModel.winSize.height
             in
                 renderPresized w h img.srcSet [] nextMsg
 
 
-fitImage : ImgSrc -> Int -> Int -> (Int, Int)
+fitImage : ImgSrc -> Int -> Int -> ( Int, Int )
 fitImage is winWidth winHeight =
     let
-        winAspect = (toFloat winWidth) / (toFloat winHeight)
-        imgAspect = (toFloat is.x) / (toFloat is.y)
+        winAspect =
+            (toFloat winWidth) / (toFloat winHeight)
+
+        imgAspect =
+            (toFloat is.x) / (toFloat is.y)
+
         scale =
             if winAspect <= imgAspect then
                 (toFloat winWidth) / (toFloat is.x)
