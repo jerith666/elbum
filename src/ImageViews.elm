@@ -14,7 +14,7 @@ renderPresized w h is s msg =
         Nothing ->
             div [] []
         Just sizedIs ->
-            render sizedIs [] [Css.width (px (toFloat w)), Css.height (px (toFloat h))] msg
+            render sizedIs [] (s ++ [Css.width (px (toFloat w)), Css.height (px (toFloat h))]) msg
 
 render : ImgSrc -> List ImgSrc -> List Mixin -> msg -> Html msg
 render idefault is s msg =
