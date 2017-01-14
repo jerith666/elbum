@@ -36,7 +36,7 @@ viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img =
                 ( w, h ) =
                     fitImage is1 fullImagePageModel.winSize.width fullImagePageModel.winSize.height
             in
-                renderPresized w h img.srcSet [] nextMsg
+                renderPresized 0 w h img.srcSet [] nextMsg
 
 
 fitImage : ImgSrc -> Int -> Int -> ( Int, Int )

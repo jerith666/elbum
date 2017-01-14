@@ -151,7 +151,7 @@ viewThumb width selectedMsg img =
                 yScaled =
                     Basics.round <| scale * (toFloat is1.y)
             in
-                renderPresized xScaled yScaled img.srcSet [] selectedMsg
+                renderPresized 10 xScaled yScaled img.srcSet [] selectedMsg
 
 
 
