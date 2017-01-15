@@ -25,9 +25,10 @@ view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
             rootDiv
                 [ overflow hidden ]
                 [ div
-                    [ styles [ color white
-                             , textAlign center
-                             ]
+                    [ styles
+                        [ color white
+                        , textAlign center
+                        ]
                     ]
                     [ Html.text img.altText ]
                 , viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img
