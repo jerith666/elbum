@@ -20,6 +20,10 @@ maxThumbWidth =
     300
 
 
+scrollPad =
+    20
+
+
 view : (Int -> msg) -> ThumbPageModel -> Html msg
 view imgChosenMsgr thumbPageModel =
     rootDivFlex column
@@ -59,7 +63,7 @@ viewThumbs imgChosenMsgr thumbPageModel =
             Debug.log "maxCols" <| Basics.max (thumbPageModel.winSize.width // maxThumbWidth) 2
 
         thumbWidth =
-            Debug.log "thumbWidth" <| thumbPageModel.winSize.width // maxCols
+            Debug.log "thumbWidth" <| (thumbPageModel.winSize.width - scrollPad) // maxCols
     in
         List.map (viewThumbColumn thumbWidth imgChosenMsgr) <|
             spreadThumbs maxCols thumbPageModel.album.images []
