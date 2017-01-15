@@ -31,7 +31,7 @@ view imgChosenMsgr thumbPageModel =
     <|
         albumTitle thumbPageModel.album.title [position fixed]
         ::
-        albumTitle thumbPageModel.album.title []
+        albumTitle thumbPageModel.album.title [Css.property "visibility" "hidden"]
         ::
         div
             [ styles [ displayFlex
