@@ -30,10 +30,10 @@ rootDiv extraStyles =
         ]
 
 
-rootDivFlexRow extraStyles =
+rootDivFlex dir extraStyles =
     rootDiv <|
         [ displayFlex
-        , flexDirection row
+        , flexDirection dir
         , overflowX Css.hidden
         ]
             ++ extraStyles

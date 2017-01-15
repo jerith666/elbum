@@ -22,7 +22,7 @@ maxThumbWidth =
 
 view : (Int -> msg) -> ThumbPageModel -> Html msg
 view imgChosenMsgr thumbPageModel =
-    rootDivFlexRow
+    rootDivFlex row
         [ backgroundColor black ]
     <|
         viewThumbs imgChosenMsgr thumbPageModel
