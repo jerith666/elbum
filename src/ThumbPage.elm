@@ -22,10 +22,34 @@ maxThumbWidth =
 
 view : (Int -> msg) -> ThumbPageModel -> Html msg
 view imgChosenMsgr thumbPageModel =
-    rootDivFlex row
+    rootDivFlex column
         [ backgroundColor black ]
     <|
-        viewThumbs imgChosenMsgr thumbPageModel
+        albumTitle thumbPageModel.album.title [position fixed]
+        ::
+        albumTitle thumbPageModel.album.title []
+        ::
+        div
+            [ styles [ displayFlex
+                     , flexDirection row
+                     ]
+            ]
+            (viewThumbs imgChosenMsgr thumbPageModel)
+        :: []
+
+
+albumTitle : String -> List Mixin -> Html msg
+albumTitle title extraStyles =
+    div
+        [ styles <|
+            [ color white
+            , textAlign center
+            , Css.width (vw 100)
+            , backgroundColor (rgba 40 40 40 0.5)
+            ]
+                ++ extraStyles
+        ]
+        [ Html.text title ]
 
 
 viewThumbs : (Int -> msg) -> ThumbPageModel -> List (Html msg)
