@@ -29,17 +29,16 @@ view imgChosenMsgr thumbPageModel =
     rootDivFlex column
         [ backgroundColor black ]
     <|
-        albumTitle thumbPageModel.album.title [position fixed]
-        ::
-        albumTitle thumbPageModel.album.title [Css.property "visibility" "hidden"]
-        ::
-        div
-            [ styles [ displayFlex
-                     , flexDirection row
-                     ]
+        [ albumTitle thumbPageModel.album.title [ position fixed ]
+        , albumTitle thumbPageModel.album.title [ Css.property "visibility" "hidden" ]
+        , div
+            [ styles
+                [ displayFlex
+                , flexDirection row
+                ]
             ]
             (viewThumbs imgChosenMsgr thumbPageModel)
-        :: []
+        ]
 
 
 albumTitle : String -> List Mixin -> Html msg
