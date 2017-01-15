@@ -49,6 +49,7 @@ albumTitle title extraStyles =
             , textAlign center
             , Css.width (vw 100)
             , backgroundColor (rgba 40 40 40 0.5)
+            , padding (px 5)
             ]
                 ++ extraStyles
         ]
