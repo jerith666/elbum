@@ -9,6 +9,10 @@ black =
     rgb 0 0 0
 
 
+white =
+    rgb 255 255 255
+
+
 styles =
     Css.asPairs >> Html.Attributes.style
 

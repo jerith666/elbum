@@ -22,7 +22,16 @@ view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
             div [] []
 
         Just img ->
-            rootDiv [ overflow hidden ] [ viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img ]
+            rootDiv
+                [ overflow hidden ]
+                [ div
+                    [ styles [ color white
+                             , textAlign center
+                             ]
+                    ]
+                    [ Html.text img.altText ]
+                , viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img
+                ]
 
 
 viewImg : msg -> msg -> msg -> FullImagePageModel -> Image -> Html msg
