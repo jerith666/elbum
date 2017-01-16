@@ -5,6 +5,7 @@ import WinSize exposing (..)
 import ImageViews exposing (..)
 import AlbumStyles exposing (..)
 import Html exposing (..)
+import Html.Events exposing (..)
 import Css exposing (..)
 
 
@@ -28,6 +29,16 @@ view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
                 , property "justify-content" "center"
                 ]
                 [ div
+                    [ styles
+                        [ position absolute
+                        , top (px 5)
+                        , right (px 5)
+                        , color white
+                        ]
+                    , onClick backToThumbsMsg
+                    ]
+                    [ Html.text "x" ]
+                , div
                     [ styles
                         [ color white
                         , textAlign center
