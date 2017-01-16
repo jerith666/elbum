@@ -22,8 +22,11 @@ view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
             div [] []
 
         Just img ->
-            rootDiv
-                [ overflow hidden ]
+            rootDivFlex column
+                [ overflow hidden
+                , alignItems center
+                , property "justify-content" "center"
+                ]
                 [ div
                     [ styles
                         [ color white
