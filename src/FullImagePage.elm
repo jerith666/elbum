@@ -32,7 +32,9 @@ view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
                 , alignItems center
                 , property "justify-content" "center"
                 ]
-                [ div
+                [ navElement prevMsg "<" left
+                , navElement nextMsg ">" right
+                , div
                     [ styles
                         [ position absolute
                         , top (px 5)
@@ -42,8 +44,6 @@ view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
                     , onClick backToThumbsMsg
                     ]
                     [ Html.text "x" ]
-                , navElement prevMsg "<" left
-                , navElement nextMsg ">" right
                 , div
                     [ styles
                         [ color white
