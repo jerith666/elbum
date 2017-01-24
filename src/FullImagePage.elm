@@ -16,6 +16,10 @@ type alias FullImagePageModel =
     }
 
 
+imgTitleHeight : Float
+imgTitleHeight = 5
+
+
 view : msg -> msg -> msg -> FullImagePageModel -> Html msg
 view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
     case List.head <| List.drop fullImagePageModel.index fullImagePageModel.album.images of
@@ -42,6 +46,8 @@ view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
                     [ styles
                         [ color white
                         , textAlign center
+                        , height (pct imgTitleHeight)
+                        , lineHeight (px (imgTitleHeight / 100 * toFloat fullImagePageModel.winSize.height))
                         ]
                     ]
                     [ Html.text img.altText ]
@@ -58,7 +64,10 @@ viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img =
         is1 :: _ ->
             let
                 ( w, h ) =
-                    fitImage is1 fullImagePageModel.winSize.width fullImagePageModel.winSize.height
+                    fitImage
+                        is1
+                        fullImagePageModel.winSize.width
+                        <| Basics.round ( toFloat fullImagePageModel.winSize.height * ( 1 - imgTitleHeight / 100 ) )
             in
                 renderPresized 0 w h img.srcSet [] nextMsg
 
