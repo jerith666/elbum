@@ -20,8 +20,8 @@ imgTitleHeight : Float
 imgTitleHeight = 5
 
 
-view : msg -> msg -> msg -> FullImagePageModel -> Html msg
-view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
+view : msg -> msg -> msg -> msg -> FullImagePageModel -> Html msg
+view prevMsg nextMsg backToThumbsMsg noOpMsg fullImagePageModel =
     case List.head <| List.drop fullImagePageModel.index fullImagePageModel.album.images of
         Nothing ->
             div [] []
@@ -53,7 +53,7 @@ view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
                         ]
                     ]
                     [ Html.text img.altText ]
-                , Html.map (\x -> nextMsg) <| viewImg fullImagePageModel img
+                , viewImg noOpMsg fullImagePageModel img
                 ]
 
 
@@ -73,8 +73,8 @@ navElement msg label side =
         ]
         [ Html.text label ]
 
-viewImg : FullImagePageModel -> Image -> Html ()
-viewImg fullImagePageModel img =
+viewImg : msg -> FullImagePageModel -> Image -> Html msg
+viewImg msg fullImagePageModel img =
     case img.srcSet of
         [] ->
             div [] []
@@ -87,7 +87,7 @@ viewImg fullImagePageModel img =
                         fullImagePageModel.winSize.width
                         <| Basics.round ( toFloat fullImagePageModel.winSize.height * ( 1 - imgTitleHeight / 100 ) )
             in
-                renderPresized 0 w h img.srcSet [] ()
+                renderPresized 0 w h img.srcSet [] msg
 
 
 fitImage : ImgSrc -> Int -> Int -> ( Int, Int )
