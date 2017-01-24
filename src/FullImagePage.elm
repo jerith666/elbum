@@ -42,6 +42,8 @@ view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
                     , onClick backToThumbsMsg
                     ]
                     [ Html.text "x" ]
+                , navElement prevMsg "<" left
+                , navElement nextMsg ">" right
                 , div
                     [ styles
                         [ color white
@@ -54,6 +56,22 @@ view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
                 , viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img
                 ]
 
+
+navElement msg label side =
+    div
+        [ styles
+            [ position absolute
+            , height (vh 100)
+            , lineHeight (vh 100)
+            , side (px 0)
+            , width (px 20)
+            , textAlign center
+            , color white
+            , backgroundColor (rgba 40 40 40 0.5)
+            ]
+        , onClick msg
+        ]
+        [ Html.text label ]
 
 viewImg : msg -> msg -> msg -> FullImagePageModel -> Image -> Html msg
 viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img =
