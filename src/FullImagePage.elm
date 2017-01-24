@@ -53,7 +53,7 @@ view prevMsg nextMsg backToThumbsMsg fullImagePageModel =
                         ]
                     ]
                     [ Html.text img.altText ]
-                , viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img
+                , Html.map (\x -> nextMsg) <| viewImg fullImagePageModel img
                 ]
 
 
@@ -73,8 +73,8 @@ navElement msg label side =
         ]
         [ Html.text label ]
 
-viewImg : msg -> msg -> msg -> FullImagePageModel -> Image -> Html msg
-viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img =
+viewImg : FullImagePageModel -> Image -> Html ()
+viewImg fullImagePageModel img =
     case img.srcSet of
         [] ->
             div [] []
@@ -87,7 +87,7 @@ viewImg prevMsg nextMsg backToThumbsMsg fullImagePageModel img =
                         fullImagePageModel.winSize.width
                         <| Basics.round ( toFloat fullImagePageModel.winSize.height * ( 1 - imgTitleHeight / 100 ) )
             in
-                renderPresized 0 w h img.srcSet [] nextMsg
+                renderPresized 0 w h img.srcSet [] ()
 
 
 fitImage : ImgSrc -> Int -> Int -> ( Int, Int )
