@@ -29,7 +29,7 @@ update msg model =
         View index ->
             case model of
                 Thumbs album winSize ->
-                    FullImage album index winSize
+                    FullImage album (bounded album index) winSize
 
                 _ ->
                     model
@@ -37,7 +37,7 @@ update msg model =
         Prev ->
             case model of
                 FullImage album index winSize ->
-                    FullImage album (index - 1) winSize
+                    FullImage album (bounded album (index - 1)) winSize
 
                 _ ->
                     model
@@ -45,7 +45,7 @@ update msg model =
         Next ->
             case model of
                 FullImage album index winSize ->
-                    FullImage album (index + 1) winSize
+                    FullImage album (bounded album (index + 1)) winSize
 
                 _ ->
                     model
@@ -57,6 +57,13 @@ update msg model =
 
                 FullImage album index winSize ->
                     Thumbs album winSize
+
+
+bounded : Album -> Int -> Int
+bounded album proposedIndex =
+    Basics.min
+        (Basics.max proposedIndex 0)
+        (List.length album.images - 1)
 
 
 view : AlbumPage -> Html AlbumPageMsg
