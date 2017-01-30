@@ -7,12 +7,14 @@ import AlbumStyles exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
 import Css exposing (..)
+import TouchEvents exposing (..)
 
 
 type alias FullImagePageModel =
     { album : Album
     , index : Int
     , winSize : WinSize
+    , offset : (Int, Int)
     }
 
 
