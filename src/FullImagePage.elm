@@ -17,7 +17,8 @@ type alias FullImagePageModel =
 
 
 imgTitleHeight : Float
-imgTitleHeight = 5
+imgTitleHeight =
+    5
 
 
 view : msg -> msg -> msg -> msg -> FullImagePageModel -> Html msg
@@ -32,31 +33,38 @@ view prevMsg nextMsg backToThumbsMsg noOpMsg fullImagePageModel =
                 , alignItems center
                 , property "justify-content" "center"
                 ]
-                <| (if fullImagePageModel.index == 0 then [] else [ navElement prevMsg "<" left ])
-                ++
-                (if fullImagePageModel.index >= List.length fullImagePageModel.album.images - 1 then [] else [ navElement nextMsg ">" right ])
-                ++
-                [ div
-                    [ styles
-                        [ position absolute
-                        , top (px 5)
-                        , right (px 5)
-                        , color white
-                        ]
-                    , onClick backToThumbsMsg
-                    ]
-                    [ Html.text "x" ]
-                , div
-                    [ styles
-                        [ color white
-                        , textAlign center
-                        , height (pct imgTitleHeight)
-                        , lineHeight (px (imgTitleHeight / 100 * toFloat fullImagePageModel.winSize.height))
-                        ]
-                    ]
-                    [ Html.text img.altText ]
-                , viewImg noOpMsg fullImagePageModel img
-                ]
+            <|
+                (if fullImagePageModel.index == 0 then
+                    []
+                 else
+                    [ navElement prevMsg "<" left ]
+                )
+                    ++ (if fullImagePageModel.index >= List.length fullImagePageModel.album.images - 1 then
+                            []
+                        else
+                            [ navElement nextMsg ">" right ]
+                       )
+                    ++ [ div
+                            [ styles
+                                [ position absolute
+                                , top (px 5)
+                                , right (px 5)
+                                , color white
+                                ]
+                            , onClick backToThumbsMsg
+                            ]
+                            [ Html.text "x" ]
+                       , div
+                            [ styles
+                                [ color white
+                                , textAlign center
+                                , height (pct imgTitleHeight)
+                                , lineHeight (px (imgTitleHeight / 100 * toFloat fullImagePageModel.winSize.height))
+                                ]
+                            ]
+                            [ Html.text img.altText ]
+                       , viewImg noOpMsg fullImagePageModel img
+                       ]
 
 
 navElement msg label side =
@@ -75,6 +83,7 @@ navElement msg label side =
         ]
         [ Html.text label ]
 
+
 viewImg : msg -> FullImagePageModel -> Image -> Html msg
 viewImg msg fullImagePageModel img =
     case img.srcSet of
@@ -87,7 +96,8 @@ viewImg msg fullImagePageModel img =
                     fitImage
                         is1
                         fullImagePageModel.winSize.width
-                        <| Basics.round ( toFloat fullImagePageModel.winSize.height * ( 1 - imgTitleHeight / 100 ) )
+                    <|
+                        Basics.round (toFloat fullImagePageModel.winSize.height * (1 - imgTitleHeight / 100))
             in
                 renderPresized 0 w h img.srcSet [] msg
 
