@@ -64,7 +64,7 @@ navElement msg label side =
             , height (vh 100)
             , lineHeight (vh 100)
             , side (px 0)
-            , width (px 20)
+            , width (pct 5)
             , textAlign center
             , color white
             , backgroundColor (rgba 40 40 40 0.5)
