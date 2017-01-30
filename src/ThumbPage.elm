@@ -27,7 +27,7 @@ scrollPad =
 view : (Int -> msg) -> ThumbPageModel -> Html msg
 view imgChosenMsgr thumbPageModel =
     rootDivFlex column
-        [ backgroundColor black ]
+        [ overflowX Css.hidden ]
     <|
         [ albumTitle thumbPageModel.album.title [ position fixed ]
         , albumTitle thumbPageModel.album.title [ Css.property "visibility" "hidden" ]

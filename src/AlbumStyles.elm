@@ -34,6 +34,5 @@ rootDivFlex dir extraStyles =
     rootDiv <|
         [ displayFlex
         , flexDirection dir
-        , overflowX Css.hidden
         ]
             ++ extraStyles
