@@ -32,9 +32,11 @@ view prevMsg nextMsg backToThumbsMsg noOpMsg fullImagePageModel =
                 , alignItems center
                 , property "justify-content" "center"
                 ]
-                [ navElement prevMsg "<" left
-                , navElement nextMsg ">" right
-                , div
+                <| (if fullImagePageModel.index == 0 then [] else [ navElement prevMsg "<" left ])
+                ++
+                (if fullImagePageModel.index >= List.length fullImagePageModel.album.images - 1 then [] else [ navElement nextMsg ">" right ])
+                ++
+                [ div
                     [ styles
                         [ position absolute
                         , top (px 5)
