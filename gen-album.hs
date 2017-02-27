@@ -42,7 +42,8 @@ genAlbum src dest = do
   imgs <- imgsOnly afiles
   pimgs <- sequence $ map (procImage dest) imgs
   let a = Album { title = last $ splitDirectories src
-                , images = pimgs
+                , imageFirst = head pimgs
+                , imageRest = tail pimgs
                 }
   C.writeFile (dest </> "album.json") $ encode a
 
@@ -53,7 +54,8 @@ procImage d (f,i) = do
         t = takeBaseName f
     srcSet <- procSrcSet d f i w h
     return Image { altText = t
-                 , srcSet = srcSet
+                 , srcSetFirst = head srcSet
+                 , srcSetRest = tail srcSet
                  }
 
 procSrcSet :: FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
