@@ -8,6 +8,7 @@ import Html.Events exposing (..)
 import Css exposing (..)
 
 
+-- TODO change signature to allow non-empty msg
 renderPresized : Int -> Int -> Int -> List ImgSrc -> List Mixin -> msg -> Html msg
 renderPresized margin w h is s msg =
     case List.head <| List.sortBy (\is -> is.x) <| List.filter (\is -> is.x > w && is.y > h) is of

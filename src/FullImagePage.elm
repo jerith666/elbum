@@ -11,8 +11,8 @@ import TouchEvents exposing (..)
 
 
 type alias FullImagePageModel =
-    { album : Album
-    , index : Int
+    { prevImgs : List Image
+    , album : Album
     , winSize : WinSize
     , offset : (Int, Int)
     }
@@ -25,48 +25,43 @@ imgTitleHeight =
 
 view : msg -> msg -> msg -> msg -> FullImagePageModel -> Html msg
 view prevMsg nextMsg backToThumbsMsg noOpMsg fullImagePageModel =
-    case List.head <| List.drop fullImagePageModel.index fullImagePageModel.album.images of
-        Nothing ->
-            div [] []
-
-        Just img ->
-            rootDivFlex column
-                [ overflow hidden
-                , alignItems center
-                , property "justify-content" "center"
-                ]
-            <|
-                (if fullImagePageModel.index == 0 then
+    rootDivFlex column
+        [ overflow hidden
+        , alignItems center
+        , property "justify-content" "center"
+        ]
+    <|
+        (if List.isEmpty fullImagePageModel.prevImgs then
+            []
+         else
+            [ navElement prevMsg "<" left ]
+        )
+            ++ (if List.isEmpty fullImagePageModel.album.imageRest then
                     []
-                 else
-                    [ navElement prevMsg "<" left ]
-                )
-                    ++ (if fullImagePageModel.index >= List.length fullImagePageModel.album.images - 1 then
-                            []
-                        else
-                            [ navElement nextMsg ">" right ]
-                       )
-                    ++ [ div
-                            [ styles
-                                [ position absolute
-                                , top (px 5)
-                                , right (px 5)
-                                , color white
-                                ]
-                            , onClick backToThumbsMsg
-                            ]
-                            [ Html.text "x" ]
-                       , div
-                            [ styles
-                                [ color white
-                                , textAlign center
-                                , height (pct imgTitleHeight)
-                                , lineHeight (px (imgTitleHeight / 100 * toFloat fullImagePageModel.winSize.height))
-                                ]
-                            ]
-                            [ Html.text img.altText ]
-                       , viewImg noOpMsg fullImagePageModel img
-                       ]
+                else
+                    [ navElement nextMsg ">" right ]
+               )
+            ++ [ div
+                    [ styles
+                        [ position absolute
+                        , top (px 5)
+                        , right (px 5)
+                        , color white
+                        ]
+                    , onClick backToThumbsMsg
+                    ]
+                    [ Html.text "x" ]
+               , div
+                    [ styles
+                        [ color white
+                        , textAlign center
+                        , height (pct imgTitleHeight)
+                        , lineHeight (px (imgTitleHeight / 100 * toFloat fullImagePageModel.winSize.height))
+                        ]
+                    ]
+                    [ Html.text fullImagePageModel.album.imageFirst.altText ]
+               , viewImg noOpMsg fullImagePageModel fullImagePageModel.album.imageFirst
+               ]
 
 
 navElement msg label side =
@@ -88,20 +83,15 @@ navElement msg label side =
 
 viewImg : msg -> FullImagePageModel -> Image -> Html msg
 viewImg msg fullImagePageModel img =
-    case img.srcSet of
-        [] ->
-            div [] []
-
-        is1 :: _ ->
-            let
-                ( w, h ) =
-                    fitImage
-                        is1
-                        fullImagePageModel.winSize.width
-                    <|
-                        Basics.round (toFloat fullImagePageModel.winSize.height * (1 - imgTitleHeight / 100))
-            in
-                renderPresized 0 w h img.srcSet [] msg
+    let
+        ( w, h ) =
+            fitImage
+                img.srcSetFirst
+                fullImagePageModel.winSize.width
+            <|
+                Basics.round (toFloat fullImagePageModel.winSize.height * (1 - imgTitleHeight / 100))
+    in
+        renderPresized 0 w h (img.srcSetFirst :: img.srcSetRest) [] msg
 
 
 fitImage : ImgSrc -> Int -> Int -> ( Int, Int )
