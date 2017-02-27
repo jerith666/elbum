@@ -9,11 +9,11 @@ import Html exposing (..)
 
 type AlbumPage
     = Thumbs Album WinSize
-    | FullImage Album Int WinSize
+    | FullImage (List Image) Album WinSize
 
 
 type AlbumPageMsg
-    = View Int
+    = View (List Image) Image (List Image)
     | Prev
     | Next
     | BackToThumbs
@@ -26,26 +26,50 @@ type AlbumPageMsg
 update : AlbumPageMsg -> AlbumPage -> AlbumPage
 update msg model =
     case msg of
-        View index ->
+        View prevImgs curImg nextImgs ->
             case model of
                 Thumbs album winSize ->
-                    FullImage album (bounded album index) winSize
+                    FullImage
+                        prevImgs
+                        { title = album.title
+                        , imageFirst = curImg
+                        , imageRest = nextImgs
+                        }
+                        winSize
 
                 _ ->
                     model
 
         Prev ->
             case model of
-                FullImage album index winSize ->
-                    FullImage album (bounded album (index - 1)) winSize
+                FullImage prevImgs album winSize ->
+                    let
+                        (newPrev, newRest, newCur) = shift album.imageRest prevImgs album.imageFirst
+                    in
+                        FullImage
+                            newPrev
+                            { title = album.title
+                            , imageFirst = newCur
+                            , imageRest = newRest
+                            }
+                            winSize
 
                 _ ->
                     model
 
         Next ->
             case model of
-                FullImage album index winSize ->
-                    FullImage album (bounded album (index + 1)) winSize
+                FullImage prevImgs album winSize ->
+                    let
+                        (newPrev, newRest, newCur) = shift prevImgs album.imageRest album.imageFirst
+                    in
+                        FullImage
+                            newPrev
+                            { title = album.title
+                            , imageFirst = newCur
+                            , imageRest = newRest
+                            }
+                            winSize
 
                 _ ->
                     model
@@ -55,15 +79,13 @@ update msg model =
                 Thumbs album winSize ->
                     model
 
-                FullImage album index winSize ->
+                FullImage prevImgs album winSize ->
                     Thumbs album winSize
 
 
-bounded : Album -> Int -> Int
-bounded album proposedIndex =
-    Basics.min
-        (Basics.max proposedIndex 0)
-        (List.length album.images - 1)
+shift : List Image -> List Image -> Image -> (List Image, List Image, Image)
+shift   takeFromImgs  addToImgs     oldImg =
+    (takeFromImgs, addToImgs, oldImg) -- TODO!
 
 
 view : AlbumPage -> Html AlbumPageMsg
