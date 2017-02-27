@@ -94,5 +94,14 @@ view albumPage =
         Thumbs album winSize ->
             ThumbPage.view View { album = album, winSize = winSize }
 
-        FullImage album index winSize ->
-            FullImagePage.view Prev Next BackToThumbs (View index) { album = album, index = index, winSize = winSize, offset = (0,0) }
+        FullImage prevImgs album winSize ->
+            FullImagePage.view
+                Prev
+                Next
+                BackToThumbs
+                (View prevImgs album.imageFirst album.imageRest)
+                { prevImgs = prevImgs
+                , album = album
+                , winSize = winSize
+                , offset = (0,0)
+                }
