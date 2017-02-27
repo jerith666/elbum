@@ -66,7 +66,7 @@ viewThumbs imgChosenMsgr thumbPageModel =
             Debug.log "thumbWidth" <| (thumbPageModel.winSize.width - scrollPad) // maxCols
     in
         List.map (viewThumbColumn thumbWidth imgChosenMsgr) <|
-            spreadThumbs maxCols thumbPageModel.album.images []
+            spreadThumbs maxCols (thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest) []
 
 
 viewThumbColumn : Int -> (Int -> msg) -> List ( Image, Int ) -> Html msg
@@ -143,50 +143,35 @@ shorter ( i1, h1 ) ( i2, h2 ) =
 
 
 imgHeight img =
-    case img.srcSet of
-        [] ->
-            0
-
-        is1 :: _ ->
-            Basics.round <| (toFloat is1.y) * (1000 / toFloat is1.x)
-
-
-viewThumbs2 : Int -> (Int -> msg) -> ThumbPageModel -> List (Html msg)
-viewThumbs2 i imgChosenMsgr thumbPageModel =
-    case List.head <| List.drop i thumbPageModel.album.images of
-        Just nextImg ->
-            viewThumb 300 (imgChosenMsgr i) nextImg
-                :: viewThumbs2 (i + 1) imgChosenMsgr thumbPageModel
-
-        Nothing ->
-            []
+    let
+        is1 = img.srcSetFirst
+    in
+        Basics.round <| (toFloat is1.y) * (1000 / toFloat is1.x)
 
 
 viewThumb : Int -> msg -> Image -> Html msg
 viewThumb width selectedMsg img =
-    case img.srcSet of
-        [] ->
-            div [] []
+    let
+        is1 = img.srcSetFirst
+    in
+        let
+            scale =
+                (toFloat width) / (toFloat is1.x)
 
-        is1 :: _ ->
-            let
-                scale =
-                    (toFloat width) / (toFloat is1.x)
+            xScaled =
+                Basics.round <| scale * (toFloat is1.x)
 
-                xScaled =
-                    Basics.round <| scale * (toFloat is1.x)
-
-                yScaled =
-                    Basics.round <| scale * (toFloat is1.y)
-            in
-                renderPresized 10
-                    xScaled
-                    yScaled
-                    img.srcSet
-                    [ borderRadius (px 5)
-                    , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
-                    ]
-                    selectedMsg
+            yScaled =
+                Basics.round <| scale * (toFloat is1.y)
+        in
+            renderPresized 10
+                xScaled
+                yScaled
+                (img.srcSetFirst :: img.srcSetRest)
+                [ borderRadius (px 5)
+                , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
+                ]
+                selectedMsg
 
 
 
