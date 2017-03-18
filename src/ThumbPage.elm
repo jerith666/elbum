@@ -71,17 +71,27 @@ viewThumbs imgChosenMsgr thumbPageModel =
         List.map (viewThumbColumn thumbWidth (convertImgChosenMsgr thumbPageModel.album.imageFirst imgs imgChosenMsgr)) <|
             spreadThumbs maxCols imgs []
 
+
 convertImgChosenMsgr : Image -> List Image -> (List Image -> Image -> List Image -> msg) -> (Int -> msg)
 convertImgChosenMsgr image1 images prevCurRestImgChosenMsgr =
     \i ->
         let
-            prev = Debug.log ("prev i=" ++ (toString i)) (List.take i images)
-            cur = case List.head (List.drop i images) of
-                Just img -> Debug.log ("cur i=" ++ (toString i)) img
-                Nothing -> Debug.log ("cur NOTHING!!! i=" ++ (toString i)) image1
-            next = Debug.log ("next i=" ++ (toString i)) (List.drop (i+1) images)
+            prev =
+                Debug.log ("prev i=" ++ (toString i)) (List.take i images)
+
+            cur =
+                case List.head (List.drop i images) of
+                    Just img ->
+                        Debug.log ("cur i=" ++ (toString i)) img
+
+                    Nothing ->
+                        Debug.log ("cur NOTHING!!! i=" ++ (toString i)) image1
+
+            next =
+                Debug.log ("next i=" ++ (toString i)) (List.drop (i + 1) images)
         in
             prevCurRestImgChosenMsgr prev cur next
+
 
 viewThumbColumn : Int -> (Int -> msg) -> List ( Image, Int ) -> Html msg
 viewThumbColumn thumbWidth imgChosenMsgr images =
@@ -158,7 +168,8 @@ shorter ( i1, h1 ) ( i2, h2 ) =
 
 imgHeight img =
     let
-        is1 = img.srcSetFirst
+        is1 =
+            img.srcSetFirst
     in
         Basics.round <| (toFloat is1.y) * (1000 / toFloat is1.x)
 
@@ -166,7 +177,8 @@ imgHeight img =
 viewThumb : Int -> msg -> Image -> Html msg
 viewThumb width selectedMsg img =
     let
-        is1 = img.srcSetFirst
+        is1 =
+            img.srcSetFirst
     in
         let
             scale =

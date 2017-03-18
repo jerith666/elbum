@@ -14,7 +14,7 @@ type alias FullImagePageModel =
     { prevImgs : List Image
     , album : Album
     , winSize : WinSize
-    , offset : (Int, Int)
+    , offset : ( Int, Int )
     }
 
 

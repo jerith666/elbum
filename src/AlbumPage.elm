@@ -45,7 +45,8 @@ update msg model =
             case model of
                 FullImage prevImgs album winSize ->
                     let
-                        (newPrev, newCur, newRest) = shiftLeft prevImgs album.imageFirst album.imageRest
+                        ( newPrev, newCur, newRest ) =
+                            shiftLeft prevImgs album.imageFirst album.imageRest
                     in
                         FullImage
                             newPrev
@@ -62,7 +63,8 @@ update msg model =
             case model of
                 FullImage prevImgs album winSize ->
                     let
-                        (newPrev, newCur, newRest) = shiftRight prevImgs album.imageFirst album.imageRest
+                        ( newPrev, newCur, newRest ) =
+                            shiftRight prevImgs album.imageFirst album.imageRest
                     in
                         FullImage
                             newPrev
@@ -82,7 +84,8 @@ update msg model =
 
                 FullImage prevImgs album winSize ->
                     let
-                        (newFirst, newRest) = shiftToBeginning prevImgs album.imageFirst album.imageRest
+                        ( newFirst, newRest ) =
+                            shiftToBeginning prevImgs album.imageFirst album.imageRest
                     in
                         Thumbs
                             { title = album.title
@@ -90,6 +93,7 @@ update msg model =
                             , imageRest = newRest
                             }
                             winSize
+
 
 view : AlbumPage -> Html AlbumPageMsg
 view albumPage =
@@ -106,5 +110,5 @@ view albumPage =
                 { prevImgs = prevImgs
                 , album = album
                 , winSize = winSize
-                , offset = (0,0)
+                , offset = ( 0, 0 )
                 }
