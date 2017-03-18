@@ -142,7 +142,7 @@ view albumPage =
                 Prev
                 Next
                 BackToThumbs
-                (View prevImgs album.imageFirst album.imageRest)
+                NoUpdate
                 { prevImgs = prevImgs
                 , album = album
                 , winSize = winSize
