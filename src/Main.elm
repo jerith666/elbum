@@ -108,7 +108,15 @@ decodeAlbumRequest r =
 
 subscriptions : AlbumBootstrap -> Sub AlbumBootstrapMsg
 subscriptions model =
-    resizes Resize
+    case model of
+        Loaded albumPage ->
+            Sub.batch
+                [ Sub.map PageMsg <| AlbumPage.subscriptions albumPage
+                , resizes Resize
+                ]
+
+        _ ->
+            resizes Resize
 
 
 

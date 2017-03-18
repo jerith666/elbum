@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), view, update)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), view, update, subscriptions)
 
 import ListUtils exposing (..)
 import WinSize exposing (..)
@@ -112,3 +112,8 @@ view albumPage =
                 , winSize = winSize
                 , offset = ( 0, 0 )
                 }
+
+
+subscriptions : AlbumPage -> Sub AlbumPageMsg
+subscriptions albumPage =
+    Sub.none
