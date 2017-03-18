@@ -137,6 +137,10 @@ subscriptions albumPage =
                             -- left arrow
                             Prev
 
+                        38 ->
+                            -- up arrow
+                            BackToThumbs
+
                         _ ->
                             NoUpdate
                 )
