@@ -14,7 +14,7 @@ type alias FullImagePageModel =
     { prevImgs : List Image
     , album : Album
     , winSize : WinSize
-    , offset : ( Int, Int )
+    , offset : ( Float, Float )
     }
 
 
@@ -23,8 +23,8 @@ imgTitleHeight =
     5
 
 
-view : msg -> msg -> msg -> msg -> FullImagePageModel -> Html msg
-view prevMsg nextMsg backToThumbsMsg noOpMsg fullImagePageModel =
+view : msg -> msg -> msg -> (Touch -> msg) -> (Touch -> msg) -> msg -> FullImagePageModel -> Html msg
+view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg noOpMsg fullImagePageModel =
     rootDivFlex column
         [ overflow hidden
         , alignItems center
@@ -60,7 +60,7 @@ view prevMsg nextMsg backToThumbsMsg noOpMsg fullImagePageModel =
                         ]
                     ]
                     [ Html.text fullImagePageModel.album.imageFirst.altText ]
-               , viewImg noOpMsg fullImagePageModel fullImagePageModel.album.imageFirst
+               , viewImg noOpMsg touchStartMsg touchContinueMsg fullImagePageModel fullImagePageModel.album.imageFirst
                ]
 
 
@@ -81,8 +81,8 @@ navElement msg label side =
         [ Html.text label ]
 
 
-viewImg : msg -> FullImagePageModel -> Image -> Html msg
-viewImg msg fullImagePageModel img =
+viewImg : msg -> (Touch -> msg) -> (Touch -> msg) -> FullImagePageModel -> Image -> Html msg
+viewImg clickMsg touchStartMsg touchContinueMsg fullImagePageModel img =
     let
         ( w, h ) =
             fitImage
@@ -96,9 +96,15 @@ viewImg msg fullImagePageModel img =
             w
             h
             (img.srcSetFirst :: img.srcSetRest)
-            []
-            []
-            msg
+            [ position relative
+              -- note: no up/down movement is desired, just left/right
+              -- , top <| px <| Tuple.second fullImagePageModel.offset
+            , left <| px <| Tuple.first fullImagePageModel.offset
+            ]
+            [ onTouchStart touchStartMsg
+            , onTouchMove touchContinueMsg
+            ]
+            clickMsg
 
 
 fitImage : ImgSrc -> Int -> Int -> ( Int, Int )

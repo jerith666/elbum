@@ -10,19 +10,15 @@ import Keyboard exposing (..)
 import TouchEvents exposing (..)
 
 
-type Pos
-    = Pos Int Int
-
-
 type AlbumPage
     = Thumbs Album WinSize
-    | FullImage (List Image) Album WinSize (Maybe ( Pos, Pos ))
+    | FullImage (List Image) Album WinSize (Maybe ( Touch, Touch ))
 
 
 type AlbumPageMsg
     = View (List Image) Image (List Image)
-    | TouchDragStart Pos
-    | TouchDragContinue Pos
+    | TouchDragStart Touch
+    | TouchDragContinue Touch
     | Prev
     | Next
     | BackToThumbs
@@ -142,6 +138,8 @@ view albumPage =
                 Prev
                 Next
                 BackToThumbs
+                TouchDragStart
+                TouchDragContinue
                 NoUpdate
                 { prevImgs = prevImgs
                 , album = album
@@ -150,14 +148,14 @@ view albumPage =
                 }
 
 
-offsetFor : Maybe ( Pos, Pos ) -> ( Int, Int )
+offsetFor : Maybe ( Touch, Touch ) -> ( Float, Float )
 offsetFor dragInfo =
     case dragInfo of
         Nothing ->
             ( 0, 0 )
 
-        Just ( Pos sx sy, Pos cx cy ) ->
-            ( cx - sx, cy - sy )
+        Just ( start, current ) ->
+            ( current.clientX - start.clientX, current.clientY - start.clientY )
 
 
 subscriptions : AlbumPage -> Sub AlbumPageMsg
