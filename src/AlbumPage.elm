@@ -6,6 +6,7 @@ import Album exposing (..)
 import ThumbPage exposing (..)
 import FullImagePage exposing (..)
 import Html exposing (..)
+import Keyboard exposing (..)
 
 
 type AlbumPage
@@ -18,6 +19,7 @@ type AlbumPageMsg
     | Prev
     | Next
     | BackToThumbs
+    | NoUpdate
 
 
 
@@ -94,6 +96,9 @@ update msg model =
                             }
                             winSize
 
+        NoUpdate ->
+            model
+
 
 view : AlbumPage -> Html AlbumPageMsg
 view albumPage =
@@ -116,4 +121,22 @@ view albumPage =
 
 subscriptions : AlbumPage -> Sub AlbumPageMsg
 subscriptions albumPage =
-    Sub.none
+    case albumPage of
+        Thumbs _ _ ->
+            Sub.none
+
+        FullImage _ _ _ ->
+            downs
+                (\keycode ->
+                    case keycode of
+                        39 ->
+                            -- right arrow
+                            Next
+
+                        37 ->
+                            -- left arrow
+                            Prev
+
+                        _ ->
+                            NoUpdate
+                )
