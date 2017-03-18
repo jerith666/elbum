@@ -80,8 +80,23 @@ update msg model =
                     model
 
                 FullImage prevImgs album winSize ->
-                    Thumbs album winSize
+                    let
+                        (newFirst, newRest) = shiftToBeginning prevImgs album.imageFirst album.imageRest
+                    in
+                        Thumbs
+                            { title = album.title
+                            , imageFirst = newFirst
+                            , imageRest = newRest
+                            }
+                            winSize
 
+shiftToBeginning : List Image -> Image -> List Image -> (Image, List Image)
+shiftToBeginning prevImgs img restImgs =
+    case prevImgs of
+        [] ->
+            (img, restImgs)
+        prev1 :: prevRest ->
+            (prev1, prevRest ++ (img :: restImgs))
 
 shift : List Image -> List Image -> Image -> (List Image, List Image, Image)
 shift   takeFromImgs  addToImgs     oldImg =
