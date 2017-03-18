@@ -44,7 +44,7 @@ update msg model =
             case model of
                 FullImage prevImgs album winSize ->
                     let
-                        (newPrev, newRest, newCur) = shift album.imageRest prevImgs album.imageFirst
+                        (newPrev, newRest, newCur) = shift prevImgs album.imageRest album.imageFirst (\i -> \is -> i :: is)
                     in
                         FullImage
                             newPrev
@@ -61,7 +61,7 @@ update msg model =
             case model of
                 FullImage prevImgs album winSize ->
                     let
-                        (newPrev, newRest, newCur) = shift prevImgs album.imageRest album.imageFirst
+                        (newRest, newPrev, newCur) = shift album.imageRest prevImgs album.imageFirst (\i -> \is -> is ++ [i])
                     in
                         FullImage
                             newPrev
@@ -98,10 +98,14 @@ shiftToBeginning prevImgs img restImgs =
         prev1 :: prevRest ->
             (prev1, prevRest ++ (img :: restImgs))
 
-shift : List Image -> List Image -> Image -> (List Image, List Image, Image)
-shift   takeFromImgs  addToImgs     oldImg =
-    (takeFromImgs, addToImgs, oldImg) -- TODO!
-
+--TODO generic shift is too tricky, probably simpler to just have a shiftFwd and shiftRev
+shift : List Image -> List Image -> Image -> (Image -> List Image -> List Image) -> (List Image, List Image, Image)
+shift   takeFromImgs  addToImgs     oldImg   combiner                            =
+    case takeFromImgs of
+        [] ->
+            (takeFromImgs, addToImgs, oldImg)
+        take1 :: takeRest ->
+            (takeRest, combiner oldImg addToImgs, take1)
 
 view : AlbumPage -> Html AlbumPageMsg
 view albumPage =
