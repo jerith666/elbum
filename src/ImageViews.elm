@@ -11,8 +11,8 @@ import Css exposing (..)
 -- TODO change signature to allow non-empty msg
 
 
-renderPresized : Int -> Int -> Int -> List ImgSrc -> List Mixin -> msg -> Html msg
-renderPresized margin w h is s msg =
+renderPresized : Int -> Int -> Int -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> msg -> Html msg
+renderPresized margin w h is s otherAttrs msg =
     case List.head <| List.sortBy (\is -> is.x) <| List.filter (\is -> is.x > w && is.y > h) is of
         Nothing ->
             div [] []
@@ -26,19 +26,22 @@ renderPresized margin w h is s msg =
                        , Css.height (px (toFloat <| h - 2 * margin))
                        ]
                 )
+                otherAttrs
                 msg
 
 
-render : ImgSrc -> List ImgSrc -> List Mixin -> msg -> Html msg
-render idefault is s msg =
+render : ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> msg -> Html msg
+render idefault is s otherAttrs msg =
     img
-        [ styles s
-        , Html.Attributes.src idefault.url
-        , attribute "srcset" (encodeSrcSet is)
-        , Html.Attributes.width idefault.x
-        , Html.Attributes.height idefault.y
-        , onClick msg
-        ]
+        ([ styles s
+         , Html.Attributes.src idefault.url
+         , attribute "srcset" (encodeSrcSet is)
+         , Html.Attributes.width idefault.x
+         , Html.Attributes.height idefault.y
+         , onClick msg
+         ]
+            ++ otherAttrs
+        )
         []
 
 

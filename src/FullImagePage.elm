@@ -91,7 +91,14 @@ viewImg msg fullImagePageModel img =
             <|
                 Basics.round (toFloat fullImagePageModel.winSize.height * (1 - imgTitleHeight / 100))
     in
-        renderPresized 0 w h (img.srcSetFirst :: img.srcSetRest) [] msg
+        renderPresized
+            0
+            w
+            h
+            (img.srcSetFirst :: img.srcSetRest)
+            []
+            []
+            msg
 
 
 fitImage : ImgSrc -> Int -> Int -> ( Int, Int )

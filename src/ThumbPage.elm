@@ -197,6 +197,7 @@ viewThumb width selectedMsg img =
                 [ borderRadius (px 5)
                 , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
                 ]
+                []
                 selectedMsg
 
 
