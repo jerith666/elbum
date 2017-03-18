@@ -115,7 +115,7 @@ insertImage : Int -> Int -> Image -> List (List ( Image, Int )) -> List (List ( 
 insertImage maxCols i nextImg alreadySpreadImages =
     if List.length alreadySpreadImages < maxCols then
         alreadySpreadImages
-            ++ [ [ ( Debug.log ("start column " ++ (toString col) ++ " with image " ++ (toString i))
+            ++ [ [ ( Debug.log ("start column " ++ (toString (List.length alreadySpreadImages)) ++ " with image " ++ (toString i))
                         nextImg
                    , i
                    )
