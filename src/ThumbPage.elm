@@ -72,15 +72,14 @@ viewThumbs imgChosenMsgr thumbPageModel =
             spreadThumbs maxCols imgs []
 
 convertImgChosenMsgr : Image -> List Image -> (List Image -> Image -> List Image -> msg) -> (Int -> msg)
-convertImgChosenMsgr image1 imageRest prevCurRestImgChosenMsgr =
+convertImgChosenMsgr image1 images prevCurRestImgChosenMsgr =
     \i ->
         let
-            images = image1 :: imageRest
             prev = Debug.log ("prev i=" ++ (toString i)) (List.take i images)
-            cur = case List.head (List.drop (i+1) images) of
-                Just img -> Debug.log ("in just case in convertImgChosenMsgr i = " ++ (toString i)) img
-                Nothing -> Debug.log ("in nothing case in convertImgChosenMsgr i = " ++ (toString i)) image1
-            next = Debug.log ("next i=" ++ (toString i)) (List.drop (i+2) images)
+            cur = case List.head (List.drop i images) of
+                Just img -> Debug.log ("cur i=" ++ (toString i)) img
+                Nothing -> Debug.log ("cur NOTHING!!! i=" ++ (toString i)) image1
+            next = Debug.log ("next i=" ++ (toString i)) (List.drop (i+1) images)
         in
             prevCurRestImgChosenMsgr prev cur next
 
