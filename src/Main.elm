@@ -23,6 +23,7 @@ type AlbumBootstrapMsg
     | PageMsg AlbumPage.AlbumPageMsg
 
 
+main : Program Never AlbumBootstrap AlbumBootstrapMsg
 main =
     program
         { init = init
@@ -105,6 +106,7 @@ decodeAlbumRequest r =
             NoAlbum e
 
 
+subscriptions : AlbumBootstrap -> Sub AlbumBootstrapMsg
 subscriptions model =
     resizes Resize
 
