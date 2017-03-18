@@ -76,11 +76,11 @@ convertImgChosenMsgr image1 imageRest prevCurRestImgChosenMsgr =
     \i ->
         let
             images = image1 :: imageRest
-            prev = List.take i images
-            cur = case List.head (List.drop i images) of
-                Just img -> img
-                Nothing -> image1
-            next = List.drop (i+1) images
+            prev = Debug.log ("prev i=" ++ (toString i)) (List.take i images)
+            cur = case List.head (List.drop (i+1) images) of
+                Just img -> Debug.log ("in just case in convertImgChosenMsgr i = " ++ (toString i)) img
+                Nothing -> Debug.log ("in nothing case in convertImgChosenMsgr i = " ++ (toString i)) image1
+            next = Debug.log ("next i=" ++ (toString i)) (List.drop (i+2) images)
         in
             prevCurRestImgChosenMsgr prev cur next
 
