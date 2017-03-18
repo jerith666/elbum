@@ -44,7 +44,7 @@ update msg model =
             case model of
                 FullImage prevImgs album winSize ->
                     let
-                        (newPrev, newRest, newCur) = shift prevImgs album.imageRest album.imageFirst (\i -> \is -> i :: is)
+                        (newPrev, newCur, newRest) = shiftLeft prevImgs album.imageFirst album.imageRest
                     in
                         FullImage
                             newPrev
@@ -61,7 +61,7 @@ update msg model =
             case model of
                 FullImage prevImgs album winSize ->
                     let
-                        (newRest, newPrev, newCur) = shift album.imageRest prevImgs album.imageFirst (\i -> \is -> is ++ [i])
+                        (newPrev, newCur, newRest) = shiftRight prevImgs album.imageFirst album.imageRest
                     in
                         FullImage
                             newPrev
@@ -98,14 +98,32 @@ shiftToBeginning prevImgs img restImgs =
         prev1 :: prevRest ->
             (prev1, prevRest ++ (img :: restImgs))
 
---TODO generic shift is too tricky, probably simpler to just have a shiftFwd and shiftRev
-shift : List Image -> List Image -> Image -> (Image -> List Image -> List Image) -> (List Image, List Image, Image)
-shift   takeFromImgs  addToImgs     oldImg   combiner                            =
-    case takeFromImgs of
+{-return a tuple with the new middle element taken from the beginning of the right hand list,
+  the old middle element appended to the left hand list, if possible, otherwise do nothing-}
+shiftRight : List a -> a -> List a -> (List a, a, List a)
+shiftRight   xLefts    x    xRights =
+    case xRights of
         [] ->
-            (takeFromImgs, addToImgs, oldImg)
-        take1 :: takeRest ->
-            (takeRest, combiner oldImg addToImgs, take1)
+            (xLefts, x, xRights)
+        xRight :: xRightRights ->
+            (xLefts ++ [x], xRight, xRightRights)
+
+
+{-return a tuple with the new middle element taken from the end of the left hand list,
+  the old middle element prepended to the right hand list, if possible, otherwise do nothing-}
+shiftLeft : List a -> a -> List a -> (List a, a, List a)
+shiftLeft   xLefts    x    xRights =
+    case xLefts of
+        [] ->
+            (xLefts, x, xRights)
+        [xLeft] ->
+            ([], xLeft, x :: xRights)
+        xLeft :: xLeftRights ->
+            let
+                (xLRss, xss, xRss) = shiftLeft xLeftRights x xRights
+            in
+                (xLeft :: xLRss, xss, xRss)
+
 
 view : AlbumPage -> Html AlbumPageMsg
 view albumPage =
