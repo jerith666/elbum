@@ -24,7 +24,7 @@ scrollPad =
     20
 
 
-view : (Int -> msg) -> ThumbPageModel -> Html msg
+view : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> Html msg
 view imgChosenMsgr thumbPageModel =
     rootDivFlex column
         [ overflowX Css.hidden ]
@@ -56,7 +56,7 @@ albumTitle title extraStyles =
         [ Html.text title ]
 
 
-viewThumbs : (Int -> msg) -> ThumbPageModel -> List (Html msg)
+viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
 viewThumbs imgChosenMsgr thumbPageModel =
     let
         maxCols =
@@ -64,10 +64,25 @@ viewThumbs imgChosenMsgr thumbPageModel =
 
         thumbWidth =
             Debug.log "thumbWidth" <| (thumbPageModel.winSize.width - scrollPad) // maxCols
-    in
-        List.map (viewThumbColumn thumbWidth imgChosenMsgr) <|
-            spreadThumbs maxCols (thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest) []
 
+        imgs =
+            thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
+    in
+        List.map (viewThumbColumn thumbWidth (convertImgChosenMsgr thumbPageModel.album.imageFirst imgs imgChosenMsgr)) <|
+            spreadThumbs maxCols imgs []
+
+convertImgChosenMsgr : Image -> List Image -> (List Image -> Image -> List Image -> msg) -> (Int -> msg)
+convertImgChosenMsgr image1 imageRest prevCurRestImgChosenMsgr =
+    \i ->
+        let
+            images = image1 :: imageRest
+            prev = List.take i images
+            cur = case List.head (List.drop i images) of
+                Just img -> img
+                Nothing -> image1
+            next = List.drop (i+1) images
+        in
+            prevCurRestImgChosenMsgr prev cur next
 
 viewThumbColumn : Int -> (Int -> msg) -> List ( Image, Int ) -> Html msg
 viewThumbColumn thumbWidth imgChosenMsgr images =
