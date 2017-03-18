@@ -23,8 +23,8 @@ imgTitleHeight =
     5
 
 
-view : msg -> msg -> msg -> (Touch -> msg) -> (Touch -> msg) -> msg -> FullImagePageModel -> Html msg
-view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg noOpMsg fullImagePageModel =
+view : msg -> msg -> msg -> (Touch -> msg) -> (Touch -> msg) -> (Touch -> msg) -> msg -> FullImagePageModel -> Html msg
+view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNextMsg noOpMsg fullImagePageModel =
     rootDivFlex column
         [ overflow hidden
         , alignItems center
@@ -60,7 +60,7 @@ view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg noOpMsg full
                         ]
                     ]
                     [ Html.text fullImagePageModel.album.imageFirst.altText ]
-               , viewImg noOpMsg touchStartMsg touchContinueMsg fullImagePageModel fullImagePageModel.album.imageFirst
+               , viewImg noOpMsg touchStartMsg touchContinueMsg touchPrevNextMsg fullImagePageModel fullImagePageModel.album.imageFirst
                ]
 
 
@@ -81,8 +81,8 @@ navElement msg label side =
         [ Html.text label ]
 
 
-viewImg : msg -> (Touch -> msg) -> (Touch -> msg) -> FullImagePageModel -> Image -> Html msg
-viewImg clickMsg touchStartMsg touchContinueMsg fullImagePageModel img =
+viewImg : msg -> (Touch -> msg) -> (Touch -> msg) -> (Touch -> msg) -> FullImagePageModel -> Image -> Html msg
+viewImg clickMsg touchStartMsg touchContinueMsg touchPrevNext fullImagePageModel img =
     let
         ( w, h ) =
             fitImage
@@ -103,6 +103,7 @@ viewImg clickMsg touchStartMsg touchContinueMsg fullImagePageModel img =
             ]
             [ onTouchStart touchStartMsg
             , onTouchMove touchContinueMsg
+            , onTouchEnd touchPrevNext
             ]
             clickMsg
 

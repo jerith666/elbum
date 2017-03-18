@@ -140,12 +140,31 @@ view albumPage =
                 BackToThumbs
                 TouchDragStart
                 TouchDragContinue
+                (touchPrevNext dragInfo)
                 NoUpdate
                 { prevImgs = prevImgs
                 , album = album
                 , winSize = winSize
                 , offset = offsetFor dragInfo
                 }
+
+
+touchPrevNext : Maybe ( Touch, Touch ) -> Touch -> AlbumPageMsg
+touchPrevNext dragInfo touch =
+    case dragInfo of
+        Nothing ->
+            NoUpdate
+
+        Just ( start, cur ) ->
+            case getDirectionX start.clientX touch.clientX of
+                Left ->
+                    Next
+
+                Right ->
+                    Prev
+
+                _ ->
+                    NoUpdate
 
 
 offsetFor : Maybe ( Touch, Touch ) -> ( Float, Float )
