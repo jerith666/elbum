@@ -65,8 +65,8 @@ update msg model =
                             , Cmd.none
                             )
 
-                        FullImage album index oldSize ->
-                            ( Loaded (FullImage album index <| Debug.log "window size updated for full" size)
+                        FullImage album index oldSize dragInfo ->
+                            ( Loaded (FullImage album index (Debug.log "window size updated for full" size) dragInfo)
                             , Cmd.none
                             )
 
