@@ -4,12 +4,28 @@ module AlbumTypes
 ( ImgSrc(..)
 , Image(..)
 , Album(..)
+, NodeOrAlbum(..)
+, AlbumTreeNode(..)
 ) where
 
 import Data.Aeson
 import GHC.Generics
 
-{-| A photo album has a title and a collection of at least one image.
+{-| Each level of the album tree has a title, and a list children.
+    each child is either a subtree or an "leaf" album. -}
+data AlbumTreeNode
+   = AlbumTreeNode
+   { nodeTitle :: String
+   , childFirst :: NodeOrAlbum
+   , childRest :: [NodeOrAlbum]
+   }
+
+{-| A union type of either a tree node or a "leaf" album. -}
+data NodeOrAlbum
+   = Subtree AlbumTreeNode
+   | Leaf Album
+
+{-| A single photo album has a title and a collection of at least one image.
     Future: add sub-albums. -}
 data Album
    = Album
