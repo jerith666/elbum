@@ -18,12 +18,13 @@ data AlbumTreeNode
    { nodeTitle :: String
    , childFirst :: NodeOrAlbum
    , childRest :: [NodeOrAlbum]
-   }
+   } deriving (Generic, Show, Eq)
 
 {-| A union type of either a tree node or a "leaf" album. -}
 data NodeOrAlbum
    = Subtree AlbumTreeNode
    | Leaf Album
+   deriving (Generic, Show, Eq)
 
 {-| A single photo album has a title and a collection of at least one image.
     Future: add sub-albums. -}

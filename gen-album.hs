@@ -21,10 +21,10 @@ import qualified Data.ByteString.Lazy.Char8 as C
 import AlbumTypes
 
 instance ToJSON ImgSrc
-
 instance ToJSON Image
-
 instance ToJSON Album
+instance ToJSON NodeOrAlbum
+instance ToJSON AlbumTreeNode
 
 main = do
   args <- getArgs
