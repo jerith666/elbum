@@ -6,6 +6,8 @@ import System.FilePath
 
 import Data.List
 
+import Control.Monad
+
 import Codec.Picture hiding (Image)
 import Codec.Picture.Types hiding (Image)
 
@@ -31,21 +33,41 @@ main = do
   case args of
        [] -> usage
        _:[] -> usage
-       src:dest:[] -> genAlbum src dest
+       src:dest:[] -> writeNodeOrAlbum src dest
        _:_:_:_ -> usage
 
 usage = putStrLn "usage: gen-album <src> <dest>"
 
-genAlbum src dest = do
+writeNodeOrAlbum :: String -> String -> IO ()
+writeNodeOrAlbum src dest = do
+  nodeOrAlbum <- genNodeOrAlbum src dest
+  C.writeFile (dest </> "album.json") $ encode nodeOrAlbum
+
+genNodeOrAlbum :: String -> String -> IO NodeOrAlbum
+genNodeOrAlbum src dest = do
   files <- getDirectoryContents src
   let afiles = map (\f -> src </> f) (sort files)
   imgs <- imgsOnly afiles
+  subdirs <- dirsOnly afiles
+  a <- genAlbum src dest imgs
+  return $ Leaf a
+
+genNode :: String -> String -> [FilePath] -> IO AlbumTreeNode
+genNode src dest dirs = do
+  cFirst <- genNodeOrAlbum (head dirs) dest
+  cRest <- mapM (\dir -> genNodeOrAlbum dir dest) (tail dirs)
+  return AlbumTreeNode { nodeTitle = src
+                       , childFirst = cFirst
+                       , childRest = cRest
+                       }
+
+genAlbum :: String -> String -> [(FilePath, DynamicImage)] -> IO Album
+genAlbum src dest imgs = do
   pimgs <- sequence $ map (procImage dest) imgs
-  let a = Album { title = last $ splitDirectories src
-                , imageFirst = head pimgs
-                , imageRest = tail pimgs
-                }
-  C.writeFile (dest </> "album.json") $ encode a
+  return Album { title = last $ splitDirectories src
+               , imageFirst = head pimgs
+               , imageRest = tail pimgs
+               }
 
 procImage :: FilePath -> (FilePath, DynamicImage) -> IO Image
 procImage d (f,i) = do
@@ -102,6 +124,8 @@ shrink maxdim w h = let factor = fromIntegral maxdim / fromIntegral (max w h)
                     in (scale w, scale h)
 
 
+dirsOnly :: [FilePath] -> IO [FilePath]
+dirsOnly = filterM doesDirectoryExist
 
 imgsOnly :: [FilePath] -> IO [(FilePath, DynamicImage)]
 imgsOnly [] = return []
