@@ -167,7 +167,7 @@ imgOnly f = do
 
 putStrSameLn :: String -> IO ()
 putStrSameLn s = do
-    putStr "\r                                                              "
+    putStr "\r                                                                                              "
     putStr "\r"
     putStr s
     hFlush stdout
