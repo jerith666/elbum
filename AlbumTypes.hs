@@ -11,8 +11,8 @@ module AlbumTypes
 import Data.Aeson
 import GHC.Generics
 
-{-| Each level of the album tree has a title, and a list children.
-    each child is either a subtree or an "leaf" album. -}
+{-| Each level of the album tree has a title, and a list of children.
+    Each child is either a subtree or an "leaf" album. -}
 data AlbumTreeNode
    = AlbumTreeNode
    { nodeTitle :: String
