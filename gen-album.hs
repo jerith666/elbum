@@ -111,7 +111,7 @@ procSrcSet d f i w h = do
 
 sizes :: [Int]
 -- sizes = [1600, 800, 400, 200]
-sizes = [400, 200]
+sizes = [400, 200, 100]
 
 shrinkImgSrc :: FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
 shrinkImgSrc d f i w h maxdim = do
