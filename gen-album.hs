@@ -4,6 +4,7 @@ import System.IO
 import System.Directory
 import System.FilePath
 
+import Data.Either
 import Data.List
 
 import Control.Monad
@@ -40,26 +41,47 @@ usage = putStrLn "usage: gen-album <src> <dest>"
 
 writeNodeOrAlbum :: String -> String -> IO ()
 writeNodeOrAlbum src dest = do
-  nodeOrAlbum <- genNodeOrAlbum src dest
-  C.writeFile (dest </> "album.json") $ encode nodeOrAlbum
+  eNodeOrAlbum <- genNodeOrAlbum src dest
+  case eNodeOrAlbum of
+    Left err ->
+      putStrLn err
+    Right nodeOrAlbum ->
+      C.writeFile (dest </> "album.json") $ encode nodeOrAlbum
 
-genNodeOrAlbum :: String -> String -> IO NodeOrAlbum
+genNodeOrAlbum :: String -> String -> IO (Either String NodeOrAlbum)
 genNodeOrAlbum src dest = do
   files <- getDirectoryContents src
   let afiles = map (\f -> src </> f) (sort files)
   imgs <- imgsOnly afiles
   subdirs <- dirsOnly afiles
-  a <- genAlbum src dest imgs
-  return $ Leaf a
+  let icount = length imgs
+      idirs = length subdirs
+  if ((icount > 0) && (idirs > 0)) then do
+    return $ Left $ "directory " ++ src ++ " contains both images and subdirs, this is not supported"
+  else
+    if length imgs > 0 then do
+      a <- genAlbum src dest imgs
+      return $ Right $ Leaf a
+    else do
+      return $ Left "support for subalbums not implemented yet"
 
-genNode :: String -> String -> [FilePath] -> IO AlbumTreeNode
+genNode :: String -> String -> [FilePath] -> IO (Either String AlbumTreeNode)
 genNode src dest dirs = do
-  cFirst <- genNodeOrAlbum (head dirs) dest
-  cRest <- mapM (\dir -> genNodeOrAlbum dir dest) (tail dirs)
-  return AlbumTreeNode { nodeTitle = src
-                       , childFirst = cFirst
-                       , childRest = cRest
-                       }
+  ecFirst <- genNodeOrAlbum (head dirs) dest
+  case ecFirst of
+    Left err ->
+      return $ Left $ err
+    Right cFirst -> do
+      ecRest <- mapM (\dir -> genNodeOrAlbum dir dest) (tail dirs)
+      case lefts ecRest of
+        [] -> do
+          let cRest = rights ecRest
+          return $ Right $ AlbumTreeNode { nodeTitle = src
+                                         , childFirst = cFirst
+                                         , childRest = cRest
+                                         }
+        errs -> do
+          return $ Left $ head errs
 
 genAlbum :: String -> String -> [(FilePath, DynamicImage)] -> IO Album
 genAlbum src dest imgs = do
