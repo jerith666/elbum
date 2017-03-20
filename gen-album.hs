@@ -50,7 +50,7 @@ writeNodeOrAlbum src dest = do
 
 genNodeOrAlbum :: String -> String -> IO (Either String NodeOrAlbum)
 genNodeOrAlbum src dest = do
-  files <- getDirectoryContents src
+  files <- filter (`notElem` [".",".."]) <$> getDirectoryContents src
   let afiles = map (\f -> src </> f) (sort files)
   imgs <- imgsOnly afiles
   subdirs <- dirsOnly afiles
@@ -63,7 +63,7 @@ genNodeOrAlbum src dest = do
       a <- genAlbum src dest imgs
       return $ Right $ Leaf a
     else do
-      return $ Left "support for subalbums not implemented yet"
+      return $ Left $ "support for subalbums not implemented yet: " ++ (head subdirs)
 
 genNode :: String -> String -> [FilePath] -> IO (Either String AlbumTreeNode)
 genNode src dest dirs = do
