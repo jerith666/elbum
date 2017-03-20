@@ -63,7 +63,12 @@ genNodeOrAlbum src dest = do
       a <- genAlbum src dest imgs
       return $ Right $ Leaf a
     else do
-      return $ Left $ "support for subalbums not implemented yet: " ++ (head subdirs)
+      en <- genNode src dest subdirs
+      case en of
+        Left err ->
+          return $ Left $ err
+        Right n ->
+          return $ Right $ Subtree n
 
 genNode :: String -> String -> [FilePath] -> IO (Either String AlbumTreeNode)
 genNode src dest dirs = do
