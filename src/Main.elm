@@ -3,6 +3,7 @@ module Main exposing (..)
 import WinSize exposing (..)
 import Album exposing (..)
 import AlbumPage exposing (..)
+import AlbumTreeNodePage exposing (..)
 import Task exposing (..)
 import Html exposing (..)
 import Http exposing (..)
@@ -13,12 +14,13 @@ type AlbumBootstrap
     = Sizing
     | Loading WinSize
     | LoadError Http.Error
-    | Loaded AlbumPage
+    | LoadedNode AlbumTreeNodePage
+    | LoadedAlbum AlbumPage
 
 
 type AlbumBootstrapMsg
     = Resize Size
-    | YesAlbum Album
+    | YesAlbum AlbumTreeNode
     | NoAlbum Http.Error
     | PageMsg AlbumPage.AlbumPageMsg
 
@@ -47,7 +49,7 @@ update msg model =
             case model of
                 Sizing ->
                     ( Loading <| Debug.log "window size set" size
-                    , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecAlbum))
+                    , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecAlbumTreeNode))
                     )
 
                 Loading oldSize ->
@@ -58,22 +60,27 @@ update msg model =
                 LoadError _ ->
                     ( model, Cmd.none )
 
-                Loaded albumPage ->
+                LoadedAlbum albumPage ->
                     case albumPage of
                         Thumbs album oldSize ->
-                            ( Loaded (Thumbs album <| Debug.log "window size updated for thumbs" size)
+                            ( LoadedAlbum (Thumbs album <| Debug.log "window size updated for thumbs" size)
                             , Cmd.none
                             )
 
                         FullImage album index oldSize dragInfo ->
-                            ( Loaded (FullImage album index (Debug.log "window size updated for full" size) dragInfo)
+                            ( LoadedAlbum (FullImage album index (Debug.log "window size updated for full" size) dragInfo)
                             , Cmd.none
                             )
 
-        YesAlbum album ->
+                LoadedNode (AlbumTreeNodePage albumNode oldSize parentNode) ->
+                    ( LoadedNode (AlbumTreeNodePage albumNode size parentNode)
+                    , Cmd.none
+                    )
+
+        YesAlbum albumNode ->
             case model of
                 Loading winSize ->
-                    ( Loaded (Thumbs album winSize)
+                    ( LoadedNode (AlbumTreeNodePage albumNode winSize Nothing)
                     , Cmd.none
                     )
 
@@ -87,8 +94,8 @@ update msg model =
 
         PageMsg pageMsg ->
             case model of
-                Loaded oldPage ->
-                    ( Loaded (AlbumPage.update pageMsg oldPage)
+                LoadedAlbum oldPage ->
+                    ( LoadedAlbum (AlbumPage.update pageMsg oldPage)
                     , Cmd.none
                     )
 
@@ -96,7 +103,7 @@ update msg model =
                     ( model, Cmd.none )
 
 
-decodeAlbumRequest : Result Http.Error Album -> AlbumBootstrapMsg
+decodeAlbumRequest : Result Http.Error AlbumTreeNode -> AlbumBootstrapMsg
 decodeAlbumRequest r =
     case r of
         Ok a ->
@@ -109,7 +116,7 @@ decodeAlbumRequest r =
 subscriptions : AlbumBootstrap -> Sub AlbumBootstrapMsg
 subscriptions model =
     case model of
-        Loaded albumPage ->
+        LoadedAlbum albumPage ->
             Sub.batch
                 [ Sub.map PageMsg <| AlbumPage.subscriptions albumPage
                 , resizes Resize
@@ -135,5 +142,8 @@ view albumBootstrap =
         LoadError e ->
             text ("Error Loading Album: " ++ (toString e))
 
-        Loaded albumPage ->
+        LoadedAlbum albumPage ->
             Html.map PageMsg (AlbumPage.view albumPage)
+
+        LoadedNode albumNode ->
+            AlbumTreeNodePage.view albumNode
