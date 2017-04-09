@@ -18,7 +18,7 @@ jsonDecAlbumTreeNode : Json.Decode.Decoder ( AlbumTreeNode )
 jsonDecAlbumTreeNode =
    ("nodeTitle" := Json.Decode.string) >>= \pnodeTitle ->
    ("childFirst" := jsonDecNodeOrAlbum) >>= \pchildFirst ->
-   ("childRest" := Json.Decode.list (jsonDecNodeOrAlbum)) >>= \pchildRest ->
+   ("childRest" := Json.Decode.list (Json.Decode.lazy (\_ -> jsonDecNodeOrAlbum))) >>= \pchildRest ->
    Json.Decode.succeed {nodeTitle = pnodeTitle, childFirst = pchildFirst, childRest = pchildRest}
 
 jsonEncAlbumTreeNode : AlbumTreeNode -> Value
@@ -38,7 +38,7 @@ type NodeOrAlbum  =
 jsonDecNodeOrAlbum : Json.Decode.Decoder ( NodeOrAlbum )
 jsonDecNodeOrAlbum =
     let jsonDecDictNodeOrAlbum = Dict.fromList
-            [ ("Subtree", Json.Decode.map Subtree (jsonDecAlbumTreeNode))
+            [ ("Subtree", Json.Decode.map Subtree (Json.Decode.lazy (\_ -> jsonDecAlbumTreeNode)))
             , ("Leaf", Json.Decode.map Leaf (jsonDecAlbum))
             ]
         jsonDecObjectSetNodeOrAlbum = Set.fromList []
