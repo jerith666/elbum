@@ -2,6 +2,7 @@
 
 import Elm.Derive
 import Elm.Module
+import Elm.Versions
 
 import Data.Proxy
 
@@ -15,7 +16,7 @@ deriveBoth defaultOptions ''AlbumTreeNode
 
 main :: IO ()
 main =
-    putStrLn $ makeElmModule "Album"
+    putStrLn $ makeElmModuleWithVersion Elm0p18 "Album"
     [ DefineElm (Proxy :: Proxy AlbumTreeNode)
     , DefineElm (Proxy :: Proxy NodeOrAlbum)
     , DefineElm (Proxy :: Proxy Album)
