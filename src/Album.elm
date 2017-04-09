@@ -41,14 +41,15 @@ jsonDecNodeOrAlbum =
             [ ("Subtree", Json.Decode.map Subtree (jsonDecAlbumTreeNode))
             , ("Leaf", Json.Decode.map Leaf (jsonDecAlbum))
             ]
-    in  decodeSumTwoElemArray  "NodeOrAlbum" jsonDecDictNodeOrAlbum
+        jsonDecObjectSetNodeOrAlbum = Set.fromList []
+    in  decodeSumTaggedObject "NodeOrAlbum" "ctorTag" "ctorContents" jsonDecDictNodeOrAlbum jsonDecObjectSetNodeOrAlbum
 
 jsonEncNodeOrAlbum : NodeOrAlbum -> Value
 jsonEncNodeOrAlbum  val =
     let keyval v = case v of
                     Subtree v1 -> ("Subtree", encodeValue (jsonEncAlbumTreeNode v1))
                     Leaf v1 -> ("Leaf", encodeValue (jsonEncAlbum v1))
-    in encodeSumTwoElementArray keyval val
+    in encodeSumTaggedObject "ctorTag" "ctorContents" keyval val
 
 
 

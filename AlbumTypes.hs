@@ -57,8 +57,8 @@ data ImgSrc
    , y :: Int
    } deriving (Generic, Show, Eq)
 
-deriveBoth defaultOptions{sumEncoding=TwoElemArray} ''AlbumTreeNode
-deriveBoth defaultOptions{sumEncoding=TwoElemArray} ''NodeOrAlbum
-deriveBoth defaultOptions{sumEncoding=TwoElemArray} ''Album
-deriveBoth defaultOptions{sumEncoding=TwoElemArray} ''Image
-deriveBoth defaultOptions{sumEncoding=TwoElemArray} ''ImgSrc
+deriveBoth defaultOptions{sumEncoding=TaggedObject "ctorTag" "ctorContents"} ''AlbumTreeNode
+deriveBoth defaultOptions{sumEncoding=TaggedObject "ctorTag" "ctorContents"} ''NodeOrAlbum
+deriveBoth defaultOptions{sumEncoding=TaggedObject "ctorTag" "ctorContents"} ''Album
+deriveBoth defaultOptions{sumEncoding=TaggedObject "ctorTag" "ctorContents"} ''Image
+deriveBoth defaultOptions{sumEncoding=TaggedObject "ctorTag" "ctorContents"} ''ImgSrc
