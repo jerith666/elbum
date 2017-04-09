@@ -1,7 +1,7 @@
 module Album exposing(..)
 
 import Json.Decode
-import Json.Decode exposing (field)
+import Json.Decode exposing ((:=))
 import Json.Encode exposing (Value)
 -- The following module comes from bartavelle/json-helpers
 import Json.Helpers exposing (..)
@@ -42,14 +42,14 @@ jsonDecNodeOrAlbum =
             [ ("Subtree", Json.Decode.map Subtree (jsonDecAlbumTreeNode))
             , ("Leaf", Json.Decode.map Leaf (jsonDecAlbum))
             ]
-    in  decodeSumObjectWithSingleField  "NodeOrAlbum" jsonDecDictNodeOrAlbum
+    in  decodeSumTwoElemArray  "NodeOrAlbum" jsonDecDictNodeOrAlbum
 
 jsonEncNodeOrAlbum : NodeOrAlbum -> Value
 jsonEncNodeOrAlbum  val =
     let keyval v = case v of
                     Subtree v1 -> ("Subtree", encodeValue (jsonEncAlbumTreeNode v1))
                     Leaf v1 -> ("Leaf", encodeValue (jsonEncAlbum v1))
-    in encodeSumObjectWithSingleField keyval val
+    in encodeSumTwoElementArray keyval val
 
 
 

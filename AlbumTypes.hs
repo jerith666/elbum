@@ -57,8 +57,8 @@ data ImgSrc
    , y :: Int
    } deriving (Generic, Show, Eq)
 
-deriveBoth defaultOptions ''AlbumTreeNode
-deriveBoth defaultOptions ''NodeOrAlbum
-deriveBoth defaultOptions ''Album
-deriveBoth defaultOptions ''Image
-deriveBoth defaultOptions ''ImgSrc
+deriveBoth defaultOptions{sumEncoding=TwoElemArray} ''AlbumTreeNode
+deriveBoth defaultOptions{sumEncoding=TwoElemArray} ''NodeOrAlbum
+deriveBoth defaultOptions{sumEncoding=TwoElemArray} ''Album
+deriveBoth defaultOptions{sumEncoding=TwoElemArray} ''Image
+deriveBoth defaultOptions{sumEncoding=TwoElemArray} ''ImgSrc
