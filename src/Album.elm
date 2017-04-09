@@ -1,7 +1,7 @@
 module Album exposing(..)
 
 import Json.Decode
-import Json.Decode exposing (field)
+import Json.Decode exposing ((:=))
 import Json.Encode exposing (Value)
 -- The following module comes from bartavelle/json-helpers
 import Json.Helpers exposing (..)
@@ -17,10 +17,10 @@ type alias AlbumTreeNode  =
 
 jsonDecAlbumTreeNode : Json.Decode.Decoder ( AlbumTreeNode )
 jsonDecAlbumTreeNode =
-   (field "nodeTitle" Json.Decode.string) |> Json.Decode.andThen (\pnodeTitle ->
-   (field "childFirst" jsonDecNodeOrAlbum) |> Json.Decode.andThen (\pchildFirst ->
-   (field "childRest" (Json.Decode.list (jsonDecNodeOrAlbum))) |> Json.Decode.andThen (\pchildRest ->
-   Json.Decode.succeed {nodeTitle = pnodeTitle, childFirst = pchildFirst, childRest = pchildRest})))
+   ("nodeTitle" := Json.Decode.string) >>= \pnodeTitle ->
+   ("childFirst" := jsonDecNodeOrAlbum) >>= \pchildFirst ->
+   ("childRest" := Json.Decode.list (jsonDecNodeOrAlbum)) >>= \pchildRest ->
+   Json.Decode.succeed {nodeTitle = pnodeTitle, childFirst = pchildFirst, childRest = pchildRest}
 
 jsonEncAlbumTreeNode : AlbumTreeNode -> Value
 jsonEncAlbumTreeNode  val =
@@ -61,10 +61,10 @@ type alias Album  =
 
 jsonDecAlbum : Json.Decode.Decoder ( Album )
 jsonDecAlbum =
-   (field "title" Json.Decode.string) |> Json.Decode.andThen (\ptitle ->
-   (field "imageFirst" jsonDecImage) |> Json.Decode.andThen (\pimageFirst ->
-   (field "imageRest" (Json.Decode.list (jsonDecImage))) |> Json.Decode.andThen (\pimageRest ->
-   Json.Decode.succeed {title = ptitle, imageFirst = pimageFirst, imageRest = pimageRest})))
+   ("title" := Json.Decode.string) >>= \ptitle ->
+   ("imageFirst" := jsonDecImage) >>= \pimageFirst ->
+   ("imageRest" := Json.Decode.list (jsonDecImage)) >>= \pimageRest ->
+   Json.Decode.succeed {title = ptitle, imageFirst = pimageFirst, imageRest = pimageRest}
 
 jsonEncAlbum : Album -> Value
 jsonEncAlbum  val =
@@ -84,10 +84,10 @@ type alias Image  =
 
 jsonDecImage : Json.Decode.Decoder ( Image )
 jsonDecImage =
-   (field "altText" Json.Decode.string) |> Json.Decode.andThen (\paltText ->
-   (field "srcSetFirst" jsonDecImgSrc) |> Json.Decode.andThen (\psrcSetFirst ->
-   (field "srcSetRest" (Json.Decode.list (jsonDecImgSrc))) |> Json.Decode.andThen (\psrcSetRest ->
-   Json.Decode.succeed {altText = paltText, srcSetFirst = psrcSetFirst, srcSetRest = psrcSetRest})))
+   ("altText" := Json.Decode.string) >>= \paltText ->
+   ("srcSetFirst" := jsonDecImgSrc) >>= \psrcSetFirst ->
+   ("srcSetRest" := Json.Decode.list (jsonDecImgSrc)) >>= \psrcSetRest ->
+   Json.Decode.succeed {altText = paltText, srcSetFirst = psrcSetFirst, srcSetRest = psrcSetRest}
 
 jsonEncImage : Image -> Value
 jsonEncImage  val =
@@ -107,10 +107,10 @@ type alias ImgSrc  =
 
 jsonDecImgSrc : Json.Decode.Decoder ( ImgSrc )
 jsonDecImgSrc =
-   (field "url" Json.Decode.string) |> Json.Decode.andThen (\purl ->
-   (field "x" Json.Decode.int) |> Json.Decode.andThen (\px ->
-   (field "y" Json.Decode.int) |> Json.Decode.andThen (\py ->
-   Json.Decode.succeed {url = purl, x = px, y = py})))
+   ("url" := Json.Decode.string) >>= \purl ->
+   ("x" := Json.Decode.int) >>= \px ->
+   ("y" := Json.Decode.int) >>= \py ->
+   Json.Decode.succeed {url = purl, x = px, y = py}
 
 jsonEncImgSrc : ImgSrc -> Value
 jsonEncImgSrc  val =
