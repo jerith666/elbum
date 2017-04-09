@@ -20,7 +20,7 @@ type AlbumBootstrap
 
 type AlbumBootstrapMsg
     = Resize Size
-    | YesAlbum AlbumTreeNode
+    | YesAlbum NodeOrAlbum
     | NoAlbum Http.Error
     | PageMsg AlbumPage.AlbumPageMsg
 
@@ -49,7 +49,7 @@ update msg model =
             case model of
                 Sizing ->
                     ( Loading <| Debug.log "window size set" size
-                    , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecAlbumTreeNode))
+                    , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecNodeOrAlbum))
                     )
 
                 Loading oldSize ->
@@ -77,12 +77,18 @@ update msg model =
                     , Cmd.none
                     )
 
-        YesAlbum albumNode ->
+        YesAlbum nodeOrAlbum ->
             case model of
                 Loading winSize ->
-                    ( LoadedNode (AlbumTreeNodePage albumNode winSize Nothing)
-                    , Cmd.none
-                    )
+                    case nodeOrAlbum of
+                        Subtree albumNode ->
+                            ( LoadedNode (AlbumTreeNodePage albumNode winSize Nothing)
+                            , Cmd.none
+                            )
+                        Leaf album ->
+                            ( LoadedAlbum (Thumbs album winSize)
+                            , Cmd.none
+                            )
 
                 _ ->
                     ( model, Cmd.none )
@@ -103,7 +109,7 @@ update msg model =
                     ( model, Cmd.none )
 
 
-decodeAlbumRequest : Result Http.Error AlbumTreeNode -> AlbumBootstrapMsg
+decodeAlbumRequest : Result Http.Error NodeOrAlbum -> AlbumBootstrapMsg
 decodeAlbumRequest r =
     case r of
         Ok a ->
