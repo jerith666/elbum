@@ -161,7 +161,7 @@ decodeSumObjectWithSingleField name mapping =
                     decodeSumFinal name key value mapping
 
                 _ ->
-                    Err ("Can't decode " ++ name ++ ": object has too many keys")
+                    Err ("Can't decode " ++ name ++ ": object expected to match pattern [ ( key, value ) ], but has too many keys: " ++ (toString lst))
         )
 
 
