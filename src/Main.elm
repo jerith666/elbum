@@ -82,7 +82,7 @@ update msg model =
                 Loading winSize ->
                     case nodeOrAlbum of
                         Subtree albumNode ->
-                            ( LoadedNode (AlbumTreeNodePage albumNode winSize Nothing)
+                            ( LoadedNode (AlbumTreeNodePage albumNode winSize [])
                             , Cmd.none
                             )
                         Leaf album ->

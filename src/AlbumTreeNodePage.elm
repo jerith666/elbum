@@ -6,7 +6,7 @@ import WinSize exposing (..)
 
 
 type AlbumTreeNodePage
-    = AlbumTreeNodePage AlbumTreeNode WinSize (Maybe AlbumTreeNode)
+    = AlbumTreeNodePage AlbumTreeNode WinSize (List AlbumTreeNode)
 
 
 type AlbumTreeNodePageMsg
@@ -14,4 +14,4 @@ type AlbumTreeNodePageMsg
 
 
 view (AlbumTreeNodePage albumTreeNode winSize parent) =
-    Html.text "hello world"
+    Html.text <| "album tree node page for " ++ albumTreeNode.nodeTitle
