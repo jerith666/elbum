@@ -2,7 +2,6 @@ module AlbumTreeNodePage exposing (AlbumTreeNodePage(..), AlbumTreeNodePageMsg, 
 
 import Html exposing (..)
 import Css exposing (..)
-
 import Album exposing (..)
 import AlbumStyles exposing (..)
 import WinSize exposing (..)
@@ -20,17 +19,21 @@ view (AlbumTreeNodePage albumTreeNode winSize parent) =
     rootDivFlex
         column
         []
-        <| [ viewTitle albumTreeNode.nodeTitle ]
-        ++ [ viewChildNode albumTreeNode.childFirst ]
-        ++ List.map viewChildNode albumTreeNode.childRest
+    <|
+        [ viewTitle albumTreeNode.nodeTitle ]
+            ++ [ viewChildNode albumTreeNode.childFirst ]
+            ++ List.map viewChildNode albumTreeNode.childRest
 
 
 viewTitle title =
-    div [styles [color white
-                 , textAlign center
-                 , Css.width (vw 100)
-                 , padding (px 5)
-                 ]]
+    div
+        [ styles
+            [ color white
+            , textAlign center
+            , Css.width (vw 100)
+            , padding (px 5)
+            ]
+        ]
         [ Html.text <| "album tree node page for " ++ title ]
 
 
@@ -40,6 +43,7 @@ viewChildNode nodeOrAlbum =
             div
                 [ styles [ color white ] ]
                 [ Html.text <| "link to sub album " ++ albumTreeNode.nodeTitle ]
+
         Leaf album ->
             div
                 [ styles [ color white ] ]

@@ -85,6 +85,7 @@ update msg model =
                             ( LoadedNode (AlbumTreeNodePage albumNode winSize [])
                             , Cmd.none
                             )
+
                         Leaf album ->
                             ( LoadedAlbum (Thumbs album winSize)
                             , Cmd.none
