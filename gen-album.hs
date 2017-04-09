@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 import System.Environment
 import System.IO
 
@@ -20,17 +18,10 @@ import Vision.Image hiding (Image, map)
 import Vision.Image.Transform
 import Vision.Image.JuicyPixels
 
-import Elm.Derive
 import Data.Aeson (encode)
 import qualified Data.ByteString.Lazy.Char8 as C
 
 import AlbumTypes
-
-$(deriveBoth defaultOptions ''ImgSrc)
-$(deriveBoth defaultOptions ''Image)
-$(deriveBoth defaultOptions ''Album)
-$(deriveBoth defaultOptions ''NodeOrAlbum)
-$(deriveBoth defaultOptions ''AlbumTreeNode)
 
 main = do
   args <- getArgs

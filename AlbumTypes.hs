@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module AlbumTypes
 ( ImgSrc(..)
@@ -8,8 +9,9 @@ module AlbumTypes
 , AlbumTreeNode(..)
 ) where
 
-import Data.Aeson
 import GHC.Generics
+
+import Elm.Derive
 
 {-| Each level of the album tree has a title, and a list of children.
     Each child is either a subtree or a "leaf" album. -}
@@ -54,3 +56,9 @@ data ImgSrc
    , x :: Int
    , y :: Int
    } deriving (Generic, Show, Eq)
+
+deriveBoth defaultOptions ''AlbumTreeNode
+deriveBoth defaultOptions ''NodeOrAlbum
+deriveBoth defaultOptions ''Album
+deriveBoth defaultOptions ''Image
+deriveBoth defaultOptions ''ImgSrc

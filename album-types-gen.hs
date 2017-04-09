@@ -1,18 +1,9 @@
-{-# LANGUAGE TemplateHaskell #-}
-
-import Elm.Derive
 import Elm.Module
 import Elm.Versions
 
 import Data.Proxy
 
 import AlbumTypes
-
-deriveBoth defaultOptions ''ImgSrc
-deriveBoth defaultOptions ''Image
-deriveBoth defaultOptions ''Album
-deriveBoth defaultOptions ''NodeOrAlbum
-deriveBoth defaultOptions ''AlbumTreeNode
 
 main :: IO ()
 main =
