@@ -127,11 +127,11 @@ update msg model =
             model
 
 
-view : AlbumPage -> Html AlbumPageMsg
-view albumPage =
+view : AlbumPage -> Maybe AlbumTreeNode -> Html AlbumPageMsg
+view albumPage parent =
     case albumPage of
         Thumbs album winSize ->
-            ThumbPage.view View { album = album, winSize = winSize }
+            ThumbPage.view View { album = album, parent = parent, winSize = winSize }
 
         FullImage prevImgs album winSize dragInfo ->
             FullImagePage.view

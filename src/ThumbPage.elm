@@ -12,6 +12,7 @@ import Css exposing (..)
 
 type alias ThumbPageModel =
     { album : Album
+    , parent: Maybe AlbumTreeNode
     , winSize : WinSize
     }
 
