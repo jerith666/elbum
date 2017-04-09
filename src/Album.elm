@@ -41,7 +41,7 @@ type NodeOrAlbum  =
 jsonDecNodeOrAlbum : Json.Decode.Decoder ( NodeOrAlbum )
 jsonDecNodeOrAlbum =
     let jsonDecDictNodeOrAlbum = Dict.fromList
-            [ ("Subtree", Json.Decode.map Subtree (jsonDecAlbumTreeNode))
+            [ ("Subtree", Json.Decode.map Subtree (Json.Decode.lazy (\_ -> jsonDecAlbumTreeNode)))
             , ("Leaf", Json.Decode.map Leaf (jsonDecAlbum))
             ]
     in  decodeSumObjectWithSingleField  "NodeOrAlbum" jsonDecDictNodeOrAlbum
