@@ -15,7 +15,7 @@ type AlbumBootstrap
     | Loading WinSize
     | LoadError Http.Error
     | LoadedNode AlbumTreeNodePage
-    | LoadedAlbum AlbumPage (Maybe AlbumTreeNode)
+    | LoadedAlbum AlbumPage (List AlbumTreeNode)
 
 
 type AlbumBootstrapMsg
@@ -60,20 +60,20 @@ update msg model =
                 LoadError _ ->
                     ( model, Cmd.none )
 
-                LoadedAlbum albumPage parent ->
+                LoadedAlbum albumPage parents ->
                     case albumPage of
                         Thumbs album oldSize ->
-                            ( LoadedAlbum (Thumbs album <| Debug.log "window size updated for thumbs" size) parent
+                            ( LoadedAlbum (Thumbs album <| Debug.log "window size updated for thumbs" size) parents
                             , Cmd.none
                             )
 
                         FullImage album index oldSize dragInfo ->
-                            ( LoadedAlbum (FullImage album index (Debug.log "window size updated for full" size) dragInfo) parent
+                            ( LoadedAlbum (FullImage album index (Debug.log "window size updated for full" size) dragInfo) parents
                             , Cmd.none
                             )
 
-                LoadedNode (AlbumTreeNodePage albumNode oldSize parentNode) ->
-                    ( LoadedNode (AlbumTreeNodePage albumNode size parentNode)
+                LoadedNode (AlbumTreeNodePage albumNode oldSize parentNodes) ->
+                    ( LoadedNode (AlbumTreeNodePage albumNode size parentNodes)
                     , Cmd.none
                     )
 
@@ -87,7 +87,7 @@ update msg model =
                             )
 
                         Leaf album ->
-                            ( LoadedAlbum (Thumbs album winSize) Nothing
+                            ( LoadedAlbum (Thumbs album winSize) []
                             , Cmd.none
                             )
 
@@ -101,8 +101,8 @@ update msg model =
 
         PageMsg pageMsg ->
             case model of
-                LoadedAlbum oldPage parent ->
-                    ( LoadedAlbum (AlbumPage.update pageMsg oldPage) parent
+                LoadedAlbum oldPage parents ->
+                    ( LoadedAlbum (AlbumPage.update pageMsg oldPage) parents
                     , Cmd.none
                     )
 
@@ -123,7 +123,7 @@ decodeAlbumRequest r =
 subscriptions : AlbumBootstrap -> Sub AlbumBootstrapMsg
 subscriptions model =
     case model of
-        LoadedAlbum albumPage parent ->
+        LoadedAlbum albumPage parents ->
             Sub.batch
                 [ Sub.map PageMsg <| AlbumPage.subscriptions albumPage
                 , resizes Resize
@@ -149,8 +149,8 @@ view albumBootstrap =
         LoadError e ->
             text ("Error Loading Album: " ++ (toString e))
 
-        LoadedAlbum albumPage parent ->
-            Html.map PageMsg (AlbumPage.view albumPage parent)
+        LoadedAlbum albumPage parents ->
+            Html.map PageMsg (AlbumPage.view albumPage parents)
 
         LoadedNode albumNode ->
             AlbumTreeNodePage.view albumNode
