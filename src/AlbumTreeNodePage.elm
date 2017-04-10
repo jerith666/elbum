@@ -1,6 +1,7 @@
-module AlbumTreeNodePage exposing (AlbumTreeNodePage(..), AlbumTreeNodePageMsg, view)
+module AlbumTreeNodePage exposing (AlbumTreeNodePage(..), view)
 
 import Html exposing (..)
+import Html.Events exposing (..)
 import Css exposing (..)
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -11,18 +12,14 @@ type AlbumTreeNodePage
     = AlbumTreeNodePage AlbumTreeNode WinSize (List AlbumTreeNode)
 
 
-type AlbumTreeNodePageMsg
-    = String
-
-
-view (AlbumTreeNodePage albumTreeNode winSize parent) =
+view (AlbumTreeNodePage albumTreeNode winSize parent) viewSubtree viewAlbum =
     rootDivFlex
         column
         []
     <|
         [ viewTitle albumTreeNode.nodeTitle ]
-            ++ [ viewChildNode albumTreeNode.childFirst ]
-            ++ List.map viewChildNode albumTreeNode.childRest
+            ++ [ viewChildNode viewSubtree viewAlbum albumTreeNode.childFirst ]
+            ++ List.map (viewChildNode viewSubtree viewAlbum) albumTreeNode.childRest
 
 
 viewTitle title =
@@ -37,14 +34,18 @@ viewTitle title =
         [ Html.text <| "album tree node page for " ++ title ]
 
 
-viewChildNode nodeOrAlbum =
+viewChildNode viewSubtree viewAlbum nodeOrAlbum =
     case nodeOrAlbum of
         Subtree albumTreeNode ->
             div
-                [ styles [ color white ] ]
+                [ styles [ color white ]
+                , onClick <| viewSubtree albumTreeNode
+                ]
                 [ Html.text <| "link to sub album " ++ albumTreeNode.nodeTitle ]
 
         Leaf album ->
             div
-                [ styles [ color white ] ]
+                [ styles [ color white ]
+                , onClick <| viewAlbum album
+                ]
                 [ Html.text <| "link to leaf album " ++ album.title ]

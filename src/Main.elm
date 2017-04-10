@@ -23,6 +23,8 @@ type AlbumBootstrapMsg
     | YesAlbum NodeOrAlbum
     | NoAlbum Http.Error
     | PageMsg AlbumPage.AlbumPageMsg
+    | ViewNode AlbumTreeNodePage
+    | ViewAlbum AlbumPage (List AlbumTreeNode)
 
 
 main : Program Never AlbumBootstrap AlbumBootstrapMsg
@@ -109,6 +111,16 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        ViewNode albumTreeNodePage ->
+            ( LoadedNode albumTreeNodePage
+            , Cmd.none
+            )
+
+        ViewAlbum albumPage parents ->
+            ( LoadedAlbum albumPage parents
+            , Cmd.none
+            )
+
 
 decodeAlbumRequest : Result Http.Error NodeOrAlbum -> AlbumBootstrapMsg
 decodeAlbumRequest r =
@@ -152,5 +164,8 @@ view albumBootstrap =
         LoadedAlbum albumPage parents ->
             Html.map PageMsg (AlbumPage.view albumPage parents)
 
-        LoadedNode albumNode ->
-            AlbumTreeNodePage.view albumNode
+        LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) ->
+            AlbumTreeNodePage.view
+                (AlbumTreeNodePage albumTreeNode winSize parents)
+                (\albumTreeNode -> ViewNode <| AlbumTreeNodePage albumTreeNode winSize <| albumTreeNode :: parents)
+                (\album -> ViewAlbum (Thumbs album winSize) <| albumTreeNode :: parents)
