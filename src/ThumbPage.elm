@@ -30,8 +30,8 @@ view imgChosenMsgr thumbPageModel =
     rootDivFlex column
         [ overflowX Css.hidden ]
     <|
-        [ albumTitle thumbPageModel.album.title [ position fixed ]
-        , albumTitle thumbPageModel.album.title [ Css.property "visibility" "hidden" ]
+        [ albumTitle thumbPageModel.album.title thumbPageModel.parents [ position fixed ]
+        , albumTitle thumbPageModel.album.title thumbPageModel.parents [ Css.property "visibility" "hidden" ]
         , div
             [ styles
                 [ displayFlex
@@ -42,8 +42,8 @@ view imgChosenMsgr thumbPageModel =
         ]
 
 
-albumTitle : String -> List Mixin -> Html msg
-albumTitle title extraStyles =
+albumTitle : String -> List AlbumTreeNode -> List Mixin -> Html msg
+albumTitle title parents extraStyles =
     div
         [ styles <|
             [ color white
@@ -54,7 +54,10 @@ albumTitle title extraStyles =
             ]
                 ++ extraStyles
         ]
-        [ Html.text title ]
+        <| List.map albumParent parents ++ [span [] [Html.text title]]
+
+albumParent albumTreeNode =
+    span [] [Html.text <| albumTreeNode.nodeTitle ++ " < "]
 
 
 viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
