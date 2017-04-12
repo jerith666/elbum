@@ -37,6 +37,16 @@ viewTitle title =
         [ Html.text <| "album tree node page for " ++ title ]
 
 
+thumbFor : NodeOrAlbum -> Image
+thumbFor nodeOrAlbum =
+    case nodeOrAlbum of
+        Subtree albumTreeNode ->
+            thumbFor albumTreeNode.childFirst
+
+        Leaf album ->
+            album.imageFirst
+
+
 viewChildNode : (AlbumTreeNode -> msg) -> (Album -> msg) -> NodeOrAlbum -> Html msg
 viewChildNode viewSubtree viewAlbum nodeOrAlbum =
     case nodeOrAlbum of
@@ -45,7 +55,9 @@ viewChildNode viewSubtree viewAlbum nodeOrAlbum =
                 [ styles [ color white ]
                 , onClick <| viewSubtree albumTreeNode
                 ]
-                [ Html.text <| "link to sub album " ++ albumTreeNode.nodeTitle ]
+                [ viewThumb 200 (viewSubtree albumTreeNode) (thumbFor <| Subtree albumTreeNode)
+                , div [] [ Html.text <| "link to sub album " ++ albumTreeNode.nodeTitle ]
+                ]
 
         Leaf album ->
             div
