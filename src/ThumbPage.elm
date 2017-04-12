@@ -6,7 +6,6 @@ import ImageViews exposing (..)
 import AlbumStyles exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
-import Html.Attributes exposing (..)
 import Css exposing (..)
 
 
@@ -17,10 +16,12 @@ type alias ThumbPageModel =
     }
 
 
+maxThumbWidth : Int
 maxThumbWidth =
     300
 
 
+scrollPad : Int
 scrollPad =
     20
 
@@ -59,6 +60,7 @@ albumTitle title parents showNode extraStyles =
             ++ [ span [] [ Html.text title ] ]
 
 
+albumParent : (AlbumTreeNode -> msg) -> AlbumTreeNode -> Html msg
 albumParent showNode albumTreeNode =
     span
         [ onClick <| showNode albumTreeNode ]
@@ -175,6 +177,7 @@ shorter ( i1, h1 ) ( i2, h2 ) =
         ( i2, h2 )
 
 
+imgHeight : Image -> Int
 imgHeight img =
     let
         is1 =
