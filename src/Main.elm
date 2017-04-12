@@ -149,6 +149,7 @@ subscriptions model =
 -- Sub.none --TODO FullImagePage.prevNextSubscriptions?
 
 
+pageSize : AlbumPage -> WinSize
 pageSize albumPage =
     case albumPage of
         Thumbs _ winSize ->
@@ -158,6 +159,7 @@ pageSize albumPage =
             winSize
 
 
+parentsAbove : List a -> a -> List a
 parentsAbove parents node =
     case parents of
         [] ->
@@ -197,6 +199,21 @@ view albumBootstrap =
 
         LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) ->
             AlbumTreeNodePage.view
-                (AlbumTreeNodePage albumTreeNode winSize parents)
-                (\albumTreeNode -> ViewNode <| AlbumTreeNodePage albumTreeNode winSize <| albumTreeNode :: parents)
-                (\album -> ViewAlbum (Thumbs album winSize) <| albumTreeNode :: parents)
+                (AlbumTreeNodePage
+                    albumTreeNode
+                    winSize
+                    parents
+                )
+                (\albumTreeNode ->
+                    ViewNode <|
+                        AlbumTreeNodePage albumTreeNode winSize <|
+                            albumTreeNode
+                                :: parents
+                )
+                (\album ->
+                    ViewAlbum
+                        (Thumbs album winSize)
+                    <|
+                        albumTreeNode
+                            :: parents
+                )
