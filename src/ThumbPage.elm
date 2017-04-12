@@ -55,7 +55,7 @@ albumTitle title parents showNode extraStyles =
                 ++ extraStyles
         ]
     <|
-        List.map (albumParent showNode) parents
+        List.map (albumParent showNode) (List.reverse parents)
             ++ [ span [] [ Html.text title ] ]
 
 

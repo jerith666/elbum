@@ -204,9 +204,9 @@ view albumBootstrap =
                     winSize
                     parents
                 )
-                (\albumTreeNode ->
+                (\albumTreeNodeChild ->
                     ViewNode <|
-                        AlbumTreeNodePage albumTreeNode winSize <|
+                        AlbumTreeNodePage albumTreeNodeChild winSize <|
                             albumTreeNode
                                 :: parents
                 )
