@@ -158,6 +158,18 @@ pageSize albumPage =
             winSize
 
 
+parentsAbove parents node =
+    case parents of
+        [] ->
+            []
+
+        p :: ps ->
+            if node == p then
+                ps
+            else
+                parentsAbove ps node
+
+
 view : AlbumBootstrap -> Html AlbumBootstrapMsg
 view albumBootstrap =
     case albumBootstrap of
@@ -171,7 +183,17 @@ view albumBootstrap =
             text ("Error Loading Album: " ++ (toString e))
 
         LoadedAlbum albumPage parents ->
-            AlbumPage.view albumPage (\node -> ViewNode <| AlbumTreeNodePage node (pageSize albumPage) parents) PageMsg parents
+            AlbumPage.view
+                albumPage
+                (\node ->
+                    ViewNode <|
+                        AlbumTreeNodePage
+                            node
+                            (pageSize albumPage)
+                            (parentsAbove parents node)
+                )
+                PageMsg
+                parents
 
         LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) ->
             AlbumTreeNodePage.view
