@@ -1,4 +1,4 @@
-module ThumbPage exposing (ThumbPageModel, view)
+module ThumbPage exposing (ThumbPageModel, view, viewThumb)
 
 import Album exposing (..)
 import WinSize exposing (..)
