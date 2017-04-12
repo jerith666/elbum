@@ -12,7 +12,7 @@ import Css exposing (..)
 
 type alias ThumbPageModel =
     { album : Album
-    , parents: List AlbumTreeNode
+    , parents : List AlbumTreeNode
     , winSize : WinSize
     }
 
@@ -25,13 +25,13 @@ scrollPad =
     20
 
 
-view : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> Html msg
-view imgChosenMsgr thumbPageModel =
+view : (List Image -> Image -> List Image -> msg) -> (AlbumTreeNode -> msg) -> ThumbPageModel -> Html msg
+view imgChosenMsgr showNode thumbPageModel =
     rootDivFlex column
         [ overflowX Css.hidden ]
     <|
-        [ albumTitle thumbPageModel.album.title thumbPageModel.parents [ position fixed ]
-        , albumTitle thumbPageModel.album.title thumbPageModel.parents [ Css.property "visibility" "hidden" ]
+        [ albumTitle thumbPageModel.album.title thumbPageModel.parents showNode [ position fixed ]
+        , albumTitle thumbPageModel.album.title thumbPageModel.parents showNode [ Css.property "visibility" "hidden" ]
         , div
             [ styles
                 [ displayFlex
@@ -42,8 +42,8 @@ view imgChosenMsgr thumbPageModel =
         ]
 
 
-albumTitle : String -> List AlbumTreeNode -> List Mixin -> Html msg
-albumTitle title parents extraStyles =
+albumTitle : String -> List AlbumTreeNode -> (AlbumTreeNode -> msg) -> List Mixin -> Html msg
+albumTitle title parents showNode extraStyles =
     div
         [ styles <|
             [ color white
@@ -54,10 +54,15 @@ albumTitle title parents extraStyles =
             ]
                 ++ extraStyles
         ]
-        <| List.map albumParent parents ++ [span [] [Html.text title]]
+    <|
+        List.map (albumParent showNode) parents
+            ++ [ span [] [ Html.text title ] ]
 
-albumParent albumTreeNode =
-    span [] [Html.text <| albumTreeNode.nodeTitle ++ " < "]
+
+albumParent showNode albumTreeNode =
+    span
+        [ onClick <| showNode albumTreeNode ]
+        [ Html.text <| albumTreeNode.nodeTitle ++ " < " ]
 
 
 viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)

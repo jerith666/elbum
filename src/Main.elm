@@ -149,6 +149,15 @@ subscriptions model =
 -- Sub.none --TODO FullImagePage.prevNextSubscriptions?
 
 
+pageSize albumPage =
+    case albumPage of
+        Thumbs _ winSize ->
+            winSize
+
+        FullImage _ _ winSize _ ->
+            winSize
+
+
 view : AlbumBootstrap -> Html AlbumBootstrapMsg
 view albumBootstrap =
     case albumBootstrap of
@@ -162,7 +171,7 @@ view albumBootstrap =
             text ("Error Loading Album: " ++ (toString e))
 
         LoadedAlbum albumPage parents ->
-            Html.map PageMsg (AlbumPage.view albumPage parents)
+            AlbumPage.view albumPage (\node -> ViewNode <| AlbumTreeNodePage node (pageSize albumPage) parents) PageMsg parents
 
         LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) ->
             AlbumTreeNodePage.view

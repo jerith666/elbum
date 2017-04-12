@@ -127,26 +127,30 @@ update msg model =
             model
 
 
-view : AlbumPage -> List AlbumTreeNode -> Html AlbumPageMsg
-view albumPage parents =
+view : AlbumPage -> (AlbumTreeNode -> msg) -> (AlbumPageMsg -> msg) -> List AlbumTreeNode -> Html msg
+view albumPage showNode wrapMsg parents =
     case albumPage of
         Thumbs album winSize ->
-            ThumbPage.view View { album = album, parents = parents, winSize = winSize }
+            ThumbPage.view
+                (\x -> (\y -> (\z -> wrapMsg (View x y z))))
+                showNode
+                { album = album, parents = parents, winSize = winSize }
 
         FullImage prevImgs album winSize dragInfo ->
-            FullImagePage.view
-                Prev
-                Next
-                BackToThumbs
-                TouchDragStart
-                TouchDragContinue
-                (touchPrevNext dragInfo)
-                NoUpdate
-                { prevImgs = prevImgs
-                , album = album
-                , winSize = winSize
-                , offset = offsetFor dragInfo
-                }
+            Html.map wrapMsg <|
+                FullImagePage.view
+                    Prev
+                    Next
+                    BackToThumbs
+                    TouchDragStart
+                    TouchDragContinue
+                    (touchPrevNext dragInfo)
+                    NoUpdate
+                    { prevImgs = prevImgs
+                    , album = album
+                    , winSize = winSize
+                    , offset = offsetFor dragInfo
+                    }
 
 
 touchPrevNext : Maybe ( Touch, Touch ) -> Touch -> AlbumPageMsg
