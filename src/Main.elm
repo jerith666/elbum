@@ -168,8 +168,10 @@ parentsAbove parents node =
         p :: ps ->
             if node == p then
                 ps
-            else
+            else if List.member node parents then
                 parentsAbove ps node
+            else
+                parents
 
 
 view : AlbumBootstrap -> Html AlbumBootstrapMsg
@@ -207,8 +209,11 @@ view albumBootstrap =
                 (\albumTreeNodeChild ->
                     ViewNode <|
                         AlbumTreeNodePage albumTreeNodeChild winSize <|
-                            albumTreeNode
-                                :: parents
+                            parentsAbove
+                                (albumTreeNode
+                                    :: parents
+                                )
+                                albumTreeNodeChild
                 )
                 (\album ->
                     ViewAlbum
