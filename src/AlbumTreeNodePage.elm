@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Events exposing (..)
 import Css exposing (..)
 import Album exposing (..)
-import ThumbPage exposing (viewThumb)
+import ThumbPage exposing (viewThumb, albumTitle)
 import AlbumStyles exposing (..)
 import WinSize exposing (..)
 
@@ -14,27 +14,14 @@ type AlbumTreeNodePage
 
 
 view : AlbumTreeNodePage -> (AlbumTreeNode -> msg) -> (Album -> msg) -> Html msg
-view (AlbumTreeNodePage albumTreeNode winSize parent) viewSubtree viewAlbum =
+view (AlbumTreeNodePage albumTreeNode winSize parents) viewSubtree viewAlbum =
     rootDivFlex
         column
         []
     <|
-        [ viewTitle albumTreeNode.nodeTitle ]
+        [ albumTitle albumTreeNode.nodeTitle parents viewSubtree [] ]
             ++ [ viewChildNode viewSubtree viewAlbum albumTreeNode.childFirst ]
             ++ List.map (viewChildNode viewSubtree viewAlbum) albumTreeNode.childRest
-
-
-viewTitle : String -> Html msg
-viewTitle title =
-    div
-        [ styles
-            [ color white
-            , textAlign center
-            , Css.width (vw 100)
-            , padding (px 5)
-            ]
-        ]
-        [ Html.text <| "album tree node page for " ++ title ]
 
 
 thumbFor : NodeOrAlbum -> Image
