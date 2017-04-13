@@ -1,4 +1,4 @@
-module ListUtils exposing (shiftToBeginning, shiftLeft, shiftRight)
+module ListUtils exposing (shiftToBeginning, shiftLeft, shiftRight, dropThrough)
 
 
 shiftToBeginning : List a -> a -> List a -> ( a, List a )
@@ -48,3 +48,18 @@ shiftLeft xLefts x xRights =
                     shiftLeft xLeftRights x xRights
             in
                 ( xLeft :: xLRss, xss, xRss )
+
+
+dropThrough : List a -> a -> List a
+dropThrough elems elem =
+    case elems of
+        [] ->
+            []
+
+        e :: es ->
+            if elem == e then
+                es
+            else if List.member elem elems then
+                dropThrough es elem
+            else
+                elems

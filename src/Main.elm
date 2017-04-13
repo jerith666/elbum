@@ -4,6 +4,7 @@ import WinSize exposing (..)
 import Album exposing (..)
 import AlbumPage exposing (..)
 import AlbumTreeNodePage exposing (..)
+import ListUtils exposing (..)
 import Task exposing (..)
 import Html exposing (..)
 import Http exposing (..)
@@ -159,21 +160,6 @@ pageSize albumPage =
             winSize
 
 
-parentsAbove : List a -> a -> List a
-parentsAbove parents node =
-    case parents of
-        [] ->
-            []
-
-        p :: ps ->
-            if node == p then
-                ps
-            else if List.member node parents then
-                parentsAbove ps node
-            else
-                parents
-
-
 view : AlbumBootstrap -> Html AlbumBootstrapMsg
 view albumBootstrap =
     case albumBootstrap of
@@ -194,7 +180,7 @@ view albumBootstrap =
                         AlbumTreeNodePage
                             node
                             (pageSize albumPage)
-                            (parentsAbove parents node)
+                            (dropThrough parents node)
                 )
                 PageMsg
                 parents
@@ -209,7 +195,7 @@ view albumBootstrap =
                 (\albumTreeNodeChild ->
                     ViewNode <|
                         AlbumTreeNodePage albumTreeNodeChild winSize <|
-                            parentsAbove
+                            dropThrough
                                 (albumTreeNode
                                     :: parents
                                 )
