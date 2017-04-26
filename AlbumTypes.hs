@@ -21,7 +21,7 @@ data AlbumTreeNode
    { nodeTitle :: String
    , childFirst :: NodeOrAlbum
    , childRest :: [NodeOrAlbum]
-   , thumbnail :: Image
+   , nodeThumbnail :: Image
    } deriving (Generic, Show, Eq)
 
 {-| A union type of either a tree node or a "leaf" album. -}
