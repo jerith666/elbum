@@ -13,13 +13,15 @@ import GHC.Generics
 
 import Elm.Derive
 
-{-| Each level of the album tree has a title, and a list of children.
+{-| Each level of the album tree has a title, a thumbnail,
+    and at least one child.
     Each child is either a subtree or a "leaf" album. -}
 data AlbumTreeNode
    = AlbumTreeNode
    { nodeTitle :: String
    , childFirst :: NodeOrAlbum
    , childRest :: [NodeOrAlbum]
+   , thumbnail :: Image
    } deriving (Generic, Show, Eq)
 
 {-| A union type of either a tree node or a "leaf" album. -}
@@ -28,11 +30,12 @@ data NodeOrAlbum
    | Leaf Album
    deriving (Generic, Show, Eq)
 
-{-| A single photo album has a title and a collection of at least one image.
-    Future: add sub-albums. -}
+{-| A single photo album has a title, a thumbnail,
+    and a collection of at least one image. -}
 data Album
    = Album
    { title :: String
+   , thumbnail :: Image
    , imageFirst :: Image
    , imageRest :: [Image]
    } deriving (Generic, Show, Eq)
