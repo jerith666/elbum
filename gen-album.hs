@@ -54,8 +54,12 @@ genNodeOrAlbum src dest = do
     return $ Left $ "directory " ++ src ++ " contains both images and subdirs, this is not supported"
   else
     if length imgs > 0 then do
-      a <- genAlbum src dest imgs
-      return $ Right $ Leaf a
+      aOrErr <- genAlbum src dest imgs
+      case aOrErr of
+        Left err ->
+          return $ Left $ err
+        Right a ->
+          return $ Right $ Leaf a
     else do
       en <- genNode src dest subdirs
       case en of
@@ -75,20 +79,49 @@ genNode src dest dirs = do
       case lefts ecRest of
         [] -> do
           let cRest = rights ecRest
-          return $ Right $ AlbumTreeNode { nodeTitle = src
-                                         , childFirst = cFirst
-                                         , childRest = cRest
-                                         }
+              childImages = getChildImages $ cFirst : cRest
+          thumbOrErr <- findThumb src childImages
+          case thumbOrErr of
+            Left err ->
+              return $ Left $ err
+            Right thumb ->
+              return $ Right $ AlbumTreeNode { nodeTitle = src
+                                             , nodeThumbnail = thumb
+                                             , childFirst = cFirst
+                                             , childRest = cRest
+                                             }
         errs -> do
           return $ Left $ head errs
 
-genAlbum :: String -> String -> [(FilePath, DynamicImage)] -> IO Album
+getChildImages :: [NodeOrAlbum] -> [Image]
+getChildImages nodeOrAlbums =
+  concat $ map getChildImages1 nodeOrAlbums
+
+getChildImages1 :: NodeOrAlbum -> [Image]
+getChildImages1 nodeOrAlbum =
+  case nodeOrAlbum of
+    Subtree albumTreeNode ->
+      getChildImages $ (childFirst albumTreeNode) : (childRest albumTreeNode)
+    Leaf album ->
+      (imageFirst album) : (imageRest album)
+
+genAlbum :: String -> String -> [(FilePath, DynamicImage)] -> IO (Either String Album)
 genAlbum src dest imgs = do
   pimgs <- sequence $ map (procImage dest) imgs
-  return Album { title = last $ splitDirectories src
-               , imageFirst = head pimgs
-               , imageRest = tail pimgs
-               }
+  thumbOrErr <- findThumb src pimgs
+  case thumbOrErr of
+    Left err ->
+      return $ Left $ err
+    Right thumb ->
+      return $ Right $ Album { title = last $ splitDirectories src
+                             , thumbnail = thumb
+                             , imageFirst = head pimgs
+                             , imageRest = tail pimgs
+                             }
+
+findThumb :: FilePath -> [Image] -> IO (Either String Image)
+findThumb src images =
+  return $ Left $ "implement loading of thumbnail from " ++ src
 
 procImage :: FilePath -> (FilePath, DynamicImage) -> IO Image
 procImage d (f,i) = do
