@@ -122,18 +122,22 @@ genAlbum src dest imgs = do
 findThumb :: FilePath -> [Image] -> IO (Either String Image)
 findThumb src images = do
   let thumbLink = src </> "thumbnail"
-  thumbLinkExists <- pathIsSymbolicLink thumbLink
-  if thumbLinkExists then do
-    thumbPath <- getSymbolicLinkTarget thumbLink
-    thumbDataArr <- imgOnly thumbPath
-    case thumbDataArr of
-      [] -> do
-        return $ Left $ src ++ " thumbnail at " ++ thumbPath ++ " could not be loaded"
-      thumbData:_ -> do
-        thumb <- procImage src thumbData
-        return $ Right $ thumb
+  thumbLinkFileExists <- doesFileExist thumbLink
+  if thumbLinkFileExists then do
+    thumbLinkExists <- pathIsSymbolicLink thumbLink
+    if thumbLinkExists then do
+      thumbPath <- getSymbolicLinkTarget thumbLink
+      thumbDataArr <- imgOnly thumbPath
+      case thumbDataArr of
+        [] -> do
+          return $ Left $ src ++ " thumbnail at " ++ thumbPath ++ " could not be loaded"
+        thumbData:_ -> do
+          thumb <- procImage src thumbData
+          return $ Right $ thumb
+    else do
+      return $ Left $ thumbLink ++ " is not a symbolic link"
   else do
-    return $ Left $ src ++ " does not contain a 'thumbnail' symbolic link"
+    return $ Left $ src ++ " does not contain a 'thumbnail' file"
 
 procImage :: FilePath -> (FilePath, DynamicImage) -> IO Image
 procImage d (f,i) = do
