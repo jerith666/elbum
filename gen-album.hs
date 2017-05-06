@@ -127,7 +127,7 @@ findThumb src images = do
     thumbLinkExists <- pathIsSymbolicLink thumbLink
     if thumbLinkExists then do
       thumbPath <- getSymbolicLinkTarget thumbLink
-      thumbDataArr <- imgOnly thumbPath
+      thumbDataArr <- imgOnly $ src </> thumbPath
       case thumbDataArr of
         [] -> do
           return $ Left $ src ++ " thumbnail at " ++ thumbPath ++ " could not be loaded"
