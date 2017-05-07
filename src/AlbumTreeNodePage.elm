@@ -24,16 +24,6 @@ view (AlbumTreeNodePage albumTreeNode winSize parents) viewSubtree viewAlbum =
             ++ List.map (viewChildNode viewSubtree viewAlbum) albumTreeNode.childRest
 
 
-thumbFor : NodeOrAlbum -> Image
-thumbFor nodeOrAlbum =
-    case nodeOrAlbum of
-        Subtree albumTreeNode ->
-            thumbFor albumTreeNode.childFirst
-
-        Leaf album ->
-            album.imageFirst
-
-
 viewChildNode : (AlbumTreeNode -> msg) -> (Album -> msg) -> NodeOrAlbum -> Html msg
 viewChildNode viewSubtree viewAlbum nodeOrAlbum =
     case nodeOrAlbum of
@@ -42,7 +32,7 @@ viewChildNode viewSubtree viewAlbum nodeOrAlbum =
                 [ styles [ color white ]
                 , onClick <| viewSubtree albumTreeNode
                 ]
-                [ viewThumb 200 (viewSubtree albumTreeNode) (thumbFor <| Subtree albumTreeNode)
+                [ viewThumb 200 (viewSubtree albumTreeNode) albumTreeNode.nodeThumbnail
                 , div [] [ Html.text <| "link to sub album " ++ albumTreeNode.nodeTitle ]
                 ]
 
@@ -51,6 +41,6 @@ viewChildNode viewSubtree viewAlbum nodeOrAlbum =
                 [ styles [ color white ]
                 , onClick <| viewAlbum album
                 ]
-                [ viewThumb 200 (viewAlbum album) album.imageFirst
+                [ viewThumb 200 (viewAlbum album) album.thumbnail
                 , div [] [ Html.text <| "link to leaf album " ++ album.title ]
                 ]
