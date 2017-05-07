@@ -44,7 +44,7 @@ writeNodeOrAlbum src dest = do
 
 genNodeOrAlbum :: String -> String -> IO (Either String NodeOrAlbum)
 genNodeOrAlbum src dest = do
-  files <- filter (`notElem` [".",".."]) <$> getDirectoryContents src
+  files <- filter (`notElem` [".","..","thumbnail"]) <$> getDirectoryContents src
   let afiles = map (\f -> src </> f) (sort files)
   imgs <- imgsOnly afiles
   subdirs <- dirsOnly afiles
