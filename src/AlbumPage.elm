@@ -40,6 +40,7 @@ update msg model =
                         { title = album.title
                         , imageFirst = curImg
                         , imageRest = nextImgs
+                        , thumbnail = album.thumbnail
                         }
                         winSize
                         Nothing
@@ -59,6 +60,7 @@ update msg model =
                             { title = album.title
                             , imageFirst = newCur
                             , imageRest = newRest
+                            , thumbnail = album.thumbnail
                             }
                             winSize
                             Nothing
@@ -78,6 +80,7 @@ update msg model =
                             { title = album.title
                             , imageFirst = newCur
                             , imageRest = newRest
+                            , thumbnail = album.thumbnail
                             }
                             winSize
                             Nothing
@@ -96,6 +99,7 @@ update msg model =
                             { title = album.title
                             , imageFirst = newFirst
                             , imageRest = newRest
+                            , thumbnail = album.thumbnail
                             }
                             winSize
 
