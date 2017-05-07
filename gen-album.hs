@@ -86,7 +86,7 @@ genNode src dest autoThumb dirs = do
           case thumbOrErr of
             Left err ->
               if autoThumb then
-                return $ Right $ AlbumTreeNode { nodeTitle = src
+                return $ Right $ AlbumTreeNode { nodeTitle = last $ splitDirectories src
                                                , nodeThumbnail = head childImages
                                                , childFirst = cFirst
                                                , childRest = cRest
@@ -94,7 +94,7 @@ genNode src dest autoThumb dirs = do
               else
                 return $ Left $ err
             Right thumb ->
-              return $ Right $ AlbumTreeNode { nodeTitle = src
+              return $ Right $ AlbumTreeNode { nodeTitle = last $ splitDirectories src
                                              , nodeThumbnail = thumb
                                              , childFirst = cFirst
                                              , childRest = cRest
