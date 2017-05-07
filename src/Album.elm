@@ -1,6 +1,7 @@
 module Album exposing(..)
 
 import Json.Decode
+import Json.Decode exposing ((:=))
 import Json.Encode exposing (Value)
 -- The following module comes from bartavelle/json-helpers
 import Json.Helpers exposing (..)
@@ -12,6 +13,7 @@ type alias AlbumTreeNode  =
    { nodeTitle: String
    , childFirst: NodeOrAlbum
    , childRest: (List NodeOrAlbum)
+   , nodeThumbnail: Image
    }
 
 jsonDecAlbumTreeNode : Json.Decode.Decoder ( AlbumTreeNode )
@@ -19,7 +21,8 @@ jsonDecAlbumTreeNode =
    ("nodeTitle" := Json.Decode.string) >>= \pnodeTitle ->
    ("childFirst" := jsonDecNodeOrAlbum) >>= \pchildFirst ->
    ("childRest" := Json.Decode.list (jsonDecNodeOrAlbum)) >>= \pchildRest ->
-   Json.Decode.succeed {nodeTitle = pnodeTitle, childFirst = pchildFirst, childRest = pchildRest}
+   ("nodeThumbnail" := jsonDecImage) >>= \pnodeThumbnail ->
+   Json.Decode.succeed {nodeTitle = pnodeTitle, childFirst = pchildFirst, childRest = pchildRest, nodeThumbnail = pnodeThumbnail}
 
 jsonEncAlbumTreeNode : AlbumTreeNode -> Value
 jsonEncAlbumTreeNode  val =
@@ -27,6 +30,7 @@ jsonEncAlbumTreeNode  val =
    [ ("nodeTitle", Json.Encode.string val.nodeTitle)
    , ("childFirst", jsonEncNodeOrAlbum val.childFirst)
    , ("childRest", (Json.Encode.list << List.map jsonEncNodeOrAlbum) val.childRest)
+   , ("nodeThumbnail", jsonEncImage val.nodeThumbnail)
    ]
 
 
@@ -38,7 +42,7 @@ type NodeOrAlbum  =
 jsonDecNodeOrAlbum : Json.Decode.Decoder ( NodeOrAlbum )
 jsonDecNodeOrAlbum =
     let jsonDecDictNodeOrAlbum = Dict.fromList
-            [ ("Subtree", Json.Decode.map Subtree (Json.Decode.lazy (\_ -> jsonDecAlbumTreeNode)))
+            [ ("Subtree", Json.Decode.map Subtree (jsonDecAlbumTreeNode))
             , ("Leaf", Json.Decode.map Leaf (jsonDecAlbum))
             ]
     in  decodeSumObjectWithSingleField  "NodeOrAlbum" jsonDecDictNodeOrAlbum
@@ -54,6 +58,7 @@ jsonEncNodeOrAlbum  val =
 
 type alias Album  =
    { title: String
+   , thumbnail: Image
    , imageFirst: Image
    , imageRest: (List Image)
    }
@@ -61,14 +66,16 @@ type alias Album  =
 jsonDecAlbum : Json.Decode.Decoder ( Album )
 jsonDecAlbum =
    ("title" := Json.Decode.string) >>= \ptitle ->
+   ("thumbnail" := jsonDecImage) >>= \pthumbnail ->
    ("imageFirst" := jsonDecImage) >>= \pimageFirst ->
    ("imageRest" := Json.Decode.list (jsonDecImage)) >>= \pimageRest ->
-   Json.Decode.succeed {title = ptitle, imageFirst = pimageFirst, imageRest = pimageRest}
+   Json.Decode.succeed {title = ptitle, thumbnail = pthumbnail, imageFirst = pimageFirst, imageRest = pimageRest}
 
 jsonEncAlbum : Album -> Value
 jsonEncAlbum  val =
    Json.Encode.object
    [ ("title", Json.Encode.string val.title)
+   , ("thumbnail", jsonEncImage val.thumbnail)
    , ("imageFirst", jsonEncImage val.imageFirst)
    , ("imageRest", (Json.Encode.list << List.map jsonEncImage) val.imageRest)
    ]
