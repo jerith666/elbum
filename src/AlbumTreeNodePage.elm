@@ -33,7 +33,7 @@ viewChildNode viewSubtree viewAlbum nodeOrAlbum =
                 , onClick <| viewSubtree albumTreeNode
                 ]
                 [ viewThumb 200 (viewSubtree albumTreeNode) albumTreeNode.nodeThumbnail
-                , div [] [ Html.text <| "link to sub album " ++ albumTreeNode.nodeTitle ]
+                , div [] [ Html.text albumTreeNode.nodeTitle ]
                 ]
 
         Leaf album ->
@@ -42,5 +42,5 @@ viewChildNode viewSubtree viewAlbum nodeOrAlbum =
                 , onClick <| viewAlbum album
                 ]
                 [ viewThumb 200 (viewAlbum album) album.thumbnail
-                , div [] [ Html.text <| "link to leaf album " ++ album.title ]
+                , div [] [ Html.text album.title ]
                 ]
