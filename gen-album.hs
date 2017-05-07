@@ -37,15 +37,15 @@ thumbFilename = "thumbnail"
 
 writeNodeOrAlbum :: String -> String -> IO ()
 writeNodeOrAlbum src dest = do
-  eNodeOrAlbum <- genNodeOrAlbum src dest
+  eNodeOrAlbum <- genNodeOrAlbum src dest True
   case eNodeOrAlbum of
     Left err ->
       putStrLn err
     Right nodeOrAlbum ->
       C.writeFile (dest </> "album.json") $ encode nodeOrAlbum
 
-genNodeOrAlbum :: String -> String -> IO (Either String NodeOrAlbum)
-genNodeOrAlbum src dest = do
+genNodeOrAlbum :: String -> String -> Bool -> IO (Either String NodeOrAlbum)
+genNodeOrAlbum src dest autoThumb = do
   files <- filter (`notElem` [".","..",thumbFilename]) <$> getDirectoryContents src
   let afiles = map (\f -> src </> f) (sort files)
   imgs <- imgsOnly afiles
@@ -63,21 +63,21 @@ genNodeOrAlbum src dest = do
         Right a ->
           return $ Right $ Leaf a
     else do
-      en <- genNode src dest subdirs
+      en <- genNode src dest autoThumb subdirs
       case en of
         Left err ->
           return $ Left $ err
         Right n ->
           return $ Right $ Subtree n
 
-genNode :: String -> String -> [FilePath] -> IO (Either String AlbumTreeNode)
-genNode src dest dirs = do
-  ecFirst <- genNodeOrAlbum (head dirs) dest
+genNode :: String -> String -> Bool -> [FilePath] -> IO (Either String AlbumTreeNode)
+genNode src dest autoThumb dirs = do
+  ecFirst <- genNodeOrAlbum (head dirs) dest False
   case ecFirst of
     Left err ->
       return $ Left $ err
     Right cFirst -> do
-      ecRest <- mapM (\dir -> genNodeOrAlbum dir dest) (tail dirs)
+      ecRest <- mapM (\dir -> genNodeOrAlbum dir dest False) (tail dirs)
       case lefts ecRest of
         [] -> do
           let cRest = rights ecRest
@@ -85,7 +85,14 @@ genNode src dest dirs = do
           thumbOrErr <- findThumb src dest childImages
           case thumbOrErr of
             Left err ->
-              return $ Left $ err
+              if autoThumb then
+                return $ Right $ AlbumTreeNode { nodeTitle = src
+                                               , nodeThumbnail = head childImages
+                                               , childFirst = cFirst
+                                               , childRest = cRest
+                                               }
+              else
+                return $ Left $ err
             Right thumb ->
               return $ Right $ AlbumTreeNode { nodeTitle = src
                                              , nodeThumbnail = thumb
