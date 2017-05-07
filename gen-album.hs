@@ -80,7 +80,7 @@ genNode src dest dirs = do
         [] -> do
           let cRest = rights ecRest
               childImages = getChildImages $ cFirst : cRest
-          thumbOrErr <- findThumb src childImages
+          thumbOrErr <- findThumb src dest childImages
           case thumbOrErr of
             Left err ->
               return $ Left $ err
@@ -108,7 +108,7 @@ getChildImages1 nodeOrAlbum =
 genAlbum :: String -> String -> [(FilePath, DynamicImage)] -> IO (Either String Album)
 genAlbum src dest imgs = do
   pimgs <- sequence $ map (procImage dest) imgs
-  thumbOrErr <- findThumb src pimgs
+  thumbOrErr <- findThumb src dest pimgs
   case thumbOrErr of
     Left err ->
       return $ Left $ err
@@ -119,8 +119,8 @@ genAlbum src dest imgs = do
                              , imageRest = tail pimgs
                              }
 
-findThumb :: FilePath -> [Image] -> IO (Either String Image)
-findThumb src images = do
+findThumb :: FilePath -> FilePath -> [Image] -> IO (Either String Image)
+findThumb src dest images = do
   let thumbLink = src </> "thumbnail"
   thumbLinkFileExists <- doesFileExist thumbLink
   if thumbLinkFileExists then do
@@ -132,7 +132,7 @@ findThumb src images = do
         [] -> do
           return $ Left $ src ++ " thumbnail at " ++ thumbPath ++ " could not be loaded"
         thumbData:_ -> do
-          thumb <- procImage src thumbData
+          thumb <- procImage dest thumbData
           return $ Right $ thumb
     else do
       return $ Left $ thumbLink ++ " is not a symbolic link"
