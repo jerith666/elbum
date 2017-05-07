@@ -33,6 +33,8 @@ main = do
 
 usage = putStrLn "usage: gen-album <src> <dest>"
 
+thumbFilename = "thumbnail"
+
 writeNodeOrAlbum :: String -> String -> IO ()
 writeNodeOrAlbum src dest = do
   eNodeOrAlbum <- genNodeOrAlbum src dest
@@ -44,7 +46,7 @@ writeNodeOrAlbum src dest = do
 
 genNodeOrAlbum :: String -> String -> IO (Either String NodeOrAlbum)
 genNodeOrAlbum src dest = do
-  files <- filter (`notElem` [".","..","thumbnail"]) <$> getDirectoryContents src
+  files <- filter (`notElem` [".","..",thumbFilename]) <$> getDirectoryContents src
   let afiles = map (\f -> src </> f) (sort files)
   imgs <- imgsOnly afiles
   subdirs <- dirsOnly afiles
@@ -121,7 +123,7 @@ genAlbum src dest imgs = do
 
 findThumb :: FilePath -> FilePath -> [Image] -> IO (Either String Image)
 findThumb src dest images = do
-  let thumbLink = src </> "thumbnail"
+  let thumbLink = src </> thumbFilename
   thumbLinkFileExists <- doesFileExist thumbLink
   if thumbLinkFileExists then do
     thumbLinkExists <- pathIsSymbolicLink thumbLink
