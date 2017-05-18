@@ -8,6 +8,6 @@
 #https://github.com/gibiansky/IHaskell/pull/686
 #nix-shell -I nixpkgs=/home/matt/git/nixos/nixpkgs -p "haskellPackages.ghcWithPackages (pkgs: with pkgs; [ihaskell-juicypixels elm-bridge])"
 
-nix-shell -p "haskellPackages.ghcWithPackages (pkgs: with pkgs; [friday-juicypixels elm-bridge friday directory_1_3_1_1])"
+nix-shell -p "haskellPackages.ghcWithPackages (pkgs: with pkgs; [friday-juicypixels elm-bridge friday directory_1_3_1_1 regex-compat])"
 
 #cabal install friday-juicypixels

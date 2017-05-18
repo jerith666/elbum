@@ -9,6 +9,8 @@ import Data.List
 
 import Control.Monad
 
+import Text.Regex
+
 import Codec.Picture hiding (Image)
 import Codec.Picture.Types hiding (Image)
 
@@ -86,7 +88,7 @@ genNode src dest autoThumb dirs = do
           case thumbOrErr of
             Left err ->
               if autoThumb then
-                return $ Right $ AlbumTreeNode { nodeTitle = last $ splitDirectories src
+                return $ Right $ AlbumTreeNode { nodeTitle = titleForDir src
                                                , nodeThumbnail = head childImages
                                                , childFirst = cFirst
                                                , childRest = cRest
@@ -94,7 +96,7 @@ genNode src dest autoThumb dirs = do
               else
                 return $ Left $ err
             Right thumb ->
-              return $ Right $ AlbumTreeNode { nodeTitle = last $ splitDirectories src
+              return $ Right $ AlbumTreeNode { nodeTitle = titleForDir src
                                              , nodeThumbnail = thumb
                                              , childFirst = cFirst
                                              , childRest = cRest
@@ -122,11 +124,16 @@ genAlbum src dest imgs = do
     Left err ->
       return $ Left $ err
     Right thumb ->
-      return $ Right $ Album { title = last $ splitDirectories src
+      return $ Right $ Album { title = titleForDir src
                              , thumbnail = thumb
                              , imageFirst = head pimgs
                              , imageRest = tail pimgs
                              }
+
+titleForDir :: String -> String
+titleForDir dir =
+  let dirName = last $ splitDirectories dir
+  in subRegex (mkRegex "^[0-9]+_") dirName ""
 
 findThumb :: FilePath -> FilePath -> [Image] -> IO (Either String Image)
 findThumb src dest images = do
