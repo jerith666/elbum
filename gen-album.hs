@@ -1,3 +1,5 @@
+{-# LANGUAGE QuasiQuotes                      #-}
+
 import System.Environment
 import System.IO
 
@@ -8,6 +10,8 @@ import Data.Either
 import Data.List
 
 import Control.Monad
+
+import Text.RE.TDFA.String
 
 import Codec.Picture hiding (Image)
 import Codec.Picture.Types hiding (Image)
@@ -101,6 +105,11 @@ genNode src dest autoThumb dirs = do
                                              }
         errs -> do
           return $ Left $ head errs
+
+nodeTitleForDir :: String -> String
+nodeTitleForDir dir =
+  let dirName = last $ splitDirectories dir
+  in dirName ?=~/ [ed|^(0-9)+_///|]
 
 getChildImages :: [NodeOrAlbum] -> [Image]
 getChildImages nodeOrAlbums =
