@@ -11,7 +11,7 @@ import TouchEvents exposing (..)
 
 
 type AlbumPage
-    = Thumbs Album WinSize
+    = Thumbs Album WinSize (List Image)
     | FullImage (List Image) Album WinSize (Maybe ( Touch, Touch ))
 
 
@@ -34,7 +34,7 @@ update msg model =
     case msg of
         View prevImgs curImg nextImgs ->
             case model of
-                Thumbs album winSize ->
+                Thumbs album winSize _ ->
                     FullImage
                         prevImgs
                         { title = album.title
@@ -102,6 +102,7 @@ update msg model =
                             , thumbnail = album.thumbnail
                             }
                             winSize
+                            []
 
                 _ ->
                     model
@@ -134,11 +135,15 @@ update msg model =
 view : AlbumPage -> (AlbumTreeNode -> msg) -> (AlbumPageMsg -> msg) -> List AlbumTreeNode -> Html msg
 view albumPage showNode wrapMsg parents =
     case albumPage of
-        Thumbs album winSize ->
+        Thumbs album winSize loadedImages ->
             ThumbPage.view
                 (\x -> (\y -> (\z -> wrapMsg (View x y z))))
                 showNode
-                { album = album, parents = parents, winSize = winSize }
+                { album = album
+                , parents = parents
+                , winSize = winSize
+                , loadedImages = loadedImages
+                }
 
         FullImage prevImgs album winSize dragInfo ->
             Html.map wrapMsg <|
@@ -188,7 +193,7 @@ offsetFor dragInfo =
 subscriptions : AlbumPage -> Sub AlbumPageMsg
 subscriptions albumPage =
     case albumPage of
-        Thumbs _ _ ->
+        Thumbs _ _ _ ->
             Sub.none
 
         FullImage _ _ _ _ ->

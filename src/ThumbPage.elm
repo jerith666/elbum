@@ -13,6 +13,7 @@ type alias ThumbPageModel =
     { album : Album
     , parents : List AlbumTreeNode
     , winSize : WinSize
+    , loadedImages : List Image
     }
 
 

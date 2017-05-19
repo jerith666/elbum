@@ -65,8 +65,8 @@ update msg model =
 
                 LoadedAlbum albumPage parents ->
                     case albumPage of
-                        Thumbs album oldSize ->
-                            ( LoadedAlbum (Thumbs album <| Debug.log "window size updated for thumbs" size) parents
+                        Thumbs album oldSize loadedImages ->
+                            ( LoadedAlbum (Thumbs album (Debug.log "window size updated for thumbs" size) loadedImages) parents
                             , Cmd.none
                             )
 
@@ -90,7 +90,7 @@ update msg model =
                             )
 
                         Leaf album ->
-                            ( LoadedAlbum (Thumbs album winSize) []
+                            ( LoadedAlbum (Thumbs album winSize []) []
                             , Cmd.none
                             )
 
@@ -153,7 +153,7 @@ subscriptions model =
 pageSize : AlbumPage -> WinSize
 pageSize albumPage =
     case albumPage of
-        Thumbs _ winSize ->
+        Thumbs _ winSize _ ->
             winSize
 
         FullImage _ _ winSize _ ->
@@ -203,7 +203,7 @@ view albumBootstrap =
                 )
                 (\album ->
                     ViewAlbum
-                        (Thumbs album winSize)
+                        (Thumbs album winSize [])
                     <|
                         albumTreeNode
                             :: parents
