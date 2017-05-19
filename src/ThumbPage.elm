@@ -7,13 +7,14 @@ import AlbumStyles exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
 import Css exposing (..)
+import Set exposing (..)
 
 
 type alias ThumbPageModel =
     { album : Album
     , parents : List AlbumTreeNode
     , winSize : WinSize
-    , loadedImages : List Image
+    , loadedImages : Set String
     }
 
 

@@ -8,10 +8,11 @@ import FullImagePage exposing (..)
 import Html exposing (..)
 import Keyboard exposing (..)
 import TouchEvents exposing (..)
+import Set exposing (..)
 
 
 type AlbumPage
-    = Thumbs Album WinSize (List Image)
+    = Thumbs Album WinSize (Set String)
     | FullImage (List Image) Album WinSize (Maybe ( Touch, Touch ))
 
 
@@ -102,7 +103,7 @@ update msg model =
                             , thumbnail = album.thumbnail
                             }
                             winSize
-                            []
+                            empty
 
                 _ ->
                     model

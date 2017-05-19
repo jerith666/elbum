@@ -9,6 +9,7 @@ import Task exposing (..)
 import Html exposing (..)
 import Http exposing (..)
 import Window exposing (..)
+import Set exposing (..)
 
 
 type AlbumBootstrap
@@ -90,7 +91,7 @@ update msg model =
                             )
 
                         Leaf album ->
-                            ( LoadedAlbum (Thumbs album winSize []) []
+                            ( LoadedAlbum (Thumbs album winSize empty) []
                             , Cmd.none
                             )
 
@@ -203,7 +204,7 @@ view albumBootstrap =
                 )
                 (\album ->
                     ViewAlbum
-                        (Thumbs album winSize [])
+                        (Thumbs album winSize empty)
                     <|
                         albumTreeNode
                             :: parents
