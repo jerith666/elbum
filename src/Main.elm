@@ -16,8 +16,8 @@ type AlbumBootstrap
     = Sizing
     | Loading WinSize
     | LoadError Http.Error
-    | LoadedNode AlbumTreeNodePage
-    | LoadedAlbum AlbumPage (List AlbumTreeNode)
+    | LoadedNode AlbumTreeNodePage (Set String)
+    | LoadedAlbum AlbumPage (List AlbumTreeNode) (Set String)
 
 
 type AlbumBootstrapMsg
@@ -65,24 +65,27 @@ update msg model =
                 LoadError _ ->
                     ( model, Cmd.none )
 
-                LoadedAlbum albumPage parents ->
+                LoadedAlbum albumPage parents pendingUrls ->
                     case albumPage of
                         Thumbs album oldSize loadedImages ->
                             let
                                 model =
                                     Thumbs album (Debug.log "window size updated for thumbs" size) loadedImages
+
+                                urls =
+                                    AlbumPage.urlsToGet model
                             in
-                                ( LoadedAlbum model parents
-                                , getUrls <| AlbumPage.urlsToGet model
+                                ( LoadedAlbum model parents <| union pendingUrls urls
+                                , getUrls pendingUrls urls
                                 )
 
                         FullImage album index oldSize dragInfo ->
-                            ( LoadedAlbum (FullImage album index (Debug.log "window size updated for full" size) dragInfo) parents
+                            ( LoadedAlbum (FullImage album index (Debug.log "window size updated for full" size) dragInfo) parents pendingUrls
                             , Cmd.none
                             )
 
-                LoadedNode (AlbumTreeNodePage albumNode oldSize parentNodes) ->
-                    ( LoadedNode (AlbumTreeNodePage albumNode size parentNodes)
+                LoadedNode (AlbumTreeNodePage albumNode oldSize parentNodes) pendingUrls ->
+                    ( LoadedNode (AlbumTreeNodePage albumNode size parentNodes) pendingUrls
                     , Cmd.none
                     )
 
@@ -91,14 +94,21 @@ update msg model =
                 Loading winSize ->
                     case nodeOrAlbum of
                         Subtree albumNode ->
-                            ( LoadedNode (AlbumTreeNodePage albumNode winSize [])
+                            ( LoadedNode (AlbumTreeNodePage albumNode winSize []) empty
                             , Cmd.none
                             )
 
                         Leaf album ->
-                            ( LoadedAlbum (Thumbs album winSize empty) []
-                            , getUrls <| AlbumPage.urlsToGet (Thumbs album winSize empty)
-                            )
+                            let
+                                albumPage =
+                                    Thumbs album winSize empty
+
+                                urls =
+                                    AlbumPage.urlsToGet albumPage
+                            in
+                                ( LoadedAlbum albumPage [] urls
+                                , getUrls empty urls
+                                )
 
                 _ ->
                     ( model, Cmd.none )
@@ -110,13 +120,16 @@ update msg model =
 
         PageMsg pageMsg ->
             case model of
-                LoadedAlbum oldPage parents ->
+                LoadedAlbum oldPage parents pendingUrls ->
                     let
                         newPage =
                             AlbumPage.update pageMsg oldPage
+
+                        urls =
+                            AlbumPage.urlsToGet newPage
                     in
-                        ( LoadedAlbum (newPage) parents
-                        , getUrls <| AlbumPage.urlsToGet newPage
+                        ( LoadedAlbum (newPage) parents <| union pendingUrls urls
+                        , getUrls pendingUrls urls
                         )
 
                 _ ->
@@ -124,15 +137,18 @@ update msg model =
 
         ImageLoaded url ->
             case model of
-                LoadedAlbum albumPage parents ->
+                LoadedAlbum albumPage parents pendingUrls ->
                     case albumPage of
                         Thumbs album size loadedImages ->
                             let
                                 model =
                                     Thumbs album size <| insert url loadedImages
+
+                                urls =
+                                    AlbumPage.urlsToGet model
                             in
-                                ( LoadedAlbum model parents
-                                , getUrls <| AlbumPage.urlsToGet model
+                                ( LoadedAlbum model parents <| union pendingUrls urls
+                                , getUrls pendingUrls urls
                                 )
 
                         _ ->
@@ -142,14 +158,18 @@ update msg model =
                     ( model, Cmd.none )
 
         ViewNode albumTreeNodePage ->
-            ( LoadedNode albumTreeNodePage
+            ( LoadedNode albumTreeNodePage empty
             , Cmd.none
             )
 
         ViewAlbum albumPage parents ->
-            ( LoadedAlbum albumPage parents
-            , getUrls <| AlbumPage.urlsToGet albumPage
-            )
+            let
+                urls =
+                    AlbumPage.urlsToGet albumPage
+            in
+                ( LoadedAlbum albumPage parents urls
+                , getUrls empty urls
+                )
 
 
 decodeAlbumRequest : Result Http.Error NodeOrAlbum -> AlbumBootstrapMsg
@@ -162,9 +182,9 @@ decodeAlbumRequest r =
             NoAlbum e
 
 
-getUrls : Set String -> Cmd AlbumBootstrapMsg
-getUrls urls =
-    Cmd.batch <| List.map getUrl <| Set.toList urls
+getUrls : Set String -> Set String -> Cmd AlbumBootstrapMsg
+getUrls pending urls =
+    Cmd.batch <| List.map getUrl <| Set.toList <| Set.diff urls pending
 
 
 getUrl : String -> Cmd AlbumBootstrapMsg
@@ -207,7 +227,7 @@ decodeUrlResult result =
 subscriptions : AlbumBootstrap -> Sub AlbumBootstrapMsg
 subscriptions model =
     case model of
-        LoadedAlbum albumPage parents ->
+        LoadedAlbum albumPage parents pendingUrls ->
             Sub.batch
                 [ Sub.map PageMsg <| AlbumPage.subscriptions albumPage
                 , resizes Resize
@@ -243,7 +263,7 @@ view albumBootstrap =
         LoadError e ->
             text ("Error Loading Album: " ++ (toString e))
 
-        LoadedAlbum albumPage parents ->
+        LoadedAlbum albumPage parents pendingUrls ->
             AlbumPage.view
                 albumPage
                 (\node ->
@@ -256,7 +276,7 @@ view albumBootstrap =
                 PageMsg
                 parents
 
-        LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) ->
+        LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) pendingUrls ->
             AlbumTreeNodePage.view
                 (AlbumTreeNodePage
                     albumTreeNode
