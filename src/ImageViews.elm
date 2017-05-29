@@ -11,7 +11,7 @@ import Css exposing (..)
 -- TODO change signature to allow non-empty msg
 
 
-renderPresized : Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> msg -> Html msg
+renderPresized : Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> Maybe msg -> Html msg
 renderPresized margin w h i iRest s otherAttrs msg =
     render (smallestImageBiggerThan w h i iRest)
         []
@@ -35,19 +35,29 @@ smallestImageBiggerThan w h i iRest =
             sizedIs
 
 
-render : ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> msg -> Html msg
+render : ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> Maybe msg -> Html msg
 render idefault is s otherAttrs msg =
-    img
-        ([ styles s
-         , Html.Attributes.src idefault.url
-         , attribute "srcset" (encodeSrcSet is)
-         , Html.Attributes.width idefault.x
-         , Html.Attributes.height idefault.y
-         , onClick msg
-         ]
-            ++ otherAttrs
-        )
-        []
+    let
+        baseAttrs =
+            [ styles s
+            , Html.Attributes.src idefault.url
+            , attribute "srcset" (encodeSrcSet is)
+            , Html.Attributes.width idefault.x
+            , Html.Attributes.height idefault.y
+            ]
+                ++ otherAttrs
+
+        clickAttr =
+            case msg of
+                Just m ->
+                    [ onClick m ]
+
+                Nothing ->
+                    []
+    in
+        img
+            (baseAttrs ++ clickAttr)
+            []
 
 
 encodeSrcSet : List ImgSrc -> String

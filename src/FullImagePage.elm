@@ -106,7 +106,8 @@ viewImg clickMsg touchStartMsg touchContinueMsg touchPrevNext fullImagePageModel
             , onTouchMove touchContinueMsg
             , onTouchEnd touchPrevNext
             ]
-            clickMsg
+        <|
+            Just clickMsg
 
 
 fitImage : ImgSrc -> Int -> Int -> ( Int, Int )
