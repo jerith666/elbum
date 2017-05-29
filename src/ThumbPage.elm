@@ -72,7 +72,14 @@ albumParent showNode albumTreeNode =
 
 urlsToGet : ThumbPageModel -> Set String
 urlsToGet thumbPageModel =
-    Set.empty
+    let
+        ( _, thumbWidth ) =
+            colsWidth thumbPageModel
+
+        srcs =
+            List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
+    in
+        Set.fromList <| List.map (\i -> i.url) <| List.take 5 srcs
 
 
 viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
