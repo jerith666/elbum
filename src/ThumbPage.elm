@@ -192,6 +192,24 @@ imgHeight img =
 viewThumb : Int -> msg -> Image -> Html msg
 viewThumb width selectedMsg img =
     let
+        ( xScaled, yScaled ) =
+            sizeForWidth width img
+    in
+        renderPresized 10
+            xScaled
+            yScaled
+            img.srcSetFirst
+            img.srcSetRest
+            [ borderRadius (px 5)
+            , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
+            ]
+            []
+            selectedMsg
+
+
+sizeForWidth : Int -> Image -> ( Int, Int )
+sizeForWidth width img =
+    let
         is1 =
             img.srcSetFirst
     in
@@ -205,13 +223,4 @@ viewThumb width selectedMsg img =
             yScaled =
                 Basics.round <| scale * (toFloat is1.y)
         in
-            renderPresized 10
-                xScaled
-                yScaled
-                img.srcSetFirst
-                img.srcSetRest
-                [ borderRadius (px 5)
-                , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
-                ]
-                []
-                selectedMsg
+            ( xScaled, yScaled )
