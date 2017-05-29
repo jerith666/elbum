@@ -78,11 +78,8 @@ urlsToGet thumbPageModel =
 viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
 viewThumbs imgChosenMsgr thumbPageModel =
     let
-        maxCols =
-            Debug.log "maxCols" <| Basics.max (thumbPageModel.winSize.width // maxThumbWidth) 2
-
-        thumbWidth =
-            Debug.log "thumbWidth" <| (thumbPageModel.winSize.width - scrollPad) // maxCols
+        ( maxCols, thumbWidth ) =
+            colsWidth thumbPageModel
 
         imgs =
             thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
@@ -94,6 +91,18 @@ viewThumbs imgChosenMsgr thumbPageModel =
             )
         <|
             spreadThumbs maxCols imgs []
+
+
+colsWidth : ThumbPageModel -> ( Int, Int )
+colsWidth thumbPageModel =
+    let
+        maxCols =
+            Debug.log "maxCols" <| Basics.max (thumbPageModel.winSize.width // maxThumbWidth) 2
+
+        thumbWidth =
+            Debug.log "thumbWidth" <| (thumbPageModel.winSize.width - scrollPad) // maxCols
+    in
+        ( maxCols, thumbWidth )
 
 
 convertImgChosenMsgr : Image -> List Image -> (List Image -> Image -> List Image -> msg) -> (Int -> msg)
