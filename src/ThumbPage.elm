@@ -106,14 +106,11 @@ convertImgChosenMsgr image1 images prevCurRestImgChosenMsgr =
             prevCurRestImgChosenMsgr prev cur next
 
 
-viewThumbColumn : Int -> (Int -> msg) -> (String -> msg) -> List ( Image, Int ) -> Set Image -> Html msg
-viewThumbColumn thumbWidth imgChosenMsgr imgLoadedMsgr images loadedImages =
+viewThumbColumn : Int -> (Int -> msg) -> List ( Image, Int ) -> Html msg
+viewThumbColumn thumbWidth imgChosenMsgr images =
     let
         viewThumbTuple ( img, i ) =
-            if member img.x loadedImages then
-                viewThumb thumbWidth (imgChosenMsgr i) img
-            else
-                loadThumb thumbWidth (imgLoadedMsgr img.x) img
+            viewThumb thumbWidth (imgChosenMsgr i) img
     in
         div
             [ styles
@@ -189,11 +186,6 @@ imgHeight img =
             img.srcSetFirst
     in
         Basics.round <| (toFloat is1.y) * (1000 / toFloat is1.x)
-
-
-loadThumb : Int -> msg -> Image -> Html msg
-loadThumb width loadedMsg img =
-    Html.text "unloaded image"
 
 
 viewThumb : Int -> msg -> Image -> Html msg
