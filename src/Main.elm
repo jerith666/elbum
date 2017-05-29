@@ -97,7 +97,7 @@ update msg model =
 
                         Leaf album ->
                             ( LoadedAlbum (Thumbs album winSize empty) []
-                            , Cmd.none
+                            , getUrls <| AlbumPage.urlsToGet (Thumbs album winSize empty)
                             )
 
                 _ ->
@@ -111,9 +111,13 @@ update msg model =
         PageMsg pageMsg ->
             case model of
                 LoadedAlbum oldPage parents ->
-                    ( LoadedAlbum (AlbumPage.update pageMsg oldPage) parents
-                    , Cmd.none
-                    )
+                    let
+                        newPage =
+                            AlbumPage.update pageMsg oldPage
+                    in
+                        ( LoadedAlbum (newPage) parents
+                        , getUrls <| AlbumPage.urlsToGet newPage
+                        )
 
                 _ ->
                     ( model, Cmd.none )
@@ -144,7 +148,7 @@ update msg model =
 
         ViewAlbum albumPage parents ->
             ( LoadedAlbum albumPage parents
-            , Cmd.none
+            , getUrls <| AlbumPage.urlsToGet albumPage
             )
 
 
