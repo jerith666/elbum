@@ -82,7 +82,12 @@ viewThumbs imgChosenMsgr thumbPageModel =
         imgs =
             thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
     in
-        List.map (viewThumbColumn thumbWidth (convertImgChosenMsgr thumbPageModel.album.imageFirst imgs imgChosenMsgr)) <|
+        List.map
+            (viewThumbColumn thumbWidth
+                (convertImgChosenMsgr thumbPageModel.album.imageFirst imgs imgChosenMsgr)
+                thumbPageModel.loadedImages
+            )
+        <|
             spreadThumbs maxCols imgs []
 
 
@@ -107,11 +112,18 @@ convertImgChosenMsgr image1 images prevCurRestImgChosenMsgr =
             prevCurRestImgChosenMsgr prev cur next
 
 
-viewThumbColumn : Int -> (Int -> msg) -> List ( Image, Int ) -> Html msg
-viewThumbColumn thumbWidth imgChosenMsgr images =
+viewThumbColumn : Int -> (Int -> msg) -> Set String -> List ( Image, Int ) -> Html msg
+viewThumbColumn thumbWidth imgChosenMsgr loadedUrls images =
     let
         viewThumbTuple ( img, i ) =
-            viewThumb thumbWidth (imgChosenMsgr i) img
+            let
+                src =
+                    srcForWidth thumbWidth img
+            in
+                if member src.url loadedUrls then
+                    viewThumb thumbWidth (imgChosenMsgr i) img
+                else
+                    stubThumb thumbWidth img
     in
         div
             [ styles
@@ -189,6 +201,15 @@ imgHeight img =
         Basics.round <| (toFloat is1.y) * (1000 / toFloat is1.x)
 
 
+srcForWidth : Int -> Image -> ImgSrc
+srcForWidth width img =
+    let
+        ( xScaled, yScaled ) =
+            sizeForWidth width img
+    in
+        smallestImageBiggerThan xScaled yScaled img.srcSetFirst img.srcSetRest
+
+
 viewThumb : Int -> msg -> Image -> Html msg
 viewThumb width selectedMsg img =
     let
@@ -205,6 +226,23 @@ viewThumb width selectedMsg img =
             ]
             []
             selectedMsg
+
+
+stubThumb : Int -> Image -> Html msg
+stubThumb width img =
+    let
+        ( xScaled, yScaled ) =
+            sizeForWidth width img
+    in
+        div
+            [ styles
+                [ Css.width <| px <| toFloat xScaled
+                , height <| px <| toFloat yScaled
+                , color white
+                , textAlign center
+                ]
+            ]
+            [ Html.text "..." ]
 
 
 sizeForWidth : Int -> Image -> ( Int, Int )

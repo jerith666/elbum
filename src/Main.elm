@@ -27,6 +27,7 @@ type AlbumBootstrapMsg
     | PageMsg AlbumPage.AlbumPageMsg
     | ViewNode AlbumTreeNodePage
     | ViewAlbum AlbumPage (List AlbumTreeNode)
+    | ImageLoaded String
 
 
 main : Program Never AlbumBootstrap AlbumBootstrapMsg
@@ -67,9 +68,13 @@ update msg model =
                 LoadedAlbum albumPage parents ->
                     case albumPage of
                         Thumbs album oldSize loadedImages ->
-                            ( LoadedAlbum (Thumbs album (Debug.log "window size updated for thumbs" size) loadedImages) parents
-                            , Cmd.none
-                            )
+                            let
+                                model =
+                                    Thumbs album (Debug.log "window size updated for thumbs" size) loadedImages
+                            in
+                                ( LoadedAlbum model parents
+                                , getUrls <| AlbumPage.urlsToGet model
+                                )
 
                         FullImage album index oldSize dragInfo ->
                             ( LoadedAlbum (FullImage album index (Debug.log "window size updated for full" size) dragInfo) parents
@@ -113,6 +118,25 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        ImageLoaded url ->
+            case model of
+                LoadedAlbum albumPage parents ->
+                    case albumPage of
+                        Thumbs album size loadedImages ->
+                            let
+                                model =
+                                    Thumbs album size <| insert url loadedImages
+                            in
+                                ( LoadedAlbum model parents
+                                , getUrls <| AlbumPage.urlsToGet model
+                                )
+
+                        _ ->
+                            ( model, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
+
         ViewNode albumTreeNodePage ->
             ( LoadedNode albumTreeNodePage
             , Cmd.none
@@ -129,6 +153,48 @@ decodeAlbumRequest r =
     case r of
         Ok a ->
             YesAlbum a
+
+        Err e ->
+            NoAlbum e
+
+
+getUrls : Set String -> Cmd AlbumBootstrapMsg
+getUrls urls =
+    Cmd.batch <| List.map getUrl <| Set.toList urls
+
+
+getUrl : String -> Cmd AlbumBootstrapMsg
+getUrl url =
+    Task.attempt decodeUrlResult
+        (Http.toTask
+            (Http.request
+                { method = "GET"
+                , headers = []
+                , url = url
+                , body = emptyBody
+                , expect = expectStringResponse <| handleGetResponse url
+                , timeout = Nothing
+                , withCredentials = False
+                }
+            )
+        )
+
+
+handleGetResponse : String -> Response String -> Result String String
+handleGetResponse url r =
+    case r.status.code of
+        200 ->
+            Ok url
+
+        _ ->
+            Err <| "err " ++ r.status.message
+
+
+decodeUrlResult : Result Error String -> AlbumBootstrapMsg
+decodeUrlResult result =
+    case result of
+        Ok url ->
+            ImageLoaded url
 
         Err e ->
             NoAlbum e

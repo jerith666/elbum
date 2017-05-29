@@ -1,4 +1,4 @@
-module ImageViews exposing (renderPresized, render)
+module ImageViews exposing (renderPresized, render, smallestImageBiggerThan)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)

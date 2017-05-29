@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), view, update, subscriptions)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), view, update, subscriptions, urlsToGet)
 
 import ListUtils exposing (..)
 import WinSize exposing (..)
@@ -131,6 +131,11 @@ update msg model =
 
         NoUpdate ->
             model
+
+
+urlsToGet : AlbumPage -> Set String
+urlsToGet albumPage =
+    empty
 
 
 view : AlbumPage -> (AlbumTreeNode -> msg) -> (AlbumPageMsg -> msg) -> List AlbumTreeNode -> Html msg
