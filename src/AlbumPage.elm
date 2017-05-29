@@ -135,7 +135,17 @@ update msg model =
 
 urlsToGet : AlbumPage -> Set String
 urlsToGet albumPage =
-    empty
+    case albumPage of
+        Thumbs album winSize loadedImages ->
+            ThumbPage.urlsToGet
+                { album = album
+                , parents = []
+                , winSize = winSize
+                , loadedImages = loadedImages
+                }
+
+        _ ->
+            empty
 
 
 view : AlbumPage -> (AlbumTreeNode -> msg) -> (AlbumPageMsg -> msg) -> List AlbumTreeNode -> Html msg

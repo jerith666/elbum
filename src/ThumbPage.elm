@@ -1,4 +1,4 @@
-module ThumbPage exposing (ThumbPageModel, view, viewThumb, albumTitle)
+module ThumbPage exposing (ThumbPageModel, view, viewThumb, albumTitle, urlsToGet)
 
 import Album exposing (..)
 import WinSize exposing (..)
@@ -68,6 +68,11 @@ albumParent showNode albumTreeNode =
     span
         [ onClick <| showNode albumTreeNode ]
         [ Html.text <| albumTreeNode.nodeTitle ++ " < " ]
+
+
+urlsToGet : ThumbPageModel -> Set String
+urlsToGet thumbPageModel =
+    Set.empty
 
 
 viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
