@@ -1,4 +1,4 @@
-module ListUtils exposing (shiftToBeginning, shiftLeft, shiftRight, dropThrough)
+module ListUtils exposing (shiftToBeginning, shiftLeft, shiftRight, dropThrough, mapI)
 
 
 shiftToBeginning : List a -> a -> List a -> ( a, List a )
@@ -50,6 +50,12 @@ shiftLeft xLefts x xRights =
                 ( xLeft :: xLRss, xss, xRss )
 
 
+
+{- drop elements of the given list until the given element is found.
+   if that element is not present, return the entire list.
+-}
+
+
 dropThrough : List a -> a -> List a
 dropThrough elems elem =
     case elems of
@@ -63,3 +69,19 @@ dropThrough elems elem =
                 dropThrough es elem
             else
                 elems
+
+
+
+{- apply the given map function to only the ith element of the given list -}
+
+
+mapI : Int -> (a -> a) -> List a -> List a
+mapI i map l =
+    let
+        ifmap ( j, a ) =
+            if i == j then
+                (map a)
+            else
+                a
+    in
+        List.map ifmap <| List.indexedMap (,) l

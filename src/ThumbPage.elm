@@ -4,6 +4,7 @@ import Album exposing (..)
 import WinSize exposing (..)
 import ImageViews exposing (..)
 import AlbumStyles exposing (..)
+import ListUtils exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
 import Css exposing (..)
@@ -214,19 +215,3 @@ viewThumb width selectedMsg img =
                 ]
                 []
                 selectedMsg
-
-
-
--- TODO move below to utils file
-
-
-mapI : Int -> (a -> a) -> List a -> List a
-mapI i map l =
-    let
-        ifmap ( j, a ) =
-            if i == j then
-                (map a)
-            else
-                a
-    in
-        List.map ifmap <| List.indexedMap (,) l
