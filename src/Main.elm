@@ -174,7 +174,7 @@ getUrl url =
             (Http.request
                 { method = "GET"
                 , headers = []
-                , url = url
+                , url = Debug.log "getUrl" url
                 , body = emptyBody
                 , expect = expectStringResponse <| handleGetResponse url
                 , timeout = Nothing
