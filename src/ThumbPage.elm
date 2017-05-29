@@ -79,7 +79,14 @@ urlsToGet thumbPageModel =
         srcs =
             List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
     in
-        Set.fromList <| List.map (\i -> i.url) <| List.take 5 srcs
+        Set.diff
+            (Set.fromList <|
+                List.take 5 <|
+                    List.map
+                        (\i -> i.url)
+                        srcs
+            )
+            thumbPageModel.loadedImages
 
 
 viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
