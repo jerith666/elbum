@@ -207,6 +207,7 @@ viewThumb width selectedMsg img =
             renderPresized 10
                 xScaled
                 yScaled
+                img.srcSetFirst
                 (img.srcSetFirst :: img.srcSetRest)
                 [ borderRadius (px 5)
                 , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)

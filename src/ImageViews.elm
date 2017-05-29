@@ -11,23 +11,28 @@ import Css exposing (..)
 -- TODO change signature to allow non-empty msg
 
 
-renderPresized : Int -> Int -> Int -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> msg -> Html msg
-renderPresized margin w h is s otherAttrs msg =
+renderPresized : Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> msg -> Html msg
+renderPresized margin w h i is s otherAttrs msg =
+    render (smallestImageBiggerThan w h i is)
+        []
+        (s
+            ++ [ Css.margin (px <| toFloat margin)
+               , Css.width (px (toFloat <| w - 2 * margin))
+               , Css.height (px (toFloat <| h - 2 * margin))
+               ]
+        )
+        otherAttrs
+        msg
+
+
+smallestImageBiggerThan : Int -> Int -> ImgSrc -> List ImgSrc -> ImgSrc
+smallestImageBiggerThan w h i is =
     case List.head <| List.sortBy (\is -> is.x) <| List.filter (\is -> is.x > w && is.y > h) is of
         Nothing ->
-            div [] []
+            i
 
         Just sizedIs ->
-            render sizedIs
-                []
-                (s
-                    ++ [ Css.margin (px <| toFloat margin)
-                       , Css.width (px (toFloat <| w - 2 * margin))
-                       , Css.height (px (toFloat <| h - 2 * margin))
-                       ]
-                )
-                otherAttrs
-                msg
+            sizedIs
 
 
 render : ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> msg -> Html msg

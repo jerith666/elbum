@@ -95,6 +95,7 @@ viewImg clickMsg touchStartMsg touchContinueMsg touchPrevNext fullImagePageModel
             0
             w
             h
+            img.srcSetFirst
             (img.srcSetFirst :: img.srcSetRest)
             [ position relative
               -- note: no up/down movement is desired, just left/right
