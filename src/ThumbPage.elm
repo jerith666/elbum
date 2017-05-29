@@ -252,6 +252,11 @@ viewThumb width selectedMsg img =
             img.srcSetRest
             [ borderRadius (px 5)
             , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
+            , opacity (num 1)
+            , property "transition-property" "opacity"
+            , property "transition-duration" "2s"
+            , property "transition-timing-function" "ease-in-out"
+            , property "transition-delay" "0s"
             ]
             []
             selectedMsg
