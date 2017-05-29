@@ -12,8 +12,8 @@ import Css exposing (..)
 
 
 renderPresized : Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> msg -> Html msg
-renderPresized margin w h i is s otherAttrs msg =
-    render (smallestImageBiggerThan w h i is)
+renderPresized margin w h i iRest s otherAttrs msg =
+    render (smallestImageBiggerThan w h i iRest)
         []
         (s
             ++ [ Css.margin (px <| toFloat margin)
@@ -26,8 +26,8 @@ renderPresized margin w h i is s otherAttrs msg =
 
 
 smallestImageBiggerThan : Int -> Int -> ImgSrc -> List ImgSrc -> ImgSrc
-smallestImageBiggerThan w h i is =
-    case List.head <| List.sortBy (\is -> is.x) <| List.filter (\is -> is.x > w && is.y > h) is of
+smallestImageBiggerThan w h i iRest =
+    case List.head <| List.sortBy (\is -> is.x) <| List.filter (\is -> is.x > w && is.y > h) <| i :: iRest of
         Nothing ->
             i
 

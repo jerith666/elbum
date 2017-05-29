@@ -96,7 +96,7 @@ viewImg clickMsg touchStartMsg touchContinueMsg touchPrevNext fullImagePageModel
             w
             h
             img.srcSetFirst
-            (img.srcSetFirst :: img.srcSetRest)
+            img.srcSetRest
             [ position relative
               -- note: no up/down movement is desired, just left/right
               -- , top <| px <| Tuple.second fullImagePageModel.offset
