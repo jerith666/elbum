@@ -41,10 +41,20 @@ init =
 view model =
     case model of
         Shown url ->
-            viewImg url 1 Hide
+            div
+                []
+                [ Html.text "shown"
+                , viewImg url 1 Hide
+                ]
 
         Hidden url ->
-            viewImg url 0 Show
+            div
+                []
+            <|
+                List.reverse
+                    [ Html.text "hidden"
+                    , viewImg url 0 Show
+                    ]
 
 
 styles =
