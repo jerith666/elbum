@@ -63,16 +63,16 @@ view model =
     in
         case model of
             Showing url ->
-                show url 0 "show"
+                show url 0 "show0"
 
             Shown url ->
-                show url 1 "show"
+                show url 1 "show1"
 
             Hiding url ->
-                hide url 1 "hide"
+                hide url 1 "hide1"
 
             Hidden url ->
-                hide url 0 "hide"
+                hide url 0 "hide0"
 
 
 styles =
