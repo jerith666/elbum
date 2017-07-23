@@ -16,45 +16,57 @@ import Css exposing (..)
 
 
 type Model
-    = Shown String
+    = Showing String
+    | Shown String
+    | Hiding String
     | Hidden String
 
 
 type Update
-    = Show
-    | Hide
+    = StartShow
+    | EndShow
+    | StartHide
+    | EndHide
 
 
 main : Program Never Model Update
 main =
-    beginnerProgram
-        { model = init
+    program
+        { init = init
         , view = view
         , update = update
+        , subscriptions = \_ -> Sub.none
         }
 
 
 init =
-    Shown "DSC_4816.JPG"
+    (Showing "DSC_4816.JPG", Cmd.none)
 
 
 view model =
-    case model of
-        Shown url ->
-            div
-                []
-                [ Html.text "shown"
-                , viewImg url 1 Hide
+    let show url = div
+         []
+         [ Html.text "shown"
+         , viewImg url 1 StartHide
+         ]
+        hide url = div
+            []
+          <|
+            List.reverse
+                [ Html.text "hidden"
+                , viewImg url 0 StartShow
                 ]
+    in
+      case model of
+        Shown url ->
+            show url
+        Showing url ->
+            show url
 
+        Hiding url ->
+            hide url
         Hidden url ->
-            div
-                []
-            <|
-                List.reverse
-                    [ Html.text "hidden"
-                    , viewImg url 0 Show
-                    ]
+            hide url
 
 
 styles =
@@ -82,21 +94,38 @@ viewImg url op upd =
         []
 
 
-update : Update -> Model -> Model
+update : Update -> Model -> (Model, Cmd Update)
 update msg model =
-    case msg of
-        Hide ->
+    let
+        hiding =
             case model of
+                Hiding _ ->
+                    model
+
                 Hidden _ ->
                     model
 
                 Shown url ->
-                    Hidden url
+                    Hiding url
 
-        Show ->
+                Showing url ->
+                    Hiding url
+        showing =
             case model of
+                Hiding url ->
+                    Showing url
+
                 Hidden url ->
-                    Shown url
+                    Showing url
+
+                Showing _ ->
+                    model
 
                 Shown _ ->
                     model
+    in
+            case msg of
+                StartShow -> (showing, perform (\x -> x) (succeed EndShow))
+                EndShow -> (showing, Cmd.none)
+                StartHide -> (hiding, perform (\x -> x) (succeed EndHide))
+                EndHide -> (hiding, Cmd.none)

@@ -10,6 +10,7 @@ import Html exposing (..)
 import Http exposing (..)
 import Window exposing (..)
 import Set exposing (..)
+import AnimationTest exposing (..)
 
 
 type AlbumBootstrap
