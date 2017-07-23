@@ -45,34 +45,34 @@ init =
 
 view model =
     let
-        show url =
+        show url op txt =
             div
                 []
-                [ Html.text "shown"
-                , viewImg url 1 StartHide
+                [ Html.text txt
+                , viewImg url op StartHide
                 ]
 
-        hide url =
+        hide url op txt =
             div
                 []
             <|
                 List.reverse
-                    [ Html.text "hidden"
-                    , viewImg url 0 StartShow
+                    [ Html.text txt
+                    , viewImg url op StartShow
                     ]
     in
         case model of
-            Shown url ->
-                show url
-
             Showing url ->
-                show url
+                show url 0 "show"
+
+            Shown url ->
+                show url 1 "show"
 
             Hiding url ->
-                hide url
+                hide url 1 "hide"
 
             Hidden url ->
-                hide url
+                hide url 0 "hide"
 
 
 styles =
