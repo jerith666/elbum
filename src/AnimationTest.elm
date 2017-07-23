@@ -40,33 +40,39 @@ main =
 
 
 init =
-    (Showing "DSC_4816.JPG", Cmd.none)
+    ( Showing "DSC_4816.JPG", Cmd.none )
 
 
 view model =
-    let show url = div
-         []
-         [ Html.text "shown"
-         , viewImg url 1 StartHide
-         ]
-        hide url = div
-            []
-          <|
-            List.reverse
-                [ Html.text "hidden"
-                , viewImg url 0 StartShow
+    let
+        show url =
+            div
+                []
+                [ Html.text "shown"
+                , viewImg url 1 StartHide
                 ]
-    in
-      case model of
-        Shown url ->
-            show url
-        Showing url ->
-            show url
 
-        Hiding url ->
-            hide url
-        Hidden url ->
-            hide url
+        hide url =
+            div
+                []
+            <|
+                List.reverse
+                    [ Html.text "hidden"
+                    , viewImg url 0 StartShow
+                    ]
+    in
+        case model of
+            Shown url ->
+                show url
+
+            Showing url ->
+                show url
+
+            Hiding url ->
+                hide url
+
+            Hidden url ->
+                hide url
 
 
 styles =
@@ -94,38 +100,98 @@ viewImg url op upd =
         []
 
 
-update : Update -> Model -> (Model, Cmd Update)
+update : Update -> Model -> ( Model, Cmd Update )
 update msg model =
-    let
-        hiding =
-            case model of
-                Hiding _ ->
-                    model
-
-                Hidden _ ->
-                    model
-
-                Shown url ->
-                    Hiding url
-
-                Showing url ->
-                    Hiding url
-        showing =
-            case model of
-                Hiding url ->
-                    Showing url
-
-                Hidden url ->
-                    Showing url
-
-                Showing _ ->
-                    model
-
-                Shown _ ->
-                    model
-    in
+    case model of
+        Showing url ->
             case msg of
-                StartShow -> (showing, perform (\x -> x) (succeed EndShow))
-                EndShow -> (showing, Cmd.none)
-                StartHide -> (hiding, perform (\x -> x) (succeed EndHide))
-                EndHide -> (hiding, Cmd.none)
+                StartShow ->
+                    ( model, Cmd.none )
+
+                EndShow ->
+                    ( Shown url, Cmd.none )
+
+                StartHide ->
+                    ( Hiding url, perform (\x -> x) (succeed EndHide) )
+
+                EndHide ->
+                    ( Hidden url, Cmd.none )
+
+        Shown url ->
+            case msg of
+                StartShow ->
+                    ( Showing url, perform (\x -> x) (succeed EndShow) )
+
+                EndShow ->
+                    ( model, Cmd.none )
+
+                StartHide ->
+                    ( Hiding url, perform (\x -> x) (succeed EndHide) )
+
+                EndHide ->
+                    ( Hidden url, Cmd.none )
+
+        Hiding url ->
+            case msg of
+                StartShow ->
+                    ( Showing url, perform (\x -> x) (succeed EndShow) )
+
+                EndShow ->
+                    ( Shown url, Cmd.none )
+
+                StartHide ->
+                    ( model, Cmd.none )
+
+                EndHide ->
+                    ( Hidden url, Cmd.none )
+
+        Hidden url ->
+            case msg of
+                StartShow ->
+                    ( Showing url, perform (\x -> x) (succeed EndShow) )
+
+                EndShow ->
+                    ( Shown url, Cmd.none )
+
+                StartHide ->
+                    ( Hiding url, perform (\x -> x) (succeed EndHide) )
+
+                EndHide ->
+                    ( model, Cmd.none )
+
+
+
+-- Shown url ->
+{-
+   let hiding = case model of
+               Hiding _ ->
+                   model
+
+               Hidden _ ->
+                   model
+
+               Shown url ->
+                   Hiding url
+
+               Showing url ->
+                   Hiding url
+       showing =
+           case model of
+               Hiding url ->
+                   Showing url
+
+               Hidden url ->
+                   Showing url
+
+               Showing _ ->
+                   model
+
+               Shown _ ->
+                   model
+   in
+           case msg of
+               StartShow -> (showing, perform (\x -> x) (succeed EndShow))
+               EndShow -> (showing, Cmd.none)
+               StartHide -> (hiding, perform (\x -> x) (succeed EndHide))
+               EndHide -> (hiding, Cmd.none)
+-}
