@@ -12,7 +12,7 @@ import Set exposing (..)
 
 
 type AlbumPage
-    = Thumbs Album WinSize (Set String)
+    = Thumbs Album WinSize (Set String) (Set String)
     | FullImage (List Image) Album WinSize (Maybe ( Touch, Touch ))
 
 
@@ -35,7 +35,7 @@ update msg model =
     case msg of
         View prevImgs curImg nextImgs ->
             case model of
-                Thumbs album winSize _ ->
+                Thumbs album winSize _ _ ->
                     FullImage
                         prevImgs
                         { title = album.title
@@ -104,6 +104,7 @@ update msg model =
                             }
                             winSize
                             empty
+                            empty
 
                 _ ->
                     model
@@ -136,11 +137,12 @@ update msg model =
 urlsToGet : AlbumPage -> Set String
 urlsToGet albumPage =
     case albumPage of
-        Thumbs album winSize loadedImages ->
+        Thumbs album winSize justLoadedImages loadedImages ->
             ThumbPage.urlsToGet
                 { album = album
                 , parents = []
                 , winSize = winSize
+                , justLoadedImages = justLoadedImages
                 , loadedImages = loadedImages
                 }
 
@@ -151,13 +153,14 @@ urlsToGet albumPage =
 view : AlbumPage -> (AlbumTreeNode -> msg) -> (AlbumPageMsg -> msg) -> List AlbumTreeNode -> Html msg
 view albumPage showNode wrapMsg parents =
     case albumPage of
-        Thumbs album winSize loadedImages ->
+        Thumbs album winSize justLoadedImages loadedImages ->
             ThumbPage.view
                 (\x -> (\y -> (\z -> wrapMsg (View x y z))))
                 showNode
                 { album = album
                 , parents = parents
                 , winSize = winSize
+                , justLoadedImages = justLoadedImages
                 , loadedImages = loadedImages
                 }
 
@@ -209,7 +212,7 @@ offsetFor dragInfo =
 subscriptions : AlbumPage -> Sub AlbumPageMsg
 subscriptions albumPage =
     case albumPage of
-        Thumbs _ _ _ ->
+        Thumbs _ _ _ _ ->
             Sub.none
 
         FullImage _ _ _ _ ->

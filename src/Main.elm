@@ -68,10 +68,10 @@ update msg model =
 
                 LoadedAlbum albumPage parents pendingUrls ->
                     case albumPage of
-                        Thumbs album oldSize loadedImages ->
+                        Thumbs album oldSize justLoadedImages loadedImages ->
                             let
                                 model =
-                                    Thumbs album (Debug.log "window size updated for thumbs" size) loadedImages
+                                    Thumbs album (Debug.log "window size updated for thumbs" size) justLoadedImages loadedImages
 
                                 urls =
                                     AlbumPage.urlsToGet model
@@ -245,7 +245,7 @@ subscriptions model =
 pageSize : AlbumPage -> WinSize
 pageSize albumPage =
     case albumPage of
-        Thumbs _ winSize _ ->
+        Thumbs _ winSize _ _ ->
             winSize
 
         FullImage _ _ winSize _ ->
