@@ -209,7 +209,7 @@ justLoadedReadyToDisplayNextState album size justLoadedImages readyToDisplayImag
             Thumbs album size (Set.insert url justLoadedImages) readyToDisplayImages
 
         ReadyToDisplay ->
-            Thumbs album size justLoadedImages <| Set.insert url readyToDisplayImages
+            Thumbs album size (Set.remove url justLoadedImages) <| Set.insert url readyToDisplayImages
 
         _ ->
             Thumbs album size justLoadedImages readyToDisplayImages
