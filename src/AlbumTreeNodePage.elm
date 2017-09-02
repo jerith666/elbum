@@ -32,7 +32,7 @@ viewChildNode viewSubtree viewAlbum nodeOrAlbum =
                 [ styles [ color white ]
                 , onClick <| viewSubtree albumTreeNode
                 ]
-                [ viewThumb 200 1 (viewSubtree albumTreeNode) albumTreeNode.nodeThumbnail
+                [ viewThumb 200 (viewSubtree albumTreeNode) albumTreeNode.nodeThumbnail
                 , div [] [ Html.text albumTreeNode.nodeTitle ]
                 ]
 
@@ -41,6 +41,6 @@ viewChildNode viewSubtree viewAlbum nodeOrAlbum =
                 [ styles [ color white ]
                 , onClick <| viewAlbum album
                 ]
-                [ viewThumb 200 1 (viewAlbum album) album.thumbnail
+                [ viewThumb 200 (viewAlbum album) album.thumbnail
                 , div [] [ Html.text album.title ]
                 ]

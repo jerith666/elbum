@@ -15,7 +15,6 @@ type alias ThumbPageModel =
     { album : Album
     , parents : List AlbumTreeNode
     , winSize : WinSize
-    , justLoadedImages : Set String
     , loadedImages : Set String
     }
 
@@ -103,7 +102,6 @@ viewThumbs imgChosenMsgr thumbPageModel =
         List.map
             (viewThumbColumn thumbWidth
                 (convertImgChosenMsgr thumbPageModel.album.imageFirst imgs imgChosenMsgr)
-                thumbPageModel.justLoadedImages
                 thumbPageModel.loadedImages
             )
         <|
@@ -143,8 +141,8 @@ convertImgChosenMsgr image1 images prevCurRestImgChosenMsgr =
             prevCurRestImgChosenMsgr prev cur next
 
 
-viewThumbColumn : Int -> (Int -> msg) -> Set String -> Set String -> List ( Image, Int ) -> Html msg
-viewThumbColumn thumbWidth imgChosenMsgr justLoadedUrls loadedUrls images =
+viewThumbColumn : Int -> (Int -> msg) -> Set String -> List ( Image, Int ) -> Html msg
+viewThumbColumn thumbWidth imgChosenMsgr loadedUrls images =
     let
         viewThumbTuple ( img, i ) =
             let
@@ -152,9 +150,7 @@ viewThumbColumn thumbWidth imgChosenMsgr justLoadedUrls loadedUrls images =
                     srcForWidth thumbWidth img
             in
                 if member src.url loadedUrls then
-                    viewThumb thumbWidth 1 (imgChosenMsgr i) img
-                else if member src.url justLoadedUrls then
-                    viewThumb thumbWidth 0 (imgChosenMsgr i) img
+                    viewThumb thumbWidth (imgChosenMsgr i) img
                 else
                     stubThumb thumbWidth img
     in
@@ -243,8 +239,8 @@ srcForWidth width img =
         smallestImageBiggerThan xScaled yScaled img.srcSetFirst img.srcSetRest
 
 
-viewThumb : Int -> Float -> msg -> Image -> Html msg
-viewThumb width op selectedMsg img =
+viewThumb : Int -> msg -> Image -> Html msg
+viewThumb width selectedMsg img =
     let
         ( xScaled, yScaled ) =
             sizeForWidth width img
@@ -256,7 +252,7 @@ viewThumb width op selectedMsg img =
             img.srcSetRest
             [ borderRadius (px 5)
             , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
-            , opacity (num op)
+            , opacity (num 1)
             , property "transition-property" "opacity"
             , property "transition-duration" "2s"
             , property "transition-timing-function" "ease-in-out"
