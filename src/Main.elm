@@ -24,7 +24,7 @@ type AlbumBootstrap
 type UrlLoadState
     = Requested
       --| Partial Int
-      --| JustCompleted
+    | JustCompleted
     | ReadyToDisplay
     | Failed Http.Error
 
@@ -37,6 +37,7 @@ type AlbumBootstrapMsg
     | ViewNode AlbumTreeNodePage
     | ViewAlbum AlbumPage (List AlbumTreeNode)
     | ImageLoaded String
+    | ImageReadyToDisplay String
     | ImageFailed String Http.Error
 
 
@@ -148,6 +149,9 @@ update msg model =
                     ( model, Cmd.none )
 
         ImageLoaded url ->
+            updateImageResult model url JustCompleted
+
+        ImageReadyToDisplay url ->
             updateImageResult model url ReadyToDisplay
 
         ImageFailed url err ->
@@ -185,7 +189,10 @@ updateImageResult model url result =
                             Dict.union (Dict.fromList [ ( url, result ) ]) <|
                                 Dict.union pendingUrls <|
                                     dictWithValues urls Requested
-                        , getUrls pendingUrls urls
+                        , Cmd.batch
+                            [ getUrls pendingUrls urls
+                            , urlNextState url result
+                            ]
                         )
 
                 _ ->
@@ -193,6 +200,16 @@ updateImageResult model url result =
 
         _ ->
             ( model, Cmd.none )
+
+
+urlNextState : String -> UrlLoadState -> Cmd AlbumBootstrapMsg
+urlNextState url result =
+    case result of
+        JustCompleted ->
+            perform (\x -> x) (succeed <| ImageReadyToDisplay url)
+
+        _ ->
+            Cmd.none
 
 
 decodeAlbumRequest : Result Http.Error NodeOrAlbum -> AlbumBootstrapMsg
