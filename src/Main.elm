@@ -17,20 +17,15 @@ type AlbumBootstrap
     = Sizing
     | Loading WinSize
     | LoadError Http.Error
-    | LoadedNode AlbumTreeNodePage (Set String)
-      --(Dict String UrlLoadState)
-    | LoadedAlbum AlbumPage (List AlbumTreeNode) (Set String)
-
-
-
---(Dict String UrlLoadState)
+    | LoadedNode AlbumTreeNodePage (Dict String UrlLoadState)
+    | LoadedAlbum AlbumPage (List AlbumTreeNode) (Dict String UrlLoadState)
 
 
 type UrlLoadState
-    = Unrequested
-    | Requested
+    = Requested
       --| Partial Int
-    | Completed
+      --| JustCompleted
+    | ReadyToDisplay
     | Failed Http.Error
 
 
@@ -42,6 +37,7 @@ type AlbumBootstrapMsg
     | ViewNode AlbumTreeNodePage
     | ViewAlbum AlbumPage (List AlbumTreeNode)
     | ImageLoaded String
+    | ImageFailed String Http.Error
 
 
 main : Program Never AlbumBootstrap AlbumBootstrapMsg
@@ -89,7 +85,9 @@ update msg model =
                                 urls =
                                     AlbumPage.urlsToGet model
                             in
-                                ( LoadedAlbum model parents <| Set.union pendingUrls urls
+                                ( LoadedAlbum model parents <|
+                                    Dict.union pendingUrls <|
+                                        dictWithValues urls Requested
                                 , getUrls pendingUrls urls
                                 )
 
@@ -108,7 +106,7 @@ update msg model =
                 Loading winSize ->
                     case nodeOrAlbum of
                         Subtree albumNode ->
-                            ( LoadedNode (AlbumTreeNodePage albumNode winSize []) Set.empty
+                            ( LoadedNode (AlbumTreeNodePage albumNode winSize []) Dict.empty
                             , Cmd.none
                             )
 
@@ -120,8 +118,8 @@ update msg model =
                                 urls =
                                     AlbumPage.urlsToGet albumPage
                             in
-                                ( LoadedAlbum albumPage [] urls
-                                , getUrls Set.empty urls
+                                ( LoadedAlbum albumPage [] <| dictWithValues urls Requested
+                                , getUrls Dict.empty urls
                                 )
 
                 _ ->
@@ -142,7 +140,7 @@ update msg model =
                         urls =
                             AlbumPage.urlsToGet newPage
                     in
-                        ( LoadedAlbum (newPage) parents <| Set.union pendingUrls urls
+                        ( LoadedAlbum (newPage) parents <| Dict.union pendingUrls <| dictWithValues urls Requested
                         , getUrls pendingUrls urls
                         )
 
@@ -150,30 +148,13 @@ update msg model =
                     ( model, Cmd.none )
 
         ImageLoaded url ->
-            case model of
-                LoadedAlbum albumPage parents pendingUrls ->
-                    case albumPage of
-                        Thumbs album size loadedImages ->
-                            let
-                                model =
-                                    Thumbs album size <| Set.insert url loadedImages
+            updateImageResult model url ReadyToDisplay
 
-                                urls =
-                                    AlbumPage.urlsToGet model
-                            in
-                                ( LoadedAlbum model parents <| Set.union pendingUrls urls
-                                  --TODO union wrong here?
-                                , getUrls pendingUrls urls
-                                )
-
-                        _ ->
-                            ( model, Cmd.none )
-
-                _ ->
-                    ( model, Cmd.none )
+        ImageFailed url err ->
+            updateImageResult model url <| Failed err
 
         ViewNode albumTreeNodePage ->
-            ( LoadedNode albumTreeNodePage Set.empty
+            ( LoadedNode albumTreeNodePage Dict.empty
             , Cmd.none
             )
 
@@ -182,9 +163,36 @@ update msg model =
                 urls =
                     AlbumPage.urlsToGet albumPage
             in
-                ( LoadedAlbum albumPage parents urls
-                , getUrls Set.empty urls
+                ( LoadedAlbum albumPage parents <| dictWithValues urls Requested
+                , getUrls Dict.empty urls
                 )
+
+
+updateImageResult : AlbumBootstrap -> String -> UrlLoadState -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
+updateImageResult model url result =
+    case model of
+        LoadedAlbum albumPage parents pendingUrls ->
+            case albumPage of
+                Thumbs album size loadedImages ->
+                    let
+                        model =
+                            Thumbs album size <| Set.insert url loadedImages
+
+                        urls =
+                            AlbumPage.urlsToGet model
+                    in
+                        ( LoadedAlbum model parents <|
+                            Dict.union (Dict.fromList [ ( url, result ) ]) <|
+                                Dict.union pendingUrls <|
+                                    dictWithValues urls Requested
+                        , getUrls pendingUrls urls
+                        )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )
 
 
 decodeAlbumRequest : Result Http.Error NodeOrAlbum -> AlbumBootstrapMsg
@@ -197,14 +205,14 @@ decodeAlbumRequest r =
             NoAlbum e
 
 
-getUrls : Set String -> Set String -> Cmd AlbumBootstrapMsg
-getUrls pending urls =
-    Cmd.batch <| List.map getUrl <| Set.toList <| Set.diff urls pending
+getUrls : Dict String UrlLoadState -> Set String -> Cmd AlbumBootstrapMsg
+getUrls existingUrls newUrls =
+    Cmd.batch <| List.map getUrl <| Set.toList <| Set.diff newUrls <| Set.fromList <| keys existingUrls
 
 
 getUrl : String -> Cmd AlbumBootstrapMsg
 getUrl url =
-    Task.attempt decodeUrlResult
+    Task.attempt (decodeUrlResult url)
         (Http.toTask
             (Http.request
                 { method = "GET"
@@ -229,14 +237,14 @@ handleGetResponse url r =
             Err <| "err " ++ r.status.message
 
 
-decodeUrlResult : Result Error String -> AlbumBootstrapMsg
-decodeUrlResult result =
+decodeUrlResult : String -> Result Error String -> AlbumBootstrapMsg
+decodeUrlResult origUrl result =
     case result of
         Ok url ->
             ImageLoaded url
 
         Err e ->
-            NoAlbum e
+            ImageFailed origUrl e
 
 
 subscriptions : AlbumBootstrap -> Sub AlbumBootstrapMsg

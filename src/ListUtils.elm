@@ -1,4 +1,14 @@
-module ListUtils exposing (shiftToBeginning, shiftLeft, shiftRight, dropThrough, mapI)
+module ListUtils exposing (dictWithValues, shiftToBeginning, shiftLeft, shiftRight, dropThrough, mapI)
+
+import Dict exposing (..)
+import Set exposing (..)
+
+
+dictWithValues : Set comparable -> a -> Dict comparable a
+dictWithValues keys val =
+    Dict.fromList <|
+        List.map (\key -> ( key, val )) <|
+            Set.toList keys
 
 
 shiftToBeginning : List a -> a -> List a -> ( a, List a )
