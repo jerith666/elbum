@@ -78,10 +78,10 @@ update msg model =
 
                 LoadedAlbum albumPage parents pendingUrls ->
                     case albumPage of
-                        Thumbs album oldSize loadedImages ->
+                        Thumbs album oldSize justLoadedImages readyToDisplayImages ->
                             let
                                 model =
-                                    Thumbs album (Debug.log "window size updated for thumbs" size) loadedImages
+                                    Thumbs album (Debug.log "window size updated for thumbs" size) justLoadedImages readyToDisplayImages
 
                                 urls =
                                     AlbumPage.urlsToGet model
@@ -114,7 +114,7 @@ update msg model =
                         Leaf album ->
                             let
                                 albumPage =
-                                    Thumbs album winSize Set.empty
+                                    Thumbs album winSize Set.empty Set.empty
 
                                 urls =
                                     AlbumPage.urlsToGet albumPage
@@ -177,10 +177,10 @@ updateImageResult model url result =
     case model of
         LoadedAlbum albumPage parents pendingUrls ->
             case albumPage of
-                Thumbs album size loadedImages ->
+                Thumbs album size justLoadedImages readyToDisplayImages ->
                     let
                         model =
-                            Thumbs album size <| Set.insert url loadedImages
+                            justLoadedReadyToDisplayNextState album size justLoadedImages readyToDisplayImages url result
 
                         urls =
                             AlbumPage.urlsToGet model
@@ -200,6 +200,19 @@ updateImageResult model url result =
 
         _ ->
             ( model, Cmd.none )
+
+
+justLoadedReadyToDisplayNextState : Album -> WinSize -> Set String -> Set String -> String -> UrlLoadState -> AlbumPage
+justLoadedReadyToDisplayNextState album size justLoadedImages readyToDisplayImages url result =
+    case result of
+        JustCompleted ->
+            Thumbs album size (Set.insert url justLoadedImages) readyToDisplayImages
+
+        ReadyToDisplay ->
+            Thumbs album size justLoadedImages <| Set.insert url readyToDisplayImages
+
+        _ ->
+            Thumbs album size justLoadedImages readyToDisplayImages
 
 
 urlNextState : String -> UrlLoadState -> Cmd AlbumBootstrapMsg
@@ -284,7 +297,7 @@ subscriptions model =
 pageSize : AlbumPage -> WinSize
 pageSize albumPage =
     case albumPage of
-        Thumbs _ winSize _ ->
+        Thumbs _ winSize _ _ ->
             winSize
 
         FullImage _ _ winSize _ ->
@@ -334,7 +347,7 @@ view albumBootstrap =
                 )
                 (\album ->
                     ViewAlbum
-                        (Thumbs album winSize Set.empty)
+                        (Thumbs album winSize Set.empty Set.empty)
                     <|
                         albumTreeNode
                             :: parents

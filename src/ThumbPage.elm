@@ -15,7 +15,8 @@ type alias ThumbPageModel =
     { album : Album
     , parents : List AlbumTreeNode
     , winSize : WinSize
-    , loadedImages : Set String
+    , justLoadedImages : Set String
+    , readyToDisplayImages : Set String
     }
 
 
@@ -83,7 +84,7 @@ urlsToGet thumbPageModel =
             Set.fromList <|
                 List.take 5 <|
                     List.filter
-                        (\url -> not <| member url thumbPageModel.loadedImages)
+                        (\url -> not <| member url <| Set.union thumbPageModel.justLoadedImages thumbPageModel.readyToDisplayImages)
                     <|
                         List.map
                             (\i -> i.url)
@@ -102,7 +103,8 @@ viewThumbs imgChosenMsgr thumbPageModel =
         List.map
             (viewThumbColumn thumbWidth
                 (convertImgChosenMsgr thumbPageModel.album.imageFirst imgs imgChosenMsgr)
-                thumbPageModel.loadedImages
+                thumbPageModel.justLoadedImages
+                thumbPageModel.readyToDisplayImages
             )
         <|
             spreadThumbs maxCols imgs []
@@ -141,16 +143,17 @@ convertImgChosenMsgr image1 images prevCurRestImgChosenMsgr =
             prevCurRestImgChosenMsgr prev cur next
 
 
-viewThumbColumn : Int -> (Int -> msg) -> Set String -> List ( Image, Int ) -> Html msg
-viewThumbColumn thumbWidth imgChosenMsgr loadedUrls images =
+viewThumbColumn : Int -> (Int -> msg) -> Set String -> Set String -> List ( Image, Int ) -> Html msg
+viewThumbColumn thumbWidth imgChosenMsgr justLoadedImages readyToDisplayImages images =
     let
         viewThumbTuple ( img, i ) =
             let
                 src =
                     srcForWidth thumbWidth img
             in
-                if member src.url loadedUrls then
+                if member src.url <| Set.union justLoadedImages readyToDisplayImages then
                     viewThumb thumbWidth (imgChosenMsgr i) img
+                    --TODO opacity
                 else
                     stubThumb thumbWidth img
     in
