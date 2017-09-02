@@ -155,9 +155,9 @@ viewThumbColumn thumbWidth imgChosenMsgr justLoadedImages readyToDisplayImages i
                     let
                         opacity =
                             if member src.url justLoadedImages then
-                                ( 0, False )
+                                0
                             else
-                                ( 1, True )
+                                1
                     in
                         viewThumb thumbWidth opacity (imgChosenMsgr i) img
                     --TODO opacity
@@ -249,7 +249,7 @@ srcForWidth width img =
         smallestImageBiggerThan xScaled yScaled img.srcSetFirst img.srcSetRest
 
 
-viewThumb : Int -> ( Float, Bool ) -> msg -> Image -> Html msg
+viewThumb : Int -> Float -> msg -> Image -> Html msg
 viewThumb width opasity selectedMsg img =
     let
         ( xScaled, yScaled ) =
@@ -260,28 +260,17 @@ viewThumb width opasity selectedMsg img =
             yScaled
             img.srcSetFirst
             img.srcSetRest
-            ([ borderRadius (px 5)
-             , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
-             ]
-                ++ (opacityStyles opasity)
-            )
-            []
-        <|
-            Just selectedMsg
-
-
-opacityStyles ( op, anim ) =
-    case anim of
-        True ->
-            [ opacity (num op)
+            [ borderRadius (px 5)
+            , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
+            , opacity (num opasity)
             , property "transition-property" "opacity"
             , property "transition-duration" "2s"
             , property "transition-timing-function" "ease-in-out"
             , property "transition-delay" "0s"
             ]
-
-        False ->
-            [ opacity (num op) ]
+            []
+        <|
+            Just selectedMsg
 
 
 loadingImg : ImgSrc
