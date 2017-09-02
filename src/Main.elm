@@ -10,7 +10,7 @@ import Html exposing (..)
 import Http exposing (..)
 import Window exposing (..)
 import Set exposing (..)
-import AnimationTest exposing (..)
+import Dict exposing (..)
 
 
 type AlbumBootstrap
@@ -18,7 +18,20 @@ type AlbumBootstrap
     | Loading WinSize
     | LoadError Http.Error
     | LoadedNode AlbumTreeNodePage (Set String)
+      --(Dict String UrlLoadState)
     | LoadedAlbum AlbumPage (List AlbumTreeNode) (Set String)
+
+
+
+--(Dict String UrlLoadState)
+
+
+type UrlLoadState
+    = Unrequested
+    | Requested
+      --| Partial Int
+    | Completed
+    | Failed Http.Error
 
 
 type AlbumBootstrapMsg
@@ -76,7 +89,7 @@ update msg model =
                                 urls =
                                     AlbumPage.urlsToGet model
                             in
-                                ( LoadedAlbum model parents <| union pendingUrls urls
+                                ( LoadedAlbum model parents <| Set.union pendingUrls urls
                                 , getUrls pendingUrls urls
                                 )
 
@@ -95,20 +108,20 @@ update msg model =
                 Loading winSize ->
                     case nodeOrAlbum of
                         Subtree albumNode ->
-                            ( LoadedNode (AlbumTreeNodePage albumNode winSize []) empty
+                            ( LoadedNode (AlbumTreeNodePage albumNode winSize []) Set.empty
                             , Cmd.none
                             )
 
                         Leaf album ->
                             let
                                 albumPage =
-                                    Thumbs album winSize empty
+                                    Thumbs album winSize Set.empty
 
                                 urls =
                                     AlbumPage.urlsToGet albumPage
                             in
                                 ( LoadedAlbum albumPage [] urls
-                                , getUrls empty urls
+                                , getUrls Set.empty urls
                                 )
 
                 _ ->
@@ -129,7 +142,7 @@ update msg model =
                         urls =
                             AlbumPage.urlsToGet newPage
                     in
-                        ( LoadedAlbum (newPage) parents <| union pendingUrls urls
+                        ( LoadedAlbum (newPage) parents <| Set.union pendingUrls urls
                         , getUrls pendingUrls urls
                         )
 
@@ -143,12 +156,12 @@ update msg model =
                         Thumbs album size loadedImages ->
                             let
                                 model =
-                                    Thumbs album size <| insert url loadedImages
+                                    Thumbs album size <| Set.insert url loadedImages
 
                                 urls =
                                     AlbumPage.urlsToGet model
                             in
-                                ( LoadedAlbum model parents <| union pendingUrls urls
+                                ( LoadedAlbum model parents <| Set.union pendingUrls urls
                                   --TODO union wrong here?
                                 , getUrls pendingUrls urls
                                 )
@@ -160,7 +173,7 @@ update msg model =
                     ( model, Cmd.none )
 
         ViewNode albumTreeNodePage ->
-            ( LoadedNode albumTreeNodePage empty
+            ( LoadedNode albumTreeNodePage Set.empty
             , Cmd.none
             )
 
@@ -170,7 +183,7 @@ update msg model =
                     AlbumPage.urlsToGet albumPage
             in
                 ( LoadedAlbum albumPage parents urls
-                , getUrls empty urls
+                , getUrls Set.empty urls
                 )
 
 
@@ -296,7 +309,7 @@ view albumBootstrap =
                 )
                 (\album ->
                     ViewAlbum
-                        (Thumbs album winSize empty)
+                        (Thumbs album winSize Set.empty)
                     <|
                         albumTreeNode
                             :: parents
