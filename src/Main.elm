@@ -149,6 +149,7 @@ update msg model =
                                     AlbumPage.urlsToGet model
                             in
                                 ( LoadedAlbum model parents <| union pendingUrls urls
+                                  --TODO union wrong here?
                                 , getUrls pendingUrls urls
                                 )
 
