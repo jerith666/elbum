@@ -11,6 +11,8 @@ import Http exposing (..)
 import Window exposing (..)
 import Set exposing (..)
 import Dict exposing (..)
+import Time exposing (..)
+import Delay exposing (..)
 
 
 type AlbumBootstrap
@@ -219,7 +221,7 @@ urlNextState : String -> UrlLoadState -> Cmd AlbumBootstrapMsg
 urlNextState url result =
     case result of
         JustCompleted ->
-            perform (\x -> x) (succeed <| ImageReadyToDisplay url)
+            after 100 millisecond <| ImageReadyToDisplay url
 
         _ ->
             Cmd.none
