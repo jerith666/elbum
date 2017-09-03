@@ -275,7 +275,7 @@ opacityStyles ( op, anim ) =
         True ->
             [ opacity (num op)
             , property "transition-property" "opacity"
-            , property "transition-duration" "2s"
+            , property "transition-duration" "1s"
             , property "transition-timing-function" "ease-in-out"
             , property "transition-delay" "0s"
             ]
