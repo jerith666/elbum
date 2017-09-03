@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), view, update, subscriptions, urlsToGet)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), view, update, subscriptions, urlsToGet, resetUrls)
 
 import ListUtils exposing (..)
 import WinSize exposing (..)
@@ -132,6 +132,19 @@ update msg model =
 
         NoUpdate ->
             model
+
+
+resetUrls : AlbumPageMsg -> Bool
+resetUrls msg =
+    case msg of
+        BackToThumbs ->
+            True
+
+        View _ _ _ ->
+            True
+
+        _ ->
+            False
 
 
 urlsToGet : AlbumPage -> Set String

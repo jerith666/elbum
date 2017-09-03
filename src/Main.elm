@@ -135,16 +135,22 @@ update msg model =
 
         PageMsg pageMsg ->
             case model of
-                LoadedAlbum oldPage parents pendingUrls ->
+                LoadedAlbum oldPage parents oldPendingUrls ->
                     let
                         newPage =
                             AlbumPage.update pageMsg oldPage
 
+                        newPendingUrls =
+                            if AlbumPage.resetUrls pageMsg then
+                                Dict.empty
+                            else
+                                oldPendingUrls
+
                         urls =
                             AlbumPage.urlsToGet newPage
                     in
-                        ( LoadedAlbum (newPage) parents <| Dict.union pendingUrls <| dictWithValues urls Requested
-                        , getUrls pendingUrls urls
+                        ( LoadedAlbum newPage parents <| Dict.union newPendingUrls <| dictWithValues urls Requested
+                        , getUrls newPendingUrls urls
                         )
 
                 _ ->
