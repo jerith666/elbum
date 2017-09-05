@@ -118,7 +118,7 @@ getChildImages1 nodeOrAlbum =
 
 genAlbum :: String -> String -> [(FilePath, DynamicImage)] -> IO (Either String Album)
 genAlbum src dest imgs = do
-  pimgs <- sequence $ map (procImage dest) imgs
+  pimgs <- sequence $ map (procImage src dest) imgs
   thumbOrErr <- findThumb src dest pimgs
   case thumbOrErr of
     Left err ->
@@ -148,43 +148,44 @@ findThumb src dest images = do
         [] -> do
           return $ Left $ src ++ " thumbnail at " ++ thumbPath ++ " could not be loaded"
         thumbData:_ -> do
-          thumb <- procImage dest thumbData
+          thumb <- procImage src dest thumbData
           return $ Right $ thumb
     else do
       return $ Left $ thumbLink ++ " is not a symbolic link"
   else do
     return $ Left $ src ++ " does not contain a 'thumbnail' file"
 
-procImage :: FilePath -> (FilePath, DynamicImage) -> IO Image
-procImage d (f,i) = do
+procImage :: FilePath -> FilePath -> (FilePath, DynamicImage) -> IO Image
+procImage s d (f,i) = do
     let w = dynamicMap imageWidth i
         h = dynamicMap imageHeight i
         t = takeBaseName f
-    srcSet <- procSrcSet d f i w h
+    srcSet <- procSrcSet s d f i w h
     return Image { altText = t
                  , srcSetFirst = head srcSet
                  , srcSetRest = tail srcSet
                  }
 
-procSrcSet :: FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
-procSrcSet d f i w h = do
-    rawImg <- raw d f w h
+procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
+procSrcSet s d f i w h = do
+    rawImg <- raw s d f w h
     putStrSameLn $ "processing " ++ (show f) ++ " "
-    shrunken <- sequence $ map (shrinkImgSrc d f i w h) sizes
+    shrunken <- sequence $ map (shrinkImgSrc s d f i w h) sizes
     return (rawImg : shrunken)
 
 sizes :: [Int]
 -- sizes = [1600, 800, 400, 200]
 sizes = [400, 200, 100]
 
-shrinkImgSrc :: FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
-shrinkImgSrc d f i w h maxdim = do
+shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
+shrinkImgSrc s d f i w h maxdim = do
     let fi = toFridayRGB $ convertRGB8 i
         (xsm, ysm) = shrink maxdim w h
         fism = resize Bilinear (ix2 ysm xsm) fi
         ism = toJuicyRGB fism
+        srel = makeRelative s f
         fsm = (takeFileName (dropExtension f)) ++ "." ++ (show maxdim) ++ ".png"
-        fsmpath = d </> fsm
+        fsmpath = d </> srel </> fsm
     putStr $ show maxdim ++ "w "
     hFlush stdout
     savePngImage fsmpath $ ImageRGB8 ism
@@ -193,10 +194,11 @@ shrinkImgSrc d f i w h maxdim = do
                   , y = ysm
                   }
 
-raw :: FilePath -> FilePath -> Int -> Int -> IO ImgSrc
-raw d fpath w h = do
+raw :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
+raw s d fpath w h = do
     let f = takeFileName fpath
-        dest = d </> f
+        srel = makeRelative s fpath
+        dest = d </> srel </> f
     copyFile fpath dest
     putStrSameLn $ "copied " ++ f
     return ImgSrc { url = f
