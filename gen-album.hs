@@ -39,15 +39,15 @@ thumbFilename = "thumbnail"
 
 writeNodeOrAlbum :: String -> String -> IO ()
 writeNodeOrAlbum src dest = do
-  eNodeOrAlbum <- genNodeOrAlbum src dest True
+  eNodeOrAlbum <- genNodeOrAlbum src src dest True
   case eNodeOrAlbum of
     Left err ->
       putStrLn err
     Right nodeOrAlbum ->
       C.writeFile (dest </> "album.json") $ encode nodeOrAlbum
 
-genNodeOrAlbum :: String -> String -> Bool -> IO (Either String NodeOrAlbum)
-genNodeOrAlbum src dest autoThumb = do
+genNodeOrAlbum :: FilePath -> FilePath -> FilePath -> Bool -> IO (Either String NodeOrAlbum)
+genNodeOrAlbum srcRoot src dest autoThumb = do
   files <- filter (`notElem` [".","..",thumbFilename]) <$> getDirectoryContents src
   let afiles = map (\f -> src </> f) (sort files)
   imgs <- imgsOnly afiles
@@ -58,28 +58,28 @@ genNodeOrAlbum src dest autoThumb = do
     return $ Left $ "directory " ++ src ++ " contains both images and subdirs, this is not supported"
   else
     if length imgs > 0 then do
-      aOrErr <- genAlbum src dest imgs
+      aOrErr <- genAlbum srcRoot src dest imgs
       case aOrErr of
         Left err ->
           return $ Left $ err
         Right a ->
           return $ Right $ Leaf a
     else do
-      en <- genNode src dest autoThumb subdirs
+      en <- genNode srcRoot src dest autoThumb subdirs
       case en of
         Left err ->
           return $ Left $ err
         Right n ->
           return $ Right $ Subtree n
 
-genNode :: String -> String -> Bool -> [FilePath] -> IO (Either String AlbumTreeNode)
-genNode src dest autoThumb dirs = do
-  ecFirst <- genNodeOrAlbum (head dirs) dest False
+genNode :: FilePath -> FilePath -> FilePath -> Bool -> [FilePath] -> IO (Either String AlbumTreeNode)
+genNode srcRoot src dest autoThumb dirs = do
+  ecFirst <- genNodeOrAlbum srcRoot (head dirs) dest False
   case ecFirst of
     Left err ->
       return $ Left $ err
     Right cFirst -> do
-      ecRest <- mapM (\dir -> genNodeOrAlbum dir dest False) (tail dirs)
+      ecRest <- mapM (\dir -> genNodeOrAlbum srcRoot dir dest False) (tail dirs)
       case lefts ecRest of
         [] -> do
           let cRest = rights ecRest
@@ -116,9 +116,9 @@ getChildImages1 nodeOrAlbum =
     Leaf album ->
       (imageFirst album) : (imageRest album)
 
-genAlbum :: String -> String -> [(FilePath, DynamicImage)] -> IO (Either String Album)
-genAlbum src dest imgs = do
-  pimgs <- sequence $ map (procImage src dest) imgs
+genAlbum :: FilePath -> FilePath -> FilePath -> [(FilePath, DynamicImage)] -> IO (Either String Album)
+genAlbum srcRoot src dest imgs = do
+  pimgs <- sequence $ map (procImage srcRoot dest) imgs
   thumbOrErr <- findThumb src dest pimgs
   case thumbOrErr of
     Left err ->
@@ -175,8 +175,7 @@ procSrcSet s d f i w h = do
 
 sizes :: [Int]
 -- sizes = [1600, 800, 400, 200]
--- sizes = [400, 200, 100]
-sizes = [100]
+sizes = [400, 200, 100]
 
 shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
 shrinkImgSrc s d f i w h maxdim = do
@@ -187,8 +186,7 @@ shrinkImgSrc s d f i w h maxdim = do
         srel = takeDirectory $ makeRelative s f
         fsm = (takeFileName (dropExtension f)) ++ "." ++ (show maxdim) ++ ".png"
         fsmpath = d </> srel </> fsm
-    -- putStr $ show maxdim ++ "w "
-    putStrLn $ "shrunk " ++ f ++ " to " ++ fsmpath
+    putStr $ show maxdim ++ "w "
     hFlush stdout
     createDirectoryIfMissing True $ takeDirectory fsmpath
     savePngImage fsmpath $ ImageRGB8 ism
@@ -204,7 +202,7 @@ raw s d fpath w h = do
         dest = d </> srel </> f
     createDirectoryIfMissing True $ takeDirectory dest
     copyFile fpath dest
-    putStrLn $ "copied " ++ f ++ " to " ++ dest
+    putStrSameLn $ "copied " ++ f
     return ImgSrc { url = makeRelative d dest
                   , x = w
                   , y = h
