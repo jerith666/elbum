@@ -175,7 +175,8 @@ procSrcSet s d f i w h = do
 
 sizes :: [Int]
 -- sizes = [1600, 800, 400, 200]
-sizes = [400, 200, 100]
+-- sizes = [400, 200, 100]
+sizes = [100]
 
 shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
 shrinkImgSrc s d f i w h maxdim = do
@@ -183,13 +184,15 @@ shrinkImgSrc s d f i w h maxdim = do
         (xsm, ysm) = shrink maxdim w h
         fism = resize Bilinear (ix2 ysm xsm) fi
         ism = toJuicyRGB fism
-        srel = makeRelative s f
+        srel = takeDirectory $ makeRelative s f
         fsm = (takeFileName (dropExtension f)) ++ "." ++ (show maxdim) ++ ".png"
         fsmpath = d </> srel </> fsm
-    putStr $ show maxdim ++ "w "
+    -- putStr $ show maxdim ++ "w "
+    putStrLn $ "shrunk " ++ f ++ " to " ++ fsmpath
     hFlush stdout
+    createDirectoryIfMissing True $ takeDirectory fsmpath
     savePngImage fsmpath $ ImageRGB8 ism
-    return ImgSrc { url = fsm
+    return ImgSrc { url = makeRelative d fsmpath
                   , x = xsm
                   , y = ysm
                   }
@@ -197,11 +200,12 @@ shrinkImgSrc s d f i w h maxdim = do
 raw :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
 raw s d fpath w h = do
     let f = takeFileName fpath
-        srel = makeRelative s fpath
+        srel = takeDirectory $ makeRelative s fpath
         dest = d </> srel </> f
+    createDirectoryIfMissing True $ takeDirectory dest
     copyFile fpath dest
-    putStrSameLn $ "copied " ++ f
-    return ImgSrc { url = f
+    putStrLn $ "copied " ++ f ++ " to " ++ dest
+    return ImgSrc { url = makeRelative d dest
                   , x = w
                   , y = h
                   }
