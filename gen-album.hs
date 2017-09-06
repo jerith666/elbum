@@ -84,7 +84,7 @@ genNode srcRoot src dest autoThumb dirs = do
         [] -> do
           let cRest = rights ecRest
               childImages = getChildImages $ cFirst : cRest
-          thumbOrErr <- findThumb src dest childImages
+          thumbOrErr <- findThumb srcRoot src dest childImages
           case thumbOrErr of
             Left err ->
               if autoThumb then
@@ -119,7 +119,7 @@ getChildImages1 nodeOrAlbum =
 genAlbum :: FilePath -> FilePath -> FilePath -> [(FilePath, DynamicImage)] -> IO (Either String Album)
 genAlbum srcRoot src dest imgs = do
   pimgs <- sequence $ map (procImage srcRoot dest) imgs
-  thumbOrErr <- findThumb src dest pimgs
+  thumbOrErr <- findThumb srcRoot src dest pimgs
   case thumbOrErr of
     Left err ->
       return $ Left $ err
@@ -135,8 +135,8 @@ titleForDir dir =
   let dirName = last $ splitDirectories dir
   in subRegex (mkRegex "^[0-9]+_") dirName ""
 
-findThumb :: FilePath -> FilePath -> [Image] -> IO (Either String Image)
-findThumb src dest images = do
+findThumb :: FilePath -> FilePath -> FilePath -> [Image] -> IO (Either String Image)
+findThumb srcRoot src dest images = do
   let thumbLink = src </> thumbFilename
   thumbLinkFileExists <- doesFileExist thumbLink
   if thumbLinkFileExists then do
@@ -148,7 +148,7 @@ findThumb src dest images = do
         [] -> do
           return $ Left $ src ++ " thumbnail at " ++ thumbPath ++ " could not be loaded"
         thumbData:_ -> do
-          thumb <- procImage src dest thumbData
+          thumb <- procImage srcRoot dest thumbData
           return $ Right $ thumb
     else do
       return $ Left $ thumbLink ++ " is not a symbolic link"
