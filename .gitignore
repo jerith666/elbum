@@ -10,3 +10,4 @@ node_modules/
 *.png
 *.JPG
 test-rawpics
+test-albums/
