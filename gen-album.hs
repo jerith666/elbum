@@ -6,6 +6,7 @@ import System.FilePath
 
 import Data.Either
 import Data.List
+import Data.Maybe
 
 import Control.Monad
 
@@ -145,9 +146,9 @@ findThumb srcRoot src dest images = do
       thumbPath <- getSymbolicLinkTarget thumbLink
       thumbDataArr <- imgOnly $ src </> thumbPath
       case thumbDataArr of
-        [] -> do
+        Nothing -> do
           return $ Left $ src ++ " thumbnail at " ++ thumbPath ++ " could not be loaded"
-        thumbData:_ -> do
+        Just thumbData -> do
           thumb <- procImage srcRoot dest thumbData
           return $ Right $ thumb
     else do
@@ -221,17 +222,17 @@ imgsOnly :: [FilePath] -> IO [(FilePath, DynamicImage)]
 imgsOnly [] = return []
 imgsOnly (f:fs) = do fo <- imgOnly f
                      fos <- imgsOnly fs
-                     return $ fo ++ fos
+                     return $ (maybeToList fo) ++ fos
 
-imgOnly :: FilePath -> IO [(FilePath, DynamicImage)]
+imgOnly :: FilePath -> IO (Maybe (FilePath, DynamicImage))
 imgOnly f = do
     loadResult <- readImage f
     case loadResult of
-         Left err -> do return []
+         Left err -> do return Nothing
          Right img ->
              do
                  putStrSameLn $ "loaded " ++ (show f)
-                 return [(f, img)]
+                 return $ Just (f, img)
 
 putStrSameLn :: String -> IO ()
 putStrSameLn s = do
