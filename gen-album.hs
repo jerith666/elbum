@@ -143,7 +143,7 @@ findThumb srcRoot src dest images = do
   if thumbLinkFileExists then do
     thumbLinkExists <- pathIsSymbolicLink thumbLink
     if thumbLinkExists then do
-      thumbPath <- getSymbolicLinkTarget thumbLink
+      thumbPath <- readLink thumbLink
       if isAbsolute thumbPath then do
         return $ Left $ src ++ " thumbnail link must point to a relative path, but is absolute: " ++ thumbPath
       else do
@@ -159,6 +159,24 @@ findThumb srcRoot src dest images = do
       return $ Left $ thumbLink ++ " is not a symbolic link"
   else do
     return $ Left $ src ++ " does not contain a 'thumbnail' file"
+
+readLink :: FilePath -> IO FilePath
+readLink f = do
+  isLink <- pathIsSymbolicLink f
+  if isLink then do
+    putStrLn $ "file " ++ f ++ " is link"
+    target <- getSymbolicLinkTarget f
+    putStrLn $ "file " ++ f ++ " resolves to " ++ target
+    if isAbsolute target then do
+      putStrLn $ target ++ " is absolute"
+      readLink target
+    else do
+      let ftgt = takeDirectory f </> target
+      putStrLn $ target ++ " made relative: " ++ ftgt
+      readLink ftgt
+  else do
+    putStrLn $ "file " ++ f ++ " is not link"
+    return f
 
 procImage :: FilePath -> FilePath -> (FilePath, DynamicImage) -> IO Image
 procImage s d (f,i) = do
