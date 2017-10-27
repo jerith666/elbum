@@ -184,9 +184,7 @@ shrinkImgSrc s d f i w h maxdim = do
         (xsm, ysm) = shrink maxdim w h
         fism = resize Bilinear (ix2 ysm xsm) fi
         ism = toJuicyRGB fism
-        srel = takeDirectory $ makeRelative s f
-        fsm = (takeFileName (dropExtension f)) ++ "." ++ (show maxdim) ++ ".png"
-        fsmpath = d </> srel </> fsm
+        fsmpath = fst $ destForShrink maxdim s d f
     putStr $ show maxdim ++ "w "
     hFlush stdout
     createDirectoryIfMissing True $ takeDirectory fsmpath
@@ -198,9 +196,7 @@ shrinkImgSrc s d f i w h maxdim = do
 
 raw :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
 raw s d fpath w h = do
-    let f = takeFileName fpath
-        srel = takeDirectory $ makeRelative s fpath
-        dest = d </> srel </> f
+    let (f,dest) = destForRaw s d fpath
     createDirectoryIfMissing True $ takeDirectory dest
     copyFile fpath dest
     putStrSameLn $ "copied " ++ f
@@ -208,6 +204,20 @@ raw s d fpath w h = do
                   , x = w
                   , y = h
                   }
+
+destForRaw :: FilePath -> FilePath -> FilePath -> (FilePath, FilePath)
+destForRaw =
+  destFor takeFileName
+
+destForShrink :: Int -> FilePath -> FilePath -> FilePath -> (FilePath, FilePath)
+destForShrink maxdim =
+  destFor (\f -> (takeFileName (dropExtension f)) ++ "." ++ (show maxdim) ++ ".png")
+
+destFor :: (FilePath -> FilePath) -> FilePath -> FilePath -> FilePath -> (FilePath, FilePath)
+destFor fNameMaker src dest fileInSrc =
+  let srel = takeDirectory $ makeRelative src fileInSrc
+      fName = fNameMaker fileInSrc
+  in (dest </> srel </> fName, fName)
 
 shrink :: Int -> Int -> Int -> (Int, Int)
 shrink maxdim w h = let factor = fromIntegral maxdim / fromIntegral (max w h)
