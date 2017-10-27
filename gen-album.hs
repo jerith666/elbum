@@ -84,13 +84,13 @@ genNode srcRoot src dest autoThumb dirs = do
       case lefts ecRest of
         [] -> do
           let cRest = rights ecRest
-              childImages = getChildImages $ cFirst : cRest
+              childImages = getChildImages dest $ cFirst : cRest
           thumbOrErr <- findThumb srcRoot src dest childImages
           case thumbOrErr of
             Left err ->
               if autoThumb then
                 return $ Right $ AlbumTreeNode { nodeTitle = titleForDir src
-                                               , nodeThumbnail = head childImages
+                                               , nodeThumbnail = snd $ head childImages
                                                , childFirst = cFirst
                                                , childRest = cRest
                                                }
@@ -105,22 +105,22 @@ genNode srcRoot src dest autoThumb dirs = do
         errs -> do
           return $ Left $ head errs
 
-getChildImages :: [NodeOrAlbum] -> [Image]
-getChildImages nodeOrAlbums =
-  concat $ map getChildImages1 nodeOrAlbums
+getChildImages :: FilePath -> [NodeOrAlbum] -> [(FilePath, Image)]
+getChildImages d nodeOrAlbums =
+  concat $ map (getChildImages1 d) nodeOrAlbums
 
-getChildImages1 :: NodeOrAlbum -> [Image]
-getChildImages1 nodeOrAlbum =
+getChildImages1 :: FilePath -> NodeOrAlbum -> [(FilePath, Image)]
+getChildImages1 d nodeOrAlbum =
   case nodeOrAlbum of
     Subtree albumTreeNode ->
-      getChildImages $ (childFirst albumTreeNode) : (childRest albumTreeNode)
+      getChildImages (d </> (nodeTitle albumTreeNode)) $ (childFirst albumTreeNode) : (childRest albumTreeNode)
     Leaf album ->
-      (imageFirst album) : (imageRest album)
+      map (\i -> (d, i)) $ (imageFirst album) : (imageRest album)
 
 genAlbum :: FilePath -> FilePath -> FilePath -> [(FilePath, DynamicImage)] -> IO (Either String Album)
 genAlbum srcRoot src dest imgs = do
   pimgs <- sequence $ map (procImage srcRoot dest) imgs
-  thumbOrErr <- findThumb srcRoot src dest pimgs
+  thumbOrErr <- findThumb srcRoot src dest $ map (\i -> (dest,i)) pimgs
   case thumbOrErr of
     Left err ->
       return $ Left $ err
@@ -136,7 +136,7 @@ titleForDir dir =
   let dirName = last $ splitDirectories dir
   in subRegex (mkRegex "^[0-9]+_") dirName ""
 
-findThumb :: FilePath -> FilePath -> FilePath -> [Image] -> IO (Either String Image)
+findThumb :: FilePath -> FilePath -> FilePath -> [(FilePath,Image)] -> IO (Either String Image)
 findThumb srcRoot src dest images = do
   let thumbLink = src </> thumbFilename
   thumbLinkFileExists <- doesFileExist thumbLink
@@ -148,13 +148,13 @@ findThumb srcRoot src dest images = do
         return $ Left $ src ++ " thumbnail link must point to a relative path, but is absolute: " ++ thumbPath
       else do
         let thumbDest = makeRelative dest $ fst $ destForRaw src dest thumbPath
-            isThumb i = equalFilePath thumbDest $ url $ srcSetFirst i
+            isThumb (d,i) = equalFilePath thumbDest $ (d </> (url $ srcSetFirst i))
             thumb = listToMaybe $ filter isThumb images
         case thumb of
           Nothing -> do
-            return $ Left $ src ++ " thumbnail '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ (concat $ map (\i -> url $ srcSetFirst i) images)
+            return $ Left $ src ++ " thumbnail '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ (concat $ map (\(d,i) -> d </> (url $ srcSetFirst i)) images)
           Just t -> do
-            return $ Right $ t
+            return $ Right $ snd t
     else do
       return $ Left $ thumbLink ++ " is not a symbolic link"
   else do
