@@ -84,7 +84,7 @@ genNode srcRoot src dest autoThumb dirs = do
       case lefts ecRest of
         [] -> do
           let cRest = rights ecRest
-              childImages = getChildImages dest $ cFirst : cRest
+              childImages = getChildImages (dest </> (makeRelative srcRoot src)) $ cFirst : cRest
           thumbOrErr <- findThumb srcRoot src dest childImages
           case thumbOrErr of
             Left err ->
@@ -115,7 +115,7 @@ getChildImages1 d nodeOrAlbum =
     Subtree albumTreeNode ->
       getChildImages (d </> (nodeTitle albumTreeNode)) $ (childFirst albumTreeNode) : (childRest albumTreeNode)
     Leaf album ->
-      map (\i -> (d, i)) $ (imageFirst album) : (imageRest album)
+      map (\i -> (d </> (title album), i)) $ (imageFirst album) : (imageRest album)
 
 genAlbum :: FilePath -> FilePath -> FilePath -> [(FilePath, DynamicImage)] -> IO (Either String Album)
 genAlbum srcRoot src dest imgs = do
@@ -147,7 +147,7 @@ findThumb srcRoot src dest images = do
       if isAbsolute thumbPath then do
         return $ Left $ src ++ " thumbnail link must point to a relative path, but is absolute: " ++ thumbPath
       else do
-        let thumbDest = makeRelative dest $ fst $ destForRaw src dest thumbPath
+        let thumbDest = fst $ destForRaw src dest thumbPath
             isThumb (d,i) = equalFilePath thumbDest $ (d </> (url $ srcSetFirst i))
             thumb = listToMaybe $ filter isThumb images
         case thumb of
