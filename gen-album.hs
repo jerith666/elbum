@@ -144,12 +144,6 @@ findThumb srcRoot src dest images = do
     thumbLinkExists <- pathIsSymbolicLink thumbLink
     if thumbLinkExists then do
       thumbPath <- getSymbolicLinkTarget thumbLink
-      if isAbsolute thumbPath then do
-        return $ Left $ src ++ " thumbnail link must point to a relative path, but is absolute: " ++ thumbPath
-      else do
-        
-
-      -- TODO don't need to reload thumbnail here, can just check for it in images
       thumbDataArr <- imgOnly $ src </> thumbPath
       case thumbDataArr of
         Nothing -> do
