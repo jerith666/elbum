@@ -144,13 +144,17 @@ findThumb srcRoot src dest images = do
     thumbLinkExists <- pathIsSymbolicLink thumbLink
     if thumbLinkExists then do
       thumbPath <- getSymbolicLinkTarget thumbLink
-      thumbDataArr <- imgOnly $ src </> thumbPath
-      case thumbDataArr of
-        Nothing -> do
-          return $ Left $ src ++ " thumbnail at " ++ thumbPath ++ " could not be loaded"
-        Just thumbData -> do
-          thumb <- procImage srcRoot dest thumbData
-          return $ Right $ thumb
+      if isAbsolute thumbPath then do
+        return $ Left $ src ++ " thumbnail link must point to a relative path, but is absolute: " ++ thumbPath
+      else do
+        let thumbDest = makeRelative dest $ fst $ destForRaw src dest thumbPath
+            isThumb i = equalFilePath thumbDest $ url $ srcSetFirst i
+            thumb = listToMaybe $ filter isThumb images
+        case thumb of
+          Nothing -> do
+            return $ Left $ src ++ " thumbnail '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ (concat $ map (\i -> url $ srcSetFirst i) images)
+          Just t -> do
+            return $ Right $ t
     else do
       return $ Left $ thumbLink ++ " is not a symbolic link"
   else do
