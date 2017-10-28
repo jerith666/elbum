@@ -51,8 +51,7 @@ genNodeOrAlbum :: FilePath -> FilePath -> FilePath -> Bool -> IO (Either String 
 genNodeOrAlbum srcRoot src dest autoThumb = do
   files <- filter (`notElem` [".","..",thumbFilename]) <$> getDirectoryContents src
   let afiles = map (\f -> src </> f) (sort files)
-  imgs <- imgsOnly afiles
-  pimgs <- sequence $ map (procImage srcRoot dest) imgs
+  pimgs <- procImgsOnly srcRoot dest afiles
   subdirs <- dirsOnly afiles
   let icount = length pimgs
       idirs = length subdirs
@@ -244,6 +243,18 @@ shrink maxdim w h = let factor = fromIntegral maxdim / fromIntegral (max w h)
 
 dirsOnly :: [FilePath] -> IO [FilePath]
 dirsOnly = filterM doesDirectoryExist
+
+procImgsOnly :: FilePath -> FilePath -> [FilePath] -> IO [Image]
+procImgsOnly _ _ [] = return []
+procImgsOnly s d (f:fs) = do
+  mi <- imgOnly f
+  is <- procImgsOnly s d fs
+  case mi of
+    Nothing -> do
+      return is
+    Just i -> do
+      pi <- procImage s d i
+      return $ pi:is
 
 imgsOnly :: [FilePath] -> IO [(FilePath, DynamicImage)]
 imgsOnly [] = return []
