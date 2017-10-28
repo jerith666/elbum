@@ -59,7 +59,8 @@ genNodeOrAlbum srcRoot src dest autoThumb = do
     return $ Left $ "directory " ++ src ++ " contains both images and subdirs, this is not supported"
   else
     if length imgs > 0 then do
-      aOrErr <- genAlbum srcRoot src dest imgs
+      pimgs <- sequence $ map (procImage srcRoot dest) imgs
+      aOrErr <- genAlbum srcRoot src dest pimgs
       case aOrErr of
         Left err ->
           return $ Left $ err
@@ -117,18 +118,17 @@ getChildImages1 nodeOrAlbum =
     Leaf album ->
       (imageFirst album) : (imageRest album)
 
-genAlbum :: FilePath -> FilePath -> FilePath -> [(FilePath, DynamicImage)] -> IO (Either String Album)
+genAlbum :: FilePath -> FilePath -> FilePath -> [Image] -> IO (Either String Album)
 genAlbum srcRoot src dest imgs = do
-  pimgs <- sequence $ map (procImage srcRoot dest) imgs
-  thumbOrErr <- findThumb srcRoot src dest pimgs
+  thumbOrErr <- findThumb srcRoot src dest imgs
   case thumbOrErr of
     Left err ->
       return $ Left $ err
     Right thumb ->
       return $ Right $ Album { title = titleForDir src
                              , thumbnail = thumb
-                             , imageFirst = head pimgs
-                             , imageRest = tail pimgs
+                             , imageFirst = head imgs
+                             , imageRest = tail imgs
                              }
 
 titleForDir :: String -> String
