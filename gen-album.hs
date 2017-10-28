@@ -218,7 +218,7 @@ shrinkImgSrc s d f i w h maxdim = do
 
 raw :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
 raw s d fpath w h = do
-    let (f,dest) = destForRaw s d fpath
+    let (dest,f) = destForRaw s d fpath
     createDirectoryIfMissing True $ takeDirectory dest
     copyFile fpath dest
     putStrSameLn $ "copied " ++ f
