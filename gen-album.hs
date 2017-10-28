@@ -150,6 +150,10 @@ findThumb srcRoot src dest images = do
         let thumbDest = fst $ destForRaw srcRoot dest thumbPath
             isThumb (d,i) = equalFilePath thumbDest $ (dest </> (url $ srcSetFirst i))
             thumb = listToMaybe $ filter isThumb images
+        putStrLn $ "src: " ++ src
+        putStrLn $ "dest: " ++ dest
+        putStrLn $ "thumbPath: " ++ thumbPath
+        putStrLn $ "thumbDest: " ++ thumbDest
         case thumb of
           Nothing -> do
             return $ Left $ src ++ " thumbnail '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ (concat $ map (\(d,i) -> dest </> (url $ srcSetFirst i)) images)
@@ -219,6 +223,11 @@ shrinkImgSrc s d f i w h maxdim = do
 raw :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
 raw s d fpath w h = do
     let (dest,f) = destForRaw s d fpath
+    putStrLn $ "s: " ++ s
+    putStrLn $ "d: " ++ d
+    putStrLn $ "fpath: " ++ fpath
+    putStrLn $ "dest: " ++ dest
+    putStrLn $ "url: " ++ (makeRelative d dest)
     createDirectoryIfMissing True $ takeDirectory dest
     copyFile fpath dest
     putStrSameLn $ "copied " ++ f
