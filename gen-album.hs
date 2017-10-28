@@ -52,14 +52,14 @@ genNodeOrAlbum srcRoot src dest autoThumb = do
   files <- filter (`notElem` [".","..",thumbFilename]) <$> getDirectoryContents src
   let afiles = map (\f -> src </> f) (sort files)
   imgs <- imgsOnly afiles
+  pimgs <- sequence $ map (procImage srcRoot dest) imgs
   subdirs <- dirsOnly afiles
-  let icount = length imgs
+  let icount = length pimgs
       idirs = length subdirs
   if ((icount > 0) && (idirs > 0)) then do
     return $ Left $ "directory " ++ src ++ " contains both images and subdirs, this is not supported"
   else
-    if length imgs > 0 then do
-      pimgs <- sequence $ map (procImage srcRoot dest) imgs
+    if length pimgs > 0 then do
       aOrErr <- genAlbum srcRoot src dest pimgs
       case aOrErr of
         Left err ->
