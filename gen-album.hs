@@ -147,12 +147,12 @@ findThumb srcRoot src dest images = do
       if isAbsolute thumbPath then do
         return $ Left $ src ++ " thumbnail link must point to a relative path, but is absolute: " ++ thumbPath
       else do
-        let thumbDest = fst $ destForRaw src dest thumbPath
-            isThumb (d,i) = equalFilePath thumbDest $ (d </> (url $ srcSetFirst i))
+        let thumbDest = fst $ destForRaw srcRoot dest thumbPath
+            isThumb (d,i) = equalFilePath thumbDest $ (dest </> (url $ srcSetFirst i))
             thumb = listToMaybe $ filter isThumb images
         case thumb of
           Nothing -> do
-            return $ Left $ src ++ " thumbnail '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ (concat $ map (\(d,i) -> d </> (url $ srcSetFirst i)) images)
+            return $ Left $ src ++ " thumbnail '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ (concat $ map (\(d,i) -> dest </> (url $ srcSetFirst i)) images)
           Just t -> do
             return $ Right $ snd t
     else do
