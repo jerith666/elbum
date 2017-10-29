@@ -60,7 +60,7 @@ view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNex
                         ]
                     ]
                     [ Html.text fullImagePageModel.album.imageFirst.altText ]
-               , viewImg noOpMsg touchStartMsg touchContinueMsg touchPrevNextMsg fullImagePageModel fullImagePageModel.album.imageFirst
+               , viewImg nextMsg touchStartMsg touchContinueMsg touchPrevNextMsg fullImagePageModel fullImagePageModel.album.imageFirst
                ]
 
 
