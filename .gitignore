@@ -11,3 +11,8 @@ node_modules/
 *.JPG
 test-rawpics
 test-albums/
+*.pdf
+*.ps
+*.dyn_*
+*.aux
+*.hp
