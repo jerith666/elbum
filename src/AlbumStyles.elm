@@ -23,7 +23,8 @@ rootDiv extraStyles =
             [ position absolute
             , Css.height (vh 100)
             , Css.width (vw 100)
-              -- , overflow auto
+            , overflowX Css.hidden
+            , overflowY auto
             , backgroundColor black
             ]
                 ++ extraStyles
