@@ -20,8 +20,10 @@ view (AlbumTreeNodePage albumTreeNode winSize parents) viewSubtree viewAlbum =
         []
     <|
         [ albumTitle albumTreeNode.nodeTitle parents viewSubtree [] ]
-            ++ [ viewChildNode viewSubtree viewAlbum albumTreeNode.childFirst ]
-            ++ List.map (viewChildNode viewSubtree viewAlbum) albumTreeNode.childRest
+            ++ (List.reverse <|
+                    [ viewChildNode viewSubtree viewAlbum albumTreeNode.childFirst ]
+                        ++ List.map (viewChildNode viewSubtree viewAlbum) albumTreeNode.childRest
+               )
 
 
 viewChildNode : (AlbumTreeNode -> msg) -> (Album -> msg) -> NodeOrAlbum -> Html msg
