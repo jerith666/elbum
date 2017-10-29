@@ -29,10 +29,8 @@ import AlbumTypes
 main = do
   args <- getArgs
   case args of
-       [] -> usage
-       _:[] -> usage
        src:dest:[] -> writeNodeOrAlbum src dest
-       _:_:_:_ -> usage
+       _ -> usage
 
 usage = putStrLn "usage: gen-album <src> <dest>"
 
