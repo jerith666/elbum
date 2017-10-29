@@ -163,13 +163,18 @@ readLink :: FilePath -> IO FilePath
 readLink f = do
   isLink <- pathIsSymbolicLink f
   if isLink then do
+    putStrLn $ "file " ++ f ++ " is link"
     target <- getSymbolicLinkTarget f
+    putStrLn $ "file " ++ f ++ " resolves to " ++ target
     if isAbsolute target then do
+      putStrLn $ target ++ " is absolute"
       readLink target
     else do
       let ftgt = takeDirectory f </> target
+      putStrLn $ target ++ " made relative: " ++ ftgt
       readLink ftgt
   else do
+    putStrLn $ "file " ++ f ++ " is not link"
     return f
 
 procImage :: FilePath -> FilePath -> (FilePath, DynamicImage) -> IO Image
