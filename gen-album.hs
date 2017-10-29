@@ -143,8 +143,8 @@ findThumb srcRoot src dest images = do
     thumbLinkExists <- pathIsSymbolicLink thumbLink
     if thumbLinkExists then do
       thumbPath <- readLink thumbLink
-      if isAbsolute thumbPath then do
-        return $ Left $ src ++ " thumbnail link must point to a relative path, but is absolute: " ++ thumbPath
+      if isAbsolute $ makeRelative srcRoot thumbPath then do
+        return $ Left $ src ++ " thumbnail link must point to a path inside " ++ srcRoot ++", but does not: " ++ thumbPath
       else do
         let thumbDest = fst $ destForRaw srcRoot dest thumbPath
             isThumb i = equalFilePath thumbDest $ (dest </> (url $ srcSetFirst i))
