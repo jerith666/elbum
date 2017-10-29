@@ -248,12 +248,16 @@ procImgsOnly :: FilePath -> FilePath -> [FilePath] -> IO [Image]
 procImgsOnly _ _ [] = return []
 procImgsOnly s d (f:fs) = do
   mi <- imgOnly f
-  is <- procImgsOnly s d fs
   case mi of
     Nothing -> do
+      is <- procImgsOnly s d fs
       return is
     Just i -> do
+      -- this ordering is key to ensuring memory usage remains relatively constant
+      -- we have to process the first image completely (load it, save it out at all
+      -- sizes, and convert to an Image) before moving on to the others
       pi <- procImage s d i
+      is <- procImgsOnly s d fs
       return $ pi:is
 
 imgsOnly :: [FilePath] -> IO [(FilePath, DynamicImage)]
