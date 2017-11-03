@@ -17,6 +17,10 @@ styles =
     Css.asPairs >> Html.Attributes.style
 
 
+rootDivId =
+    "rootDiv"
+
+
 rootDiv extraStyles =
     div
         [ styles <|
@@ -28,6 +32,7 @@ rootDiv extraStyles =
             , backgroundColor black
             ]
                 ++ extraStyles
+        , id rootDivId
         ]
 
 

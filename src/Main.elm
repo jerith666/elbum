@@ -4,6 +4,7 @@ import WinSize exposing (..)
 import Album exposing (..)
 import AlbumPage exposing (..)
 import AlbumTreeNodePage exposing (..)
+import AlbumStyles exposing (..)
 import ListUtils exposing (..)
 import Task exposing (..)
 import Html exposing (..)
@@ -13,6 +14,8 @@ import Set exposing (..)
 import Dict exposing (..)
 import Time exposing (..)
 import Delay exposing (..)
+import Dom.Scroll exposing (..)
+import Dom exposing (..)
 
 
 type AlbumBootstrap
@@ -41,6 +44,8 @@ type AlbumBootstrapMsg
     | ImageLoaded String
     | ImageReadyToDisplay String
     | ImageFailed String Http.Error
+    | ScrollSucceeded
+    | ScrollFailed Id
 
 
 main : Program Never AlbumBootstrap AlbumBootstrapMsg
@@ -167,7 +172,7 @@ update msg model =
 
         ViewNode albumTreeNodePage ->
             ( LoadedNode albumTreeNodePage Dict.empty
-            , Cmd.none
+            , scrollToTop
             )
 
         ViewAlbum albumPage parents ->
@@ -176,8 +181,29 @@ update msg model =
                     AlbumPage.urlsToGet albumPage
             in
                 ( LoadedAlbum albumPage parents <| dictWithValues urls Requested
-                , getUrls Dict.empty urls
+                , Cmd.batch [ scrollToTop, getUrls Dict.empty urls ]
                 )
+
+        ScrollSucceeded ->
+            ( model, Cmd.none )
+
+        ScrollFailed _ ->
+            ( model, Cmd.none )
+
+
+scrollToTop : Cmd AlbumBootstrapMsg
+scrollToTop =
+    Task.attempt
+        (\result ->
+            case result of
+                Ok () ->
+                    ScrollSucceeded
+
+                Err e ->
+                    ScrollFailed rootDivId
+        )
+    <|
+        toTop rootDivId
 
 
 updateImageResult : AlbumBootstrap -> String -> UrlLoadState -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
@@ -275,7 +301,7 @@ handleGetResponse url r =
             Err <| "err " ++ r.status.message
 
 
-decodeUrlResult : String -> Result Error String -> AlbumBootstrapMsg
+decodeUrlResult : String -> Result Http.Error String -> AlbumBootstrapMsg
 decodeUrlResult origUrl result =
     case result of
         Ok url ->
