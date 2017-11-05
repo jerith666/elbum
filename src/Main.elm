@@ -195,7 +195,7 @@ update msg model =
                     AlbumPage.urlsToGet albumPage
 
                 newLoc =
-                    locForAlbum model albumPage
+                    locForAlbum model albumPage parents
             in
                 ( LoadedAlbum newLoc albumPage parents <| dictWithValues urls Requested
                 , Cmd.batch [ scrollToTop, newUrl <| locToString newLoc, getUrls Dict.empty urls ]
@@ -208,6 +208,7 @@ update msg model =
             ( model, Cmd.none )
 
         Navigate loc ->
+            --TODO
             ( model, Cmd.none )
 
 
@@ -217,10 +218,23 @@ locForNode model _ =
     locOf model
 
 
-locForAlbum : AlbumBootstrap -> AlbumPage -> Location
-locForAlbum model _ =
-    --TODO
-    locOf model
+locForAlbum : AlbumBootstrap -> AlbumPage -> List AlbumTreeNode -> Location
+locForAlbum model albumPage parents =
+    let
+        curModel =
+            locOf model
+
+        title =
+            case albumPage of
+                Thumbs album _ _ _ ->
+                    album.title
+
+                FullImage _ album _ _ ->
+                    album.title
+    in
+        { curModel
+            | hash = "#" ++ title
+        }
 
 
 locOf : AlbumBootstrap -> Location
@@ -245,7 +259,7 @@ locOf model =
 locToString : Location -> String
 locToString loc =
     --TODO
-    loc.href
+    loc.href ++ loc.hash
 
 
 scrollToTop : Cmd AlbumBootstrapMsg
