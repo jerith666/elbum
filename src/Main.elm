@@ -258,8 +258,7 @@ locOf model =
 
 locToString : Location -> String
 locToString loc =
-    --TODO
-    loc.href ++ loc.hash
+    loc.protocol ++ "//" ++ loc.host ++ loc.pathname ++ loc.search ++ loc.hash
 
 
 scrollToTop : Cmd AlbumBootstrapMsg
