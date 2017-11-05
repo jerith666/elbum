@@ -233,7 +233,19 @@ locForAlbum model albumPage parents =
                     album.title
     in
         { curModel
-            | hash = "#" ++ title
+            | hash =
+                "#"
+                    ++ (String.concat
+                            (List.intersperse "/"
+                                (List.append
+                                    (List.map
+                                        (\p -> p.nodeTitle)
+                                        (List.drop 1 (List.reverse parents))
+                                    )
+                                    [ title ]
+                                )
+                            )
+                       )
         }
 
 
