@@ -213,17 +213,18 @@ update msg model =
 
 
 locForNode : AlbumBootstrap -> AlbumTreeNodePage -> Location
-locForNode model _ =
-    --TODO
-    locOf model
+locForNode model nodePage =
+    case nodePage of
+        AlbumTreeNodePage albumTreeNode _ parents ->
+            if List.isEmpty parents then
+                locForPath model "" []
+            else
+                locForPath model albumTreeNode.nodeTitle parents
 
 
 locForAlbum : AlbumBootstrap -> AlbumPage -> List AlbumTreeNode -> Location
 locForAlbum model albumPage parents =
     let
-        curModel =
-            locOf model
-
         title =
             case albumPage of
                 Thumbs album _ _ _ ->
@@ -232,7 +233,16 @@ locForAlbum model albumPage parents =
                 FullImage _ album _ _ ->
                     album.title
     in
-        { curModel
+        locForPath model title parents
+
+
+locForPath : AlbumBootstrap -> String -> List AlbumTreeNode -> Location
+locForPath model title parents =
+    let
+        curLoc =
+            locOf model
+    in
+        { curLoc
             | hash =
                 "#"
                     ++ (String.concat
