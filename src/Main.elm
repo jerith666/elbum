@@ -1,9 +1,13 @@
 module Main exposing (..)
 
+--, parse, <*)
+--import Combine exposing ((<*), ParseErr, ParseOk, end, parse, regex, sepBy, string)
+
 import Album exposing (..)
 import AlbumPage exposing (..)
 import AlbumStyles exposing (..)
 import AlbumTreeNodePage exposing (..)
+import Combine exposing (..)
 import Delay exposing (..)
 import Dict exposing (..)
 import Dom exposing (..)
@@ -208,8 +212,94 @@ update msg model =
             ( model, Cmd.none )
 
         Navigate loc ->
-            --TODO
-            ( model, Cmd.none )
+            ( model, navToMsg model loc )
+
+
+navToMsg : AlbumBootstrap -> Location -> Cmd AlbumBootstrapMsg
+navToMsg model loc =
+    let
+        parsedHref =
+            parseHref loc.href
+    in
+    case parsedHref of
+        Err _ ->
+            Cmd.none
+
+        Ok ( _, _, paths ) ->
+            case model of
+                Sizing _ ->
+                    Cmd.none
+
+                Loading _ _ ->
+                    Cmd.none
+
+                LoadError _ _ ->
+                    Cmd.none
+
+                LoadedNode _ (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
+                    navToMsgImpl winSize parents paths
+
+                LoadedAlbum _ albumPage parents _ ->
+                    navToMsgImpl (pageSize albumPage) parents paths
+
+
+navToMsgImpl : WinSize -> List AlbumTreeNode -> List String -> Cmd AlbumBootstrapMsg
+navToMsgImpl size parents paths =
+    let
+        mRoot =
+            List.head <| List.reverse parents
+
+        navFrom root paths defcmd =
+            case paths of
+                [] ->
+                    defcmd
+
+                p :: ps ->
+                    let
+                        mChild =
+                            findChild root p
+                    in
+                    case mChild of
+                        Nothing ->
+                            defcmd
+
+                        Just pChild ->
+                            case pChild of
+                                Subtree albumTreeNode ->
+                                    navFrom albumTreeNode ps <| cmdOf <| ViewNode <| AlbumTreeNodePage albumTreeNode size parents
+
+                                Leaf album ->
+                                    cmdOf <| ViewAlbum (Thumbs album size Set.empty Set.empty) parents
+    in
+    case mRoot of
+        Nothing ->
+            Cmd.none
+
+        Just root ->
+            navFrom root paths Cmd.none
+
+
+findChild : AlbumTreeNode -> String -> Maybe NodeOrAlbum
+findChild containingNode name =
+    let
+        f nodeOrAlbum =
+            case nodeOrAlbum of
+                Subtree albumTreeNode ->
+                    albumTreeNode.nodeTitle == name
+
+                Leaf album ->
+                    album.title == name
+    in
+    List.head <| List.filter f <| containingNode.childFirst :: containingNode.childRest
+
+
+parseHref : String -> Result (ParseErr ()) (ParseOk () (List String))
+parseHref href =
+    let
+        pathParser =
+            sepBy (string "/") (regex "[^/]*") <* end
+    in
+    parse pathParser href
 
 
 cmdOf : a -> Cmd a
