@@ -117,7 +117,7 @@ update msg model =
                 Loading loc winSize ->
                     let
                         locate =
-                            Task.perform (\_ -> Navigate loc) <| Task.succeed ()
+                            cmdOf <| Navigate loc
                     in
                     case nodeOrAlbum of
                         Subtree albumNode ->
@@ -210,6 +210,11 @@ update msg model =
         Navigate loc ->
             --TODO
             ( model, Cmd.none )
+
+
+cmdOf : a -> Cmd a
+cmdOf msg =
+    Task.perform (\_ -> msg) <| Task.succeed ()
 
 
 locForNode : AlbumBootstrap -> AlbumTreeNodePage -> Location
