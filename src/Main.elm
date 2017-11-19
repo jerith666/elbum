@@ -57,6 +57,7 @@ type AlbumBootstrapMsg
 main : Program Never AlbumBootstrap AlbumBootstrapMsg
 main =
     Navigation.program
+        --TODO do we even care about updates to the location beyond the initial?  maybe needed for back/forward buttons?
         Navigate
         { init = init
         , view = view
@@ -256,6 +257,7 @@ navToMsg model loc =
                     Cmd.none
 
                 LoadedNode _ (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
+                    --TODO maybe don't always prepend aTN here, only if at root?
                     navToMsgImpl winSize (albumTreeNode :: parents) paths
 
                 LoadedAlbum _ albumPage parents _ ->
