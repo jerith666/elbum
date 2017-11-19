@@ -232,7 +232,11 @@ update msg model =
             ( model, Cmd.none )
 
         Navigate loc ->
-            ( withLoc model loc, navToMsg model loc )
+            ( model, Cmd.none )
+
+
+
+--( withLoc model loc, navToMsg model loc )
 
 
 navToMsg : AlbumBootstrap -> Location -> Cmd AlbumBootstrapMsg
