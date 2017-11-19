@@ -1,8 +1,8 @@
 module AlbumStyles exposing (..)
 
+import Css exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Css exposing (..)
 
 
 black =

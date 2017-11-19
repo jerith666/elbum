@@ -1,18 +1,18 @@
 module AnimationTest exposing (..)
 
-import WinSize exposing (..)
 import Album exposing (..)
 import AlbumPage exposing (..)
 import AlbumTreeNodePage exposing (..)
-import ListUtils exposing (..)
-import Task exposing (..)
+import Css exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http exposing (..)
-import Window exposing (..)
+import ListUtils exposing (..)
 import Set exposing (..)
-import Css exposing (..)
+import Task exposing (..)
+import WinSize exposing (..)
+import Window exposing (..)
 
 
 type Model
@@ -61,18 +61,18 @@ view model =
                     , viewImg url op StartShow
                     ]
     in
-        case model of
-            Showing url ->
-                show url 0 "show0"
+    case model of
+        Showing url ->
+            show url 0 "show0"
 
-            Shown url ->
-                show url 1 "show1"
+        Shown url ->
+            show url 1 "show1"
 
-            Hiding url ->
-                hide url 1 "hide1"
+        Hiding url ->
+            hide url 1 "hide1"
 
-            Hidden url ->
-                hide url 0 "hide0"
+        Hidden url ->
+            hide url 0 "hide0"
 
 
 styles =

@@ -1,14 +1,14 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), view, update, subscriptions, urlsToGet, resetUrls)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), resetUrls, subscriptions, update, urlsToGet, view)
 
-import ListUtils exposing (..)
-import WinSize exposing (..)
 import Album exposing (..)
-import ThumbPage exposing (..)
 import FullImagePage exposing (..)
 import Html exposing (..)
 import Keyboard exposing (..)
-import TouchEvents exposing (..)
+import ListUtils exposing (..)
 import Set exposing (..)
+import ThumbPage exposing (..)
+import TouchEvents exposing (..)
+import WinSize exposing (..)
 
 
 type AlbumPage
@@ -56,15 +56,15 @@ update msg model =
                         ( newPrev, newCur, newRest ) =
                             shiftLeft prevImgs album.imageFirst album.imageRest
                     in
-                        FullImage
-                            newPrev
-                            { title = album.title
-                            , imageFirst = newCur
-                            , imageRest = newRest
-                            , thumbnail = album.thumbnail
-                            }
-                            winSize
-                            Nothing
+                    FullImage
+                        newPrev
+                        { title = album.title
+                        , imageFirst = newCur
+                        , imageRest = newRest
+                        , thumbnail = album.thumbnail
+                        }
+                        winSize
+                        Nothing
 
                 _ ->
                     model
@@ -76,15 +76,15 @@ update msg model =
                         ( newPrev, newCur, newRest ) =
                             shiftRight prevImgs album.imageFirst album.imageRest
                     in
-                        FullImage
-                            newPrev
-                            { title = album.title
-                            , imageFirst = newCur
-                            , imageRest = newRest
-                            , thumbnail = album.thumbnail
-                            }
-                            winSize
-                            Nothing
+                    FullImage
+                        newPrev
+                        { title = album.title
+                        , imageFirst = newCur
+                        , imageRest = newRest
+                        , thumbnail = album.thumbnail
+                        }
+                        winSize
+                        Nothing
 
                 _ ->
                     model
@@ -96,15 +96,15 @@ update msg model =
                         ( newFirst, newRest ) =
                             shiftToBeginning prevImgs album.imageFirst album.imageRest
                     in
-                        Thumbs
-                            { title = album.title
-                            , imageFirst = newFirst
-                            , imageRest = newRest
-                            , thumbnail = album.thumbnail
-                            }
-                            winSize
-                            empty
-                            empty
+                    Thumbs
+                        { title = album.title
+                        , imageFirst = newFirst
+                        , imageRest = newRest
+                        , thumbnail = album.thumbnail
+                        }
+                        winSize
+                        empty
+                        empty
 
                 _ ->
                     model
@@ -168,7 +168,7 @@ view albumPage showNode wrapMsg parents =
     case albumPage of
         Thumbs album winSize justLoadedImages readyToDisplayImages ->
             ThumbPage.view
-                (\x -> (\y -> (\z -> wrapMsg (View x y z))))
+                (\x -> \y -> \z -> wrapMsg (View x y z))
                 showNode
                 { album = album
                 , parents = parents

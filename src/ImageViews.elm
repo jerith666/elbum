@@ -1,11 +1,11 @@
-module ImageViews exposing (renderPresized, render, smallestImageBiggerThan)
+module ImageViews exposing (render, renderPresized, smallestImageBiggerThan)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
+import Css exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Css exposing (..)
 
 
 -- TODO change signature to allow non-empty msg
@@ -55,9 +55,9 @@ render idefault is s otherAttrs msg =
                 Nothing ->
                     []
     in
-        img
-            (baseAttrs ++ clickAttr)
-            []
+    img
+        (baseAttrs ++ clickAttr)
+        []
 
 
 encodeSrcSet : List ImgSrc -> String
@@ -67,4 +67,4 @@ encodeSrcSet is =
 
 encodeSrc : ImgSrc -> String
 encodeSrc is =
-    is.url ++ " " ++ (toString is.x) ++ "w"
+    is.url ++ " " ++ toString is.x ++ "w"

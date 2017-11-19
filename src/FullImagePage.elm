@@ -1,13 +1,13 @@
 module FullImagePage exposing (FullImagePageModel, view)
 
 import Album exposing (..)
-import WinSize exposing (..)
-import ImageViews exposing (..)
 import AlbumStyles exposing (..)
+import Css exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
-import Css exposing (..)
+import ImageViews exposing (..)
 import TouchEvents exposing (..)
+import WinSize exposing (..)
 
 
 type alias FullImagePageModel =
@@ -91,40 +91,41 @@ viewImg clickMsg touchStartMsg touchContinueMsg touchPrevNext fullImagePageModel
             <|
                 Basics.round (toFloat fullImagePageModel.winSize.height * (1 - imgTitleHeight / 100))
     in
-        renderPresized
-            0
-            w
-            h
-            img.srcSetFirst
-            img.srcSetRest
-            [ position relative
-              -- note: no up/down movement is desired, just left/right
-              -- , top <| px <| Tuple.second fullImagePageModel.offset
-            , left <| px <| Tuple.first fullImagePageModel.offset
-            ]
-            [ onTouchStart touchStartMsg
-            , onTouchMove touchContinueMsg
-            , onTouchEnd touchPrevNext
-            ]
-        <|
-            Just clickMsg
+    renderPresized
+        0
+        w
+        h
+        img.srcSetFirst
+        img.srcSetRest
+        [ position relative
+
+        -- note: no up/down movement is desired, just left/right
+        -- , top <| px <| Tuple.second fullImagePageModel.offset
+        , left <| px <| Tuple.first fullImagePageModel.offset
+        ]
+        [ onTouchStart touchStartMsg
+        , onTouchMove touchContinueMsg
+        , onTouchEnd touchPrevNext
+        ]
+    <|
+        Just clickMsg
 
 
 fitImage : ImgSrc -> Int -> Int -> ( Int, Int )
 fitImage is winWidth winHeight =
     let
         winAspect =
-            (toFloat winWidth) / (toFloat winHeight)
+            toFloat winWidth / toFloat winHeight
 
         imgAspect =
-            (toFloat is.x) / (toFloat is.y)
+            toFloat is.x / toFloat is.y
 
         scale =
             if winAspect <= imgAspect then
-                (toFloat winWidth) / (toFloat is.x)
+                toFloat winWidth / toFloat is.x
             else
-                (toFloat winHeight) / (toFloat is.y)
+                toFloat winHeight / toFloat is.y
     in
-        ( Basics.round <| (toFloat is.x) * scale
-        , Basics.round <| (toFloat is.y) * scale
-        )
+    ( Basics.round <| toFloat is.x * scale
+    , Basics.round <| toFloat is.y * scale
+    )

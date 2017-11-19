@@ -1,11 +1,11 @@
 module AlbumTreeNodePage exposing (AlbumTreeNodePage(..), view)
 
+import Album exposing (..)
+import AlbumStyles exposing (..)
+import Css exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
-import Css exposing (..)
-import Album exposing (..)
-import ThumbPage exposing (viewThumb, albumTitle)
-import AlbumStyles exposing (..)
+import ThumbPage exposing (albumTitle, viewThumb)
 import WinSize exposing (..)
 
 

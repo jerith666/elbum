@@ -1,4 +1,4 @@
-module ListUtils exposing (dictWithValues, shiftToBeginning, shiftLeft, shiftRight, dropThrough, mapI)
+module ListUtils exposing (dictWithValues, dropThrough, mapI, shiftLeft, shiftRight, shiftToBeginning)
 
 import Dict exposing (..)
 import Set exposing (..)
@@ -57,7 +57,7 @@ shiftLeft xLefts x xRights =
                 ( xLRss, xss, xRss ) =
                     shiftLeft xLeftRights x xRights
             in
-                ( xLeft :: xLRss, xss, xRss )
+            ( xLeft :: xLRss, xss, xRss )
 
 
 
@@ -90,8 +90,8 @@ mapI i map l =
     let
         ifmap ( j, a ) =
             if i == j then
-                (map a)
+                map a
             else
                 a
     in
-        List.map ifmap <| List.indexedMap (,) l
+    List.map ifmap <| List.indexedMap (,) l

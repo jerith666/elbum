@@ -1,14 +1,14 @@
-module ThumbPage exposing (ThumbPageModel, view, viewThumb, albumTitle, urlsToGet)
+module ThumbPage exposing (ThumbPageModel, albumTitle, urlsToGet, view, viewThumb)
 
 import Album exposing (..)
-import WinSize exposing (..)
-import ImageViews exposing (..)
 import AlbumStyles exposing (..)
-import ListUtils exposing (..)
+import Css exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
-import Css exposing (..)
+import ImageViews exposing (..)
+import ListUtils exposing (..)
 import Set exposing (..)
+import WinSize exposing (..)
 
 
 type alias ThumbPageModel =
@@ -80,15 +80,15 @@ urlsToGet thumbPageModel =
         srcs =
             List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
     in
-        Debug.log "urlsToGet" <|
-            Set.fromList <|
-                List.take 5 <|
-                    List.filter
-                        (\url -> not <| member url <| Set.union thumbPageModel.justLoadedImages thumbPageModel.readyToDisplayImages)
-                    <|
-                        List.map
-                            (\i -> i.url)
-                            srcs
+    Debug.log "urlsToGet" <|
+        Set.fromList <|
+            List.take 5 <|
+                List.filter
+                    (\url -> not <| member url <| Set.union thumbPageModel.justLoadedImages thumbPageModel.readyToDisplayImages)
+                <|
+                    List.map
+                        (\i -> i.url)
+                        srcs
 
 
 viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
@@ -100,14 +100,14 @@ viewThumbs imgChosenMsgr thumbPageModel =
         imgs =
             thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
     in
-        List.map
-            (viewThumbColumn thumbWidth
-                (convertImgChosenMsgr thumbPageModel.album.imageFirst imgs imgChosenMsgr)
-                thumbPageModel.justLoadedImages
-                thumbPageModel.readyToDisplayImages
-            )
-        <|
-            spreadThumbs maxCols imgs []
+    List.map
+        (viewThumbColumn thumbWidth
+            (convertImgChosenMsgr thumbPageModel.album.imageFirst imgs imgChosenMsgr)
+            thumbPageModel.justLoadedImages
+            thumbPageModel.readyToDisplayImages
+        )
+    <|
+        spreadThumbs maxCols imgs []
 
 
 colsWidth : ThumbPageModel -> ( Int, Int )
@@ -119,7 +119,7 @@ colsWidth thumbPageModel =
         thumbWidth =
             Debug.log "thumbWidth" <| (thumbPageModel.winSize.width - scrollPad) // maxCols
     in
-        ( maxCols, thumbWidth )
+    ( maxCols, thumbWidth )
 
 
 convertImgChosenMsgr : Image -> List Image -> (List Image -> Image -> List Image -> msg) -> (Int -> msg)
@@ -127,20 +127,20 @@ convertImgChosenMsgr image1 images prevCurRestImgChosenMsgr =
     \i ->
         let
             prev =
-                Debug.log ("prev i=" ++ (toString i)) (List.take i images)
+                Debug.log ("prev i=" ++ toString i) (List.take i images)
 
             cur =
                 case List.head (List.drop i images) of
                     Just img ->
-                        Debug.log ("cur i=" ++ (toString i)) img
+                        Debug.log ("cur i=" ++ toString i) img
 
                     Nothing ->
-                        Debug.log ("cur NOTHING!!! i=" ++ (toString i)) image1
+                        Debug.log ("cur NOTHING!!! i=" ++ toString i) image1
 
             next =
-                Debug.log ("next i=" ++ (toString i)) (List.drop (i + 1) images)
+                Debug.log ("next i=" ++ toString i) (List.drop (i + 1) images)
         in
-            prevCurRestImgChosenMsgr prev cur next
+        prevCurRestImgChosenMsgr prev cur next
 
 
 viewThumbColumn : Int -> (Int -> msg) -> Set String -> Set String -> List ( Image, Int ) -> Html msg
@@ -151,27 +151,27 @@ viewThumbColumn thumbWidth imgChosenMsgr justLoadedImages readyToDisplayImages i
                 src =
                     srcForWidth thumbWidth img
             in
-                if member src.url <| Set.union justLoadedImages readyToDisplayImages then
-                    let
-                        opacity =
-                            if member src.url justLoadedImages then
-                                ( 0, False )
-                            else
-                                ( 1, True )
-                    in
-                        viewThumb thumbWidth opacity (imgChosenMsgr i) img
-                    --TODO opacity
-                else
-                    stubThumb thumbWidth img
+            if member src.url <| Set.union justLoadedImages readyToDisplayImages then
+                let
+                    opacity =
+                        if member src.url justLoadedImages then
+                            ( 0, False )
+                        else
+                            ( 1, True )
+                in
+                viewThumb thumbWidth opacity (imgChosenMsgr i) img
+                --TODO opacity
+            else
+                stubThumb thumbWidth img
     in
-        div
-            [ styles
-                [ displayFlex
-                , flexDirection column
-                ]
+    div
+        [ styles
+            [ displayFlex
+            , flexDirection column
             ]
-        <|
-            List.map viewThumbTuple images
+        ]
+    <|
+        List.map viewThumbTuple images
 
 
 spreadThumbs : Int -> List Image -> List (List ( Image, Int )) -> List (List ( Image, Int ))
@@ -189,7 +189,7 @@ insertImage : Int -> Int -> Image -> List (List ( Image, Int )) -> List (List ( 
 insertImage maxCols i nextImg alreadySpreadImages =
     if List.length alreadySpreadImages < maxCols then
         alreadySpreadImages
-            ++ [ [ ( Debug.log ("start column " ++ (toString (List.length alreadySpreadImages)) ++ " with image " ++ (toString i))
+            ++ [ [ ( Debug.log ("start column " ++ toString (List.length alreadySpreadImages) ++ " with image " ++ toString i)
                         nextImg
                    , i
                    )
@@ -201,9 +201,9 @@ insertImage maxCols i nextImg alreadySpreadImages =
                 findShortest alreadySpreadImages
 
             iShortest =
-                Debug.log ("image " ++ (toString i) ++ " goes in (col,height) ") is
+                Debug.log ("image " ++ toString i ++ " goes in (col,height) ") is
         in
-            mapI (Tuple.first iShortest) (\x -> x ++ [ ( nextImg, i ) ]) alreadySpreadImages
+        mapI (Tuple.first iShortest) (\x -> x ++ [ ( nextImg, i ) ]) alreadySpreadImages
 
 
 shorterBaseCase : ( Int, Int )
@@ -216,7 +216,7 @@ findShortest imageLists =
     List.foldr
         shorter
         shorterBaseCase
-        (Debug.log "heights" (List.indexedMap (,) (List.map (List.sum << (List.map (imgHeight << Tuple.first))) imageLists)))
+        (Debug.log "heights" (List.indexedMap (,) (List.map (List.sum << List.map (imgHeight << Tuple.first)) imageLists)))
 
 
 
@@ -237,7 +237,7 @@ imgHeight img =
         is1 =
             img.srcSetFirst
     in
-        Basics.round <| (toFloat is1.y) * (1000 / toFloat is1.x)
+    Basics.round <| toFloat is1.y * (1000 / toFloat is1.x)
 
 
 srcForWidth : Int -> Image -> ImgSrc
@@ -246,7 +246,7 @@ srcForWidth width img =
         ( xScaled, yScaled ) =
             sizeForWidth width img
     in
-        smallestImageBiggerThan xScaled yScaled img.srcSetFirst img.srcSetRest
+    smallestImageBiggerThan xScaled yScaled img.srcSetFirst img.srcSetRest
 
 
 viewThumb : Int -> ( Float, Bool ) -> msg -> Image -> Html msg
@@ -255,19 +255,19 @@ viewThumb width opasity selectedMsg img =
         ( xScaled, yScaled ) =
             sizeForWidth width img
     in
-        renderPresized 10
-            xScaled
-            yScaled
-            img.srcSetFirst
-            img.srcSetRest
-            ([ borderRadius (px 5)
-             , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
-             ]
-                ++ (opacityStyles opasity)
-            )
-            []
-        <|
-            Just selectedMsg
+    renderPresized 10
+        xScaled
+        yScaled
+        img.srcSetFirst
+        img.srcSetRest
+        ([ borderRadius (px 5)
+         , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
+         ]
+            ++ opacityStyles opasity
+        )
+        []
+    <|
+        Just selectedMsg
 
 
 opacityStyles ( op, anim ) =
@@ -298,14 +298,14 @@ stubThumb width img =
         ( xScaled, yScaled ) =
             sizeForWidth width img
     in
-        renderPresized 10
-            xScaled
-            yScaled
-            loadingImg
-            []
-            []
-            []
-            Nothing
+    renderPresized 10
+        xScaled
+        yScaled
+        loadingImg
+        []
+        []
+        []
+        Nothing
 
 
 
@@ -327,14 +327,14 @@ sizeForWidth width img =
         is1 =
             img.srcSetFirst
     in
-        let
-            scale =
-                (toFloat width) / (toFloat is1.x)
+    let
+        scale =
+            toFloat width / toFloat is1.x
 
-            xScaled =
-                Basics.round <| scale * (toFloat is1.x)
+        xScaled =
+            Basics.round <| scale * toFloat is1.x
 
-            yScaled =
-                Basics.round <| scale * (toFloat is1.y)
-        in
-            ( xScaled, yScaled )
+        yScaled =
+            Basics.round <| scale * toFloat is1.y
+    in
+    ( xScaled, yScaled )
