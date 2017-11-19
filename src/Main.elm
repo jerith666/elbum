@@ -186,11 +186,11 @@ update msg model =
 
         ViewNode albumTreeNodePage ->
             let
-                newModel =
-                    LoadedNode newLoc albumTreeNodePage Dict.empty
-
                 newLoc =
                     locForNode model albumTreeNodePage
+
+                newModel =
+                    LoadedNode newLoc albumTreeNodePage Dict.empty
 
                 newLocCmd =
                     if model == newModel then
@@ -207,11 +207,11 @@ update msg model =
                 urls =
                     AlbumPage.urlsToGet albumPage
 
-                newModel =
-                    LoadedAlbum newLoc albumPage parents <| dictWithValues urls Requested
-
                 newLoc =
                     locForAlbum model albumPage parents
+
+                newModel =
+                    LoadedAlbum newLoc albumPage parents <| dictWithValues urls Requested
 
                 newLocCmd =
                     if model == newModel then
