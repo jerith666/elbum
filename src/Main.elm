@@ -186,11 +186,20 @@ update msg model =
 
         ViewNode albumTreeNodePage ->
             let
+                newModel =
+                    LoadedNode newLoc albumTreeNodePage Dict.empty
+
                 newLoc =
                     locForNode model albumTreeNodePage
+
+                newLocCmd =
+                    if model == newModel then
+                        Cmd.none
+                    else
+                        newUrl <| locToString <| newLoc
             in
-            ( LoadedNode newLoc albumTreeNodePage Dict.empty
-            , Cmd.batch [ scrollToTop, newUrl <| locToString newLoc ]
+            ( newModel
+            , Cmd.batch [ scrollToTop, newLocCmd ]
             )
 
         ViewAlbum albumPage parents ->
@@ -198,11 +207,20 @@ update msg model =
                 urls =
                     AlbumPage.urlsToGet albumPage
 
+                newModel =
+                    LoadedAlbum newLoc albumPage parents <| dictWithValues urls Requested
+
                 newLoc =
                     locForAlbum model albumPage parents
+
+                newLocCmd =
+                    if model == newModel then
+                        Cmd.none
+                    else
+                        newUrl <| locToString <| newLoc
             in
-            ( LoadedAlbum newLoc albumPage parents <| dictWithValues urls Requested
-            , Cmd.batch [ scrollToTop, newUrl <| locToString newLoc, getUrls Dict.empty urls ]
+            ( newModel
+            , Cmd.batch [ scrollToTop, newLocCmd, getUrls Dict.empty urls ]
             )
 
         ScrollSucceeded ->
@@ -217,33 +235,30 @@ update msg model =
 
 navToMsg : AlbumBootstrap -> Location -> Cmd AlbumBootstrapMsg
 navToMsg model loc =
-    if locOf model == loc then
-        Cmd.none
-    else
-        let
-            parsedHash =
-                Debug.log "parsedHash" <| parseHref loc.hash
-        in
-        case parsedHash of
-            Err _ ->
-                Cmd.none
+    let
+        parsedHash =
+            Debug.log "parsedHash" <| parseHref loc.hash
+    in
+    case parsedHash of
+        Err _ ->
+            Cmd.none
 
-            Ok ( _, _, paths ) ->
-                case model of
-                    Sizing _ ->
-                        Cmd.none
+        Ok ( _, _, paths ) ->
+            case model of
+                Sizing _ ->
+                    Cmd.none
 
-                    Loading _ _ ->
-                        Cmd.none
+                Loading _ _ ->
+                    Cmd.none
 
-                    LoadError _ _ ->
-                        Cmd.none
+                LoadError _ _ ->
+                    Cmd.none
 
-                    LoadedNode _ (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
-                        navToMsgImpl winSize (albumTreeNode :: parents) paths
+                LoadedNode _ (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
+                    navToMsgImpl winSize (albumTreeNode :: parents) paths
 
-                    LoadedAlbum _ albumPage parents _ ->
-                        navToMsgImpl (pageSize albumPage) parents paths
+                LoadedAlbum _ albumPage parents _ ->
+                    navToMsgImpl (pageSize albumPage) parents paths
 
 
 navToMsgImpl : WinSize -> List AlbumTreeNode -> List String -> Cmd AlbumBootstrapMsg
