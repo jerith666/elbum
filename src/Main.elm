@@ -67,7 +67,7 @@ main =
 
 init : Location -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 init loc =
-    ( Sizing loc
+    ( Sizing <| Debug.log "init loc" loc
     , Task.perform Resize Window.size
     )
 
@@ -218,10 +218,10 @@ update msg model =
 navToMsg : AlbumBootstrap -> Location -> Cmd AlbumBootstrapMsg
 navToMsg model loc =
     let
-        parsedHref =
-            parseHref loc.href
+        parsedHash =
+            Debug.log "parsedHash" <| parseHref loc.hash
     in
-    case parsedHref of
+    case parsedHash of
         Err _ ->
             Cmd.none
 
