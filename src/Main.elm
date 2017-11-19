@@ -193,7 +193,8 @@ update msg model =
                     LoadedNode newLoc albumTreeNodePage Dict.empty
 
                 newLocCmd =
-                    if model == newModel then
+                    --TODO this bounces back and forth between true and false with #March ... ?
+                    if Debug.log "comparing node models" <| model == newModel then
                         Cmd.none
                     else
                         newUrl <| locToString <| newLoc
@@ -230,7 +231,7 @@ update msg model =
             ( model, Cmd.none )
 
         Navigate loc ->
-            ( model, navToMsg model loc )
+            ( withLoc model loc, navToMsg model loc )
 
 
 navToMsg : AlbumBootstrap -> Location -> Cmd AlbumBootstrapMsg
@@ -395,6 +396,25 @@ locOf model =
 
         LoadedNode loc _ _ ->
             loc
+
+
+withLoc : AlbumBootstrap -> Location -> AlbumBootstrap
+withLoc model loc =
+    case model of
+        Sizing _ ->
+            Sizing loc
+
+        Loading _ winSize ->
+            Loading loc winSize
+
+        LoadError _ err ->
+            LoadError loc err
+
+        LoadedAlbum _ a b c ->
+            LoadedAlbum loc a b c
+
+        LoadedNode _ a b ->
+            LoadedNode loc a b
 
 
 locToString : Location -> String
