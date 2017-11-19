@@ -1,22 +1,22 @@
 module Main exposing (..)
 
-import WinSize exposing (..)
 import Album exposing (..)
 import AlbumPage exposing (..)
-import AlbumTreeNodePage exposing (..)
 import AlbumStyles exposing (..)
-import ListUtils exposing (..)
-import Task exposing (..)
+import AlbumTreeNodePage exposing (..)
+import Delay exposing (..)
+import Dict exposing (..)
+import Dom exposing (..)
+import Dom.Scroll exposing (..)
 import Html exposing (..)
 import Http exposing (..)
-import Window exposing (..)
-import Set exposing (..)
-import Dict exposing (..)
-import Time exposing (..)
-import Delay exposing (..)
-import Dom.Scroll exposing (..)
-import Dom exposing (..)
+import ListUtils exposing (..)
 import Navigation exposing (..)
+import Set exposing (..)
+import Task exposing (..)
+import Time exposing (..)
+import WinSize exposing (..)
+import Window exposing (..)
 
 
 type AlbumBootstrap
@@ -96,11 +96,11 @@ update msg model =
                                 urls =
                                     AlbumPage.urlsToGet model
                             in
-                                ( LoadedAlbum loc model parents <|
-                                    Dict.union pendingUrls <|
-                                        dictWithValues urls Requested
-                                , getUrls pendingUrls urls
-                                )
+                            ( LoadedAlbum loc model parents <|
+                                Dict.union pendingUrls <|
+                                    dictWithValues urls Requested
+                            , getUrls pendingUrls urls
+                            )
 
                         FullImage album index oldSize dragInfo ->
                             ( LoadedAlbum loc (FullImage album index (Debug.log "window size updated for full" size) dragInfo) parents pendingUrls
@@ -119,26 +119,26 @@ update msg model =
                         locate =
                             Task.perform (\_ -> Navigate loc) <| Task.succeed ()
                     in
-                        case nodeOrAlbum of
-                            Subtree albumNode ->
-                                ( LoadedNode loc (AlbumTreeNodePage albumNode winSize []) Dict.empty
-                                , locate
-                                )
+                    case nodeOrAlbum of
+                        Subtree albumNode ->
+                            ( LoadedNode loc (AlbumTreeNodePage albumNode winSize []) Dict.empty
+                            , locate
+                            )
 
-                            Leaf album ->
-                                let
-                                    albumPage =
-                                        Thumbs album winSize Set.empty Set.empty
+                        Leaf album ->
+                            let
+                                albumPage =
+                                    Thumbs album winSize Set.empty Set.empty
 
-                                    urls =
-                                        AlbumPage.urlsToGet albumPage
-                                in
-                                    ( LoadedAlbum loc albumPage [] <| dictWithValues urls Requested
-                                    , Cmd.batch
-                                        [ locate
-                                        , getUrls Dict.empty urls
-                                        ]
-                                    )
+                                urls =
+                                    AlbumPage.urlsToGet albumPage
+                            in
+                            ( LoadedAlbum loc albumPage [] <| dictWithValues urls Requested
+                            , Cmd.batch
+                                [ locate
+                                , getUrls Dict.empty urls
+                                ]
+                            )
 
                 _ ->
                     ( model, Cmd.none )
@@ -164,9 +164,9 @@ update msg model =
                         urls =
                             AlbumPage.urlsToGet newPage
                     in
-                        ( LoadedAlbum loc newPage parents <| Dict.union newPendingUrls <| dictWithValues urls Requested
-                        , getUrls newPendingUrls urls
-                        )
+                    ( LoadedAlbum loc newPage parents <| Dict.union newPendingUrls <| dictWithValues urls Requested
+                    , getUrls newPendingUrls urls
+                    )
 
                 _ ->
                     ( model, Cmd.none )
@@ -185,9 +185,9 @@ update msg model =
                 newLoc =
                     locForNode model albumTreeNodePage
             in
-                ( LoadedNode newLoc albumTreeNodePage Dict.empty
-                , Cmd.batch [ scrollToTop, newUrl <| locToString newLoc ]
-                )
+            ( LoadedNode newLoc albumTreeNodePage Dict.empty
+            , Cmd.batch [ scrollToTop, newUrl <| locToString newLoc ]
+            )
 
         ViewAlbum albumPage parents ->
             let
@@ -197,9 +197,9 @@ update msg model =
                 newLoc =
                     locForAlbum model albumPage parents
             in
-                ( LoadedAlbum newLoc albumPage parents <| dictWithValues urls Requested
-                , Cmd.batch [ scrollToTop, newUrl <| locToString newLoc, getUrls Dict.empty urls ]
-                )
+            ( LoadedAlbum newLoc albumPage parents <| dictWithValues urls Requested
+            , Cmd.batch [ scrollToTop, newUrl <| locToString newLoc, getUrls Dict.empty urls ]
+            )
 
         ScrollSucceeded ->
             ( model, Cmd.none )
@@ -233,7 +233,7 @@ locForAlbum model albumPage parents =
                 FullImage _ album _ _ ->
                     album.title
     in
-        locForPath model title parents
+    locForPath model title parents
 
 
 locForPath : AlbumBootstrap -> String -> List AlbumTreeNode -> Location
@@ -242,21 +242,20 @@ locForPath model title parents =
         curLoc =
             locOf model
     in
-        { curLoc
-            | hash =
-                "#"
-                    ++ (String.concat
-                            (List.intersperse "/"
-                                (List.append
-                                    (List.map
-                                        (\p -> p.nodeTitle)
-                                        (List.drop 1 (List.reverse parents))
-                                    )
-                                    [ title ]
-                                )
+    { curLoc
+        | hash =
+            "#"
+                ++ String.concat
+                    (List.intersperse "/"
+                        (List.append
+                            (List.map
+                                (\p -> p.nodeTitle)
+                                (List.drop 1 (List.reverse parents))
                             )
-                       )
-        }
+                            [ title ]
+                        )
+                    )
+    }
 
 
 locOf : AlbumBootstrap -> Location
@@ -311,15 +310,15 @@ updateImageResult model url result =
                         urls =
                             AlbumPage.urlsToGet model
                     in
-                        ( LoadedAlbum loc model parents <|
-                            Dict.union (Dict.fromList [ ( url, result ) ]) <|
-                                Dict.union pendingUrls <|
-                                    dictWithValues urls Requested
-                        , Cmd.batch
-                            [ getUrls pendingUrls urls
-                            , urlNextState url result
-                            ]
-                        )
+                    ( LoadedAlbum loc model parents <|
+                        Dict.union (Dict.fromList [ ( url, result ) ]) <|
+                            Dict.union pendingUrls <|
+                                dictWithValues urls Requested
+                    , Cmd.batch
+                        [ getUrls pendingUrls urls
+                        , urlNextState url result
+                        ]
+                    )
 
                 _ ->
                     ( model, Cmd.none )
@@ -440,7 +439,7 @@ view albumBootstrap =
             text "Album Loading ..."
 
         LoadError _ e ->
-            text ("Error Loading Album: " ++ (toString e))
+            text ("Error Loading Album: " ++ toString e)
 
         LoadedAlbum loc albumPage parents pendingUrls ->
             AlbumPage.view
