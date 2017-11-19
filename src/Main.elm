@@ -16,6 +16,7 @@ import Html exposing (..)
 import Http exposing (..)
 import ListUtils exposing (..)
 import Navigation exposing (..)
+import RouteUrl exposing (..)
 import Set exposing (..)
 import Task exposing (..)
 import Time exposing (..)
@@ -51,24 +52,25 @@ type AlbumBootstrapMsg
     | ImageFailed String Http.Error
     | ScrollSucceeded
     | ScrollFailed Id
-    | Navigate Location
+      --| Navigate Location
+    | Nav (List String)
 
 
-main : Program Never AlbumBootstrap AlbumBootstrapMsg
+main : RouteUrlProgram Never AlbumBootstrap AlbumBootstrapMsg
 main =
-    Navigation.program
-        --TODO do we even care about updates to the location beyond the initial?  maybe needed for back/forward buttons?
-        Navigate
+    RouteUrl.program
         { init = init
         , view = view
         , update = update
         , subscriptions = subscriptions
+        , delta2url = \_ -> locFor
+        , location2messages = navToMsg
         }
 
 
-init : Location -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
-init loc =
-    ( Sizing <| Debug.log "init loc" loc
+init : ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
+init =
+    ( Sizing <| Debug.crash "loc"
     , Task.perform Resize Window.size
     )
 
@@ -120,14 +122,15 @@ update msg model =
         YesAlbum nodeOrAlbum ->
             case model of
                 Loading loc winSize ->
-                    let
-                        locate =
-                            cmdOf <| Navigate loc
-                    in
+                    {- let
+                           locate =
+                               cmdOf <| Navigate loc
+                       in
+                    -}
                     case nodeOrAlbum of
                         Subtree albumNode ->
                             ( LoadedNode loc (AlbumTreeNodePage albumNode winSize []) Dict.empty
-                            , locate
+                            , Cmd.none
                             )
 
                         Leaf album ->
@@ -139,10 +142,7 @@ update msg model =
                                     AlbumPage.urlsToGet albumPage
                             in
                             ( LoadedAlbum loc albumPage [] <| dictWithValues urls Requested
-                            , Cmd.batch
-                                [ locate
-                                , getUrls Dict.empty urls
-                                ]
+                            , getUrls Dict.empty urls
                             )
 
                 _ ->
@@ -231,41 +231,46 @@ update msg model =
         ScrollFailed _ ->
             ( model, Cmd.none )
 
-        Navigate loc ->
-            ( model, Cmd.none )
+        Nav paths ->
+            ( model, pathsToCmd model paths )
 
 
 
 --( withLoc model loc, navToMsg model loc )
 
 
-navToMsg : AlbumBootstrap -> Location -> Cmd AlbumBootstrapMsg
-navToMsg model loc =
+navToMsg : Location -> List AlbumBootstrapMsg
+navToMsg loc =
     let
         parsedHash =
             Debug.log "parsedHash" <| parseHref loc.hash
     in
     case parsedHash of
         Err _ ->
-            Cmd.none
+            []
 
         Ok ( _, _, paths ) ->
-            case model of
-                Sizing _ ->
-                    Cmd.none
+            [ Nav paths ]
 
-                Loading _ _ ->
-                    Cmd.none
 
-                LoadError _ _ ->
-                    Cmd.none
+pathsToCmd : AlbumBootstrap -> List String -> Cmd AlbumBootstrapMsg
+pathsToCmd model paths =
+    case model of
+        Sizing _ ->
+            Cmd.none
 
-                LoadedNode _ (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
-                    --TODO maybe don't always prepend aTN here, only if at root?
-                    navToMsgImpl winSize (albumTreeNode :: parents) paths
+        Loading _ _ ->
+            Cmd.none
 
-                LoadedAlbum _ albumPage parents _ ->
-                    navToMsgImpl (pageSize albumPage) parents paths
+        LoadError _ _ ->
+            Cmd.none
+
+        LoadedNode _ (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
+            --TODO maybe don't always prepend aTN here, only if at root?
+            navToMsgImpl winSize (albumTreeNode :: parents) paths
+
+        LoadedAlbum _ albumPage parents _ ->
+            navToMsgImpl (pageSize albumPage) parents paths
 
 
 navToMsgImpl : WinSize -> List AlbumTreeNode -> List String -> Cmd AlbumBootstrapMsg
@@ -337,6 +342,19 @@ parseHref href =
 cmdOf : a -> Cmd a
 cmdOf msg =
     Task.perform (\_ -> msg) <| Task.succeed ()
+
+
+locFor : AlbumBootstrap -> Maybe UrlChange
+locFor model =
+    case model of
+        LoadedAlbum _ albumPage parents _ ->
+            Just <|
+                { entry = NewEntry
+                , url = locToString <| locForAlbum model albumPage parents
+                }
+
+        _ ->
+            Nothing
 
 
 locForNode : AlbumBootstrap -> AlbumTreeNodePage -> Location
