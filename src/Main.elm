@@ -217,37 +217,40 @@ update msg model =
 
 navToMsg : AlbumBootstrap -> Location -> Cmd AlbumBootstrapMsg
 navToMsg model loc =
-    let
-        parsedHash =
-            Debug.log "parsedHash" <| parseHref loc.hash
-    in
-    case parsedHash of
-        Err _ ->
-            Cmd.none
+    if locOf model == loc then
+        Cmd.none
+    else
+        let
+            parsedHash =
+                Debug.log "parsedHash" <| parseHref loc.hash
+        in
+        case parsedHash of
+            Err _ ->
+                Cmd.none
 
-        Ok ( _, _, paths ) ->
-            case model of
-                Sizing _ ->
-                    Cmd.none
+            Ok ( _, _, paths ) ->
+                case model of
+                    Sizing _ ->
+                        Cmd.none
 
-                Loading _ _ ->
-                    Cmd.none
+                    Loading _ _ ->
+                        Cmd.none
 
-                LoadError _ _ ->
-                    Cmd.none
+                    LoadError _ _ ->
+                        Cmd.none
 
-                LoadedNode _ (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
-                    navToMsgImpl winSize parents paths
+                    LoadedNode _ (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
+                        navToMsgImpl winSize (albumTreeNode :: parents) paths
 
-                LoadedAlbum _ albumPage parents _ ->
-                    navToMsgImpl (pageSize albumPage) parents paths
+                    LoadedAlbum _ albumPage parents _ ->
+                        navToMsgImpl (pageSize albumPage) parents paths
 
 
 navToMsgImpl : WinSize -> List AlbumTreeNode -> List String -> Cmd AlbumBootstrapMsg
 navToMsgImpl size parents paths =
     let
         mRoot =
-            List.head <| List.reverse parents
+            Debug.log "mRoot" <| List.head <| List.reverse parents
 
         navFrom root paths defcmd =
             case paths of
@@ -290,7 +293,7 @@ findChild containingNode name =
                 Leaf album ->
                     album.title == name
     in
-    List.head <| List.filter f <| containingNode.childFirst :: containingNode.childRest
+    Debug.log ("looking for " ++ name) <| List.head <| List.filter f <| containingNode.childFirst :: containingNode.childRest
 
 
 parseHref : String -> Result (ParseErr ()) (ParseOk () (List String))
