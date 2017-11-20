@@ -25,9 +25,9 @@ import Window exposing (..)
 
 
 type AlbumBootstrap
-    = Sizing Location
-    | Loading Location WinSize
-    | LoadError Location Http.Error
+    = Sizing
+    | Loading WinSize
+    | LoadError Http.Error
     | LoadedNode AlbumTreeNodePage (Dict String UrlLoadState)
     | LoadedAlbum AlbumPage (List AlbumTreeNode) (Dict String UrlLoadState)
 
@@ -70,7 +70,7 @@ main =
 
 init : ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 init =
-    ( Sizing <| Debug.crash "loc"
+    ( Sizing
     , Task.perform Resize Window.size
     )
 
@@ -80,17 +80,17 @@ update msg model =
     case msg of
         Resize size ->
             case model of
-                Sizing loc ->
-                    ( Loading loc <| Debug.log "window size set" size
+                Sizing ->
+                    ( Loading <| Debug.log "window size set" size
                     , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecNodeOrAlbum))
                     )
 
-                Loading loc oldSize ->
-                    ( Loading loc <| Debug.log "window size updated during load" size
+                Loading oldSize ->
+                    ( Loading <| Debug.log "window size updated during load" size
                     , Cmd.none
                     )
 
-                LoadError _ _ ->
+                LoadError _ ->
                     ( model, Cmd.none )
 
                 LoadedAlbum albumPage parents pendingUrls ->
@@ -121,12 +121,7 @@ update msg model =
 
         YesAlbum nodeOrAlbum ->
             case model of
-                Loading loc winSize ->
-                    {- let
-                           locate =
-                               cmdOf <| Navigate loc
-                       in
-                    -}
+                Loading winSize ->
                     case nodeOrAlbum of
                         Subtree albumNode ->
                             ( LoadedNode (AlbumTreeNodePage albumNode winSize []) Dict.empty
@@ -149,7 +144,7 @@ update msg model =
                     ( model, Cmd.none )
 
         NoAlbum err ->
-            ( LoadError (Debug.crash "loc") err
+            ( LoadError err
             , Cmd.none
             )
 
@@ -235,13 +230,13 @@ navToMsg loc =
 pathsToCmd : AlbumBootstrap -> List String -> Cmd AlbumBootstrapMsg
 pathsToCmd model paths =
     case model of
-        Sizing _ ->
+        Sizing ->
             Cmd.none
 
-        Loading _ _ ->
+        Loading _ ->
             Cmd.none
 
-        LoadError _ _ ->
+        LoadError _ ->
             Cmd.none
 
         LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
@@ -554,13 +549,13 @@ pageSize albumPage =
 view : AlbumBootstrap -> Html AlbumBootstrapMsg
 view albumBootstrap =
     case albumBootstrap of
-        Sizing _ ->
+        Sizing ->
             text "Album Starting"
 
-        Loading _ _ ->
+        Loading _ ->
             text "Album Loading ..."
 
-        LoadError _ e ->
+        LoadError e ->
             text ("Error Loading Album: " ++ toString e)
 
         LoadedAlbum albumPage parents pendingUrls ->
