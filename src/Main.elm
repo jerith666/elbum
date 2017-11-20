@@ -28,8 +28,8 @@ type AlbumBootstrap
     = Sizing Location
     | Loading Location WinSize
     | LoadError Location Http.Error
-    | LoadedNode Location AlbumTreeNodePage (Dict String UrlLoadState)
-    | LoadedAlbum Location AlbumPage (List AlbumTreeNode) (Dict String UrlLoadState)
+    | LoadedNode AlbumTreeNodePage (Dict String UrlLoadState)
+    | LoadedAlbum AlbumPage (List AlbumTreeNode) (Dict String UrlLoadState)
 
 
 type UrlLoadState
@@ -93,7 +93,7 @@ update msg model =
                 LoadError _ _ ->
                     ( model, Cmd.none )
 
-                LoadedAlbum loc albumPage parents pendingUrls ->
+                LoadedAlbum albumPage parents pendingUrls ->
                     case albumPage of
                         Thumbs album oldSize justLoadedImages readyToDisplayImages ->
                             let
@@ -103,19 +103,19 @@ update msg model =
                                 urls =
                                     AlbumPage.urlsToGet model
                             in
-                            ( LoadedAlbum loc model parents <|
+                            ( LoadedAlbum model parents <|
                                 Dict.union pendingUrls <|
                                     dictWithValues urls Requested
                             , getUrls pendingUrls urls
                             )
 
                         FullImage album index oldSize dragInfo ->
-                            ( LoadedAlbum loc (FullImage album index (Debug.log "window size updated for full" size) dragInfo) parents pendingUrls
+                            ( LoadedAlbum (FullImage album index (Debug.log "window size updated for full" size) dragInfo) parents pendingUrls
                             , Cmd.none
                             )
 
-                LoadedNode loc (AlbumTreeNodePage albumNode oldSize parentNodes) pendingUrls ->
-                    ( LoadedNode loc (AlbumTreeNodePage albumNode size parentNodes) pendingUrls
+                LoadedNode (AlbumTreeNodePage albumNode oldSize parentNodes) pendingUrls ->
+                    ( LoadedNode (AlbumTreeNodePage albumNode size parentNodes) pendingUrls
                     , Cmd.none
                     )
 
@@ -129,7 +129,7 @@ update msg model =
                     -}
                     case nodeOrAlbum of
                         Subtree albumNode ->
-                            ( LoadedNode loc (AlbumTreeNodePage albumNode winSize []) Dict.empty
+                            ( LoadedNode (AlbumTreeNodePage albumNode winSize []) Dict.empty
                             , Cmd.none
                             )
 
@@ -141,7 +141,7 @@ update msg model =
                                 urls =
                                     AlbumPage.urlsToGet albumPage
                             in
-                            ( LoadedAlbum loc albumPage [] <| dictWithValues urls Requested
+                            ( LoadedAlbum albumPage [] <| dictWithValues urls Requested
                             , getUrls Dict.empty urls
                             )
 
@@ -149,13 +149,13 @@ update msg model =
                     ( model, Cmd.none )
 
         NoAlbum err ->
-            ( LoadError (locOf model) err
+            ( LoadError (Debug.crash "loc") err
             , Cmd.none
             )
 
         PageMsg pageMsg ->
             case model of
-                LoadedAlbum loc oldPage parents oldPendingUrls ->
+                LoadedAlbum oldPage parents oldPendingUrls ->
                     let
                         newPage =
                             AlbumPage.update pageMsg oldPage
@@ -169,7 +169,7 @@ update msg model =
                         urls =
                             AlbumPage.urlsToGet newPage
                     in
-                    ( LoadedAlbum loc newPage parents <| Dict.union newPendingUrls <| dictWithValues urls Requested
+                    ( LoadedAlbum newPage parents <| Dict.union newPendingUrls <| dictWithValues urls Requested
                     , getUrls newPendingUrls urls
                     )
 
@@ -187,42 +187,21 @@ update msg model =
 
         ViewNode albumTreeNodePage ->
             let
-                newLoc =
-                    locForNode model albumTreeNodePage
-
                 newModel =
-                    LoadedNode newLoc albumTreeNodePage Dict.empty
-
-                newLocCmd =
-                    --TODO this bounces back and forth between true and false with #March ... ?
-                    if Debug.log "comparing node models" <| model == newModel then
-                        Cmd.none
-                    else
-                        newUrl <| locToString <| newLoc
+                    LoadedNode albumTreeNodePage Dict.empty
             in
-            ( newModel
-            , Cmd.batch [ scrollToTop, newLocCmd ]
-            )
+            ( newModel, scrollToTop )
 
         ViewAlbum albumPage parents ->
             let
                 urls =
                     AlbumPage.urlsToGet albumPage
 
-                newLoc =
-                    locForAlbum model albumPage parents
-
                 newModel =
-                    LoadedAlbum newLoc albumPage parents <| dictWithValues urls Requested
-
-                newLocCmd =
-                    if model == newModel then
-                        Cmd.none
-                    else
-                        newUrl <| locToString <| newLoc
+                    LoadedAlbum albumPage parents <| dictWithValues urls Requested
             in
             ( newModel
-            , Cmd.batch [ scrollToTop, newLocCmd, getUrls Dict.empty urls ]
+            , Cmd.batch [ scrollToTop, getUrls Dict.empty urls ]
             )
 
         ScrollSucceeded ->
@@ -265,11 +244,11 @@ pathsToCmd model paths =
         LoadError _ _ ->
             Cmd.none
 
-        LoadedNode _ (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
+        LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
             --TODO maybe don't always prepend aTN here, only if at root?
             pathsToCmdImpl winSize (albumTreeNode :: parents) paths
 
-        LoadedAlbum _ albumPage parents _ ->
+        LoadedAlbum albumPage parents _ ->
             pathsToCmdImpl (pageSize albumPage) parents paths
 
 
@@ -331,34 +310,34 @@ cmdOf msg =
 locFor : AlbumBootstrap -> Maybe UrlChange
 locFor model =
     case model of
-        LoadedAlbum _ albumPage parents _ ->
+        LoadedAlbum albumPage parents _ ->
             Just <|
                 { entry = NewEntry
-                , url = locToString <| locForAlbum model albumPage parents
+                , url = hashForAlbum model albumPage parents
                 }
 
-        LoadedNode loc albumTreeNodePage _ ->
+        LoadedNode albumTreeNodePage _ ->
             Just <|
                 { entry = NewEntry
-                , url = locToString <| locForNode model albumTreeNodePage
+                , url = hashForNode model albumTreeNodePage
                 }
 
         _ ->
             Nothing
 
 
-locForNode : AlbumBootstrap -> AlbumTreeNodePage -> Location
-locForNode model nodePage =
+hashForNode : AlbumBootstrap -> AlbumTreeNodePage -> String
+hashForNode model nodePage =
     case nodePage of
         AlbumTreeNodePage albumTreeNode _ parents ->
             if List.isEmpty parents then
-                locForPath model "" []
+                hashFromAlbumPath model "" []
             else
-                locForPath model albumTreeNode.nodeTitle parents
+                hashFromAlbumPath model albumTreeNode.nodeTitle parents
 
 
-locForAlbum : AlbumBootstrap -> AlbumPage -> List AlbumTreeNode -> Location
-locForAlbum model albumPage parents =
+hashForAlbum : AlbumBootstrap -> AlbumPage -> List AlbumTreeNode -> String
+hashForAlbum model albumPage parents =
     let
         title =
             case albumPage of
@@ -368,51 +347,43 @@ locForAlbum model albumPage parents =
                 FullImage _ album _ _ ->
                     album.title
     in
-    locForPath model title parents
+    hashFromAlbumPath model title parents
 
 
-locForPath : AlbumBootstrap -> String -> List AlbumTreeNode -> Location
-locForPath model title parents =
-    let
-        curLoc =
-            locOf model
-    in
-    { curLoc
-        | hash =
-            "#"
-                ++ String.concat
-                    (List.intersperse "/"
-                        (List.append
-                            (List.map
-                                (\p -> p.nodeTitle)
-                                (List.drop 1 (List.reverse parents))
-                            )
-                            [ title ]
-                        )
+hashFromAlbumPath : AlbumBootstrap -> String -> List AlbumTreeNode -> String
+hashFromAlbumPath model title parents =
+    "#"
+        ++ String.concat
+            (List.intersperse "/"
+                (List.append
+                    (List.map
+                        (\p -> p.nodeTitle)
+                        (List.drop 1 (List.reverse parents))
                     )
-    }
-
-
-locOf : AlbumBootstrap -> Location
-locOf model =
-    case model of
-        Sizing loc ->
-            loc
-
-        Loading loc _ ->
-            loc
-
-        LoadError loc _ ->
-            loc
-
-        LoadedAlbum loc _ _ _ ->
-            loc
-
-        LoadedNode loc _ _ ->
-            loc
+                    [ title ]
+                )
+            )
 
 
 
+{- locOf : AlbumBootstrap -> Location
+   locOf model =
+       case model of
+           Sizing loc ->
+               loc
+
+           Loading loc _ ->
+               loc
+
+           LoadError loc _ ->
+               loc
+
+           LoadedAlbum loc _ _ _ ->
+               loc
+
+           LoadedNode loc _ _ ->
+               loc
+-}
 {- withLoc : AlbumBootstrap -> Location -> AlbumBootstrap
    withLoc model loc =
        case model of
@@ -451,7 +422,7 @@ scrollToTop =
 updateImageResult : AlbumBootstrap -> String -> UrlLoadState -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 updateImageResult model url result =
     case model of
-        LoadedAlbum loc albumPage parents pendingUrls ->
+        LoadedAlbum albumPage parents pendingUrls ->
             case albumPage of
                 Thumbs album size justLoadedImages readyToDisplayImages ->
                     let
@@ -461,7 +432,7 @@ updateImageResult model url result =
                         urls =
                             AlbumPage.urlsToGet model
                     in
-                    ( LoadedAlbum loc model parents <|
+                    ( LoadedAlbum model parents <|
                         Dict.union (Dict.fromList [ ( url, result ) ]) <|
                             Dict.union pendingUrls <|
                                 dictWithValues urls Requested
@@ -556,7 +527,7 @@ decodeUrlResult origUrl result =
 subscriptions : AlbumBootstrap -> Sub AlbumBootstrapMsg
 subscriptions model =
     case model of
-        LoadedAlbum loc albumPage parents pendingUrls ->
+        LoadedAlbum albumPage parents pendingUrls ->
             Sub.batch
                 [ Sub.map PageMsg <| AlbumPage.subscriptions albumPage
                 , resizes Resize
@@ -592,7 +563,7 @@ view albumBootstrap =
         LoadError _ e ->
             text ("Error Loading Album: " ++ toString e)
 
-        LoadedAlbum loc albumPage parents pendingUrls ->
+        LoadedAlbum albumPage parents pendingUrls ->
             AlbumPage.view
                 albumPage
                 (\node ->
@@ -605,7 +576,7 @@ view albumBootstrap =
                 PageMsg
                 parents
 
-        LoadedNode loc (AlbumTreeNodePage albumTreeNode winSize parents) pendingUrls ->
+        LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) pendingUrls ->
             AlbumTreeNodePage.view
                 (AlbumTreeNodePage
                     albumTreeNode
