@@ -7,7 +7,6 @@ import Album exposing (..)
 import AlbumPage exposing (..)
 import AlbumStyles exposing (..)
 import AlbumTreeNodePage exposing (..)
-import Combine exposing (..)
 import Delay exposing (..)
 import Dict exposing (..)
 import Dom exposing (..)
@@ -15,6 +14,7 @@ import Dom.Scroll exposing (..)
 import Html exposing (..)
 import Http exposing (..)
 import ListUtils exposing (..)
+import LocationUtils exposing (..)
 import Navigation exposing (..)
 import RouteUrl exposing (..)
 import Set exposing (..)
@@ -267,14 +267,14 @@ pathsToCmd model paths =
 
         LoadedNode _ (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
             --TODO maybe don't always prepend aTN here, only if at root?
-            navToMsgImpl winSize (albumTreeNode :: parents) paths
+            pathsToCmdImpl winSize (albumTreeNode :: parents) paths
 
         LoadedAlbum _ albumPage parents _ ->
-            navToMsgImpl (pageSize albumPage) parents paths
+            pathsToCmdImpl (pageSize albumPage) parents paths
 
 
-navToMsgImpl : WinSize -> List AlbumTreeNode -> List String -> Cmd AlbumBootstrapMsg
-navToMsgImpl size parents paths =
+pathsToCmdImpl : WinSize -> List AlbumTreeNode -> List String -> Cmd AlbumBootstrapMsg
+pathsToCmdImpl size parents paths =
     let
         mRoot =
             Debug.log "mRoot" <| List.head <| List.reverse parents
@@ -323,22 +323,6 @@ findChild containingNode name =
     Debug.log ("looking for " ++ name) <| List.head <| List.filter f <| containingNode.childFirst :: containingNode.childRest
 
 
-parseHref : String -> Result (ParseErr ()) (ParseOk () (List String))
-parseHref href =
-    let
-        pathParser =
-            Combine.map
-                (List.filterMap identity)
-            <|
-                string "#"
-                    *> sepBy
-                        (string "/")
-                        (Combine.map decodeUri <| regex "[^/]*")
-                    <* end
-    in
-    parse pathParser href
-
-
 cmdOf : a -> Cmd a
 cmdOf msg =
     Task.perform (\_ -> msg) <| Task.succeed ()
@@ -351,6 +335,12 @@ locFor model =
             Just <|
                 { entry = NewEntry
                 , url = locToString <| locForAlbum model albumPage parents
+                }
+
+        LoadedNode loc albumTreeNodePage _ ->
+            Just <|
+                { entry = NewEntry
+                , url = locToString <| locForNode model albumTreeNodePage
                 }
 
         _ ->
@@ -422,28 +412,25 @@ locOf model =
             loc
 
 
-withLoc : AlbumBootstrap -> Location -> AlbumBootstrap
-withLoc model loc =
-    case model of
-        Sizing _ ->
-            Sizing loc
 
-        Loading _ winSize ->
-            Loading loc winSize
+{- withLoc : AlbumBootstrap -> Location -> AlbumBootstrap
+   withLoc model loc =
+       case model of
+           Sizing _ ->
+               Sizing loc
 
-        LoadError _ err ->
-            LoadError loc err
+           Loading _ winSize ->
+               Loading loc winSize
 
-        LoadedAlbum _ a b c ->
-            LoadedAlbum loc a b c
+           LoadError _ err ->
+               LoadError loc err
 
-        LoadedNode _ a b ->
-            LoadedNode loc a b
+           LoadedAlbum _ a b c ->
+               LoadedAlbum loc a b c
 
-
-locToString : Location -> String
-locToString loc =
-    loc.protocol ++ "//" ++ loc.host ++ loc.pathname ++ loc.search ++ loc.hash
+           LoadedNode _ a b ->
+               LoadedNode loc a b
+-}
 
 
 scrollToTop : Cmd AlbumBootstrapMsg
