@@ -52,7 +52,6 @@ type AlbumBootstrapMsg
     | ImageFailed String Http.Error
     | ScrollSucceeded
     | ScrollFailed Id
-      --| Navigate Location
     | Nav (List String)
 
 
@@ -209,10 +208,6 @@ update msg model =
             ( model, pathsToCmd model paths )
 
 
-
---( withLoc model loc, navToMsg model loc )
-
-
 navToMsg : Location -> List AlbumBootstrapMsg
 navToMsg loc =
     let
@@ -306,13 +301,13 @@ locFor : AlbumBootstrap -> Maybe UrlChange
 locFor model =
     case model of
         LoadedAlbum albumPage parents _ ->
-            Just <|
+            Just
                 { entry = NewEntry
                 , url = hashForAlbum model albumPage parents
                 }
 
         LoadedNode albumTreeNodePage _ ->
-            Just <|
+            Just
                 { entry = NewEntry
                 , url = hashForNode model albumTreeNodePage
                 }
@@ -358,45 +353,6 @@ hashFromAlbumPath model title parents =
                     [ title ]
                 )
             )
-
-
-
-{- locOf : AlbumBootstrap -> Location
-   locOf model =
-       case model of
-           Sizing loc ->
-               loc
-
-           Loading loc _ ->
-               loc
-
-           LoadError loc _ ->
-               loc
-
-           LoadedAlbum loc _ _ _ ->
-               loc
-
-           LoadedNode loc _ _ ->
-               loc
--}
-{- withLoc : AlbumBootstrap -> Location -> AlbumBootstrap
-   withLoc model loc =
-       case model of
-           Sizing _ ->
-               Sizing loc
-
-           Loading _ winSize ->
-               Loading loc winSize
-
-           LoadError _ err ->
-               LoadError loc err
-
-           LoadedAlbum _ a b c ->
-               LoadedAlbum loc a b c
-
-           LoadedNode _ a b ->
-               LoadedNode loc a b
--}
 
 
 scrollToTop : Cmd AlbumBootstrapMsg
@@ -530,10 +486,6 @@ subscriptions model =
 
         _ ->
             resizes Resize
-
-
-
--- Sub.none --TODO FullImagePage.prevNextSubscriptions?
 
 
 pageSize : AlbumPage -> WinSize
