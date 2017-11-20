@@ -295,6 +295,7 @@ pathsToCmdImpl size parents paths =
 
                         Just pChild ->
                             case pChild of
+                                --TODO losing intermediate nodes here, with links to sub-sub-albums, I think
                                 Subtree albumTreeNode ->
                                     navFrom albumTreeNode ps <| cmdOf <| ViewNode <| AlbumTreeNodePage albumTreeNode size parents
 
