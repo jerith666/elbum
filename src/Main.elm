@@ -25,8 +25,8 @@ import Window exposing (..)
 
 
 type AlbumBootstrap
-    = Sizing
-    | Loading WinSize
+    = Sizing (Maybe (List String))
+    | Loading WinSize (Maybe (List String))
     | LoadError Http.Error
     | LoadedNode AlbumTreeNodePage (Dict String UrlLoadState)
     | LoadedAlbum AlbumPage (List AlbumTreeNode) (Dict String UrlLoadState)
@@ -69,7 +69,7 @@ main =
 
 init : ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 init =
-    ( Sizing
+    ( Sizing Nothing
     , Task.perform Resize Window.size
     )
 
@@ -79,13 +79,13 @@ update msg model =
     case msg of
         Resize size ->
             case model of
-                Sizing ->
-                    ( Loading <| Debug.log "window size set" size
+                Sizing paths ->
+                    ( Loading (Debug.log "window size set" size) paths
                     , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecNodeOrAlbum))
                     )
 
-                Loading oldSize ->
-                    ( Loading <| Debug.log "window size updated during load" size
+                Loading oldSize paths ->
+                    ( Loading (Debug.log "window size updated during load" size) paths
                     , Cmd.none
                     )
 
@@ -120,11 +120,15 @@ update msg model =
 
         YesAlbum nodeOrAlbum ->
             case model of
-                Loading winSize ->
+                Loading winSize paths ->
                     case nodeOrAlbum of
                         Subtree albumNode ->
-                            ( LoadedNode (AlbumTreeNodePage albumNode winSize []) Dict.empty
-                            , Cmd.none
+                            let
+                                newModel =
+                                    LoadedNode (AlbumTreeNodePage albumNode winSize []) Dict.empty
+                            in
+                            ( newModel
+                            , pathsToCmd newModel paths
                             )
 
                         Leaf album ->
@@ -134,9 +138,12 @@ update msg model =
 
                                 urls =
                                     AlbumPage.urlsToGet albumPage
+
+                                newModel =
+                                    LoadedAlbum albumPage [] <| dictWithValues urls Requested
                             in
-                            ( LoadedAlbum albumPage [] <| dictWithValues urls Requested
-                            , getUrls Dict.empty urls
+                            ( newModel
+                            , Cmd.batch [ pathsToCmd newModel paths, getUrls Dict.empty urls ]
                             )
 
                 _ ->
@@ -205,7 +212,7 @@ update msg model =
             ( model, Cmd.none )
 
         Nav paths ->
-            ( model, pathsToCmd model paths )
+            ( withPaths model paths, pathsToCmd model <| Just paths )
 
 
 navToMsg : Location -> List AlbumBootstrapMsg
@@ -222,24 +229,48 @@ navToMsg loc =
             [ Nav paths ]
 
 
-pathsToCmd : AlbumBootstrap -> List String -> Cmd AlbumBootstrapMsg
-pathsToCmd model paths =
+withPaths : AlbumBootstrap -> List String -> AlbumBootstrap
+withPaths model paths =
     case model of
-        Sizing ->
-            Cmd.none
+        Sizing _ ->
+            Sizing <| Just paths
 
-        Loading _ ->
-            Cmd.none
+        Loading winSize _ ->
+            Loading winSize <| Just paths
 
         LoadError _ ->
+            model
+
+        LoadedNode _ _ ->
+            model
+
+        LoadedAlbum _ _ _ ->
+            model
+
+
+pathsToCmd : AlbumBootstrap -> Maybe (List String) -> Cmd AlbumBootstrapMsg
+pathsToCmd model mPaths =
+    case mPaths of
+        Nothing ->
             Cmd.none
 
-        LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
-            --TODO maybe don't always prepend aTN here, only if at root?
-            pathsToCmdImpl winSize (albumTreeNode :: parents) paths
+        Just paths ->
+            case model of
+                Sizing _ ->
+                    Cmd.none
 
-        LoadedAlbum albumPage parents _ ->
-            pathsToCmdImpl (pageSize albumPage) parents paths
+                Loading _ _ ->
+                    Cmd.none
+
+                LoadError _ ->
+                    Debug.log "pathsToCmd LoadError, ignore" Cmd.none
+
+                LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) _ ->
+                    --TODO maybe don't always prepend aTN here, only if at root?
+                    pathsToCmdImpl winSize (albumTreeNode :: parents) paths
+
+                LoadedAlbum albumPage parents _ ->
+                    pathsToCmdImpl (pageSize albumPage) parents paths
 
 
 pathsToCmdImpl : WinSize -> List AlbumTreeNode -> List String -> Cmd AlbumBootstrapMsg
@@ -501,10 +532,10 @@ pageSize albumPage =
 view : AlbumBootstrap -> Html AlbumBootstrapMsg
 view albumBootstrap =
     case albumBootstrap of
-        Sizing ->
+        Sizing _ ->
             text "Album Starting"
 
-        Loading _ ->
+        Loading _ _ ->
             text "Album Loading ..."
 
         LoadError e ->
