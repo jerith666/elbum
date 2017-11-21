@@ -311,7 +311,41 @@ navFrom size root parents paths defcmd =
                             navFrom size albumTreeNode newParents ps <| cmdOf <| ViewNode <| AlbumTreeNodePage albumTreeNode size newParents
 
                         Leaf album ->
-                            cmdOf <| ViewAlbum (Thumbs album size Set.empty Set.empty) newParents
+                            navForAlbum size album ps newParents
+
+
+navForAlbum : WinSize -> Album -> List String -> List AlbumTreeNode -> Cmd AlbumBootstrapMsg
+navForAlbum size album ps newParents =
+    case ps of
+        [] ->
+            cmdOf <| ViewAlbum (Thumbs album size Set.empty Set.empty) newParents
+
+        i :: _ ->
+            case findImg [] album i of
+                Nothing ->
+                    Cmd.none
+
+                Just ( prevs, nAlbum ) ->
+                    cmdOf <| ViewAlbum (FullImage prevs nAlbum size Nothing) newParents
+
+
+findImg : List Image -> Album -> String -> Maybe ( List Image, Album )
+findImg prevs album img =
+    if album.imageFirst.altText == img then
+        Just ( prevs, album )
+    else
+        case album.imageRest of
+            [] ->
+                Nothing
+
+            imageNext :: imageRest ->
+                findImg
+                    (prevs ++ [ album.imageFirst ])
+                    { album
+                        | imageFirst = imageNext
+                        , imageRest = imageRest
+                    }
+                    img
 
 
 findChild : AlbumTreeNode -> String -> Maybe NodeOrAlbum
@@ -357,27 +391,27 @@ hashForNode model nodePage =
     case nodePage of
         AlbumTreeNodePage albumTreeNode _ parents ->
             if List.isEmpty parents then
-                hashFromAlbumPath model "" []
+                hashFromAlbumPath model [ "" ] []
             else
-                hashFromAlbumPath model albumTreeNode.nodeTitle parents
+                hashFromAlbumPath model [ albumTreeNode.nodeTitle ] parents
 
 
 hashForAlbum : AlbumBootstrap -> AlbumPage -> List AlbumTreeNode -> String
 hashForAlbum model albumPage parents =
     let
-        title =
+        titles =
             case albumPage of
                 Thumbs album _ _ _ ->
-                    album.title
+                    [ album.title ]
 
                 FullImage _ album _ _ ->
-                    album.title
+                    [ album.title, album.imageFirst.altText ]
     in
-    hashFromAlbumPath model title parents
+    hashFromAlbumPath model titles parents
 
 
-hashFromAlbumPath : AlbumBootstrap -> String -> List AlbumTreeNode -> String
-hashFromAlbumPath model title parents =
+hashFromAlbumPath : AlbumBootstrap -> List String -> List AlbumTreeNode -> String
+hashFromAlbumPath model titles parents =
     "#"
         ++ String.concat
             (List.intersperse "/"
@@ -386,7 +420,7 @@ hashFromAlbumPath model title parents =
                         (\p -> p.nodeTitle)
                         (List.drop 1 (List.reverse parents))
                     )
-                    [ title ]
+                    titles
                 )
             )
 
