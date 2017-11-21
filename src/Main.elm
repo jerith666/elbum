@@ -278,36 +278,40 @@ pathsToCmdImpl size parents paths =
     let
         mRoot =
             Debug.log "mRoot" <| List.head <| List.reverse parents
-
-        navFrom root paths defcmd =
-            case paths of
-                [] ->
-                    defcmd
-
-                p :: ps ->
-                    let
-                        mChild =
-                            findChild root p
-                    in
-                    case mChild of
-                        Nothing ->
-                            defcmd
-
-                        Just pChild ->
-                            case pChild of
-                                --TODO losing intermediate nodes here, with links to sub-sub-albums, I think
-                                Subtree albumTreeNode ->
-                                    navFrom albumTreeNode ps <| cmdOf <| ViewNode <| AlbumTreeNodePage albumTreeNode size parents
-
-                                Leaf album ->
-                                    cmdOf <| ViewAlbum (Thumbs album size Set.empty Set.empty) parents
     in
     case mRoot of
         Nothing ->
             Cmd.none
 
         Just root ->
-            navFrom root paths Cmd.none
+            navFrom size root [] paths Cmd.none
+
+
+navFrom : WinSize -> AlbumTreeNode -> List AlbumTreeNode -> List String -> Cmd AlbumBootstrapMsg -> Cmd AlbumBootstrapMsg
+navFrom size root parents paths defcmd =
+    case paths of
+        [] ->
+            defcmd
+
+        p :: ps ->
+            let
+                mChild =
+                    findChild root p
+
+                newParents =
+                    root :: parents
+            in
+            case mChild of
+                Nothing ->
+                    defcmd
+
+                Just pChild ->
+                    case pChild of
+                        Subtree albumTreeNode ->
+                            navFrom size albumTreeNode newParents ps <| cmdOf <| ViewNode <| AlbumTreeNodePage albumTreeNode size newParents
+
+                        Leaf album ->
+                            cmdOf <| ViewAlbum (Thumbs album size Set.empty Set.empty) newParents
 
 
 findChild : AlbumTreeNode -> String -> Maybe NodeOrAlbum
