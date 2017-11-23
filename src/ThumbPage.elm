@@ -270,6 +270,7 @@ viewThumb width opasity selectedMsg img =
         Just selectedMsg
 
 
+opacityStyles : ( Float, Bool ) -> List Mixin
 opacityStyles ( op, anim ) =
     case anim of
         True ->
