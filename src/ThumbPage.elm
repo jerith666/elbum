@@ -285,41 +285,25 @@ opacityStyles ( op, anim ) =
             [ opacity (num op) ]
 
 
-loadingImg : ImgSrc
-loadingImg =
-    { url = "loading.png"
-    , x = 1
-    , y = 1
-    }
-
-
 stubThumb : Int -> Image -> Html msg
 stubThumb width img =
     let
         ( xScaled, yScaled ) =
             sizeForWidth width img
     in
-    renderPresized 10
-        xScaled
-        yScaled
-        loadingImg
-        []
-        []
-        []
-        Nothing
-
-
-
-{- div
-   [ styles
-       [ Css.width <| px <| toFloat xScaled
-       , height <| px <| toFloat yScaled
-       , color white
-       , textAlign center
-       ]
-   ]
-   [ Html.text "..." ]
--}
+    div
+        [ styles
+            [ Css.width <| px <| toFloat xScaled
+            , Css.height <| px <| toFloat yScaled
+            , color white
+            , textAlign center
+            , displayFlex
+            , property "justify-content" "center"
+            , property "align-content" "center"
+            , flexDirection column
+            ]
+        ]
+        [ Html.text "..." ]
 
 
 sizeForWidth : Int -> Image -> ( Int, Int )
