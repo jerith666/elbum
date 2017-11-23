@@ -30,6 +30,11 @@ scrollPad =
     20
 
 
+grey : Color
+grey =
+    rgb 128 128 128
+
+
 view : (List Image -> Image -> List Image -> msg) -> (AlbumTreeNode -> msg) -> ThumbPageModel -> Html msg
 view imgChosenMsgr showNode thumbPageModel =
     rootDivFlex column
@@ -301,6 +306,14 @@ stubThumb width img =
             , property "justify-content" "center"
             , property "align-content" "center"
             , flexDirection column
+
+            --TODO avoid jumping, use one borderWidth prop
+            , borderStyle solid
+            , borderColor grey
+            , borderTopWidth (px 1)
+            , borderBottomWidth (px 1)
+            , borderLeftWidth (px 1)
+            , borderRightWidth (px 1)
             ]
         ]
         [ Html.text "..." ]
