@@ -306,14 +306,15 @@ stubThumb width img =
             , property "justify-content" "center"
             , property "align-content" "center"
             , flexDirection column
-
-            --TODO avoid jumping, use one borderWidth prop
             , borderStyle solid
             , borderColor grey
+
+            --TODO use one borderWidth prop
             , borderTopWidth (px 1)
             , borderBottomWidth (px 1)
             , borderLeftWidth (px 1)
             , borderRightWidth (px 1)
+            , margin (px -1)
             ]
         ]
         [ Html.text "..." ]
