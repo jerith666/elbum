@@ -28,10 +28,19 @@ view (AlbumTreeNodePage albumTreeNode winSize parents) viewSubtree viewAlbum =
 
 viewChildNode : (AlbumTreeNode -> msg) -> (Album -> msg) -> NodeOrAlbum -> Html msg
 viewChildNode viewSubtree viewAlbum nodeOrAlbum =
+    let
+        childStyles =
+            styles
+                [ color white
+                , displayFlex
+                , flexDirection row
+                , alignItems center
+                ]
+    in
     case nodeOrAlbum of
         Subtree albumTreeNode ->
             div
-                [ styles [ color white ]
+                [ childStyles
                 , onClick <| viewSubtree albumTreeNode
                 ]
                 [ viewThumb 200 ( 1, False ) (viewSubtree albumTreeNode) albumTreeNode.nodeThumbnail
@@ -40,7 +49,7 @@ viewChildNode viewSubtree viewAlbum nodeOrAlbum =
 
         Leaf album ->
             div
-                [ styles [ color white ]
+                [ childStyles
                 , onClick <| viewAlbum album
                 ]
                 [ viewThumb 200 ( 1, False ) (viewAlbum album) album.thumbnail
