@@ -9,14 +9,17 @@ parseHref : String -> Result (ParseErr ()) (ParseOk () (List String))
 parseHref href =
     let
         pathParser =
-            Combine.map
-                (List.filterMap identity)
+            or
+                (end $> [])
             <|
-                string "#"
-                    *> sepBy
-                        (string "/")
-                        (Combine.map decodeUri <| regex "[^/]*")
-                    <* end
+                Combine.map
+                    (List.filterMap identity)
+                <|
+                    string "#"
+                        *> sepBy
+                            (string "/")
+                            (Combine.map decodeUri <| regex "[^/]*")
+                        <* end
     in
     parse pathParser href
 

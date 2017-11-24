@@ -284,13 +284,16 @@ pathsToCmdImpl size parents paths =
             Cmd.none
 
         Just root ->
-            navFrom size root [] paths Cmd.none
+            navFrom size root [] paths <| cmdOf <| ViewNode <| AlbumTreeNodePage root size []
 
 
 navFrom : WinSize -> AlbumTreeNode -> List AlbumTreeNode -> List String -> Cmd AlbumBootstrapMsg -> Cmd AlbumBootstrapMsg
 navFrom size root parents paths defcmd =
     case paths of
         [] ->
+            defcmd
+
+        [ "#" ] ->
             defcmd
 
         p :: ps ->
