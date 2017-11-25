@@ -71,9 +71,16 @@ albumTitle title parents showNode extraStyles =
 
 albumParent : (AlbumTreeNode -> msg) -> AlbumTreeNode -> Html msg
 albumParent showNode albumTreeNode =
-    span
-        [ onClick <| showNode albumTreeNode ]
-        [ Html.text <| albumTreeNode.nodeTitle ++ " < " ]
+    span []
+        [ span
+            [ onClick <| showNode albumTreeNode
+            , styles [ textDecoration underline ]
+            ]
+            [ Html.text albumTreeNode.nodeTitle ]
+        , span
+            [ styles [ padding2 (Css.em 0) (Css.em 0.5) ] ]
+            [ Html.text "<" ]
+        ]
 
 
 urlsToGet : ThumbPageModel -> Set String
