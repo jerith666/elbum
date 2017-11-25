@@ -27,7 +27,7 @@ renderPresized margin w h i iRest s otherAttrs msg =
 
 smallestImageBiggerThan : Int -> Int -> ImgSrc -> List ImgSrc -> ImgSrc
 smallestImageBiggerThan w h i iRest =
-    case List.head <| List.sortBy (\is -> is.x) <| List.filter (\is -> is.x > w && is.y > h) <| i :: iRest of
+    case List.head <| List.sortBy (\is -> is.x) <| List.filter (\is -> is.x >= w && is.y >= h) <| i :: iRest of
         Nothing ->
             Debug.log ("no sm bigger than " ++ toString w ++ ", " ++ toString h) i
 
