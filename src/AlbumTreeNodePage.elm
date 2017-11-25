@@ -30,12 +30,7 @@ viewChildNode : (AlbumTreeNode -> msg) -> (Album -> msg) -> NodeOrAlbum -> Html 
 viewChildNode viewSubtree viewAlbum nodeOrAlbum =
     let
         childStyles =
-            styles
-                [ color white
-                , displayFlex
-                , flexDirection row
-                , alignItems center
-                ]
+            styles [ color white ]
     in
     case nodeOrAlbum of
         Subtree albumTreeNode ->
@@ -43,8 +38,8 @@ viewChildNode viewSubtree viewAlbum nodeOrAlbum =
                 [ childStyles
                 , onClick <| viewSubtree albumTreeNode
                 ]
-                [ viewThumb 200 ( 1, False ) (viewSubtree albumTreeNode) albumTreeNode.nodeThumbnail
-                , div [] [ Html.text albumTreeNode.nodeTitle ]
+                [ viewThumb 200 ( 1, False ) [ verticalAlign middle ] (viewSubtree albumTreeNode) albumTreeNode.nodeThumbnail
+                , span [] [ Html.text albumTreeNode.nodeTitle ]
                 ]
 
         Leaf album ->
@@ -52,6 +47,6 @@ viewChildNode viewSubtree viewAlbum nodeOrAlbum =
                 [ childStyles
                 , onClick <| viewAlbum album
                 ]
-                [ viewThumb 200 ( 1, False ) (viewAlbum album) album.thumbnail
-                , div [] [ Html.text album.title ]
+                [ viewThumb 200 ( 1, False ) [ verticalAlign middle ] (viewAlbum album) album.thumbnail
+                , span [] [ Html.text album.title ]
                 ]

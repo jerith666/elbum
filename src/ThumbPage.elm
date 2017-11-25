@@ -171,7 +171,7 @@ viewThumbColumn thumbWidth imgChosenMsgr justLoadedImages readyToDisplayImages i
                         else
                             ( 1, True )
                 in
-                viewThumb thumbWidth opacity (imgChosenMsgr i) img
+                viewThumb thumbWidth opacity [] (imgChosenMsgr i) img
                 --TODO opacity
             else
                 stubThumb thumbWidth img
@@ -261,8 +261,8 @@ srcForWidth width img =
     smallestImageBiggerThan xScaled yScaled img.srcSetFirst img.srcSetRest
 
 
-viewThumb : Int -> ( Float, Bool ) -> msg -> Image -> Html msg
-viewThumb width opasity selectedMsg img =
+viewThumb : Int -> ( Float, Bool ) -> List Mixin -> msg -> Image -> Html msg
+viewThumb width opasity extraStyles selectedMsg img =
     let
         ( xScaled, yScaled ) =
             sizeForWidth width img
@@ -277,6 +277,7 @@ viewThumb width opasity selectedMsg img =
          , cursor pointer
          ]
             ++ opacityStyles opasity
+            ++ extraStyles
         )
         []
     <|
