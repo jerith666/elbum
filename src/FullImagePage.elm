@@ -65,17 +65,23 @@ view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNex
                ]
 
 
+navEltSize : number
+navEltSize =
+    50
+
+
 navElement msg label side =
     div
         [ styles
             [ position absolute
-            , height (vh 100)
-            , lineHeight (vh 100)
+            , height (px navEltSize)
+            , lineHeight (px navEltSize)
             , side (px 0)
-            , width (pct 5)
+            , width (px navEltSize)
             , textAlign center
             , color white
             , backgroundColor (rgba 40 40 40 0.5)
+            , borderRadius (px <| navEltSize / 2)
             , cursor pointer
             ]
         , onClick msg
