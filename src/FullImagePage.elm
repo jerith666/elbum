@@ -47,6 +47,7 @@ view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNex
                         , top (px 5)
                         , right (px 5)
                         , color white
+                        , cursor pointer
                         ]
                     , onClick backToThumbsMsg
                     ]
@@ -75,6 +76,7 @@ navElement msg label side =
             , textAlign center
             , color white
             , backgroundColor (rgba 40 40 40 0.5)
+            , cursor pointer
             ]
         , onClick msg
         ]

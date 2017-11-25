@@ -74,7 +74,7 @@ albumParent showNode albumTreeNode =
     span []
         [ span
             [ onClick <| showNode albumTreeNode
-            , styles [ textDecoration underline ]
+            , styles [ textDecoration underline, cursor pointer ]
             ]
             [ Html.text albumTreeNode.nodeTitle ]
         , span
@@ -274,6 +274,7 @@ viewThumb width opasity selectedMsg img =
         img.srcSetRest
         ([ borderRadius (px 5)
          , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
+         , cursor pointer
          ]
             ++ opacityStyles opasity
         )
