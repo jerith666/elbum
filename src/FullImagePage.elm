@@ -42,13 +42,11 @@ view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNex
                     [ navElement nextMsg ">" right ]
                )
             ++ [ div
-                    [ styles
-                        [ position absolute
-                        , top (px 5)
-                        , right (px 5)
-                        , color white
-                        , cursor pointer
-                        ]
+                    [ styles <|
+                        navBoxStyles
+                            ++ [ top (px 5)
+                               , right (px 5)
+                               ]
                     , onClick backToThumbsMsg
                     ]
                     [ Html.text "x" ]
@@ -70,20 +68,26 @@ navEltSize =
     50
 
 
+navBoxStyles : List Mixin
+navBoxStyles =
+    [ position absolute
+    , height (px navEltSize)
+    , width (px navEltSize)
+    , lineHeight (px navEltSize)
+    , textAlign center
+    , color white
+    , backgroundColor (rgba 40 40 40 0.5)
+    , borderRadius (px <| navEltSize / 2)
+    , cursor pointer
+    ]
+
+
 navElement msg label side =
     div
-        [ styles
-            [ position absolute
-            , height (px navEltSize)
-            , lineHeight (px navEltSize)
-            , side (px 0)
-            , width (px navEltSize)
-            , textAlign center
-            , color white
-            , backgroundColor (rgba 40 40 40 0.5)
-            , borderRadius (px <| navEltSize / 2)
-            , cursor pointer
-            ]
+        [ styles <|
+            navBoxStyles
+                ++ [ side (px 0)
+                   ]
         , onClick msg
         ]
         [ Html.text label ]
