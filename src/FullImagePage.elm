@@ -83,6 +83,7 @@ navBoxStyles =
     ]
 
 
+navElement : msg -> String -> (Px -> Mixin) -> Html msg
 navElement msg label side =
     div
         [ styles <|
