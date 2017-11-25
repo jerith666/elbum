@@ -193,6 +193,7 @@ sizes :: [Int]
 sizes = [400, 200, 100]
 
 shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
+--TODO should we always max the width rather than maxdim, since front-end layout always works in terms of a fixed width?
 shrinkImgSrc s d f i w h maxdim = do
     let fi = toFridayRGB $ convertRGB8 i
         (xsm, ysm) = shrink maxdim w h
