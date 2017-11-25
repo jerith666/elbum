@@ -31,11 +31,12 @@ view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNex
         , property "justify-content" "center"
         ]
     <|
-        (if List.isEmpty fullImagePageModel.prevImgs then
-            []
-         else
-            [ navElement prevMsg "<" left ]
-        )
+        [ viewImg nextMsg touchStartMsg touchContinueMsg touchPrevNextMsg fullImagePageModel fullImagePageModel.album.imageFirst ]
+            ++ (if List.isEmpty fullImagePageModel.prevImgs then
+                    []
+                else
+                    [ navElement prevMsg "<" left ]
+               )
             ++ (if List.isEmpty fullImagePageModel.album.imageRest then
                     []
                 else
@@ -59,7 +60,6 @@ view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNex
                         ]
                     ]
                     [ Html.text fullImagePageModel.album.imageFirst.altText ]
-               , viewImg nextMsg touchStartMsg touchContinueMsg touchPrevNextMsg fullImagePageModel fullImagePageModel.album.imageFirst
                ]
 
 
