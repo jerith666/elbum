@@ -42,16 +42,8 @@ view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNex
             [ Html.text fullImagePageModel.album.imageFirst.altText ]
         , viewImg nextMsg touchStartMsg touchContinueMsg touchPrevNextMsg fullImagePageModel fullImagePageModel.album.imageFirst
         ]
-            ++ (if List.isEmpty fullImagePageModel.prevImgs then
-                    []
-                else
-                    [ navElement prevMsg "<" left ]
-               )
-            ++ (if List.isEmpty fullImagePageModel.album.imageRest then
-                    []
-                else
-                    [ navElement nextMsg ">" right ]
-               )
+            ++ navEltIf fullImagePageModel.prevImgs prevMsg "<" left
+            ++ navEltIf fullImagePageModel.album.imageRest nextMsg ">" right
             ++ [ div
                     [ styles <|
                         navBoxStyles
@@ -62,6 +54,14 @@ view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNex
                     ]
                     [ Html.text "x" ]
                ]
+
+
+navEltIf : List a -> msg -> String -> (Px -> Mixin) -> List (Html msg)
+navEltIf lst navMsg navTxt navAlign =
+    if List.isEmpty lst then
+        []
+    else
+        [ navElement navMsg navTxt navAlign ]
 
 
 navEltSize : number
