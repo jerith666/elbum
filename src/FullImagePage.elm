@@ -31,7 +31,17 @@ view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNex
         , property "justify-content" "center"
         ]
     <|
-        [ viewImg nextMsg touchStartMsg touchContinueMsg touchPrevNextMsg fullImagePageModel fullImagePageModel.album.imageFirst ]
+        [ div
+            [ styles
+                [ color white
+                , textAlign center
+                , height (pct imgTitleHeight)
+                , lineHeight (px (imgTitleHeight / 100 * toFloat fullImagePageModel.winSize.height))
+                ]
+            ]
+            [ Html.text fullImagePageModel.album.imageFirst.altText ]
+        , viewImg nextMsg touchStartMsg touchContinueMsg touchPrevNextMsg fullImagePageModel fullImagePageModel.album.imageFirst
+        ]
             ++ (if List.isEmpty fullImagePageModel.prevImgs then
                     []
                 else
@@ -51,15 +61,6 @@ view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNex
                     , onClick backToThumbsMsg
                     ]
                     [ Html.text "x" ]
-               , div
-                    [ styles
-                        [ color white
-                        , textAlign center
-                        , height (pct imgTitleHeight)
-                        , lineHeight (px (imgTitleHeight / 100 * toFloat fullImagePageModel.winSize.height))
-                        ]
-                    ]
-                    [ Html.text fullImagePageModel.album.imageFirst.altText ]
                ]
 
 
