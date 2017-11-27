@@ -1,17 +1,21 @@
-sinb is not bins; sinb is a web photo album generator
+elbum is a web photo album generator
 
-desired operation:
+basic operation:
 
-run sinb executable, giving it:
- - a directory of pictures, each dir representing an album
+run album-types-gen.hs, it produces:
+ - Album.elm, client-side types and JSON en/decoders corresponding to
+   AlbumTypes.hs
+
+run gen-album.hs, giving it:
+ - a source directory of pictures, each dir representing an album
    - albums can be nested
- - a skin?
+ - a target directory
 
-it produces:
+it populates the target directory with:
  - a directory of resized pictures
- - a JSON file describing the structure and contents of the albums
+ - an album.json file describing the structure and contents of the albums
 
-and it copies in:
- - an index.html file to serve up the albums
- - ancillary css and js files to drive the album behaviour
+compile Main.elm, it produces:
+ - an index.html file to serve up an album described by album.json
 
+general approach inspired by http://bins.sautret.org/
