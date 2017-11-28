@@ -7,8 +7,10 @@ run album-types-gen.hs, it produces:
    AlbumTypes.hs
  - use src/client/album-types-gen.nix to do this
 
-run gen-album.hs, giving it:
+build and run gen-album.hs, giving it:
  - a source directory of pictures, each dir representing an album
+   - each album (except the root) must have a 'thumbnail' symlink
+     - thumbnails may point into subdirs
    - albums can be nested
  - a target directory
 
