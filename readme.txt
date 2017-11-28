@@ -5,6 +5,7 @@ basic operation:
 run album-types-gen.hs, it produces:
  - Album.elm, client-side types and JSON en/decoders corresponding to
    AlbumTypes.hs
+ - use src/client/album-types-gen.nix to do this
 
 run gen-album.hs, giving it:
  - a source directory of pictures, each dir representing an album
