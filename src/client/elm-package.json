@@ -1,7 +1,7 @@
 {
     "version": "0.1.0",
     "summary": "a web photo album generator",
-    "repository": "https://github.com/jerith666/elbum",
+    "repository": "https://github.com/jerith666/elbum.git",
     "license": "GPL3",
     "source-directories": [
         "."
