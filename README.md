@@ -20,6 +20,7 @@ generate client code to display the album
    - use `src/client/album-types-gen.nix` to do this (it includes a necessary patch to avoid https://github.com/elm-lang/elm-compiler/issues/1591).
  - compile `src/client/Main.elm`:
    - it produces an `index.html` file to render an album described by `album.json`
+   - use `src/client/client.nix` to do this
 
 use the [Nix](https://nixos.org) project's [`nix-shell`](https://nixos.org/nix/manual/#sec-nix-shell) with the provided `shell.nix` to automatically create a development environment with all the necessary tools available.
 
