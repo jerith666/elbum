@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+  <!-- this html is as close to identical to what's produced by the
+  elm compiler's '--output index.html' as possible.
+
+  two seemingly subtle things that seem like they shouldn't matter but
+  are required to get things to load at all:
+
+  (1) the tag must be <script></script> rather than <script/>
+
+  (2) the inline script that invokes elm must be in the body, not the
+  head.-->
+  <head>
+    <meta charset="UTF-8">
+    <title>Main</title>
+    <style>
+      html,head,body { padding:0; margin:0; }
+      body { font-family: calibri, helvetica, arial, sans-serif; }
+    </style>
+    <script type="text/javascript" src="elbum.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      Elm.Main.fullscreen();
+    </script>
+  </body>
+</html>

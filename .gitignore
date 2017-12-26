@@ -5,7 +5,7 @@ elm-stuff
 gen-album
 Album.elm
 album.json
-index.html
+elbum.js
 node_modules/
 *.png
 *.JPG
