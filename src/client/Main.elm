@@ -1,8 +1,5 @@
 module Main exposing (..)
 
---, parse, <*)
---import Combine exposing ((<*), ParseErr, ParseOk, end, parse, regex, sepBy, string)
-
 import Album exposing (..)
 import AlbumPage exposing (..)
 import AlbumStyles exposing (..)
