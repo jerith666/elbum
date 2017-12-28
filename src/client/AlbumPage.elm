@@ -197,6 +197,12 @@ view albumPage showNode wrapMsg parents flags =
                     flags
 
 
+minDragLen : number
+minDragLen =
+    -- a bit of experimenting and a bit of HIG googling says ...
+    75
+
+
 touchPrevNext : Maybe ( Touch, Touch ) -> Touch -> AlbumPageMsg
 touchPrevNext dragInfo touch =
     case dragInfo of
@@ -204,15 +210,18 @@ touchPrevNext dragInfo touch =
             NoUpdate
 
         Just ( start, cur ) ->
-            case getDirectionX start.clientX touch.clientX of
-                Left ->
-                    Next
+            if abs (start.clientX - touch.clientX) > minDragLen then
+                case getDirectionX start.clientX touch.clientX of
+                    Left ->
+                        Next
 
-                Right ->
-                    Prev
+                    Right ->
+                        Prev
 
-                _ ->
-                    NoUpdate
+                    _ ->
+                        NoUpdate
+            else
+                NoUpdate
 
 
 offsetFor : Maybe ( Touch, Touch ) -> ( Float, Float )
