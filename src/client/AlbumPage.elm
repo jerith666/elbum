@@ -21,6 +21,7 @@ type AlbumPageMsg
     = View (List Image) Image (List Image)
     | TouchDragStart Touch
     | TouchDragContinue Touch
+    | TouchDragAbandon
     | Prev
     | Next
     | BackToThumbs
@@ -131,6 +132,14 @@ update msg model =
                 _ ->
                     model
 
+        TouchDragAbandon ->
+            case model of
+                FullImage prevImgs album winSize _ ->
+                    FullImage prevImgs album winSize Nothing
+
+                _ ->
+                    model
+
         NoUpdate ->
             model
 
@@ -219,9 +228,9 @@ touchPrevNext dragInfo touch =
                         Prev
 
                     _ ->
-                        NoUpdate
+                        TouchDragAbandon
             else
-                NoUpdate
+                TouchDragAbandon
 
 
 offsetFor : Maybe ( Touch, Touch ) -> ( Float, Float )
