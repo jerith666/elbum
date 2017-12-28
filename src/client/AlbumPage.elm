@@ -1,6 +1,7 @@
 module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), resetUrls, subscriptions, update, urlsToGet, view)
 
 import Album exposing (..)
+import AlbumStyles exposing (..)
 import FullImagePage exposing (..)
 import Html exposing (..)
 import Keyboard exposing (..)
@@ -163,8 +164,8 @@ urlsToGet albumPage =
             empty
 
 
-view : AlbumPage -> (AlbumTreeNode -> msg) -> (AlbumPageMsg -> msg) -> List AlbumTreeNode -> Html msg
-view albumPage showNode wrapMsg parents =
+view : AlbumPage -> (AlbumTreeNode -> msg) -> (AlbumPageMsg -> msg) -> List AlbumTreeNode -> AlbumBootstrapFlags -> Html msg
+view albumPage showNode wrapMsg parents flags =
     case albumPage of
         Thumbs album winSize justLoadedImages readyToDisplayImages ->
             ThumbPage.view
@@ -176,6 +177,7 @@ view albumPage showNode wrapMsg parents =
                 , justLoadedImages = justLoadedImages
                 , readyToDisplayImages = readyToDisplayImages
                 }
+                flags
 
         FullImage prevImgs album winSize dragInfo ->
             Html.map wrapMsg <|
@@ -192,6 +194,7 @@ view albumPage showNode wrapMsg parents =
                     , winSize = winSize
                     , offset = offsetFor dragInfo
                     }
+                    flags
 
 
 touchPrevNext : Maybe ( Touch, Touch ) -> Touch -> AlbumPageMsg

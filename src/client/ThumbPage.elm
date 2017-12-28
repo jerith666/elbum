@@ -35,9 +35,11 @@ grey =
     rgb 128 128 128
 
 
-view : (List Image -> Image -> List Image -> msg) -> (AlbumTreeNode -> msg) -> ThumbPageModel -> Html msg
-view imgChosenMsgr showNode thumbPageModel =
-    rootDivFlex column
+view : (List Image -> Image -> List Image -> msg) -> (AlbumTreeNode -> msg) -> ThumbPageModel -> AlbumBootstrapFlags -> Html msg
+view imgChosenMsgr showNode thumbPageModel flags =
+    rootDivFlex
+        flags
+        column
         [ overflowX Css.hidden ]
     <|
         [ albumTitle thumbPageModel.album.title thumbPageModel.parents showNode [ position fixed ]

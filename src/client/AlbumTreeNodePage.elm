@@ -13,9 +13,10 @@ type AlbumTreeNodePage
     = AlbumTreeNodePage AlbumTreeNode WinSize (List AlbumTreeNode)
 
 
-view : AlbumTreeNodePage -> (AlbumTreeNode -> msg) -> (Album -> msg) -> Html msg
-view (AlbumTreeNodePage albumTreeNode winSize parents) viewSubtree viewAlbum =
+view : AlbumTreeNodePage -> (AlbumTreeNode -> msg) -> (Album -> msg) -> AlbumBootstrapFlags -> Html msg
+view (AlbumTreeNodePage albumTreeNode winSize parents) viewSubtree viewAlbum flags =
     rootDivFlex
+        flags
         column
         []
     <|

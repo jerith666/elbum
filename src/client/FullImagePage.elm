@@ -23,9 +23,11 @@ imgTitleHeight =
     5
 
 
-view : msg -> msg -> msg -> (Touch -> msg) -> (Touch -> msg) -> (Touch -> msg) -> msg -> FullImagePageModel -> Html msg
-view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNextMsg noOpMsg fullImagePageModel =
-    rootDivFlex column
+view : msg -> msg -> msg -> (Touch -> msg) -> (Touch -> msg) -> (Touch -> msg) -> msg -> FullImagePageModel -> AlbumBootstrapFlags -> Html msg
+view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNextMsg noOpMsg fullImagePageModel flags =
+    rootDivFlex
+        flags
+        column
         [ overflow hidden
         , alignItems center
         , property "justify-content" "center"
