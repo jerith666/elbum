@@ -189,8 +189,7 @@ procSrcSet s d f i w h = do
     return (rawImg : shrunken)
 
 sizes :: [Int]
--- sizes = [1600, 800, 400, 200]
-sizes = [400, 200, 100]
+sizes = [1600, 800, 400, 200]
 
 shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
 --TODO should we always max the width rather than maxdim, since front-end layout always works in terms of a fixed width?
