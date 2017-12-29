@@ -61,3 +61,18 @@ rootDivFlex flags dir extraStyles =
         , flexDirection dir
         ]
             ++ extraStyles
+
+
+opacityStyles : ( Float, Bool ) -> List Mixin
+opacityStyles ( op, anim ) =
+    case anim of
+        True ->
+            [ opacity (num op)
+            , Css.property "transition-property" "opacity"
+            , Css.property "transition-duration" "1s"
+            , Css.property "transition-timing-function" "ease-in-out"
+            , Css.property "transition-delay" "0s"
+            ]
+
+        False ->
+            [ opacity (num op) ]

@@ -286,21 +286,6 @@ viewThumb width opasity extraStyles selectedMsg img =
         Just selectedMsg
 
 
-opacityStyles : ( Float, Bool ) -> List Mixin
-opacityStyles ( op, anim ) =
-    case anim of
-        True ->
-            [ opacity (num op)
-            , property "transition-property" "opacity"
-            , property "transition-duration" "1s"
-            , property "transition-timing-function" "ease-in-out"
-            , property "transition-delay" "0s"
-            ]
-
-        False ->
-            [ opacity (num op) ]
-
-
 stubThumb : Int -> Image -> Html msg
 stubThumb width img =
     let
