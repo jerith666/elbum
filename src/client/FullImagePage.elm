@@ -6,6 +6,7 @@ import Css exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
 import ImageViews exposing (..)
+import Json.Decode exposing (..)
 import TouchEvents exposing (..)
 import WinSize exposing (..)
 
@@ -15,6 +16,7 @@ type alias FullImagePageModel =
     , album : Album
     , winSize : WinSize
     , offset : ( Float, Float )
+    , loaded : Bool
     }
 
 
@@ -23,8 +25,8 @@ imgTitleHeight =
     5
 
 
-view : msg -> msg -> msg -> (Touch -> msg) -> (Touch -> msg) -> (Touch -> msg) -> msg -> FullImagePageModel -> AlbumBootstrapFlags -> Html msg
-view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNextMsg noOpMsg fullImagePageModel flags =
+view : msg -> msg -> msg -> (String -> msg) -> (Touch -> msg) -> (Touch -> msg) -> (Touch -> msg) -> msg -> FullImagePageModel -> AlbumBootstrapFlags -> Html msg
+view prevMsg nextMsg backToThumbsMsg loadedMsg touchStartMsg touchContinueMsg touchPrevNextMsg noOpMsg fullImagePageModel flags =
     rootDivFlex
         flags
         column
@@ -42,7 +44,7 @@ view prevMsg nextMsg backToThumbsMsg touchStartMsg touchContinueMsg touchPrevNex
                 ]
             ]
             [ Html.text fullImagePageModel.album.imageFirst.altText ]
-        , viewImg nextMsg touchStartMsg touchContinueMsg touchPrevNextMsg fullImagePageModel fullImagePageModel.album.imageFirst
+        , viewImg loadedMsg nextMsg touchStartMsg touchContinueMsg touchPrevNextMsg fullImagePageModel fullImagePageModel.album.imageFirst fullImagePageModel.loaded
         ]
             ++ navEltIf fullImagePageModel.prevImgs prevMsg "<" left
             ++ navEltIf fullImagePageModel.album.imageRest nextMsg ">" right
@@ -97,8 +99,8 @@ navElement msg label side =
         [ Html.text label ]
 
 
-viewImg : msg -> (Touch -> msg) -> (Touch -> msg) -> (Touch -> msg) -> FullImagePageModel -> Image -> Html msg
-viewImg clickMsg touchStartMsg touchContinueMsg touchPrevNext fullImagePageModel img =
+viewImg : (String -> msg) -> msg -> (Touch -> msg) -> (Touch -> msg) -> (Touch -> msg) -> FullImagePageModel -> Image -> Bool -> Html msg
+viewImg loadedMsg clickMsg touchStartMsg touchContinueMsg touchPrevNext fullImagePageModel img loaded =
     let
         ( w, h ) =
             fitImage
@@ -113,15 +115,24 @@ viewImg clickMsg touchStartMsg touchContinueMsg touchPrevNext fullImagePageModel
         h
         img.srcSetFirst
         img.srcSetRest
-        [ position relative
+        ([ position relative
 
-        -- note: no up/down movement is desired, just left/right
-        -- , top <| px <| Tuple.second fullImagePageModel.offset
-        , left <| px <| Tuple.first fullImagePageModel.offset
-        ]
+         -- note: no up/down movement is desired, just left/right
+         -- , top <| px <| Tuple.second fullImagePageModel.offset
+         , left <| px <| Tuple.first fullImagePageModel.offset
+         ]
+            ++ opacityStyles
+                ( if loaded then
+                    1.0
+                  else
+                    0.0
+                , loaded
+                )
+        )
         [ onTouchStart touchStartMsg
         , onTouchMove touchContinueMsg
         , onTouchEnd touchPrevNext
+        , on "load" <| succeed <| loadedMsg img.srcSetFirst.url
         ]
     <|
         Just clickMsg

@@ -105,8 +105,8 @@ update msg model =
                             , getUrls pendingUrls urls
                             )
 
-                        FullImage album index oldSize dragInfo ->
-                            ( LoadedAlbum (FullImage album index (Debug.log "window size updated for full" size) dragInfo) parents flags pendingUrls
+                        FullImage album index loaded oldSize dragInfo ->
+                            ( LoadedAlbum (FullImage album index loaded (Debug.log "window size updated for full" size) dragInfo) parents flags pendingUrls
                             , Cmd.none
                             )
 
@@ -345,7 +345,7 @@ navForAlbum size album ps newParents =
                     Cmd.none
 
                 Just ( prevs, nAlbum ) ->
-                    cmdOf <| ViewAlbum (FullImage prevs nAlbum size Nothing) newParents
+                    cmdOf <| ViewAlbum (FullImage prevs nAlbum False size Nothing) newParents
 
 
 findImg : List Image -> Album -> String -> Maybe ( List Image, Album )
@@ -423,7 +423,7 @@ hashForAlbum model albumPage parents =
                 Thumbs album _ _ _ ->
                     [ album.title ]
 
-                FullImage _ album _ _ ->
+                FullImage _ album _ _ _ ->
                     [ album.title, album.imageFirst.altText ]
     in
     hashFromAlbumPath model titles parents
@@ -586,7 +586,7 @@ pageSize albumPage =
         Thumbs _ winSize _ _ ->
             winSize
 
-        FullImage _ _ winSize _ ->
+        FullImage _ _ _ winSize _ ->
             winSize
 
 

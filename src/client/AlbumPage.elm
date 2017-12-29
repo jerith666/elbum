@@ -14,7 +14,7 @@ import WinSize exposing (..)
 
 type AlbumPage
     = Thumbs Album WinSize (Set String) (Set String)
-    | FullImage (List Image) Album WinSize (Maybe ( Touch, Touch ))
+    | FullImage (List Image) Album Bool WinSize (Maybe ( Touch, Touch ))
 
 
 type AlbumPageMsg
@@ -22,6 +22,7 @@ type AlbumPageMsg
     | TouchDragStart Touch
     | TouchDragContinue Touch
     | TouchDragAbandon
+    | Loaded String
     | Prev
     | Next
     | BackToThumbs
@@ -45,6 +46,7 @@ update msg model =
                         , imageRest = nextImgs
                         , thumbnail = album.thumbnail
                         }
+                        False
                         winSize
                         Nothing
 
@@ -53,10 +55,16 @@ update msg model =
 
         Prev ->
             case model of
-                FullImage prevImgs album winSize _ ->
+                FullImage prevImgs album oldLoaded winSize _ ->
                     let
                         ( newPrev, newCur, newRest ) =
                             shiftLeft prevImgs album.imageFirst album.imageRest
+
+                        newLoaded =
+                            if album.imageFirst == newCur then
+                                oldLoaded
+                            else
+                                False
                     in
                     FullImage
                         newPrev
@@ -65,6 +73,7 @@ update msg model =
                         , imageRest = newRest
                         , thumbnail = album.thumbnail
                         }
+                        newLoaded
                         winSize
                         Nothing
 
@@ -73,10 +82,16 @@ update msg model =
 
         Next ->
             case model of
-                FullImage prevImgs album winSize _ ->
+                FullImage prevImgs album oldLoaded winSize _ ->
                     let
                         ( newPrev, newCur, newRest ) =
                             shiftRight prevImgs album.imageFirst album.imageRest
+
+                        newLoaded =
+                            if album.imageFirst == newCur then
+                                oldLoaded
+                            else
+                                False
                     in
                     FullImage
                         newPrev
@@ -85,6 +100,7 @@ update msg model =
                         , imageRest = newRest
                         , thumbnail = album.thumbnail
                         }
+                        newLoaded
                         winSize
                         Nothing
 
@@ -93,7 +109,7 @@ update msg model =
 
         BackToThumbs ->
             case model of
-                FullImage prevImgs album winSize _ ->
+                FullImage prevImgs album _ winSize _ ->
                     let
                         ( newFirst, newRest ) =
                             shiftToBeginning prevImgs album.imageFirst album.imageRest
@@ -111,31 +127,43 @@ update msg model =
                 _ ->
                     model
 
+        Loaded url ->
+            case model of
+                Thumbs _ _ _ _ ->
+                    model
+
+                FullImage prevImgs album bool winSize dragInfo ->
+                    let
+                        loaded =
+                            url == album.imageFirst.srcSetFirst.url
+                    in
+                    FullImage prevImgs album loaded winSize dragInfo
+
         TouchDragStart pos ->
             case model of
-                FullImage prevImgs album winSize dragInfo ->
-                    FullImage prevImgs album winSize (Just ( pos, pos ))
+                FullImage prevImgs album loaded winSize dragInfo ->
+                    FullImage prevImgs album loaded winSize (Just ( pos, pos ))
 
                 _ ->
                     model
 
         TouchDragContinue pos ->
             case model of
-                FullImage prevImgs album winSize dragInfo ->
+                FullImage prevImgs album loaded winSize dragInfo ->
                     case dragInfo of
                         Nothing ->
-                            FullImage prevImgs album winSize (Just ( pos, pos ))
+                            FullImage prevImgs album loaded winSize (Just ( pos, pos ))
 
                         Just ( start, cur ) ->
-                            FullImage prevImgs album winSize (Just ( start, pos ))
+                            FullImage prevImgs album loaded winSize (Just ( start, pos ))
 
                 _ ->
                     model
 
         TouchDragAbandon ->
             case model of
-                FullImage prevImgs album winSize _ ->
-                    FullImage prevImgs album winSize Nothing
+                FullImage prevImgs album loaded winSize _ ->
+                    FullImage prevImgs album loaded winSize Nothing
 
                 _ ->
                     model
@@ -188,12 +216,13 @@ view albumPage showNode wrapMsg parents flags =
                 }
                 flags
 
-        FullImage prevImgs album winSize dragInfo ->
+        FullImage prevImgs album loaded winSize dragInfo ->
             Html.map wrapMsg <|
                 FullImagePage.view
                     Prev
                     Next
                     BackToThumbs
+                    Loaded
                     TouchDragStart
                     TouchDragContinue
                     (touchPrevNext dragInfo)
@@ -202,6 +231,7 @@ view albumPage showNode wrapMsg parents flags =
                     , album = album
                     , winSize = winSize
                     , offset = offsetFor dragInfo
+                    , loaded = loaded
                     }
                     flags
 
@@ -249,7 +279,7 @@ subscriptions albumPage =
         Thumbs _ _ _ _ ->
             Sub.none
 
-        FullImage _ _ _ _ ->
+        FullImage _ _ _ _ _ ->
             downs
                 (\keycode ->
                     case keycode of
