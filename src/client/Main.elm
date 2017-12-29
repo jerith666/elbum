@@ -10,6 +10,7 @@ import Dom exposing (..)
 import Dom.Scroll exposing (..)
 import Html exposing (..)
 import Http exposing (..)
+import KeyboardUtils exposing (onUpArrow)
 import ListUtils exposing (..)
 import LocationUtils exposing (..)
 import Navigation exposing (..)
@@ -50,6 +51,7 @@ type AlbumBootstrapMsg
     | ScrollSucceeded
     | ScrollFailed Id
     | Nav (List String)
+    | NoBootstrap
 
 
 main : RouteUrlProgram AlbumBootstrapFlags AlbumBootstrap AlbumBootstrapMsg
@@ -210,6 +212,9 @@ update msg model =
 
         Nav paths ->
             ( withPaths model paths, pathsToCmd model <| Just paths )
+
+        NoBootstrap ->
+            ( model, Cmd.none )
 
 
 navToMsg : Location -> List AlbumBootstrapMsg
@@ -571,10 +576,33 @@ subscriptions : AlbumBootstrap -> Sub AlbumBootstrapMsg
 subscriptions model =
     case model of
         LoadedAlbum albumPage parents flags pendingUrls ->
+            let
+                showParent =
+                    case parents of
+                        [] ->
+                            NoBootstrap
+
+                        parent :: grandParents ->
+                            ViewNode <| AlbumTreeNodePage parent (pageSize albumPage) grandParents
+            in
             Sub.batch
-                [ Sub.map PageMsg <| AlbumPage.subscriptions albumPage
+                [ AlbumPage.subscriptions albumPage PageMsg showParent
                 , resizes Resize
                 ]
+
+        LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) flags pendingUrls ->
+            case parents of
+                [] ->
+                    resizes Resize
+
+                parent :: grandParents ->
+                    let
+                        upParent =
+                            onUpArrow
+                                (ViewNode <| AlbumTreeNodePage parent winSize grandParents)
+                                NoBootstrap
+                    in
+                    Sub.batch [ upParent, resizes Resize ]
 
         _ ->
             resizes Resize

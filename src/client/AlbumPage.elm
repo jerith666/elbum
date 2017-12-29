@@ -5,6 +5,7 @@ import AlbumStyles exposing (..)
 import FullImagePage exposing (..)
 import Html exposing (..)
 import Keyboard exposing (..)
+import KeyboardUtils exposing (onUpArrow)
 import ListUtils exposing (..)
 import Set exposing (..)
 import ThumbPage exposing (..)
@@ -254,28 +255,29 @@ offsetFor dragInfo =
             ( current.clientX - start.clientX, current.clientY - start.clientY )
 
 
-subscriptions : AlbumPage -> Sub AlbumPageMsg
-subscriptions albumPage =
+subscriptions : AlbumPage -> (AlbumPageMsg -> msg) -> msg -> Sub msg
+subscriptions albumPage wrapper showParent =
     case albumPage of
         Thumbs _ _ _ _ ->
-            Sub.none
+            onUpArrow showParent <| wrapper NoUpdate
 
         FullImage _ _ _ _ _ ->
-            downs
-                (\keycode ->
-                    case keycode of
-                        39 ->
-                            -- right arrow
-                            Next
+            Sub.map wrapper <|
+                downs
+                    (\keycode ->
+                        case keycode of
+                            39 ->
+                                -- right arrow
+                                Next
 
-                        37 ->
-                            -- left arrow
-                            Prev
+                            37 ->
+                                -- left arrow
+                                Prev
 
-                        38 ->
-                            -- up arrow
-                            BackToThumbs
+                            38 ->
+                                -- up arrow
+                                BackToThumbs
 
-                        _ ->
-                            NoUpdate
-                )
+                            _ ->
+                                NoUpdate
+                    )
