@@ -200,9 +200,7 @@ view albumPage showNode wrapMsg parents flags =
         FullImage prevImgs album loaded winSize dragInfo ->
             Html.map wrapMsg <|
                 FullImagePage.view
-                    Prev
-                    Next
-                    BackToThumbs
+                    { prevMsg = Prev, nextMsg = Next, backToThumbsMsg = BackToThumbs }
                     Loaded
                     TouchDragStart
                     TouchDragContinue

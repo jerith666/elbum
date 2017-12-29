@@ -20,13 +20,20 @@ type alias FullImagePageModel =
     }
 
 
+type alias NavMsgs msg =
+    { prevMsg : msg
+    , nextMsg : msg
+    , backToThumbsMsg : msg
+    }
+
+
 imgTitleHeight : Float
 imgTitleHeight =
     5
 
 
-view : msg -> msg -> msg -> (String -> msg) -> (Touch -> msg) -> (Touch -> msg) -> (Touch -> msg) -> msg -> FullImagePageModel -> AlbumBootstrapFlags -> Html msg
-view prevMsg nextMsg backToThumbsMsg loadedMsg touchStartMsg touchContinueMsg touchPrevNextMsg noOpMsg fullImagePageModel flags =
+view : NavMsgs msg -> (String -> msg) -> (Touch -> msg) -> (Touch -> msg) -> (Touch -> msg) -> msg -> FullImagePageModel -> AlbumBootstrapFlags -> Html msg
+view navMsgs loadedMsg touchStartMsg touchContinueMsg touchPrevNextMsg noOpMsg fullImagePageModel flags =
     rootDivFlex
         flags
         column
@@ -44,17 +51,17 @@ view prevMsg nextMsg backToThumbsMsg loadedMsg touchStartMsg touchContinueMsg to
                 ]
             ]
             [ Html.text fullImagePageModel.album.imageFirst.altText ]
-        , viewImg loadedMsg nextMsg touchStartMsg touchContinueMsg touchPrevNextMsg fullImagePageModel fullImagePageModel.album.imageFirst fullImagePageModel.loaded
+        , viewImg loadedMsg navMsgs.nextMsg touchStartMsg touchContinueMsg touchPrevNextMsg fullImagePageModel fullImagePageModel.album.imageFirst fullImagePageModel.loaded
         ]
-            ++ navEltIf fullImagePageModel.prevImgs prevMsg "<" left
-            ++ navEltIf fullImagePageModel.album.imageRest nextMsg ">" right
+            ++ navEltIf fullImagePageModel.prevImgs navMsgs.prevMsg "<" left
+            ++ navEltIf fullImagePageModel.album.imageRest navMsgs.nextMsg ">" right
             ++ [ div
                     [ styles <|
                         navBoxStyles
                             ++ [ top (px 5)
                                , right (px 5)
                                ]
-                    , onClick backToThumbsMsg
+                    , onClick navMsgs.backToThumbsMsg
                     ]
                     [ Html.text "x" ]
                ]
