@@ -192,14 +192,13 @@ sizes :: [Int]
 sizes = [1600, 800, 400, 200]
 
 shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
---TODO should we always max the width rather than maxdim, since front-end layout always works in terms of a fixed width?
-shrinkImgSrc s d f i w h maxdim = do
+shrinkImgSrc s d f i w h maxwidth = do
     let fi = toFridayRGB $ convertRGB8 i
-        (xsm, ysm) = shrink maxdim w h
+        (xsm, ysm) = shrink maxwidth w h
         fism = resize Bilinear (ix2 ysm xsm) fi
         ism = toJuicyRGB fism
-        fsmpath = fst $ destForShrink maxdim s d f
-    putStr $ show maxdim ++ "w "
+        fsmpath = fst $ destForShrink maxwidth s d f
+    putStr $ show maxwidth ++ "w "
     hFlush stdout
     createDirectoryIfMissing True $ takeDirectory fsmpath
     savePngImage fsmpath $ ImageRGB8 ism
@@ -224,8 +223,8 @@ destForRaw =
   destFor takeFileName
 
 destForShrink :: Int -> FilePath -> FilePath -> FilePath -> (FilePath, FilePath)
-destForShrink maxdim =
-  destFor (\f -> (takeFileName (dropExtension f)) ++ "." ++ (show maxdim) ++ ".png")
+destForShrink maxwidth =
+  destFor (\f -> (takeFileName (dropExtension f)) ++ "." ++ (show maxwidth) ++ ".png")
 
 destFor :: (FilePath -> FilePath) -> FilePath -> FilePath -> FilePath -> (FilePath, FilePath)
 destFor fNameMaker src dest fileInSrc =
@@ -234,9 +233,9 @@ destFor fNameMaker src dest fileInSrc =
   in (dest </> srel </> fName, fName)
 
 shrink :: Int -> Int -> Int -> (Int, Int)
-shrink maxdim w h = let factor = fromIntegral maxdim / fromIntegral (max w h)
-                        scale x = floor ((fromIntegral x) * factor)
-                    in (scale w, scale h)
+shrink maxwidth w h = let factor = fromIntegral maxwidth / fromIntegral w
+                          scale x = floor ((fromIntegral x) * factor)
+                      in (scale w, scale h)
 
 
 dirsOnly :: [FilePath] -> IO [FilePath]
