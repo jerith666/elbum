@@ -8,9 +8,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
 
--- TODO change signature to allow non-empty msg
-
-
 renderPresized : Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> Maybe msg -> Html msg
 renderPresized margin w h i iRest s otherAttrs msg =
     render (smallestImageBiggerThan w h i iRest)
