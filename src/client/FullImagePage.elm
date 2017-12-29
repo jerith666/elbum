@@ -27,13 +27,20 @@ type alias NavMsgs msg =
     }
 
 
+type alias TouchMsgs msg =
+    { touchStartMsg : Touch -> msg
+    , touchContinueMsg : Touch -> msg
+    , touchPrevNextMsg : Touch -> msg
+    }
+
+
 imgTitleHeight : Float
 imgTitleHeight =
     5
 
 
-view : NavMsgs msg -> (String -> msg) -> (Touch -> msg) -> (Touch -> msg) -> (Touch -> msg) -> msg -> FullImagePageModel -> AlbumBootstrapFlags -> Html msg
-view navMsgs loadedMsg touchStartMsg touchContinueMsg touchPrevNextMsg noOpMsg fullImagePageModel flags =
+view : NavMsgs msg -> (String -> msg) -> TouchMsgs msg -> msg -> FullImagePageModel -> AlbumBootstrapFlags -> Html msg
+view navMsgs loadedMsg touchMsgs noOpMsg fullImagePageModel flags =
     rootDivFlex
         flags
         column
@@ -51,7 +58,7 @@ view navMsgs loadedMsg touchStartMsg touchContinueMsg touchPrevNextMsg noOpMsg f
                 ]
             ]
             [ Html.text fullImagePageModel.album.imageFirst.altText ]
-        , viewImg loadedMsg navMsgs.nextMsg touchStartMsg touchContinueMsg touchPrevNextMsg fullImagePageModel fullImagePageModel.album.imageFirst fullImagePageModel.loaded
+        , viewImg loadedMsg navMsgs.nextMsg touchMsgs fullImagePageModel fullImagePageModel.album.imageFirst fullImagePageModel.loaded
         ]
             ++ navEltIf fullImagePageModel.prevImgs navMsgs.prevMsg "<" left
             ++ navEltIf fullImagePageModel.album.imageRest navMsgs.nextMsg ">" right
@@ -106,8 +113,8 @@ navElement msg label side =
         [ Html.text label ]
 
 
-viewImg : (String -> msg) -> msg -> (Touch -> msg) -> (Touch -> msg) -> (Touch -> msg) -> FullImagePageModel -> Image -> Bool -> Html msg
-viewImg loadedMsg clickMsg touchStartMsg touchContinueMsg touchPrevNext fullImagePageModel img loaded =
+viewImg : (String -> msg) -> msg -> TouchMsgs msg -> FullImagePageModel -> Image -> Bool -> Html msg
+viewImg loadedMsg clickMsg touchMsgs fullImagePageModel img loaded =
     let
         ( w, h ) =
             fitImage
@@ -136,9 +143,9 @@ viewImg loadedMsg clickMsg touchStartMsg touchContinueMsg touchPrevNext fullImag
                 , loaded
                 )
         )
-        [ onTouchStart touchStartMsg
-        , onTouchMove touchContinueMsg
-        , onTouchEnd touchPrevNext
+        [ onTouchStart touchMsgs.touchStartMsg
+        , onTouchMove touchMsgs.touchContinueMsg
+        , onTouchEnd touchMsgs.touchPrevNextMsg
         , on "load" <| succeed <| loadedMsg img.srcSetFirst.url
         ]
     <|

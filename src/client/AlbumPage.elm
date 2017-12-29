@@ -202,9 +202,11 @@ view albumPage showNode wrapMsg parents flags =
                 FullImagePage.view
                     { prevMsg = Prev, nextMsg = Next, backToThumbsMsg = BackToThumbs }
                     Loaded
-                    TouchDragStart
-                    TouchDragContinue
-                    (touchPrevNext dragInfo)
+                    { touchStartMsg = TouchDragStart
+                    , touchContinueMsg = TouchDragContinue
+                    , touchPrevNextMsg =
+                        touchPrevNext dragInfo
+                    }
                     NoUpdate
                     { prevImgs = prevImgs
                     , album = album
