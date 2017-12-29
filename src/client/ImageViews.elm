@@ -38,14 +38,20 @@ smallestImageBiggerThan w h i iRest =
 render : ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> Maybe msg -> Html msg
 render idefault is s otherAttrs msg =
     let
+        srcset =
+            case is of
+                [] ->
+                    []
+
+                _ ->
+                    [ attribute "srcset" (encodeSrcSet is) ]
+
         baseAttrs =
             [ styles s
             , Html.Attributes.src idefault.url
-            , attribute "srcset" (encodeSrcSet is)
             , Html.Attributes.width idefault.x
             , Html.Attributes.height idefault.y
             ]
-                ++ otherAttrs
 
         clickAttr =
             case msg of
@@ -56,7 +62,7 @@ render idefault is s otherAttrs msg =
                     []
     in
     img
-        (baseAttrs ++ clickAttr)
+        (baseAttrs ++ otherAttrs ++ srcset ++ clickAttr)
         []
 
 
