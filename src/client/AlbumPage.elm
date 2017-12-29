@@ -54,58 +54,10 @@ update msg model =
                     model
 
         Prev ->
-            case model of
-                FullImage prevImgs album oldLoaded winSize _ ->
-                    let
-                        ( newPrev, newCur, newRest ) =
-                            shiftLeft prevImgs album.imageFirst album.imageRest
-
-                        newLoaded =
-                            if album.imageFirst == newCur then
-                                oldLoaded
-                            else
-                                False
-                    in
-                    FullImage
-                        newPrev
-                        { title = album.title
-                        , imageFirst = newCur
-                        , imageRest = newRest
-                        , thumbnail = album.thumbnail
-                        }
-                        newLoaded
-                        winSize
-                        Nothing
-
-                _ ->
-                    model
+            updatePrevNext model shiftLeft
 
         Next ->
-            case model of
-                FullImage prevImgs album oldLoaded winSize _ ->
-                    let
-                        ( newPrev, newCur, newRest ) =
-                            shiftRight prevImgs album.imageFirst album.imageRest
-
-                        newLoaded =
-                            if album.imageFirst == newCur then
-                                oldLoaded
-                            else
-                                False
-                    in
-                    FullImage
-                        newPrev
-                        { title = album.title
-                        , imageFirst = newCur
-                        , imageRest = newRest
-                        , thumbnail = album.thumbnail
-                        }
-                        newLoaded
-                        winSize
-                        Nothing
-
-                _ ->
-                    model
+            updatePrevNext model shiftRight
 
         BackToThumbs ->
             case model of
@@ -169,6 +121,35 @@ update msg model =
                     model
 
         NoUpdate ->
+            model
+
+
+updatePrevNext : AlbumPage -> (List Image -> Image -> List Image -> ( List Image, Image, List Image )) -> AlbumPage
+updatePrevNext model shifter =
+    case model of
+        FullImage prevImgs album oldLoaded winSize _ ->
+            let
+                ( newPrev, newCur, newRest ) =
+                    shifter prevImgs album.imageFirst album.imageRest
+
+                newLoaded =
+                    if album.imageFirst == newCur then
+                        oldLoaded
+                    else
+                        False
+            in
+            FullImage
+                newPrev
+                { title = album.title
+                , imageFirst = newCur
+                , imageRest = newRest
+                , thumbnail = album.thumbnail
+                }
+                newLoaded
+                winSize
+                Nothing
+
+        _ ->
             model
 
 
