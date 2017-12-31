@@ -13,7 +13,7 @@ import WinSize exposing (..)
 
 type alias ThumbPageModel =
     { album : Album
-    , parents : List AlbumTreeNode
+    , parents : List AlbumList
     , winSize : WinSize
     , justLoadedImages : Set String
     , readyToDisplayImages : Set String
@@ -35,15 +35,15 @@ grey =
     rgb 128 128 128
 
 
-view : (List Image -> Image -> List Image -> msg) -> (AlbumTreeNode -> msg) -> ThumbPageModel -> AlbumBootstrapFlags -> Html msg
-view imgChosenMsgr showNode thumbPageModel flags =
+view : (List Image -> Image -> List Image -> msg) -> (AlbumList -> msg) -> ThumbPageModel -> AlbumBootstrapFlags -> Html msg
+view imgChosenMsgr showList thumbPageModel flags =
     rootDivFlex
         flags
         column
         [ overflowX Css.hidden ]
     <|
-        [ albumTitle thumbPageModel.album.title thumbPageModel.parents showNode [ position fixed ]
-        , albumTitle thumbPageModel.album.title thumbPageModel.parents showNode [ Css.property "visibility" "hidden" ]
+        [ albumTitle thumbPageModel.album.title thumbPageModel.parents showList [ position fixed ]
+        , albumTitle thumbPageModel.album.title thumbPageModel.parents showList [ Css.property "visibility" "hidden" ]
         , div
             [ styles
                 [ displayFlex
@@ -54,8 +54,8 @@ view imgChosenMsgr showNode thumbPageModel flags =
         ]
 
 
-albumTitle : String -> List AlbumTreeNode -> (AlbumTreeNode -> msg) -> List Mixin -> Html msg
-albumTitle title parents showNode extraStyles =
+albumTitle : String -> List AlbumList -> (AlbumList -> msg) -> List Mixin -> Html msg
+albumTitle title parents showList extraStyles =
     div
         [ styles <|
             [ color white
@@ -67,18 +67,18 @@ albumTitle title parents showNode extraStyles =
                 ++ extraStyles
         ]
     <|
-        List.map (albumParent showNode) (List.reverse parents)
+        List.map (albumParent showList) (List.reverse parents)
             ++ [ span [] [ Html.text title ] ]
 
 
-albumParent : (AlbumTreeNode -> msg) -> AlbumTreeNode -> Html msg
-albumParent showNode albumTreeNode =
+albumParent : (AlbumList -> msg) -> AlbumList -> Html msg
+albumParent showList albumList =
     span []
         [ span
-            [ onClick <| showNode albumTreeNode
+            [ onClick <| showList albumList
             , styles [ textDecoration underline, cursor pointer ]
             ]
-            [ Html.text albumTreeNode.nodeTitle ]
+            [ Html.text albumList.listTitle ]
         , span
             [ styles [ padding2 (Css.em 0) (Css.em 0.5) ] ]
             [ Html.text "<" ]

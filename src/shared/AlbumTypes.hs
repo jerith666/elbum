@@ -5,28 +5,27 @@ module AlbumTypes
 ( ImgSrc(..)
 , Image(..)
 , Album(..)
-, NodeOrAlbum(..)
-, AlbumTreeNode(..)
+, AlbumOrList(..)
+, AlbumList(..)
 ) where
 
 import GHC.Generics
 
 import Elm.Derive
 
-{-| Each level of the album tree has a title, a thumbnail,
-    and at least one child.
+{-| a list of albums has a title, a thumbnail, and at least one child.
     Each child is either a subtree or a "leaf" album. -}
-data AlbumTreeNode
-   = AlbumTreeNode
-   { nodeTitle :: String
-   , childFirst :: NodeOrAlbum
-   , childRest :: [NodeOrAlbum]
-   , nodeThumbnail :: Image
+data AlbumList
+   = AlbumList
+   { listTitle :: String
+   , childFirst :: AlbumOrList
+   , childRest :: [AlbumOrList]
+   , listThumbnail :: Image
    } deriving (Generic, Show, Eq)
 
-{-| A union type of either a tree node or a "leaf" album. -}
-data NodeOrAlbum
-   = Subtree AlbumTreeNode
+{-| A union type of either a list of albums or a "leaf" album. -}
+data AlbumOrList
+   = List AlbumList
    | Leaf Album
    deriving (Generic, Show, Eq)
 
@@ -60,8 +59,8 @@ data ImgSrc
    , y :: Int
    } deriving (Generic, Show, Eq)
 
-deriveBoth defaultOptions ''AlbumTreeNode
-deriveBoth defaultOptions ''NodeOrAlbum
+deriveBoth defaultOptions ''AlbumList
+deriveBoth defaultOptions ''AlbumOrList
 deriveBoth defaultOptions ''Album
 deriveBoth defaultOptions ''Image
 deriveBoth defaultOptions ''ImgSrc

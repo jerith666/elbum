@@ -1,9 +1,9 @@
 module Main exposing (..)
 
 import Album exposing (..)
+import AlbumListPage exposing (..)
 import AlbumPage exposing (..)
 import AlbumStyles exposing (..)
-import AlbumTreeNodePage exposing (..)
 import Delay exposing (..)
 import Dict exposing (..)
 import Dom exposing (..)
@@ -26,8 +26,8 @@ type AlbumBootstrap
     = Sizing AlbumBootstrapFlags (Maybe (List String))
     | Loading WinSize AlbumBootstrapFlags (Maybe (List String))
     | LoadError AlbumBootstrapFlags Http.Error
-    | LoadedNode AlbumTreeNodePage AlbumBootstrapFlags (Dict String UrlLoadState)
-    | LoadedAlbum AlbumPage (List AlbumTreeNode) AlbumBootstrapFlags (Dict String UrlLoadState)
+    | LoadedList AlbumListPage AlbumBootstrapFlags (Dict String UrlLoadState)
+    | LoadedAlbum AlbumPage (List AlbumList) AlbumBootstrapFlags (Dict String UrlLoadState)
 
 
 type UrlLoadState
@@ -40,11 +40,11 @@ type UrlLoadState
 
 type AlbumBootstrapMsg
     = Resize Size
-    | YesAlbum NodeOrAlbum
+    | YesAlbum AlbumOrList
     | NoAlbum Http.Error
     | PageMsg AlbumPage.AlbumPageMsg
-    | ViewNode AlbumTreeNodePage
-    | ViewAlbum AlbumPage (List AlbumTreeNode)
+    | ViewList AlbumListPage
+    | ViewAlbum AlbumPage (List AlbumList)
     | ImageLoaded String
     | ImageReadyToDisplay String
     | ImageFailed String Http.Error
@@ -80,7 +80,7 @@ update msg model =
             case model of
                 Sizing flags paths ->
                     ( Loading (Debug.log "window size set" size) flags paths
-                    , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecNodeOrAlbum))
+                    , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecAlbumOrList))
                     )
 
                 Loading oldSize flags paths ->
@@ -112,19 +112,19 @@ update msg model =
                             , Cmd.none
                             )
 
-                LoadedNode (AlbumTreeNodePage albumNode oldSize parentNodes) flags pendingUrls ->
-                    ( LoadedNode (AlbumTreeNodePage albumNode size parentNodes) flags pendingUrls
+                LoadedList (AlbumListPage albumList oldSize parentLists) flags pendingUrls ->
+                    ( LoadedList (AlbumListPage albumList size parentLists) flags pendingUrls
                     , Cmd.none
                     )
 
-        YesAlbum nodeOrAlbum ->
+        YesAlbum albumOrList ->
             case model of
                 Loading winSize flags paths ->
-                    case nodeOrAlbum of
-                        Subtree albumNode ->
+                    case albumOrList of
+                        List albumList ->
                             let
                                 newModel =
-                                    LoadedNode (AlbumTreeNodePage albumNode winSize []) flags Dict.empty
+                                    LoadedList (AlbumListPage albumList winSize []) flags Dict.empty
                             in
                             ( newModel
                             , pathsToCmd newModel paths
@@ -185,10 +185,10 @@ update msg model =
         ImageFailed url err ->
             updateImageResult model url <| Failed err
 
-        ViewNode albumTreeNodePage ->
+        ViewList albumListPage ->
             let
                 newModel =
-                    LoadedNode albumTreeNodePage (flagsOf model) Dict.empty
+                    LoadedList albumListPage (flagsOf model) Dict.empty
             in
             ( newModel, scrollToTop )
 
@@ -243,7 +243,7 @@ flagsOf model =
         LoadError flags _ ->
             flags
 
-        LoadedNode _ flags _ ->
+        LoadedList _ flags _ ->
             flags
 
         LoadedAlbum _ _ flags _ ->
@@ -262,7 +262,7 @@ withPaths model paths =
         LoadError _ _ ->
             model
 
-        LoadedNode _ _ _ ->
+        LoadedList _ _ _ ->
             model
 
         LoadedAlbum _ _ _ _ ->
@@ -286,15 +286,15 @@ pathsToCmd model mPaths =
                 LoadError _ _ ->
                     Debug.log "pathsToCmd LoadError, ignore" Cmd.none
 
-                LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) _ _ ->
+                LoadedList (AlbumListPage albumList winSize parents) _ _ ->
                     --TODO maybe don't always prepend aTN here, only if at root?
-                    pathsToCmdImpl winSize (albumTreeNode :: parents) paths
+                    pathsToCmdImpl winSize (albumList :: parents) paths
 
                 LoadedAlbum albumPage parents _ _ ->
                     pathsToCmdImpl (pageSize albumPage) parents paths
 
 
-pathsToCmdImpl : WinSize -> List AlbumTreeNode -> List String -> Cmd AlbumBootstrapMsg
+pathsToCmdImpl : WinSize -> List AlbumList -> List String -> Cmd AlbumBootstrapMsg
 pathsToCmdImpl size parents paths =
     let
         mRoot =
@@ -305,10 +305,10 @@ pathsToCmdImpl size parents paths =
             Cmd.none
 
         Just root ->
-            navFrom size root [] paths <| cmdOf <| ViewNode <| AlbumTreeNodePage root size []
+            navFrom size root [] paths <| cmdOf <| ViewList <| AlbumListPage root size []
 
 
-navFrom : WinSize -> AlbumTreeNode -> List AlbumTreeNode -> List String -> Cmd AlbumBootstrapMsg -> Cmd AlbumBootstrapMsg
+navFrom : WinSize -> AlbumList -> List AlbumList -> List String -> Cmd AlbumBootstrapMsg -> Cmd AlbumBootstrapMsg
 navFrom size root parents paths defcmd =
     case paths of
         [] ->
@@ -331,14 +331,14 @@ navFrom size root parents paths defcmd =
 
                 Just pChild ->
                     case pChild of
-                        Subtree albumTreeNode ->
-                            navFrom size albumTreeNode newParents ps <| cmdOf <| ViewNode <| AlbumTreeNodePage albumTreeNode size newParents
+                        List albumList ->
+                            navFrom size albumList newParents ps <| cmdOf <| ViewList <| AlbumListPage albumList size newParents
 
                         Leaf album ->
                             navForAlbum size album ps newParents
 
 
-navForAlbum : WinSize -> Album -> List String -> List AlbumTreeNode -> Cmd AlbumBootstrapMsg
+navForAlbum : WinSize -> Album -> List String -> List AlbumList -> Cmd AlbumBootstrapMsg
 navForAlbum size album ps newParents =
     case ps of
         [] ->
@@ -372,18 +372,18 @@ findImg prevs album img =
                     img
 
 
-findChild : AlbumTreeNode -> String -> Maybe NodeOrAlbum
-findChild containingNode name =
+findChild : AlbumList -> String -> Maybe AlbumOrList
+findChild containingList name =
     let
-        f nodeOrAlbum =
-            case nodeOrAlbum of
-                Subtree albumTreeNode ->
-                    albumTreeNode.nodeTitle == name
+        f albumOrList =
+            case albumOrList of
+                List albumList ->
+                    albumList.listTitle == name
 
                 Leaf album ->
                     album.title == name
     in
-    Debug.log ("looking for " ++ name) <| List.head <| List.filter f <| containingNode.childFirst :: containingNode.childRest
+    Debug.log ("looking for " ++ name) <| List.head <| List.filter f <| containingList.childFirst :: containingList.childRest
 
 
 cmdOf : a -> Cmd a
@@ -400,27 +400,27 @@ locFor model =
                 , url = hashForAlbum model albumPage parents
                 }
 
-        LoadedNode albumTreeNodePage _ _ ->
+        LoadedList albumListPage _ _ ->
             Just
                 { entry = NewEntry
-                , url = hashForNode model albumTreeNodePage
+                , url = hashForList model albumListPage
                 }
 
         _ ->
             Nothing
 
 
-hashForNode : AlbumBootstrap -> AlbumTreeNodePage -> String
-hashForNode model nodePage =
-    case nodePage of
-        AlbumTreeNodePage albumTreeNode _ parents ->
+hashForList : AlbumBootstrap -> AlbumListPage -> String
+hashForList model listPage =
+    case listPage of
+        AlbumListPage albumList _ parents ->
             if List.isEmpty parents then
                 hashFromAlbumPath model [ "" ] []
             else
-                hashFromAlbumPath model [ albumTreeNode.nodeTitle ] parents
+                hashFromAlbumPath model [ albumList.listTitle ] parents
 
 
-hashForAlbum : AlbumBootstrap -> AlbumPage -> List AlbumTreeNode -> String
+hashForAlbum : AlbumBootstrap -> AlbumPage -> List AlbumList -> String
 hashForAlbum model albumPage parents =
     let
         titles =
@@ -434,7 +434,7 @@ hashForAlbum model albumPage parents =
     hashFromAlbumPath model titles parents
 
 
-hashFromAlbumPath : AlbumBootstrap -> List String -> List AlbumTreeNode -> String
+hashFromAlbumPath : AlbumBootstrap -> List String -> List AlbumList -> String
 hashFromAlbumPath model titles parents =
     "#"
         ++ String.concat
@@ -443,7 +443,7 @@ hashFromAlbumPath model titles parents =
                     encodeUri
                     (List.append
                         (List.map
-                            (\p -> p.nodeTitle)
+                            (\p -> p.listTitle)
                             (List.drop 1 (List.reverse parents))
                         )
                         titles
@@ -520,7 +520,7 @@ urlNextState url result =
             Cmd.none
 
 
-decodeAlbumRequest : Result Http.Error NodeOrAlbum -> AlbumBootstrapMsg
+decodeAlbumRequest : Result Http.Error AlbumOrList -> AlbumBootstrapMsg
 decodeAlbumRequest r =
     case r of
         Ok a ->
@@ -583,14 +583,14 @@ subscriptions model =
                             NoBootstrap
 
                         parent :: grandParents ->
-                            ViewNode <| AlbumTreeNodePage parent (pageSize albumPage) grandParents
+                            ViewList <| AlbumListPage parent (pageSize albumPage) grandParents
             in
             Sub.batch
                 [ AlbumPage.subscriptions albumPage PageMsg showParent
                 , resizes Resize
                 ]
 
-        LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) flags pendingUrls ->
+        LoadedList (AlbumListPage albumList winSize parents) flags pendingUrls ->
             case parents of
                 [] ->
                     resizes Resize
@@ -599,7 +599,7 @@ subscriptions model =
                     let
                         upParent =
                             onUpArrow
-                                (ViewNode <| AlbumTreeNodePage parent winSize grandParents)
+                                (ViewList <| AlbumListPage parent winSize grandParents)
                                 NoBootstrap
                     in
                     Sub.batch [ upParent, resizes Resize ]
@@ -633,38 +633,38 @@ view albumBootstrap =
         LoadedAlbum albumPage parents flags pendingUrls ->
             AlbumPage.view
                 albumPage
-                (\node ->
-                    ViewNode <|
-                        AlbumTreeNodePage
-                            node
+                (\list ->
+                    ViewList <|
+                        AlbumListPage
+                            list
                             (pageSize albumPage)
-                            (dropThrough parents node)
+                            (dropThrough parents list)
                 )
                 PageMsg
                 parents
                 flags
 
-        LoadedNode (AlbumTreeNodePage albumTreeNode winSize parents) flags pendingUrls ->
-            AlbumTreeNodePage.view
-                (AlbumTreeNodePage
-                    albumTreeNode
+        LoadedList (AlbumListPage albumList winSize parents) flags pendingUrls ->
+            AlbumListPage.view
+                (AlbumListPage
+                    albumList
                     winSize
                     parents
                 )
-                (\albumTreeNodeChild ->
-                    ViewNode <|
-                        AlbumTreeNodePage albumTreeNodeChild winSize <|
+                (\albumListChild ->
+                    ViewList <|
+                        AlbumListPage albumListChild winSize <|
                             dropThrough
-                                (albumTreeNode
+                                (albumList
                                     :: parents
                                 )
-                                albumTreeNodeChild
+                                albumListChild
                 )
                 (\album ->
                     ViewAlbum
                         (Thumbs album winSize Set.empty Set.empty)
                     <|
-                        albumTreeNode
+                        albumList
                             :: parents
                 )
                 flags

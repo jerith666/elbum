@@ -2,11 +2,11 @@ avoids https://github.com/elm-lang/elm-compiler/issues/1591
 --- result/Album.elm	1969-12-31 19:00:01.000000000 -0500
 +++ Album.elm	2017-11-27 20:46:49.746198333 -0500
 @@ -41,7 +41,7 @@
- jsonDecNodeOrAlbum : Json.Decode.Decoder ( NodeOrAlbum )
- jsonDecNodeOrAlbum =
-     let jsonDecDictNodeOrAlbum = Dict.fromList
--            [ ("Subtree", Json.Decode.map Subtree (jsonDecAlbumTreeNode))
-+            [ ("Subtree", Json.Decode.map Subtree (Json.Decode.lazy (\_ -> jsonDecAlbumTreeNode)))
+ jsonDecAlbumOrList : Json.Decode.Decoder ( AlbumOrList )
+ jsonDecAlbumOrList =
+     let jsonDecDictAlbumOrList = Dict.fromList
+-            [ ("List", Json.Decode.map List (jsonDecAlbumList))
++            [ ("List", Json.Decode.map List (Json.Decode.lazy (\_ -> jsonDecAlbumList)))
              , ("Leaf", Json.Decode.map Leaf (jsonDecAlbum))
              ]
-     in  decodeSumObjectWithSingleField  "NodeOrAlbum" jsonDecDictNodeOrAlbum
+     in  decodeSumObjectWithSingleField  "AlbumOrList" jsonDecDictAlbumOrList

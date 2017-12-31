@@ -183,13 +183,13 @@ urlsToGet albumPage =
             empty
 
 
-view : AlbumPage -> (AlbumTreeNode -> msg) -> (AlbumPageMsg -> msg) -> List AlbumTreeNode -> AlbumBootstrapFlags -> Html msg
-view albumPage showNode wrapMsg parents flags =
+view : AlbumPage -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> AlbumBootstrapFlags -> Html msg
+view albumPage showList wrapMsg parents flags =
     case albumPage of
         Thumbs album winSize justLoadedImages readyToDisplayImages ->
             ThumbPage.view
                 (\x -> \y -> \z -> wrapMsg (View x y z))
-                showNode
+                showList
                 { album = album
                 , parents = parents
                 , winSize = winSize

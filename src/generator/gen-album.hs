@@ -29,24 +29,24 @@ import AlbumTypes
 main = do
   args <- getArgs
   case args of
-       src:dest:[] -> writeNodeOrAlbum src dest
+       src:dest:[] -> writeAlbumOrList src dest
        _ -> usage
 
 usage = putStrLn "usage: gen-album <src> <dest>"
 
 thumbFilename = "thumbnail"
 
-writeNodeOrAlbum :: String -> String -> IO ()
-writeNodeOrAlbum src dest = do
-  eNodeOrAlbum <- genNodeOrAlbum src src dest True
-  case eNodeOrAlbum of
+writeAlbumOrList :: String -> String -> IO ()
+writeAlbumOrList src dest = do
+  eAlbumOrList <- genAlbumOrList src src dest True
+  case eAlbumOrList of
     Left err ->
       putStrLn err
-    Right nodeOrAlbum ->
-      C.writeFile (dest </> "album.json") $ encode nodeOrAlbum
+    Right albumOrList ->
+      C.writeFile (dest </> "album.json") $ encode albumOrList
 
-genNodeOrAlbum :: FilePath -> FilePath -> FilePath -> Bool -> IO (Either String NodeOrAlbum)
-genNodeOrAlbum srcRoot src dest autoThumb = do
+genAlbumOrList :: FilePath -> FilePath -> FilePath -> Bool -> IO (Either String AlbumOrList)
+genAlbumOrList srcRoot src dest autoThumb = do
   files <- filter (`notElem` [".","..",thumbFilename]) <$> getDirectoryContents src
   let afiles = map (\f -> src </> f) (sort files)
   pimgs <- procImgsOnly srcRoot dest afiles
@@ -69,16 +69,16 @@ genNodeOrAlbum srcRoot src dest autoThumb = do
         Left err ->
           return $ Left $ err
         Right n ->
-          return $ Right $ Subtree n
+          return $ Right $ List n
 
-genNode :: FilePath -> FilePath -> FilePath -> Bool -> [FilePath] -> IO (Either String AlbumTreeNode)
+genNode :: FilePath -> FilePath -> FilePath -> Bool -> [FilePath] -> IO (Either String AlbumList)
 genNode srcRoot src dest autoThumb dirs = do
-  ecFirst <- genNodeOrAlbum srcRoot (head dirs) dest False
+  ecFirst <- genAlbumOrList srcRoot (head dirs) dest False
   case ecFirst of
     Left err ->
       return $ Left $ err
     Right cFirst -> do
-      ecRest <- mapM (\dir -> genNodeOrAlbum srcRoot dir dest False) (tail dirs)
+      ecRest <- mapM (\dir -> genAlbumOrList srcRoot dir dest False) (tail dirs)
       case lefts ecRest of
         [] -> do
           let cRest = rights ecRest
@@ -87,30 +87,30 @@ genNode srcRoot src dest autoThumb dirs = do
           case thumbOrErr of
             Left err ->
               if autoThumb then
-                return $ Right $ AlbumTreeNode { nodeTitle = titleForDir src
-                                               , nodeThumbnail = head childImages
-                                               , childFirst = cFirst
-                                               , childRest = cRest
-                                               }
+                return $ Right $ AlbumList { listTitle = titleForDir src
+                                           , listThumbnail = head childImages
+                                           , childFirst = cFirst
+                                           , childRest = cRest
+                                           }
               else
                 return $ Left $ err
             Right thumb ->
-              return $ Right $ AlbumTreeNode { nodeTitle = titleForDir src
-                                             , nodeThumbnail = thumb
-                                             , childFirst = cFirst
-                                             , childRest = cRest
-                                             }
+              return $ Right $ AlbumList { listTitle = titleForDir src
+                                         , listThumbnail = thumb
+                                         , childFirst = cFirst
+                                         , childRest = cRest
+                                         }
         errs -> do
           return $ Left $ head errs
 
-getChildImages :: [NodeOrAlbum] -> [Image]
-getChildImages nodeOrAlbums =
-  concat $ map getChildImages1 nodeOrAlbums
+getChildImages :: [AlbumOrList] -> [Image]
+getChildImages albumOrLists =
+  concat $ map getChildImages1 albumOrLists
 
-getChildImages1 :: NodeOrAlbum -> [Image]
-getChildImages1 nodeOrAlbum =
-  case nodeOrAlbum of
-    Subtree albumTreeNode ->
+getChildImages1 :: AlbumOrList -> [Image]
+getChildImages1 albumOrList =
+  case albumOrList of
+    List albumTreeNode ->
       getChildImages $ (childFirst albumTreeNode) : (childRest albumTreeNode)
     Leaf album ->
       (imageFirst album) : (imageRest album)
