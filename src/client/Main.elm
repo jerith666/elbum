@@ -411,13 +411,11 @@ locFor model =
 
 
 hashForList : AlbumBootstrap -> AlbumListPage -> String
-hashForList model listPage =
-    case listPage of
-        AlbumListPage albumList _ parents ->
-            if List.isEmpty parents then
-                hashFromAlbumPath model [ "" ] []
-            else
-                hashFromAlbumPath model [ albumList.listTitle ] parents
+hashForList model (AlbumListPage albumList _ parents) =
+    if List.isEmpty parents then
+        hashFromAlbumPath model [ "" ] []
+    else
+        hashFromAlbumPath model [ albumList.listTitle ] parents
 
 
 hashForAlbum : AlbumBootstrap -> AlbumPage -> List AlbumList -> String
