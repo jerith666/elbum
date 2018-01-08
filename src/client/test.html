@@ -1,0 +1,17 @@
+<html>
+ <head>
+   <script>
+     function onEvt(evt){
+       console.log(evt);
+     }
+   </script>
+ </head>
+ <body>
+   <img src="http://imgs.xkcd.com/comics/money_huge.png"
+        style="width: 100px; height: 100px"
+        onload="onEvt('load')"
+        onloadstart="onEvt('loadstart')"
+        onloadend="onEvt('loadend')"
+        onprogress="onEvt('progress')">
+ </body>
+</html>
