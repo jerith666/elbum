@@ -11,6 +11,7 @@ import Html.Events exposing (..)
 renderPresized : Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> Maybe msg -> Html msg
 renderPresized margin w h i iRest s otherAttrs msg =
     render (smallestImageBiggerThan w h i iRest)
+        --empty list disables use of srcsets; experiments indicate they don't really work
         []
         (s
             ++ [ Css.margin (px <| toFloat margin)
