@@ -198,14 +198,23 @@ shrinkImgSrc s d f i w h maxwidth = do
         fism = resize Bilinear (ix2 ysm xsm) fi
         ism = toJuicyRGB fism
         fsmpath = fst $ destForShrink maxwidth s d f
-    putStr $ show maxwidth ++ "w "
-    hFlush stdout
     createDirectoryIfMissing True $ takeDirectory fsmpath
-    savePngImage fsmpath $ ImageRGB8 ism
-    return ImgSrc { url = makeRelative d fsmpath
-                  , x = xsm
-                  , y = ysm
-                  }
+    fsmpathExists <- doesFileExist fsmpath
+    if fsmpathExists then do
+      putStr $ show maxwidth ++ "(e) "
+      hFlush stdout
+      return ImgSrc { url = makeRelative d fsmpath
+                    , x = xsm
+                    , y = ysm
+                    }
+    else do 
+      putStr $ show maxwidth ++ "w "
+      hFlush stdout
+      savePngImage fsmpath $ ImageRGB8 ism
+      return ImgSrc { url = makeRelative d fsmpath
+                    , x = xsm
+                    , y = ysm
+                    }
 
 raw :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
 raw s d fpath w h = do
