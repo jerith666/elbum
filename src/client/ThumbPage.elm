@@ -89,7 +89,7 @@ urlsToGet : ThumbPageModel -> Set String
 urlsToGet thumbPageModel =
     let
         ( _, thumbWidth ) =
-            colsWidth thumbPageModel
+            colsWidth thumbPageModel.winSize
 
         srcs =
             List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
@@ -109,7 +109,7 @@ viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> Lis
 viewThumbs imgChosenMsgr thumbPageModel =
     let
         ( maxCols, thumbWidth ) =
-            colsWidth thumbPageModel
+            colsWidth thumbPageModel.winSize
 
         imgs =
             thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
@@ -124,14 +124,14 @@ viewThumbs imgChosenMsgr thumbPageModel =
         spreadThumbs maxCols imgs []
 
 
-colsWidth : ThumbPageModel -> ( Int, Int )
-colsWidth thumbPageModel =
+colsWidth : WinSize -> ( Int, Int )
+colsWidth winSize =
     let
         maxCols =
-            Debug.log "maxCols" <| Basics.max (thumbPageModel.winSize.width // maxThumbWidth) 2
+            Debug.log "maxCols" <| Basics.max (winSize.width // maxThumbWidth) 2
 
         thumbWidth =
-            Debug.log "thumbWidth" <| (thumbPageModel.winSize.width - scrollPad) // maxCols
+            Debug.log "thumbWidth" <| (winSize.width - scrollPad) // maxCols
     in
     ( maxCols, thumbWidth )
 
