@@ -5,18 +5,22 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css)
 
 
+black : Color
 black =
     rgb 0 0 0
 
 
+white : Color
 white =
     rgb 255 255 255
 
 
+styles : List Style -> Attribute msg
 styles =
     css
 
 
+rootDivId : String
 rootDivId =
     "rootDiv"
 
@@ -40,6 +44,7 @@ rootPos flags =
         position absolute
 
 
+rootDiv : AlbumBootstrapFlags -> List Style -> List (Html msg) -> Html msg
 rootDiv flags extraStyles =
     div
         [ styles <|
@@ -55,6 +60,7 @@ rootDiv flags extraStyles =
         ]
 
 
+rootDivFlex : AlbumBootstrapFlags -> FlexDirection compatible -> List Style -> List (Html msg) -> Html msg
 rootDivFlex flags dir extraStyles =
     rootDiv flags <|
         [ displayFlex
