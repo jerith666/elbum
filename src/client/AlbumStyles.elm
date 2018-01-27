@@ -30,6 +30,16 @@ type alias AlbumBootstrapFlags =
     }
 
 
+type ImgLoadState
+    = Requested
+    | Partial ( Int, Maybe Int ) --bytes loaded, maybe total bytes
+      -- | Aborted
+      -- | Failed
+    | Completed
+    | Shown --not really a state, a bit of a hack
+    | Disappearing --not really a state, a bit of a hack
+
+
 {-| this prevents "bouncy" scrolling on iOS, as recommended at
 <https://stackoverflow.com/a/29629214/47552>. using position:fixed on
 chrome prevents scrolling the address bar off the top of the screen,
@@ -69,16 +79,35 @@ rootDivFlex flags dir extraStyles =
             ++ extraStyles
 
 
-opacityStyles : ( Float, Bool ) -> List Style
-opacityStyles ( op, anim ) =
-    case anim of
-        True ->
-            [ opacity (num op)
-            , Css.property "transition-property" "opacity"
-            , Css.property "transition-duration" "1s"
-            , Css.property "transition-timing-function" "ease-in-out"
-            , Css.property "transition-delay" "0s"
-            ]
+opacityStyles : ImgLoadState -> List Style
+opacityStyles imgLoadedState =
+    case imgLoadedState of
+        Requested ->
+            [ opacity <| num 0 ]
 
-        False ->
-            [ opacity (num op) ]
+        Partial int ->
+            [ opacity <| num 0 ]
+
+        Completed ->
+            opacityAnimatedTo 1
+
+        Shown ->
+            [ opacity <| num 1 ]
+
+        Disappearing ->
+            opacityAnimatedTo 0
+
+
+opacityDuration : Float
+opacityDuration =
+    1
+
+
+opacityAnimatedTo : Float -> List Style
+opacityAnimatedTo opasity =
+    [ opacity (num opasity)
+    , Css.property "transition-property" "opacity"
+    , Css.property "transition-duration" <| toString opacityDuration ++ "s"
+    , Css.property "transition-timing-function" "ease-in-out"
+    , Css.property "transition-delay" "0s"
+    ]

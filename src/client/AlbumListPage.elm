@@ -39,7 +39,7 @@ viewAlbumOrList viewList viewAlbum albumOrList =
                 [ childStyles
                 , onClick <| viewList albumList
                 ]
-                [ viewThumb 200 ( 1, False ) [ verticalAlign middle ] (viewList albumList) albumList.listThumbnail
+                [ viewThumb 200 Completed [ verticalAlign middle ] (viewList albumList) albumList.listThumbnail
                 , span [] [ Html.Styled.text albumList.listTitle ]
                 ]
 
@@ -48,6 +48,6 @@ viewAlbumOrList viewList viewAlbum albumOrList =
                 [ childStyles
                 , onClick <| viewAlbum album
                 ]
-                [ viewThumb 200 ( 1, False ) [ verticalAlign middle ] (viewAlbum album) album.thumbnail
+                [ viewThumb 200 Completed [ verticalAlign middle ] (viewAlbum album) album.thumbnail
                 , span [] [ Html.Styled.text album.title ]
                 ]

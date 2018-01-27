@@ -169,9 +169,9 @@ viewThumbColumn thumbWidth imgChosenMsgr justLoadedImages readyToDisplayImages i
                 let
                     opacity =
                         if member src.url justLoadedImages then
-                            ( 0, False )
+                            Partial ( 99, Nothing )
                         else
-                            ( 1, True )
+                            Completed
                 in
                 viewThumb thumbWidth opacity [] (imgChosenMsgr i) img
                 --TODO opacity
@@ -263,7 +263,7 @@ srcForWidth width img =
     smallestImageBiggerThan xScaled yScaled img.srcSetFirst img.srcSetRest
 
 
-viewThumb : Int -> ( Float, Bool ) -> List Style -> msg -> Image -> Html msg
+viewThumb : Int -> ImgLoadState -> List Style -> msg -> Image -> Html msg
 viewThumb width opasity extraStyles selectedMsg img =
     let
         ( xScaled, yScaled ) =
