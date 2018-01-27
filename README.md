@@ -1,4 +1,4 @@
-Elbum is a web photo album generator.  Example album at https://jerith666.github.io/elbum/.
+Elbum is a web photo album generator.  Example album at https://jerith666.github.io/elbum-demo/.
 
 basic operation:
 
