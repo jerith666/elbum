@@ -189,7 +189,7 @@ procSrcSet s d f i w h = do
     return (rawImg : shrunken)
 
 sizes :: [Int]
-sizes = [1600, 800, 400, 200]
+sizes = [1600, 1400, 1200, 1000, 800, 400, 200]
 
 shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
 shrinkImgSrc s d f i w h maxwidth = do
