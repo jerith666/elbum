@@ -31,7 +31,7 @@ type AlbumBootstrap
 
 
 type UrlLoadState
-    = Requested
+    = UrlRequested
       --| Partial Int
     | JustCompleted
     | ReadyToDisplay
@@ -103,7 +103,7 @@ update msg model =
                             in
                             ( LoadedAlbum model parents flags <|
                                 Dict.union pendingUrls <|
-                                    dictWithValues urls Requested
+                                    dictWithValues urls UrlRequested
                             , getUrls pendingUrls urls
                             )
 
@@ -139,7 +139,7 @@ update msg model =
                                     AlbumPage.urlsToGet albumPage
 
                                 newModel =
-                                    LoadedAlbum albumPage [] flags <| dictWithValues urls Requested
+                                    LoadedAlbum albumPage [] flags <| dictWithValues urls UrlRequested
                             in
                             ( newModel
                             , Cmd.batch [ pathsToCmd newModel paths, getUrls Dict.empty urls ]
@@ -169,8 +169,8 @@ update msg model =
                         urls =
                             AlbumPage.urlsToGet newPage
                     in
-                    ( LoadedAlbum newPage parents flags <| Dict.union newPendingUrls <| dictWithValues urls Requested
                     , getUrls newPendingUrls urls
+                    ( LoadedAlbum newPage parents flags <| Dict.union newPendingUrls <| dictWithValues urls UrlRequested
                     )
 
                 _ ->
@@ -198,7 +198,7 @@ update msg model =
                     AlbumPage.urlsToGet albumPage
 
                 newModel =
-                    LoadedAlbum albumPage parents (flagsOf model) <| dictWithValues urls Requested
+                    LoadedAlbum albumPage parents (flagsOf model) <| dictWithValues urls UrlRequested
             in
             ( newModel
             , Cmd.batch [ scrollToTop, getUrls Dict.empty urls ]
@@ -481,7 +481,7 @@ updateImageResult model url result =
                     ( LoadedAlbum model parents flags <|
                         Dict.union (Dict.fromList [ ( url, result ) ]) <|
                             Dict.union pendingUrls <|
-                                dictWithValues urls Requested
+                                dictWithValues urls UrlRequested
                     , Cmd.batch
                         [ getUrls pendingUrls urls
                         , urlNextState url result
