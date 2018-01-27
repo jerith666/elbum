@@ -1,4 +1,4 @@
-module ThumbPage exposing (ThumbPageModel, albumTitle, urlsToGet, view, viewThumb)
+module ThumbPage exposing (ThumbPageModel, albumTitle, colsWidth, urlsToGet, view, viewThumb)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)

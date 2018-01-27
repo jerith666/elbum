@@ -8,6 +8,7 @@ import Delay exposing (..)
 import Dict exposing (..)
 import Dom exposing (..)
 import Dom.Scroll exposing (..)
+import FullImagePage exposing (..)
 import Html.Styled exposing (..)
 import Http exposing (..)
 import KeyboardUtils exposing (onUpArrow)
@@ -157,7 +158,7 @@ update msg model =
             case model of
                 LoadedAlbum oldPage parents flags oldPendingUrls ->
                     let
-                        newPage =
+                        ( newPage, newPageCmd ) =
                             AlbumPage.update pageMsg oldPage
 
                         newPendingUrls =
@@ -169,8 +170,8 @@ update msg model =
                         urls =
                             AlbumPage.urlsToGet newPage
                     in
-                    , getUrls newPendingUrls urls
                     ( LoadedAlbum newPage parents flags <| Dict.union newPendingUrls <| dictWithValues urls UrlRequested
+                    , Cmd.batch [ getUrls newPendingUrls urls, Cmd.map PageMsg newPageCmd ]
                     )
 
                 _ ->
@@ -350,7 +351,17 @@ navForAlbum size album ps newParents =
                     Cmd.none
 
                 Just ( prevs, nAlbum ) ->
-                    cmdOf <| ViewAlbum (FullImage prevs nAlbum False size Nothing) newParents
+                    let
+                        ( w, h ) =
+                            fitImage nAlbum.imageFirst.srcSetFirst size.width size.height
+
+                        ( progModel, progCmd ) =
+                            progInit size nAlbum.imageFirst w h
+                    in
+                    Cmd.batch
+                        [ cmdOf <| ViewAlbum (FullImage prevs nAlbum progModel size Nothing) newParents
+                        , Cmd.map PageMsg <| Cmd.map FullMsg progCmd
+                        ]
 
 
 findImg : List Image -> Album -> String -> Maybe ( List Image, Album )
