@@ -3,7 +3,7 @@ module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), resetUrls, subscript
 import Album exposing (..)
 import AlbumStyles exposing (..)
 import FullImagePage exposing (..)
-import Html exposing (..)
+import Html.Styled exposing (..)
 import Keyboard exposing (..)
 import KeyboardUtils exposing (onUpArrow)
 import ListUtils exposing (..)
@@ -199,7 +199,7 @@ view albumPage showList wrapMsg parents flags =
                 flags
 
         FullImage prevImgs album loaded winSize dragInfo ->
-            Html.map wrapMsg <|
+            Html.Styled.map wrapMsg <|
                 FullImagePage.view
                     { prevMsg = Prev, nextMsg = Next, backToThumbsMsg = BackToThumbs }
                     Loaded

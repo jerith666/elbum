@@ -8,7 +8,7 @@ import Delay exposing (..)
 import Dict exposing (..)
 import Dom exposing (..)
 import Dom.Scroll exposing (..)
-import Html exposing (..)
+import Html.Styled exposing (..)
 import Http exposing (..)
 import KeyboardUtils exposing (onUpArrow)
 import ListUtils exposing (..)
@@ -58,7 +58,7 @@ main : RouteUrlProgram AlbumBootstrapFlags AlbumBootstrap AlbumBootstrapMsg
 main =
     RouteUrl.programWithFlags
         { init = init
-        , view = view
+        , view = view >> toUnstyled
         , update = update
         , subscriptions = subscriptions
         , delta2url = \_ -> locFor

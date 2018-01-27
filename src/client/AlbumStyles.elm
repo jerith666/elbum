@@ -1,8 +1,8 @@
 module AlbumStyles exposing (..)
 
 import Css exposing (..)
-import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Styled exposing (..)
+import Html.Styled.Attributes exposing (css)
 
 
 black =
@@ -14,7 +14,7 @@ white =
 
 
 styles =
-    Css.asPairs >> Html.Attributes.style
+    css
 
 
 rootDivId =
@@ -32,7 +32,7 @@ chrome prevents scrolling the address bar off the top of the screen,
 sacrificing valuable screen real estate, so we have to avoid it
 there.
 -}
-rootPos : AlbumBootstrapFlags -> Mixin
+rootPos : AlbumBootstrapFlags -> Style
 rootPos flags =
     if flags.scrollSupport then
         position fixed
@@ -51,7 +51,7 @@ rootDiv flags extraStyles =
             , backgroundColor black
             ]
                 ++ extraStyles
-        , id rootDivId
+        , Html.Styled.Attributes.id rootDivId
         ]
 
 
@@ -63,7 +63,7 @@ rootDivFlex flags dir extraStyles =
             ++ extraStyles
 
 
-opacityStyles : ( Float, Bool ) -> List Mixin
+opacityStyles : ( Float, Bool ) -> List Style
 opacityStyles ( op, anim ) =
     case anim of
         True ->

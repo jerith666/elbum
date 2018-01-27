@@ -3,12 +3,12 @@ module ImageViews exposing (render, renderPresized, smallestImageBiggerThan)
 import Album exposing (..)
 import AlbumStyles exposing (..)
 import Css exposing (..)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html.Styled exposing (..)
+import Html.Styled.Attributes exposing (..)
+import Html.Styled.Events exposing (..)
 
 
-renderPresized : Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> Maybe msg -> Html msg
+renderPresized : Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Style -> List (Html.Styled.Attribute msg) -> Maybe msg -> Html msg
 renderPresized margin w h i iRest s otherAttrs msg =
     render (smallestImageBiggerThan w h i iRest)
         --empty list disables use of srcsets; experiments indicate they don't really work
@@ -35,7 +35,7 @@ smallestImageBiggerThan w h i iRest =
             sizedIs
 
 
-render : ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> Maybe msg -> Html msg
+render : ImgSrc -> List ImgSrc -> List Style -> List (Html.Styled.Attribute msg) -> Maybe msg -> Html msg
 render idefault is s otherAttrs msg =
     let
         srcset =
@@ -48,9 +48,9 @@ render idefault is s otherAttrs msg =
 
         baseAttrs =
             [ styles s
-            , Html.Attributes.src idefault.url
-            , Html.Attributes.width idefault.x
-            , Html.Attributes.height idefault.y
+            , Html.Styled.Attributes.src idefault.url
+            , Html.Styled.Attributes.width idefault.x
+            , Html.Styled.Attributes.height idefault.y
             ]
 
         clickAttr =

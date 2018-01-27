@@ -3,8 +3,9 @@ module FullImagePage exposing (FullImagePageModel, view)
 import Album exposing (..)
 import AlbumStyles exposing (..)
 import Css exposing (..)
-import Html exposing (..)
-import Html.Events exposing (..)
+import Html.Styled exposing (..)
+import Html.Styled.Attributes exposing (..)
+import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)
 import TouchEvents exposing (..)
@@ -44,20 +45,20 @@ view navMsgs loadedMsg touchMsgs noOpMsg fullImagePageModel flags =
     rootDivFlex
         flags
         column
-        [ overflow hidden
+        [ overflow Css.hidden
         , alignItems center
-        , property "justify-content" "center"
+        , Css.property "justify-content" "center"
         ]
     <|
         [ div
             [ styles
                 [ color white
                 , textAlign center
-                , height (pct imgTitleHeight)
+                , Css.height (pct imgTitleHeight)
                 , lineHeight (px (imgTitleHeight / 100 * toFloat fullImagePageModel.winSize.height))
                 ]
             ]
-            [ Html.text fullImagePageModel.album.imageFirst.altText ]
+            [ Html.Styled.text fullImagePageModel.album.imageFirst.altText ]
         , viewImg loadedMsg navMsgs.nextMsg touchMsgs fullImagePageModel fullImagePageModel.album.imageFirst fullImagePageModel.loaded
         ]
             ++ navEltIf fullImagePageModel.prevImgs navMsgs.prevMsg "<" left
@@ -70,11 +71,11 @@ view navMsgs loadedMsg touchMsgs noOpMsg fullImagePageModel flags =
                                ]
                     , onClick navMsgs.backToThumbsMsg
                     ]
-                    [ Html.text "x" ]
+                    [ Html.Styled.text "x" ]
                ]
 
 
-navEltIf : List a -> msg -> String -> (Px -> Mixin) -> List (Html msg)
+navEltIf : List a -> msg -> String -> (Px -> Style) -> List (Html msg)
 navEltIf lst navMsg navTxt navAlign =
     if List.isEmpty lst then
         []
@@ -87,11 +88,11 @@ navEltSize =
     50
 
 
-navBoxStyles : List Mixin
+navBoxStyles : List Style
 navBoxStyles =
     [ position absolute
-    , height (px navEltSize)
-    , width (px navEltSize)
+    , Css.height (px navEltSize)
+    , Css.width (px navEltSize)
     , lineHeight (px navEltSize)
     , textAlign center
     , color white
@@ -101,7 +102,7 @@ navBoxStyles =
     ]
 
 
-navElement : msg -> String -> (Px -> Mixin) -> Html msg
+navElement : msg -> String -> (Px -> Style) -> Html msg
 navElement msg label side =
     div
         [ styles <|
@@ -110,7 +111,7 @@ navElement msg label side =
                    ]
         , onClick msg
         ]
-        [ Html.text label ]
+        [ Html.Styled.text label ]
 
 
 viewImg : (String -> msg) -> msg -> TouchMsgs msg -> FullImagePageModel -> Image -> Bool -> Html msg
@@ -143,9 +144,9 @@ viewImg loadedMsg clickMsg touchMsgs fullImagePageModel img loaded =
                 , loaded
                 )
         )
-        [ onTouchStart touchMsgs.touchStartMsg
-        , onTouchMove touchMsgs.touchContinueMsg
-        , onTouchEnd touchMsgs.touchPrevNextMsg
+        , Html.Styled.Attributes.fromUnstyled <| onTouchStart touchMsgs.touchStartMsg
+        , Html.Styled.Attributes.fromUnstyled <| onTouchMove touchMsgs.touchContinueMsg
+        , Html.Styled.Attributes.fromUnstyled <| onTouchEnd touchMsgs.touchPrevNextMsg
         , on "load" <| succeed <| loadedMsg img.srcSetFirst.url
         ]
     <|

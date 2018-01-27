@@ -3,8 +3,8 @@ module AlbumListPage exposing (AlbumListPage(..), view)
 import Album exposing (..)
 import AlbumStyles exposing (..)
 import Css exposing (..)
-import Html exposing (..)
-import Html.Events exposing (..)
+import Html.Styled exposing (..)
+import Html.Styled.Events exposing (..)
 import ThumbPage exposing (albumTitle, viewThumb)
 import WinSize exposing (..)
 
@@ -40,7 +40,7 @@ viewAlbumOrList viewList viewAlbum albumOrList =
                 , onClick <| viewList albumList
                 ]
                 [ viewThumb 200 ( 1, False ) [ verticalAlign middle ] (viewList albumList) albumList.listThumbnail
-                , span [] [ Html.text albumList.listTitle ]
+                , span [] [ Html.Styled.text albumList.listTitle ]
                 ]
 
         Leaf album ->
@@ -49,5 +49,5 @@ viewAlbumOrList viewList viewAlbum albumOrList =
                 , onClick <| viewAlbum album
                 ]
                 [ viewThumb 200 ( 1, False ) [ verticalAlign middle ] (viewAlbum album) album.thumbnail
-                , span [] [ Html.text album.title ]
+                , span [] [ Html.Styled.text album.title ]
                 ]

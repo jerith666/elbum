@@ -3,8 +3,8 @@ module ThumbPage exposing (ThumbPageModel, albumTitle, urlsToGet, view, viewThum
 import Album exposing (..)
 import AlbumStyles exposing (..)
 import Css exposing (..)
-import Html exposing (..)
-import Html.Events exposing (..)
+import Html.Styled exposing (..)
+import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import ListUtils exposing (..)
 import Set exposing (..)
@@ -54,7 +54,7 @@ view imgChosenMsgr showList thumbPageModel flags =
         ]
 
 
-albumTitle : String -> List AlbumList -> (AlbumList -> msg) -> List Mixin -> Html msg
+albumTitle : String -> List AlbumList -> (AlbumList -> msg) -> List Style -> Html msg
 albumTitle title parents showList extraStyles =
     div
         [ styles <|
@@ -68,7 +68,7 @@ albumTitle title parents showList extraStyles =
         ]
     <|
         List.map (albumParent showList) (List.reverse parents)
-            ++ [ span [] [ Html.text title ] ]
+            ++ [ span [] [ Html.Styled.text title ] ]
 
 
 albumParent : (AlbumList -> msg) -> AlbumList -> Html msg
@@ -78,10 +78,10 @@ albumParent showList albumList =
             [ onClick <| showList albumList
             , styles [ textDecoration underline, cursor pointer ]
             ]
-            [ Html.text albumList.listTitle ]
+            [ Html.Styled.text albumList.listTitle ]
         , span
             [ styles [ padding2 (Css.em 0) (Css.em 0.5) ] ]
-            [ Html.text "<" ]
+            [ Html.Styled.text "<" ]
         ]
 
 
@@ -263,7 +263,7 @@ srcForWidth width img =
     smallestImageBiggerThan xScaled yScaled img.srcSetFirst img.srcSetRest
 
 
-viewThumb : Int -> ( Float, Bool ) -> List Mixin -> msg -> Image -> Html msg
+viewThumb : Int -> ( Float, Bool ) -> List Style -> msg -> Image -> Html msg
 viewThumb width opasity extraStyles selectedMsg img =
     let
         ( xScaled, yScaled ) =
@@ -313,7 +313,7 @@ stubThumb width img =
             , margin (px -1)
             ]
         ]
-        [ Html.text "..." ]
+        [ Html.Styled.text "..." ]
 
 
 sizeForWidth : Int -> Image -> ( Int, Int )
