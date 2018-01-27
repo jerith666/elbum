@@ -20,6 +20,7 @@
         "elm-lang/navigation": "2.1.0 <= v < 3.0.0",
         "elm-lang/window": "1.0.1 <= v < 2.0.0",
         "knledg/touch-events": "2.1.1 <= v < 3.0.0",
+        "mdgriffith/elm-style-animation": "3.5.5 <= v < 4.0.0",
         "rgrempel/elm-route-url": "4.0.0 <= v < 5.0.0",
         "rtfeldman/elm-css": "13.0.1 <= v < 14.0.0"
     },
