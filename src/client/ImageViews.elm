@@ -27,10 +27,12 @@ smallestImageBiggerThan : Int -> Int -> ImgSrc -> List ImgSrc -> ImgSrc
 smallestImageBiggerThan w h i iRest =
     case List.head <| List.sortBy (\is -> is.x) <| List.filter (\is -> is.x >= w && is.y >= h) <| i :: iRest of
         Nothing ->
-            Debug.log ("no sm bigger than " ++ toString w ++ ", " ++ toString h) i
+            --Debug.log ("no sm bigger than " ++ toString w ++ ", " ++ toString h) i
+            i
 
         Just sizedIs ->
-            Debug.log ("sm bigger than " ++ toString w ++ " is " ++ toString sizedIs.x ++ " (" ++ sizedIs.url ++ ")") sizedIs
+            --Debug.log ("sm bigger than " ++ toString w ++ " is " ++ toString sizedIs.x ++ " (" ++ sizedIs.url ++ ")") sizedIs
+            sizedIs
 
 
 render : ImgSrc -> List ImgSrc -> List Mixin -> List (Html.Attribute msg) -> Maybe msg -> Html msg
