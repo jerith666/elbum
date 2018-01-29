@@ -7,5 +7,5 @@ find . -name album.xml | while read a; do
     t=$(xmllint --xpath "/album/description/field/text()" "$a" | sed 's/^[[:space:]]*//g' | tr -d '\n');
     (cd "$(dirname "$a")";
      pwd;
-     ln -s "${t}" thumbnail;)
+     ln -sf "${t}" thumbnail;)
 done
