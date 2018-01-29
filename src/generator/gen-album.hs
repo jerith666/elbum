@@ -14,6 +14,7 @@ import Text.Regex
 
 import Codec.Picture hiding (Image)
 import Codec.Picture.Types hiding (Image)
+import Codec.Picture.Metadata hiding (Image)
 
 import Vision.Primitive
 import Vision.Primitive.Shape
@@ -179,22 +180,64 @@ findThumb srcRoot src dest images = do
 procImgsOnly :: FilePath -> FilePath -> [FilePath] -> IO [Image]
 procImgsOnly _ _ [] = return []
 procImgsOnly s d (f:fs) = do
-  mi <- imgOnly f
+  mi <- procOrReuse s d f
   case mi of
     Nothing -> do
       is <- procImgsOnly s d fs
       return is
-    Just i -> do
+    Just pdiOrI -> do
       -- this ordering is key to ensuring memory usage remains relatively constant
       -- we have to process the first image completely (load it, save it out at all
       -- sizes, and convert to an Image) before moving on to the others
-      pi <- procImage s d i
+      pi <- either (procImage s d) return pdiOrI
       is <- procImgsOnly s d fs
       return $ pi:is
 
-imgOnly :: FilePath -> IO (Maybe (FilePath, DynamicImage))
+procOrReuse :: FilePath -> FilePath -> FilePath -> IO (Maybe (Either (FilePath, DynamicImage) Image))
+procOrReuse s d f = do
+  mi <- imgOnly f
+  case mi of
+    Nothing -> do
+      return Nothing
+    Just i -> do
+      let rawDest = fst $ destForRaw s d f
+          shrinkDests = map (\maxwidth -> ( maxwidth
+                                          , fst $ destForShrink maxwidth s d f))
+                            sizes
+      destsExist <- sequence $ map doesFileExist $ rawDest : map snd shrinkDests
+      if and destsExist then do
+        let mw = Codec.Picture.Metadata.lookup Width $ snd $ snd i
+            mh = Codec.Picture.Metadata.lookup Height $ snd $ snd i
+            wh = maybeTuple (mw, mh)
+        case wh of
+          Just (ww, hw) -> do
+            let t = takeBaseName f
+                w = fromIntegral ww
+                h = fromIntegral hw
+                srcSetFirst = ImgSrc { url = makeRelative d rawDest
+                                     , x = w
+                                     , y = h
+                                     }
+                sdToImgSrc sd =
+                  let (xsm, ysm) = shrink (fst sd) w h
+                  in
+                  ImgSrc { url = makeRelative d $ snd sd
+                         , x = xsm
+                         , y = ysm
+                         }
+                srcSetRest = map sdToImgSrc shrinkDests
+            return $ Just $ Right $ Image { altText = t
+                                          , srcSetFirst = srcSetFirst
+                                          , srcSetRest = srcSetRest
+                                          }
+          Nothing -> do
+            return Nothing
+      else do
+        return $ Just $ Left $ (fst i, fst $ snd i)
+
+imgOnly :: FilePath -> IO (Maybe (FilePath, (DynamicImage, Metadatas)))
 imgOnly f = do
-    loadResult <- readImage f
+    loadResult <- readImageWithMetadata f
     case loadResult of
          Left err -> do return Nothing
          Right img ->
@@ -222,10 +265,7 @@ procSrcSet s d f i w h = do
 
 shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
 shrinkImgSrc s d f i w h maxwidth = do
-    let fi = toFridayRGB $ convertRGB8 i
-        (xsm, ysm) = shrink maxwidth w h
-        fism = resize Bilinear (ix2 ysm xsm) fi
-        ism = toJuicyRGB fism
+    let (xsm, ysm) = shrink maxwidth w h
         fsmpath = fst $ destForShrink maxwidth s d f
     createDirectoryIfMissing True $ takeDirectory fsmpath
     fsmpathExists <- doesFileExist fsmpath
@@ -237,6 +277,9 @@ shrinkImgSrc s d f i w h maxwidth = do
                     , y = ysm
                     }
     else do 
+      let fi = toFridayRGB $ convertRGB8 i
+          fism = resize Bilinear (ix2 ysm xsm) fi
+          ism = toJuicyRGB fism
       putStr $ show maxwidth ++ "w "
       hFlush stdout
       savePngImage fsmpath $ ImageRGB8 ism
@@ -306,3 +349,19 @@ putStrSameLn s = do
     putStr "\r"
     putStr s
     hFlush stdout
+
+--
+-- basic utilities
+--
+
+maybeTuple :: (Maybe a, Maybe b) -> Maybe (a, b)
+maybeTuple (ma, mb) =
+  case ma of
+    Just a ->
+      case mb of
+        Just b ->
+          Just (a, b)
+        Nothing ->
+          Nothing
+    Nothing ->
+      Nothing
