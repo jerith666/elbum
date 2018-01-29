@@ -26,6 +26,10 @@ import qualified Data.ByteString.Lazy.Char8 as C
 
 import AlbumTypes
 
+--
+-- main & usage
+--
+
 main = do
   args <- getArgs
   case args of
@@ -34,7 +38,18 @@ main = do
 
 usage = putStrLn "usage: gen-album <src> <dest>"
 
+--
+-- configuration
+--
+
 thumbFilename = "thumbnail"
+
+sizes :: [Int]
+sizes = [1600, 1400, 1200, 1000, 800, 400, 200]
+
+--
+-- Album & AlbumList functions
+--
 
 writeAlbumOrList :: String -> String -> IO ()
 writeAlbumOrList src dest = do
@@ -157,18 +172,35 @@ findThumb srcRoot src dest images = do
   else do
     return $ Left $ src ++ " does not contain a 'thumbnail' file"
 
-readLink :: FilePath -> IO FilePath
-readLink f = do
-  isLink <- pathIsSymbolicLink f
-  if isLink then do
-    target <- getSymbolicLinkTarget f
-    if isAbsolute target then do
-      readLink target
-    else do
-      let ftgt = takeDirectory f </> target
-      readLink ftgt
-  else do
-    return f
+--
+-- Single-image functions
+--
+
+procImgsOnly :: FilePath -> FilePath -> [FilePath] -> IO [Image]
+procImgsOnly _ _ [] = return []
+procImgsOnly s d (f:fs) = do
+  mi <- imgOnly f
+  case mi of
+    Nothing -> do
+      is <- procImgsOnly s d fs
+      return is
+    Just i -> do
+      -- this ordering is key to ensuring memory usage remains relatively constant
+      -- we have to process the first image completely (load it, save it out at all
+      -- sizes, and convert to an Image) before moving on to the others
+      pi <- procImage s d i
+      is <- procImgsOnly s d fs
+      return $ pi:is
+
+imgOnly :: FilePath -> IO (Maybe (FilePath, DynamicImage))
+imgOnly f = do
+    loadResult <- readImage f
+    case loadResult of
+         Left err -> do return Nothing
+         Right img ->
+             do
+                 putStrSameLn $ "loaded " ++ (show f)
+                 return $ Just (f, img)
 
 procImage :: FilePath -> FilePath -> (FilePath, DynamicImage) -> IO Image
 procImage s d (f,i) = do
@@ -187,9 +219,6 @@ procSrcSet s d f i w h = do
     putStrSameLn $ "processing " ++ (show f) ++ " "
     shrunken <- sequence $ map (shrinkImgSrc s d f i w h) sizes
     return (rawImg : shrunken)
-
-sizes :: [Int]
-sizes = [1600, 1400, 1200, 1000, 800, 400, 200]
 
 shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
 shrinkImgSrc s d f i w h maxwidth = do
@@ -247,40 +276,29 @@ shrink maxwidth w h = let factor = fromIntegral maxwidth / fromIntegral w
                       in (scale w, scale h)
 
 
+--
+-- file/directory utilities
+--
+
 dirsOnly :: [FilePath] -> IO [FilePath]
 dirsOnly = filterM doesDirectoryExist
 
-procImgsOnly :: FilePath -> FilePath -> [FilePath] -> IO [Image]
-procImgsOnly _ _ [] = return []
-procImgsOnly s d (f:fs) = do
-  mi <- imgOnly f
-  case mi of
-    Nothing -> do
-      is <- procImgsOnly s d fs
-      return is
-    Just i -> do
-      -- this ordering is key to ensuring memory usage remains relatively constant
-      -- we have to process the first image completely (load it, save it out at all
-      -- sizes, and convert to an Image) before moving on to the others
-      pi <- procImage s d i
-      is <- procImgsOnly s d fs
-      return $ pi:is
+readLink :: FilePath -> IO FilePath
+readLink f = do
+  isLink <- pathIsSymbolicLink f
+  if isLink then do
+    target <- getSymbolicLinkTarget f
+    if isAbsolute target then do
+      readLink target
+    else do
+      let ftgt = takeDirectory f </> target
+      readLink ftgt
+  else do
+    return f
 
-imgsOnly :: [FilePath] -> IO [(FilePath, DynamicImage)]
-imgsOnly [] = return []
-imgsOnly (f:fs) = do fo <- imgOnly f
-                     fos <- imgsOnly fs
-                     return $ (maybeToList fo) ++ fos
-
-imgOnly :: FilePath -> IO (Maybe (FilePath, DynamicImage))
-imgOnly f = do
-    loadResult <- readImage f
-    case loadResult of
-         Left err -> do return Nothing
-         Right img ->
-             do
-                 putStrSameLn $ "loaded " ++ (show f)
-                 return $ Just (f, img)
+--
+-- I/O utilities
+--
 
 putStrSameLn :: String -> IO ()
 putStrSameLn s = do
