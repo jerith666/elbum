@@ -11,7 +11,7 @@ import Dom.Scroll exposing (..)
 import FullImagePage exposing (..)
 import Html.Styled exposing (..)
 import Http exposing (..)
-import KeyboardUtils exposing (onUpArrow)
+import KeyboardUtils exposing (onEscape)
 import ListUtils exposing (..)
 import LocationUtils exposing (..)
 import Navigation exposing (..)
@@ -607,7 +607,7 @@ subscriptions model =
                 parent :: grandParents ->
                     let
                         upParent =
-                            onUpArrow
+                            onEscape
                                 (ViewList <| AlbumListPage parent winSize grandParents)
                                 NoBootstrap
                     in

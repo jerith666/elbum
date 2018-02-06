@@ -1,15 +1,15 @@
-module KeyboardUtils exposing (onUpArrow)
+module KeyboardUtils exposing (onEscape)
 
 import Keyboard exposing (downs)
 
 
-onUpArrow : msg -> msg -> Sub msg
-onUpArrow action noop =
+onEscape : msg -> msg -> Sub msg
+onEscape action noop =
     downs
         (\keycode ->
             case keycode of
-                38 ->
-                    --up arrow
+                27 ->
+                    --escape
                     action
 
                 _ ->

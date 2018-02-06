@@ -6,7 +6,7 @@ import FullImagePage exposing (..)
 import Html.Styled exposing (..)
 import ImageViews exposing (..)
 import Keyboard exposing (..)
-import KeyboardUtils exposing (onUpArrow)
+import KeyboardUtils exposing (onEscape)
 import ListUtils exposing (..)
 import ProgressiveImage exposing (..)
 import Set exposing (..)
@@ -291,7 +291,7 @@ subscriptions : AlbumPage -> (AlbumPageMsg -> msg) -> msg -> Sub msg
 subscriptions albumPage wrapper showParent =
     case albumPage of
         Thumbs _ _ _ _ ->
-            onUpArrow showParent <| wrapper NoUpdate
+            onEscape showParent <| wrapper NoUpdate
 
         FullImage _ _ progImgModel _ _ ->
             Sub.batch
@@ -308,8 +308,8 @@ subscriptions albumPage wrapper showParent =
                                     -- left arrow
                                     Prev
 
-                                38 ->
-                                    -- up arrow
+                                27 ->
+                                    -- escape
                                     BackToThumbs
 
                                 _ ->
