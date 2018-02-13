@@ -708,7 +708,7 @@ view albumBootstrap =
             text ("Error Loading Album: " ++ toString e)
 
         LoadedAlbum albumPage parents flags home pendingUrls ->
-            withHomeLink home <|
+            withHomeLink home flags <|
                 AlbumPage.view
                     albumPage
                     (\list ->
@@ -723,7 +723,7 @@ view albumBootstrap =
                     flags
 
         LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls ->
-            withHomeLink home <|
+            withHomeLink home flags <|
                 AlbumListPage.view
                     (AlbumListPage
                         albumList
@@ -749,8 +749,8 @@ view albumBootstrap =
                     flags
 
 
-withHomeLink : Maybe String -> Html AlbumBootstrapMsg -> Html AlbumBootstrapMsg
-withHomeLink home basePage =
+withHomeLink : Maybe String -> AlbumBootstrapFlags -> Html AlbumBootstrapMsg -> Html AlbumBootstrapMsg
+withHomeLink home flags basePage =
     case home of
         Just h ->
             div
@@ -764,6 +764,7 @@ withHomeLink home basePage =
                         , textDecoration none
                         ]
                             ++ navBoxStyles
+                            ++ [ rootPos flags ]
                     ]
                     [ text "⌂" ]
                 ]
