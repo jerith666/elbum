@@ -4,17 +4,20 @@ import Album exposing (..)
 import AlbumListPage exposing (..)
 import AlbumPage exposing (..)
 import AlbumStyles exposing (..)
+import Css exposing (..)
 import Delay exposing (..)
 import Dict exposing (..)
 import Dom exposing (..)
 import Dom.Scroll exposing (..)
 import FullImagePage exposing (..)
 import Html.Styled exposing (..)
+import Html.Styled.Attributes exposing (..)
 import Http exposing (..)
 import KeyboardUtils exposing (onEscape)
 import ListUtils exposing (..)
 import LocationUtils exposing (..)
 import Navigation exposing (..)
+import ResultUtils exposing (..)
 import RouteUrl exposing (..)
 import Set exposing (..)
 import Task exposing (..)
@@ -25,10 +28,11 @@ import Window exposing (..)
 
 type AlbumBootstrap
     = Sizing AlbumBootstrapFlags (Maybe (List String))
-    | Loading WinSize AlbumBootstrapFlags (Maybe (List String))
+    | LoadingHomeLink WinSize AlbumBootstrapFlags (Maybe (List String))
+    | Loading WinSize AlbumBootstrapFlags (Maybe String) (Maybe (List String))
     | LoadError AlbumBootstrapFlags Http.Error
-    | LoadedList AlbumListPage AlbumBootstrapFlags (Dict String UrlLoadState)
-    | LoadedAlbum AlbumPage (List AlbumList) AlbumBootstrapFlags (Dict String UrlLoadState)
+    | LoadedList AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState)
+    | LoadedAlbum AlbumPage (List AlbumList) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState)
 
 
 type UrlLoadState
@@ -41,6 +45,8 @@ type UrlLoadState
 
 type AlbumBootstrapMsg
     = Resize Size
+    | YesHome String
+    | NoHome Http.Error
     | YesAlbum AlbumOrList
     | NoAlbum Http.Error
     | PageMsg AlbumPage.AlbumPageMsg
@@ -80,19 +86,24 @@ update msg model =
         Resize size ->
             case model of
                 Sizing flags paths ->
-                    ( Loading (Debug.log "window size set" size) flags paths
-                    , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecAlbumOrList))
+                    ( LoadingHomeLink (Debug.log "window size set" size) flags paths
+                    , Http.send (either NoHome YesHome) <| Http.getString "home"
                     )
 
-                Loading oldSize flags paths ->
-                    ( Loading (Debug.log "window size updated during load" size) flags paths
+                LoadingHomeLink oldSize flags paths ->
+                    ( LoadingHomeLink size flags paths
+                    , Cmd.none
+                    )
+
+                Loading oldSize flags home paths ->
+                    ( Loading (Debug.log "window size updated during load" size) flags home paths
                     , Cmd.none
                     )
 
                 LoadError _ _ ->
                     ( model, Cmd.none )
 
-                LoadedAlbum albumPage parents flags pendingUrls ->
+                LoadedAlbum albumPage parents flags home pendingUrls ->
                     case albumPage of
                         Thumbs album oldSize justLoadedImages readyToDisplayImages ->
                             let
@@ -102,30 +113,46 @@ update msg model =
                                 urls =
                                     AlbumPage.urlsToGet model
                             in
-                            ( LoadedAlbum model parents flags <|
+                            ( LoadedAlbum model parents flags home <|
                                 Dict.union pendingUrls <|
                                     dictWithValues urls UrlRequested
                             , getUrls pendingUrls urls
                             )
 
                         FullImage album index loaded oldSize dragInfo ->
-                            ( LoadedAlbum (FullImage album index loaded (Debug.log "window size updated for full" size) dragInfo) parents flags pendingUrls
+                            ( LoadedAlbum (FullImage album index loaded (Debug.log "window size updated for full" size) dragInfo) parents flags home pendingUrls
                             , Cmd.none
                             )
 
-                LoadedList (AlbumListPage albumList oldSize parentLists) flags pendingUrls ->
-                    ( LoadedList (AlbumListPage albumList size parentLists) flags pendingUrls
+                LoadedList (AlbumListPage albumList oldSize parentLists) flags home pendingUrls ->
+                    ( LoadedList (AlbumListPage albumList size parentLists) flags home pendingUrls
                     , Cmd.none
                     )
 
+        YesHome home ->
+            case model of
+                LoadingHomeLink size flags path ->
+                    gotHome size flags path <| Just home
+
+                _ ->
+                    ( model, Cmd.none )
+
+        NoHome err ->
+            case model of
+                LoadingHomeLink size flags path ->
+                    gotHome size flags path Nothing
+
+                _ ->
+                    ( model, Cmd.none )
+
         YesAlbum albumOrList ->
             case model of
-                Loading winSize flags paths ->
+                Loading winSize flags home paths ->
                     case albumOrList of
                         List albumList ->
                             let
                                 newModel =
-                                    LoadedList (AlbumListPage albumList winSize []) flags Dict.empty
+                                    LoadedList (AlbumListPage albumList winSize []) flags home Dict.empty
                             in
                             ( newModel
                             , pathsToCmd newModel paths
@@ -140,7 +167,7 @@ update msg model =
                                     AlbumPage.urlsToGet albumPage
 
                                 newModel =
-                                    LoadedAlbum albumPage [] flags <| dictWithValues urls UrlRequested
+                                    LoadedAlbum albumPage [] flags home <| dictWithValues urls UrlRequested
                             in
                             ( newModel
                             , Cmd.batch [ pathsToCmd newModel paths, getUrls Dict.empty urls ]
@@ -156,7 +183,7 @@ update msg model =
 
         PageMsg pageMsg ->
             case model of
-                LoadedAlbum oldPage parents flags oldPendingUrls ->
+                LoadedAlbum oldPage parents flags home oldPendingUrls ->
                     let
                         ( newPage, newPageCmd ) =
                             AlbumPage.update pageMsg oldPage
@@ -170,7 +197,7 @@ update msg model =
                         urls =
                             AlbumPage.urlsToGet newPage
                     in
-                    ( LoadedAlbum newPage parents flags <| Dict.union newPendingUrls <| dictWithValues urls UrlRequested
+                    ( LoadedAlbum newPage parents flags home <| Dict.union newPendingUrls <| dictWithValues urls UrlRequested
                     , Cmd.batch [ getUrls newPendingUrls urls, Cmd.map PageMsg newPageCmd ]
                     )
 
@@ -189,7 +216,7 @@ update msg model =
         ViewList albumListPage ->
             let
                 newModel =
-                    LoadedList albumListPage (flagsOf model) Dict.empty
+                    LoadedList albumListPage (flagsOf model) (homeOf model) Dict.empty
             in
             ( newModel, scrollToTop )
 
@@ -199,7 +226,7 @@ update msg model =
                     AlbumPage.urlsToGet albumPage
 
                 newModel =
-                    LoadedAlbum albumPage parents (flagsOf model) <| dictWithValues urls UrlRequested
+                    LoadedAlbum albumPage parents (flagsOf model) (homeOf model) <| dictWithValues urls UrlRequested
             in
             ( newModel
             , Cmd.batch [ scrollToTop, getUrls Dict.empty urls ]
@@ -216,6 +243,13 @@ update msg model =
 
         NoBootstrap ->
             ( model, Cmd.none )
+
+
+gotHome : WinSize -> AlbumBootstrapFlags -> Maybe (List String) -> Maybe String -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
+gotHome size flags paths home =
+    ( Loading size flags home paths
+    , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecAlbumOrList))
+    )
 
 
 navToMsg : Location -> List AlbumBootstrapMsg
@@ -238,17 +272,42 @@ flagsOf model =
         Sizing flags _ ->
             flags
 
-        Loading _ flags _ ->
+        LoadingHomeLink _ flags _ ->
+            flags
+
+        Loading _ flags _ _ ->
             flags
 
         LoadError flags _ ->
             flags
 
-        LoadedList _ flags _ ->
+        LoadedList _ flags _ _ ->
             flags
 
-        LoadedAlbum _ _ flags _ ->
+        LoadedAlbum _ _ flags _ _ ->
             flags
+
+
+homeOf : AlbumBootstrap -> Maybe String
+homeOf model =
+    case model of
+        Sizing _ _ ->
+            Nothing
+
+        LoadingHomeLink _ _ _ ->
+            Nothing
+
+        Loading _ _ home _ ->
+            home
+
+        LoadError _ _ ->
+            Nothing
+
+        LoadedList _ _ home _ ->
+            home
+
+        LoadedAlbum _ _ _ home _ ->
+            home
 
 
 withPaths : AlbumBootstrap -> List String -> AlbumBootstrap
@@ -257,16 +316,19 @@ withPaths model paths =
         Sizing flags _ ->
             Sizing flags <| Just paths
 
-        Loading winSize flags _ ->
-            Loading winSize flags <| Just paths
+        LoadingHomeLink winSize flags _ ->
+            LoadingHomeLink winSize flags <| Just paths
+
+        Loading winSize flags home _ ->
+            Loading winSize flags home <| Just paths
 
         LoadError _ _ ->
             model
 
-        LoadedList _ _ _ ->
+        LoadedList _ _ _ _ ->
             model
 
-        LoadedAlbum _ _ _ _ ->
+        LoadedAlbum _ _ _ _ _ ->
             model
 
 
@@ -281,17 +343,20 @@ pathsToCmd model mPaths =
                 Sizing _ _ ->
                     Cmd.none
 
-                Loading _ _ _ ->
+                LoadingHomeLink _ _ _ ->
+                    Cmd.none
+
+                Loading _ _ _ _ ->
                     Cmd.none
 
                 LoadError _ _ ->
                     Debug.log "pathsToCmd LoadError, ignore" Cmd.none
 
-                LoadedList (AlbumListPage albumList winSize parents) _ _ ->
+                LoadedList (AlbumListPage albumList winSize parents) _ _ _ ->
                     --TODO maybe don't always prepend aTN here, only if at root?
                     pathsToCmdImpl winSize (albumList :: parents) paths
 
-                LoadedAlbum albumPage parents _ _ ->
+                LoadedAlbum albumPage parents _ _ _ ->
                     pathsToCmdImpl (pageSize albumPage) parents paths
 
 
@@ -405,13 +470,13 @@ cmdOf msg =
 locFor : AlbumBootstrap -> Maybe UrlChange
 locFor model =
     case model of
-        LoadedAlbum albumPage parents _ _ ->
+        LoadedAlbum albumPage parents _ _ _ ->
             Just
                 { entry = NewEntry
                 , url = hashForAlbum model albumPage parents
                 }
 
-        LoadedList albumListPage _ _ ->
+        LoadedList albumListPage _ _ _ ->
             Just
                 { entry = NewEntry
                 , url = hashForList model albumListPage
@@ -473,13 +538,13 @@ scrollToTop =
                     ScrollFailed rootDivId
         )
     <|
-        toTop rootDivId
+        Dom.Scroll.toTop rootDivId
 
 
 updateImageResult : AlbumBootstrap -> String -> UrlLoadState -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 updateImageResult model url result =
     case model of
-        LoadedAlbum albumPage parents flags pendingUrls ->
+        LoadedAlbum albumPage parents flags home pendingUrls ->
             case albumPage of
                 Thumbs album size justLoadedImages readyToDisplayImages ->
                     let
@@ -489,7 +554,7 @@ updateImageResult model url result =
                         urls =
                             AlbumPage.urlsToGet model
                     in
-                    ( LoadedAlbum model parents flags <|
+                    ( LoadedAlbum model parents flags home <|
                         Dict.union (Dict.fromList [ ( url, result ) ]) <|
                             Dict.union pendingUrls <|
                                 dictWithValues urls UrlRequested
@@ -523,7 +588,7 @@ urlNextState : String -> UrlLoadState -> Cmd AlbumBootstrapMsg
 urlNextState url result =
     case result of
         JustCompleted ->
-            after 100 millisecond <| ImageReadyToDisplay url
+            Delay.after 100 millisecond <| ImageReadyToDisplay url
 
         _ ->
             Cmd.none
@@ -584,7 +649,7 @@ decodeUrlResult origUrl result =
 subscriptions : AlbumBootstrap -> Sub AlbumBootstrapMsg
 subscriptions model =
     case model of
-        LoadedAlbum albumPage parents flags pendingUrls ->
+        LoadedAlbum albumPage parents _ _ _ ->
             let
                 showParent =
                     case parents of
@@ -599,7 +664,7 @@ subscriptions model =
                 , resizes Resize
                 ]
 
-        LoadedList (AlbumListPage albumList winSize parents) flags pendingUrls ->
+        LoadedList (AlbumListPage albumList winSize parents) _ _ _ ->
             case parents of
                 [] ->
                     resizes Resize
@@ -633,47 +698,75 @@ view albumBootstrap =
         Sizing _ _ ->
             text "Album Starting"
 
-        Loading _ _ _ ->
+        LoadingHomeLink _ _ _ ->
+            text "Home Loading ..."
+
+        Loading _ _ _ _ ->
             text "Album Loading ..."
 
         LoadError _ e ->
             text ("Error Loading Album: " ++ toString e)
 
-        LoadedAlbum albumPage parents flags pendingUrls ->
-            AlbumPage.view
-                albumPage
-                (\list ->
-                    ViewList <|
-                        AlbumListPage
-                            list
-                            (pageSize albumPage)
-                            (dropThrough parents list)
-                )
-                PageMsg
-                parents
-                flags
-
-        LoadedList (AlbumListPage albumList winSize parents) flags pendingUrls ->
-            AlbumListPage.view
-                (AlbumListPage
-                    albumList
-                    winSize
+        LoadedAlbum albumPage parents flags home pendingUrls ->
+            withHomeLink home <|
+                AlbumPage.view
+                    albumPage
+                    (\list ->
+                        ViewList <|
+                            AlbumListPage
+                                list
+                                (pageSize albumPage)
+                                (dropThrough parents list)
+                    )
+                    PageMsg
                     parents
-                )
-                (\albumListChild ->
-                    ViewList <|
-                        AlbumListPage albumListChild winSize <|
-                            dropThrough
-                                (albumList
-                                    :: parents
-                                )
-                                albumListChild
-                )
-                (\album ->
-                    ViewAlbum
-                        (Thumbs album winSize Set.empty Set.empty)
-                    <|
+                    flags
+
+        LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls ->
+            withHomeLink home <|
+                AlbumListPage.view
+                    (AlbumListPage
                         albumList
-                            :: parents
-                )
-                flags
+                        winSize
+                        parents
+                    )
+                    (\albumListChild ->
+                        ViewList <|
+                            AlbumListPage albumListChild winSize <|
+                                dropThrough
+                                    (albumList
+                                        :: parents
+                                    )
+                                    albumListChild
+                    )
+                    (\album ->
+                        ViewAlbum
+                            (Thumbs album winSize Set.empty Set.empty)
+                        <|
+                            albumList
+                                :: parents
+                    )
+                    flags
+
+
+withHomeLink : Maybe String -> Html AlbumBootstrapMsg -> Html AlbumBootstrapMsg
+withHomeLink home basePage =
+    case home of
+        Just h ->
+            div
+                []
+                [ basePage
+                , a
+                    [ href h
+                    , styles <|
+                        [ top <| px 0
+                        , left <| px 0
+                        , textDecoration none
+                        ]
+                            ++ navBoxStyles
+                    ]
+                    [ text "⌂" ]
+                ]
+
+        Nothing ->
+            basePage

@@ -3,6 +3,7 @@ module AlbumStyles exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css)
+import Html.Styled.Events exposing (..)
 
 
 black : Color
@@ -111,3 +112,34 @@ opacityAnimatedTo opasity =
     , Css.property "transition-timing-function" "ease-in-out"
     , Css.property "transition-delay" "0s"
     ]
+
+
+navEltSize : number
+navEltSize =
+    50
+
+
+navBoxStyles : List Style
+navBoxStyles =
+    [ position absolute
+    , Css.height (px navEltSize)
+    , Css.width (px navEltSize)
+    , lineHeight (px navEltSize)
+    , textAlign center
+    , color white
+    , backgroundColor (rgba 40 40 40 0.5)
+    , borderRadius (px <| navEltSize / 2)
+    , cursor pointer
+    ]
+
+
+navElement : msg -> String -> (Px -> Style) -> Html msg
+navElement msg label side =
+    div
+        [ styles <|
+            navBoxStyles
+                ++ [ side (px 0)
+                   ]
+        , onClick msg
+        ]
+        [ Html.Styled.text label ]

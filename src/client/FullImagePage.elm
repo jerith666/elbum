@@ -83,37 +83,6 @@ navEltIf lst navMsg navTxt navAlign =
         [ navElement navMsg navTxt navAlign ]
 
 
-navEltSize : number
-navEltSize =
-    50
-
-
-navBoxStyles : List Style
-navBoxStyles =
-    [ position absolute
-    , Css.height (px navEltSize)
-    , Css.width (px navEltSize)
-    , lineHeight (px navEltSize)
-    , textAlign center
-    , color white
-    , backgroundColor (rgba 40 40 40 0.5)
-    , borderRadius (px <| navEltSize / 2)
-    , cursor pointer
-    ]
-
-
-navElement : msg -> String -> (Px -> Style) -> Html msg
-navElement msg label side =
-    div
-        [ styles <|
-            navBoxStyles
-                ++ [ side (px 0)
-                   ]
-        , onClick msg
-        ]
-        [ Html.Styled.text label ]
-
-
 viewImg : msg -> TouchMsgs msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> Html msg
 viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
     let
