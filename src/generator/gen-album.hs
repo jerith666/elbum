@@ -56,7 +56,8 @@ writeAlbumOrList :: String -> String -> IO ()
 writeAlbumOrList src dest = do
   eAlbumOrList <- genAlbumOrList src src dest True
   case eAlbumOrList of
-    Left err ->
+    Left err -> do
+      putStrLn ""
       putStrLn err
     Right albumOrList ->
       C.writeFile (dest </> "album.json") $ encode albumOrList
@@ -65,27 +66,31 @@ genAlbumOrList :: FilePath -> FilePath -> FilePath -> Bool -> IO (Either String 
 genAlbumOrList srcRoot src dest autoThumb = do
   files <- filter (`notElem` [".","..",thumbFilename]) <$> getDirectoryContents src
   let afiles = map (\f -> src </> f) (sort files)
-  pimgs <- procImgsOnly srcRoot dest afiles
-  subdirs <- dirsOnly afiles
-  let icount = length pimgs
-      idirs = length subdirs
-  if ((icount > 0) && (idirs > 0)) then do
-    return $ Left $ "directory " ++ src ++ " contains both images and subdirs, this is not supported"
-  else
-    if length pimgs > 0 then do
-      aOrErr <- genAlbum srcRoot src dest pimgs
-      case aOrErr of
-        Left err ->
-          return $ Left $ err
-        Right a ->
-          return $ Right $ Leaf a
-    else do
-      en <- genNode srcRoot src dest autoThumb subdirs
-      case en of
-        Left err ->
-          return $ Left $ err
-        Right n ->
-          return $ Right $ List n
+  epimgs <- procImgsOnly srcRoot dest afiles
+  case epimgs of
+    Left e -> do
+      return $ Left e
+    Right pimgs -> do
+      subdirs <- dirsOnly afiles
+      let icount = length pimgs
+          idirs = length subdirs
+      if ((icount > 0) && (idirs > 0)) then do
+        return $ Left $ "directory " ++ src ++ " contains both images and subdirs, this is not supported"
+      else
+        if length pimgs > 0 then do
+          aOrErr <- genAlbum srcRoot src dest pimgs
+          case aOrErr of
+            Left err ->
+              return $ Left $ err
+            Right a ->
+              return $ Right $ Leaf a
+        else do
+          en <- genNode srcRoot src dest autoThumb subdirs
+          case en of
+            Left err ->
+              return $ Left $ err
+            Right n ->
+              return $ Right $ List n
 
 genNode :: FilePath -> FilePath -> FilePath -> Bool -> [FilePath] -> IO (Either String AlbumList)
 genNode srcRoot src dest autoThumb dirs = do
@@ -177,8 +182,8 @@ findThumb srcRoot src dest images = do
 -- Single-image functions
 --
 
-procImgsOnly :: FilePath -> FilePath -> [FilePath] -> IO [Image]
-procImgsOnly _ _ [] = return []
+procImgsOnly :: FilePath -> FilePath -> [FilePath] -> IO (Either String [Image])
+procImgsOnly _ _ [] = return $ Right []
 procImgsOnly s d (f:fs) = do
   mi <- procOrReuse s d f
   case mi of
@@ -189,11 +194,19 @@ procImgsOnly s d (f:fs) = do
       -- this ordering is key to ensuring memory usage remains relatively constant
       -- we have to process the first image completely (load it, save it out at all
       -- sizes, and convert to an Image) before moving on to the others
-      pi <- either (procImage s d) return pdiOrI
-      is <- procImgsOnly s d fs
-      return $ pi:is
+      epi <- either (procImage s d) (return . Right) pdiOrI
+      case epi of
+        Left e -> do
+          return $ Left e
+        Right pi -> do
+          eis <- procImgsOnly s d fs
+          case eis of
+            Left e ->
+              return $ Left e
+            Right is ->
+              return $ Right $ pi:is
 
-procOrReuse :: FilePath -> FilePath -> FilePath -> IO (Maybe (Either (FilePath, DynamicImage) Image))
+procOrReuse :: FilePath -> FilePath -> FilePath -> IO (Maybe (Either (FilePath, (DynamicImage, Metadatas)) Image))
 procOrReuse s d f = do
   mi <- imgOnly f
   case mi of
@@ -233,7 +246,7 @@ procOrReuse s d f = do
           Nothing -> do
             return Nothing
       else do
-        return $ Just $ Left $ (fst i, fst $ snd i)
+        return $ Just $ Left $ i
 
 imgOnly :: FilePath -> IO (Maybe (FilePath, (DynamicImage, Metadatas)))
 imgOnly f = do
@@ -245,16 +258,26 @@ imgOnly f = do
                  putStrSameLn $ "loaded " ++ (show f)
                  return $ Just (f, img)
 
-procImage :: FilePath -> FilePath -> (FilePath, DynamicImage) -> IO Image
+procImage :: FilePath -> FilePath -> (FilePath, (DynamicImage, Metadatas)) -> IO (Either String Image)
 procImage s d (f,i) = do
-    let w = dynamicMap imageWidth i
-        h = dynamicMap imageHeight i
+    let w = dynamicMap imageWidth $ fst i
+        h = dynamicMap imageHeight $ fst i
+        mw = Codec.Picture.Metadata.lookup Width $ snd i
+        mh = Codec.Picture.Metadata.lookup Height $ snd i
+        mwh = maybeTuple (mw, mh)
         t = takeBaseName f
-    srcSet <- procSrcSet s d f i w h
-    return Image { altText = t
-                 , srcSetFirst = head srcSet
-                 , srcSetRest = tail srcSet
-                 }
+    case mwh of
+      Nothing ->
+        return $ Left $ "image " ++ f ++ " has no size metadata, album regen will silently drop it"
+      Just (ww, hh) ->
+        if fromIntegral ww == w && fromIntegral hh == h then do
+          srcSet <- procSrcSet s d f (fst i) w h
+          return $ Right $ Image { altText = t
+                                 , srcSetFirst = head srcSet
+                                 , srcSetRest = tail srcSet
+                                 }
+        else do
+          return $ Left $ "image " ++ f ++ " has intristic w*h of " ++ (show w) ++ "*" ++ (show h) ++ " but metadata w*h of " ++ (show ww) ++ "*" ++ (show hh) ++ "; to repair, load in The Gimp, then choose file -> overwrite"
 
 procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
 procSrcSet s d f i w h = do
