@@ -72,6 +72,12 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel flags =
                     , onClick navMsgs.backToThumbsMsg
                     ]
                     [ Html.Styled.text "x" ]
+               , a
+                    [ styles <| navBoxStyles ++ [ bottom (px 5), right (px 5), textDecoration none ]
+                    , href fullImagePageModel.album.imageFirst.srcSetFirst.url
+                    , Html.Styled.Attributes.target "_blank"
+                    ]
+                    [ Html.Styled.text "⤓" ]
                ]
 
 
