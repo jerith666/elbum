@@ -99,10 +99,10 @@ init data =
         model =
             case data.possiblyCached of
                 [] ->
-                    Debug.log "start with fallback" <| ProgImgModel data LoadingFallback animState
+                    ProgImgModel data LoadingFallback animState
 
                 c1 :: cOthers ->
-                    Debug.log "start with cached" <| ProgImgModel data (TryingCached [] c1 cOthers) animState
+                    ProgImgModel data (TryingCached [] c1 cOthers) animState
     in
     ( model, updateCmd model )
 
@@ -129,85 +129,82 @@ updateModel : ProgressiveImageMsg -> ProgressiveImageModel -> ProgressiveImageMo
 updateModel msg ((ProgImgModel data status animState) as model) =
     case msg of
         Loaded imgSrc ->
-            Debug.log "new model after Loaded" <|
-                case Debug.log ("loaded " ++ imgSrc.url ++ " in status") status of
-                    TryingCached tried trying upnext ->
-                        if imgSrc == trying then
-                            ProgImgModel data (LoadingMain trying) { animState | placeholder = show animState.placeholder }
-                        else
-                            --maybe some earlier tried image?  ignore
-                            model
-
-                    LoadingFallback ->
-                        if imgSrc == data.fallback then
-                            ProgImgModel data (LoadingMain data.fallback) { animState | placeholder = show animState.placeholder }
-                        else
-                            --maybe some earlier tryingCached?  ignore
-                            model
-
-                    LoadingMain placeholder ->
-                        if imgSrc == data.mainImg then
-                            ProgImgModel data (MainLoaded placeholder) { animState | main = showMsg animState.main }
-                        else
-                            --something stale, ignore
-                            model
-
-                    MainLoaded _ ->
-                        --some stale loading notification, ignore
+            case status of
+                TryingCached tried trying upnext ->
+                    if imgSrc == trying then
+                        ProgImgModel data (LoadingMain trying) { animState | placeholder = show animState.placeholder }
+                    else
+                        --maybe some earlier tried image?  ignore
                         model
 
-                    MainOnly ->
-                        --some stale loading notification, ignore
+                LoadingFallback ->
+                    if imgSrc == data.fallback then
+                        ProgImgModel data (LoadingMain data.fallback) { animState | placeholder = show animState.placeholder }
+                    else
+                        --maybe some earlier tryingCached?  ignore
                         model
+
+                LoadingMain placeholder ->
+                    if imgSrc == data.mainImg then
+                        ProgImgModel data (MainLoaded placeholder) { animState | main = showMsg animState.main }
+                    else
+                        --something stale, ignore
+                        model
+
+                MainLoaded _ ->
+                    --some stale loading notification, ignore
+                    model
+
+                MainOnly ->
+                    --some stale loading notification, ignore
+                    model
 
         Timeout imgSrc ->
-            Debug.log "new model after Timeout" <|
-                case Debug.log ("timeout " ++ imgSrc.url ++ " in status") status of
-                    TryingCached tried trying upnext ->
-                        case upnext of
-                            [] ->
-                                Debug.log "timeout to fallback" <| ProgImgModel data LoadingFallback animState
+            case status of
+                TryingCached tried trying upnext ->
+                    case upnext of
+                        [] ->
+                            ProgImgModel data LoadingFallback animState
 
-                            next :: later ->
-                                Debug.log "timeout to next cached" <| ProgImgModel data (TryingCached (tried ++ [ trying ]) next later) animState
+                        next :: later ->
+                            ProgImgModel data (TryingCached (tried ++ [ trying ]) next later) animState
 
-                    LoadingFallback ->
-                        --shouldn't happen
-                        model
+                LoadingFallback ->
+                    --shouldn't happen
+                    model
 
-                    LoadingMain _ ->
-                        -- shouldn't happen
-                        model
+                LoadingMain _ ->
+                    -- shouldn't happen
+                    model
 
-                    MainLoaded _ ->
-                        --shouldn't happen
-                        model
+                MainLoaded _ ->
+                    --shouldn't happen
+                    model
 
-                    MainOnly ->
-                        --shouldn't happen
-                        model
+                MainOnly ->
+                    --shouldn't happen
+                    model
 
         MainFadeinComplete ->
-            Debug.log "new model after MainFadeinComplete" <|
-                case Debug.log "main fadein complete in status" status of
-                    MainLoaded _ ->
-                        ProgImgModel data MainOnly { animState | placeholder = hide animState.placeholder }
+            case status of
+                MainLoaded _ ->
+                    ProgImgModel data MainOnly { animState | placeholder = hide animState.placeholder }
 
-                    TryingCached _ _ _ ->
-                        --shouldn't happen
-                        model
+                TryingCached _ _ _ ->
+                    --shouldn't happen
+                    model
 
-                    LoadingFallback ->
-                        --shouldn't happen
-                        model
+                LoadingFallback ->
+                    --shouldn't happen
+                    model
 
-                    LoadingMain _ ->
-                        --shouldn't happen
-                        model
+                LoadingMain _ ->
+                    --shouldn't happen
+                    model
 
-                    MainOnly ->
-                        --shouldn't happen
-                        model
+                MainOnly ->
+                    --shouldn't happen
+                    model
 
         AnimateMain animMsg ->
             --taken care of by caller, can't happen
@@ -221,7 +218,7 @@ updateCmd : ProgressiveImageModel -> Cmd ProgressiveImageMsg
 updateCmd (ProgImgModel data status animState) =
     case status of
         TryingCached _ trying _ ->
-            Delay.after 200 millisecond <| Timeout <| Debug.log "starting 200 ms timeout for " trying
+            Delay.after 200 millisecond <| Timeout trying
 
         LoadingFallback ->
             Cmd.none
@@ -281,7 +278,7 @@ viewImg imgSrc data animStyle styles =
         imgSrc
         []
         styles
-        (Debug.log ("style for " ++ imgSrc.url) animStyle ++ [ on "load" <| succeed <| Loaded imgSrc ])
+        (animStyle ++ [ on "load" <| succeed <| Loaded imgSrc ])
         Nothing
 
 
