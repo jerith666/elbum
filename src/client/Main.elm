@@ -105,6 +105,9 @@ update msg model =
 
                 LoadedAlbum albumPage parents flags home pendingUrls ->
                     case albumPage of
+                        GettingScroll _ _ _ _ _ underlyingModel ->
+                            update msg <| LoadedAlbum underlyingModel parents flags home pendingUrls
+
                         Thumbs album oldSize justLoadedImages readyToDisplayImages ->
                             let
                                 model =
@@ -119,8 +122,8 @@ update msg model =
                             , getUrls pendingUrls urls
                             )
 
-                        FullImage album index loaded oldSize dragInfo ->
-                            ( LoadedAlbum (FullImage album index loaded (Debug.log "window size updated for full" size) dragInfo) parents flags home pendingUrls
+                        FullImage album index loaded oldSize savedScroll dragInfo ->
+                            ( LoadedAlbum (FullImage album index loaded (Debug.log "window size updated for full" size) savedScroll dragInfo) parents flags home pendingUrls
                             , Cmd.none
                             )
 
@@ -424,7 +427,7 @@ navForAlbum size album ps newParents =
                             progInit size nAlbum.imageFirst w h
                     in
                     Cmd.batch
-                        [ cmdOf <| ViewAlbum (FullImage prevs nAlbum progModel size Nothing) newParents
+                        [ cmdOf <| ViewAlbum (FullImage prevs nAlbum progModel size Nothing Nothing) newParents
                         , Cmd.map PageMsg <| Cmd.map FullMsg progCmd
                         ]
 
@@ -499,10 +502,13 @@ hashForAlbum model albumPage parents =
     let
         titles =
             case albumPage of
+                GettingScroll album _ _ _ _ _ ->
+                    [ album.title ]
+
                 Thumbs album _ _ _ ->
                     [ album.title ]
 
-                FullImage _ album _ _ _ ->
+                FullImage _ album _ _ _ _ ->
                     [ album.title, album.imageFirst.altText ]
     in
     hashFromAlbumPath model titles parents
@@ -685,10 +691,13 @@ subscriptions model =
 pageSize : AlbumPage -> WinSize
 pageSize albumPage =
     case albumPage of
+        GettingScroll _ _ _ _ winSize _ ->
+            winSize
+
         Thumbs _ winSize _ _ ->
             winSize
 
-        FullImage _ _ _ winSize _ ->
+        FullImage _ _ _ winSize _ _ ->
             winSize
 
 
