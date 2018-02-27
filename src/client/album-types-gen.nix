@@ -15,7 +15,6 @@ stdenv.mkDerivation {
   name = "Album.elm";
   src = ../shared/AlbumTypes.hs;
   gen = ./album-types-gen.hs;
-  fix = ./Album.elm.patch;
 
   buildInputs = [ ghc ];
 
@@ -29,7 +28,6 @@ stdenv.mkDerivation {
     cd src;
     mkdir $out;
     ${ghc}/bin/runhaskell album-types-gen.hs > Album.elm;
-    patch Album.elm < $fix;
     cp -iv Album.elm $out/;
   '';
 }

@@ -17,7 +17,7 @@ generate album data from a directory of pictures
 generate client code to display the album
  - run `src/client/album-types-gen.hs`:
    - it produces `Album.elm`, client-side types and JSON en/decoders corresponding to `AlbumTypes.hs`
-   - use `src/client/album-types-gen.nix` to do this (it includes a necessary patch to avoid https://github.com/elm-lang/elm-compiler/issues/1591).
+   - use `src/client/album-types-gen.nix` to do this.
  - in `src/client`, run `elm-make Main.elm --output elbum.js`:
    - the `index.html` in `src/client` loads the compiled `elbum.js` and renders an album described by `album.json`
 
