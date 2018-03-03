@@ -4,6 +4,8 @@
 with (import nixpkgs config);
 
 let
+  albumTypes = import ./album-types-gen.nix {};
+
   mkDerivation =
     { srcs ? ./elm-srcs.nix
     , src
@@ -41,18 +43,30 @@ let
         elmfile = module: "${srcdir}/${builtins.replaceStrings ["."] ["/"] module}.elm";
       in ''
         mkdir -p $out/share/doc
+        cp -iv ${albumTypes}/Album.elm .;
         ${lib.concatStrings (map (module: ''
           elm make --warn ${elmfile module} --output $out/${module}.js --docs $out/share/doc/${module}.json
         '') targets)}
       '';
 
-      installPhase = ":";
+      installPhase = ''
+        mv -iv $out/Main.js $out/elbum.js;
+        cp -iv index.html $out;
+      '';
     };
 in mkDerivation {
   name = "jerith666-elbum-0.1.0";
   srcs = ./elm-srcs.nix;
-  src = ./.;
+  src = lib.cleanSourceWith {
+    src = ./.;
+    filter = path: type:
+      type == "regular" && (
+        pkgs.lib.hasSuffix ".elm" path ||
+        pkgs.lib.hasSuffix "elm-package.json" path ||
+        pkgs.lib.hasSuffix "index.html" path
+      );
+  };
   srcdir = ".";
-  targets = [];
+  targets = [ "Main" ];
 }
 
