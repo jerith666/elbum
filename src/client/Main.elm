@@ -622,7 +622,7 @@ getUrl url =
             (Http.request
                 { method = "GET"
                 , headers = []
-                , url = Debug.log "getUrl" url
+                , url = Debug.log "getUrl" <| encodePath url
                 , body = emptyBody
                 , expect = expectStringResponse <| handleGetResponse url
                 , timeout = Nothing

@@ -6,6 +6,7 @@ import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
+import ListUtils exposing (..)
 
 
 renderPresized : Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Style -> List (Html.Styled.Attribute msg) -> Maybe msg -> Html msg
@@ -48,7 +49,7 @@ render idefault is s otherAttrs msg =
 
         baseAttrs =
             [ styles s
-            , Html.Styled.Attributes.src idefault.url
+            , Html.Styled.Attributes.src <| encodePath idefault.url
             , Html.Styled.Attributes.width idefault.x
             , Html.Styled.Attributes.height idefault.y
             ]
@@ -73,4 +74,4 @@ encodeSrcSet is =
 
 encodeSrc : ImgSrc -> String
 encodeSrc is =
-    is.url ++ " " ++ toString is.x ++ "w"
+    encodePath is.url ++ " " ++ toString is.x ++ "w"

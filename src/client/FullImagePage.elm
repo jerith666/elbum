@@ -7,6 +7,7 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
+import ListUtils exposing (..)
 import ProgressiveImage exposing (..)
 import TouchEvents exposing (..)
 import WinSize exposing (..)
@@ -74,7 +75,7 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel flags =
                     [ Html.Styled.text "x" ]
                , a
                     [ styles <| navBoxStyles ++ [ bottom (px 5), right (px 5), textDecoration none ]
-                    , href fullImagePageModel.album.imageFirst.srcSetFirst.url
+                    , href <| encodePath fullImagePageModel.album.imageFirst.srcSetFirst.url
                     , Html.Styled.Attributes.target "_blank"
                     ]
                     [ Html.Styled.text "⤓" ]

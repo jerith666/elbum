@@ -1,7 +1,15 @@
-module ListUtils exposing (dictWithValues, dropThrough, mapI, shiftLeft, shiftRight, shiftToBeginning)
+module ListUtils exposing (dictWithValues, dropThrough, encodePath, mapI, shiftLeft, shiftRight, shiftToBeginning)
 
 import Dict exposing (..)
+import Http exposing (encodeUri)
 import Set exposing (..)
+
+
+{-| splits the path on "/"s, calls encodeUri on each path segment, then reassembles it.
+-}
+encodePath : String -> String
+encodePath =
+    String.split "/" >> List.map encodeUri >> String.join "/"
 
 
 dictWithValues : Set comparable -> a -> Dict comparable a
