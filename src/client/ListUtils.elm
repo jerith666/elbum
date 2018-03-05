@@ -21,12 +21,9 @@ shiftToBeginning prevImgs img restImgs =
             ( prev1, prevRest ++ (img :: restImgs) )
 
 
-
-{- return a tuple with the new middle element taken from the beginning of the right hand list,
-   the old middle element appended to the left hand list, if possible, otherwise do nothing
+{-| return a tuple with the new middle element taken from the beginning of the right hand list,
+the old middle element appended to the left hand list, if possible, otherwise do nothing
 -}
-
-
 shiftRight : List a -> a -> List a -> ( List a, a, List a )
 shiftRight xLefts x xRights =
     case xRights of
@@ -37,12 +34,9 @@ shiftRight xLefts x xRights =
             ( xLefts ++ [ x ], xRight, xRightRights )
 
 
-
-{- return a tuple with the new middle element taken from the end of the left hand list,
-   the old middle element prepended to the right hand list, if possible, otherwise do nothing
+{-| return a tuple with the new middle element taken from the end of the left hand list,
+the old middle element prepended to the right hand list, if possible, otherwise do nothing
 -}
-
-
 shiftLeft : List a -> a -> List a -> ( List a, a, List a )
 shiftLeft xLefts x xRights =
     case xLefts of
@@ -60,12 +54,9 @@ shiftLeft xLefts x xRights =
             ( xLeft :: xLRss, xss, xRss )
 
 
-
-{- drop elements of the given list until the given element is found.
-   if that element is not present, return the entire list.
+{-| drop elements of the given list until the given element is found.
+if that element is not present, return the entire list.
 -}
-
-
 dropThrough : List a -> a -> List a
 dropThrough elems elem =
     case elems of
@@ -81,10 +72,8 @@ dropThrough elems elem =
                 elems
 
 
-
-{- apply the given map function to only the ith element of the given list -}
-
-
+{-| apply the given map function to only the ith element of the given list
+-}
 mapI : Int -> (a -> a) -> List a -> List a
 mapI i map l =
     let
