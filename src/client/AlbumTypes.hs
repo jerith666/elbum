@@ -1,1 +1,1 @@
-../shared/AlbumTypes.hs
+../generator/AlbumTypes.hs

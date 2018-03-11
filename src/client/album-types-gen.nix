@@ -13,7 +13,7 @@ let
 in
 stdenv.mkDerivation {
   name = "Album.elm";
-  src = ../shared/AlbumTypes.hs;
+  src = ../generator/AlbumTypes.hs;
   gen = ./album-types-gen.hs;
 
   buildInputs = [ ghc ];
