@@ -1,0 +1,13 @@
+#!@bash@/bin/bash
+
+set -o errexit
+set -o nounset
+
+@generator@/bin/elbum "$@";
+
+dest=$2;
+cd $dest;
+
+ln -s @client@/index.html;
+ln -s @client@/elbum.js;
+
