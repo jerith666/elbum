@@ -1,5 +1,6 @@
 import System.Environment
 import System.IO
+import System.Exit
 
 import System.Directory
 import System.FilePath
@@ -37,7 +38,9 @@ main = do
        src:dest:[] -> writeAlbumOrList src dest
        _ -> usage
 
-usage = putStrLn "usage: gen-album <src> <dest>"
+usage = do
+  putStrLn "usage: gen-album <src> <dest>"
+  exitWith $ ExitFailure 1
 
 --
 -- configuration
@@ -59,6 +62,7 @@ writeAlbumOrList src dest = do
     Left err -> do
       putStrLn ""
       putStrLn err
+      exitWith $ ExitFailure 1
     Right albumOrList ->
       C.writeFile (dest </> "album.json") $ encode albumOrList
 
