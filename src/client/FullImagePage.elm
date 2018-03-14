@@ -119,7 +119,7 @@ viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
         , Html.Styled.Attributes.fromUnstyled <| onTouchEnd touchMsgs.touchPrevNextMsg
         , onClick clickMsg
         ]
-        [ Html.Styled.map wrapProgMsg <| ProgressiveImage.view fullImagePageModel.progImgModel ]
+        [ Html.Styled.map wrapProgMsg <| ProgressiveImage.view <| withWidthHeight w h fullImagePageModel.progImgModel ]
 
 
 fitImage : ImgSrc -> Int -> Int -> ( Int, Int )

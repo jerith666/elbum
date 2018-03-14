@@ -1,4 +1,4 @@
-module ProgressiveImage exposing (ProgressiveImageData, ProgressiveImageModel, ProgressiveImageMsg, init, subscriptions, update, updateCmd, view)
+module ProgressiveImage exposing (ProgressiveImageData, ProgressiveImageModel, ProgressiveImageMsg, init, subscriptions, update, updateCmd, view, withWidthHeight)
 
 import Album exposing (ImgSrc)
 import AlbumStyles exposing (..)
@@ -105,6 +105,11 @@ init data =
                     ProgImgModel data (TryingCached [] c1 cOthers) animState
     in
     ( model, updateCmd model )
+
+
+withWidthHeight : Int -> Int -> ProgressiveImageModel -> ProgressiveImageModel
+withWidthHeight w h (ProgImgModel data status animState) =
+    ProgImgModel { data | width = w, height = h } status animState
 
 
 update : ProgressiveImageMsg -> ProgressiveImageModel -> ( ProgressiveImageModel, Cmd ProgressiveImageMsg )
