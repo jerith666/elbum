@@ -1,0 +1,3 @@
+<Files ~ "^(album\.json|elbum\.js|home|index\.html)$">
+Header append Cache-Control "no-cache, public"
+</Files>

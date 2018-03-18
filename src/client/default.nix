@@ -52,6 +52,7 @@ let
       installPhase = ''
         mv -iv $out/Main.js $out/elbum.js;
         cp -iv index.html $out;
+        cp -iv .htaccess $out;
       '';
     };
 in mkDerivation {
@@ -63,7 +64,8 @@ in mkDerivation {
       type == "regular" && (
         pkgs.lib.hasSuffix ".elm" path ||
         pkgs.lib.hasSuffix "elm-package.json" path ||
-        pkgs.lib.hasSuffix "index.html" path
+        pkgs.lib.hasSuffix "index.html" path ||
+        pkgs.lib.hasSuffix ".htaccess" path
       );
   };
   srcdir = ".";
