@@ -281,7 +281,7 @@ procImage s d (f,i) = do
                                  , srcSetRest = tail srcSet
                                  }
         else do
-          return $ Left $ "image " ++ f ++ " has intristic w*h of " ++ (show w) ++ "*" ++ (show h) ++ " but metadata w*h of " ++ (show ww) ++ "*" ++ (show hh) ++ "; to repair, load in The Gimp, then choose file -> overwrite"
+          return $ Left $ "image " ++ f ++ " has intrinsic w*h of " ++ (show w) ++ "*" ++ (show h) ++ " but metadata w*h of " ++ (show ww) ++ "*" ++ (show hh) ++ "; to repair, load in The Gimp, then choose file -> overwrite"
 
 procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
 procSrcSet s d f i w h = do
