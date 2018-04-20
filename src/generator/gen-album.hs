@@ -126,7 +126,7 @@ genNode srcRoot src dest autoThumb dirs = do
                                          , childRest = cRest
                                          }
         errs -> do
-          return $ Left $ head errs
+          return $ Left $ concat $ intersperse "\n" errs
 
 getChildImages :: [AlbumOrList] -> [Image]
 getChildImages albumOrLists =
