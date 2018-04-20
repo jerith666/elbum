@@ -4,6 +4,7 @@ import System.Exit
 
 import System.Directory
 import System.FilePath
+import System.Posix.Files
 
 import Data.Either
 import Data.List
@@ -320,6 +321,7 @@ raw s d fpath w h = do
     let (dest,f) = destForRaw s d fpath
     createDirectoryIfMissing True $ takeDirectory dest
     copyFile fpath dest
+    setFileMode dest $ foldl unionFileModes ownerReadMode [groupReadMode, otherReadMode]
     putStrSameLn $ "copied " ++ f
     return ImgSrc { url = makeRelative d dest
                   , x = w
