@@ -64,6 +64,7 @@ rootDiv flags extraStyles =
             , Css.width (vw 100)
             , overflowX Css.hidden
             , overflowY auto
+            , Css.property "-webkit-overflow-scrolling" "touch"
             , backgroundColor black
             ]
                 ++ extraStyles
