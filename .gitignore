@@ -3,6 +3,7 @@
 *.hi
 elm-stuff
 gen-album
+check-pics
 Album.elm
 album.json
 elbum.js
