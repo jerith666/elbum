@@ -141,10 +141,10 @@
   };
   "rtfeldman/elm-css" = {
     src = fetchzip {
-      url = "https://github.com/rtfeldman/elm-css/archive/13.1.1.zip";
-      sha256 = "1w7bcdqvwmzjajk7b9jassipkaxpdz4b04g4hyf5c9hknl47qf1i";
+      url = "https://github.com/rtfeldman/elm-css/archive/14.0.0.zip";
+      sha256 = "0di4ypcd0rn3d34932drfl3fhp4bkk1kgrhx52vqjskxmkwsip4y";
     };
-    version = "13.1.1";
+    version = "14.0.0";
   };
   "rtfeldman/elm-css-util" = {
     src = fetchzip {

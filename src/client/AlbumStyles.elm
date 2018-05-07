@@ -1,9 +1,11 @@
 module AlbumStyles exposing (..)
 
 import Css exposing (..)
+import Css.Transitions exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events exposing (..)
+import Time exposing (..)
 
 
 black : Color
@@ -65,7 +67,7 @@ rootDiv flags extraStyles =
             , overflowX Css.hidden
             , overflowY auto
             , Css.property "-webkit-overflow-scrolling" "touch"
-            , backgroundColor black
+            , Css.backgroundColor black
             ]
                 ++ extraStyles
         , Html.Styled.Attributes.id rootDivId
@@ -85,16 +87,16 @@ opacityStyles : ImgLoadState -> List Style
 opacityStyles imgLoadedState =
     case imgLoadedState of
         Requested ->
-            [ opacity <| num 0 ]
+            [ Css.opacity <| num 0 ]
 
         Partial int ->
-            [ opacity <| num 0 ]
+            [ Css.opacity <| num 0 ]
 
         Completed ->
             opacityAnimatedTo 1
 
         Shown ->
-            [ opacity <| num 1 ]
+            [ Css.opacity <| num 1 ]
 
         Disappearing ->
             opacityAnimatedTo 0
@@ -107,11 +109,13 @@ opacityDuration =
 
 opacityAnimatedTo : Float -> List Style
 opacityAnimatedTo opasity =
-    [ opacity (num opasity)
-    , Css.property "transition-property" "opacity"
-    , Css.property "transition-duration" <| toString opacityDuration ++ "s"
-    , Css.property "transition-timing-function" "ease-in-out"
-    , Css.property "transition-delay" "0s"
+    [ Css.opacity (num opasity)
+    , transition
+        [ Css.Transitions.opacity3
+            (opacityDuration * Time.second)
+            0
+            easeInOut
+        ]
     ]
 
 
@@ -125,11 +129,11 @@ navBoxStyles =
     [ position absolute
     , Css.height (px navEltSize)
     , Css.width (px navEltSize)
-    , lineHeight (px navEltSize)
+    , Css.lineHeight (px navEltSize)
     , textAlign center
-    , color white
-    , backgroundColor (rgba 40 40 40 0.5)
-    , borderRadius (px <| navEltSize / 2)
+    , Css.color white
+    , Css.backgroundColor (rgba 40 40 40 0.5)
+    , Css.borderRadius (px <| navEltSize / 2)
     , cursor pointer
     ]
 
