@@ -48,6 +48,9 @@ view imgChosenMsgr showList thumbPageModel flags =
             [ styles
                 [ displayFlex
                 , flexDirection row
+
+                -- ensure the main body of the page doesn't get squished when the images overflow the viewport
+                , flexShrink <| num 0
                 ]
             ]
             (viewThumbs imgChosenMsgr thumbPageModel)
