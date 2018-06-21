@@ -1,4 +1,4 @@
-module ListUtils exposing (dictWithValues, dropThrough, encodePath, mapI, shiftLeft, shiftRight, shiftToBeginning)
+module ListUtils exposing (dictWithValues, dropThrough, dropThroughPred, dropWhileAndOne, encodePath, mapI, shiftLeft, shiftRight, shiftToBeginning)
 
 import Dict exposing (..)
 import Http exposing (encodeUri)
@@ -62,20 +62,48 @@ shiftLeft xLefts x xRights =
             ( xLeft :: xLRss, xss, xRss )
 
 
+{-| drop elements of the given list that satisfy the given predicate, until one
+is found that does not; then drop that one as well, and return the entire
+remaining list. if no elements satisfy the predicate, return the entire list.
+-}
+dropWhileAndOne : (a -> Bool) -> List a -> List a
+dropWhileAndOne predicate elems =
+    if List.any predicate elems then
+        case elems of
+            [] ->
+                []
+
+            e :: es ->
+                if predicate e then
+                    dropWhileAndOne predicate es
+                else
+                    Maybe.withDefault [] <| List.tail <| elems
+    else
+        elems
+
+
 {-| drop elements of the given list until the given element is found.
 if that element is not present, return the entire list.
 -}
-dropThrough : List a -> a -> List a
-dropThrough elems elem =
+dropThrough : a -> List a -> List a
+dropThrough elem elems =
+    dropThroughPred (\e -> e == elem) elems
+
+
+{-| drop elements of the given list until the given element is found.
+if that element is not present, return the entire list.
+-}
+dropThroughPred : (a -> Bool) -> List a -> List a
+dropThroughPred pred elems =
     case elems of
         [] ->
             []
 
         e :: es ->
-            if elem == e then
+            if pred e then
                 es
-            else if List.member elem elems then
-                dropThrough es elem
+            else if List.any pred elems then
+                dropThroughPred pred es
             else
                 elems
 
