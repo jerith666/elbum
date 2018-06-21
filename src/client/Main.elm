@@ -380,10 +380,11 @@ pathsToCmd model mPaths =
 
                 LoadedList (AlbumListPage albumList winSize parents) _ _ _ ->
                     --TODO maybe don't always prepend aTN here, only if at root?
-                    pathsToCmdImpl winSize (albumList :: parents) paths
+                    --TODO I think it's okay to drop the scroll positions here, should only happen at initial load (?)
+                    pathsToCmdImpl winSize (albumList :: List.map Tuple.first parents) paths
 
                 LoadedAlbum albumPage parents _ _ _ ->
-                    pathsToCmdImpl (pageSize albumPage) parents paths
+                    pathsToCmdImpl (pageSize albumPage) (List.map Tuple.first parents) paths
 
 
 pathsToCmdImpl : WinSize -> List AlbumList -> List String -> Cmd AlbumBootstrapMsg
@@ -748,11 +749,14 @@ view albumBootstrap =
                 AlbumPage.view
                     albumPage
                     (\list ->
-                        ViewList <|
-                            AlbumListPage
+                        ViewList
+                            (AlbumListPage
                                 list
                                 (pageSize albumPage)
                                 (dropThroughPred (\( p, _ ) -> p == list) parents)
+                            )
+                            --TODO scroll
+                            Nothing
                     )
                     PageMsg
                     (List.map Tuple.first parents)
@@ -767,19 +771,22 @@ view albumBootstrap =
                         parents
                     )
                     (\albumListChild ->
-                        ViewList <|
-                            AlbumListPage albumListChild winSize <|
-                                dropThrough
-                                    (albumList
+                        ViewList
+                            (AlbumListPage albumListChild winSize <|
+                                dropThroughPred
+                                    (\( p, _ ) -> p == albumListChild)
+                                    (( albumList, {- TODO need scroll info here? -} Nothing )
                                         :: parents
                                     )
-                                    albumListChild
+                            )
+                            --TODO scroll
+                            Nothing
                     )
                     (\album ->
                         ViewAlbum
                             (Thumbs album winSize Set.empty Set.empty)
                         <|
-                            albumList
+                            ( albumList, {- TODO add scroll info here -} Nothing )
                                 :: parents
                     )
                     flags
