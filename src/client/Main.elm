@@ -397,7 +397,7 @@ pathsToCmdImpl size parents paths =
             Cmd.none
 
         Just root ->
-            navFrom size root [] paths <| cmdOf <| ViewList <| AlbumListPage root size []
+            navFrom size root [] paths <| cmdOf <| ViewList (AlbumListPage root size []) Nothing
 
 
 navFrom : WinSize -> AlbumList -> List AlbumList -> List String -> Cmd AlbumBootstrapMsg -> Cmd AlbumBootstrapMsg
@@ -424,7 +424,7 @@ navFrom size root parents paths defcmd =
                 Just pChild ->
                     case pChild of
                         List albumList ->
-                            navFrom size albumList newParents ps <| cmdOf <| ViewList <| AlbumListPage albumList size newParents
+                            navFrom size albumList newParents ps <| cmdOf <| ViewList (AlbumListPage albumList size <| List.map (\p -> ( p, Nothing )) newParents) Nothing
 
                         Leaf album ->
                             navForAlbum size album ps newParents
@@ -432,9 +432,13 @@ navFrom size root parents paths defcmd =
 
 navForAlbum : WinSize -> Album -> List String -> List AlbumList -> Cmd AlbumBootstrapMsg
 navForAlbum size album ps newParents =
+    let
+        parentsNoScroll =
+            List.map (\p -> ( p, Nothing )) newParents
+    in
     case ps of
         [] ->
-            cmdOf <| ViewAlbum (Thumbs album size Set.empty Set.empty) newParents
+            cmdOf <| ViewAlbum (Thumbs album size Set.empty Set.empty) parentsNoScroll
 
         i :: _ ->
             case findImg [] album i of
@@ -450,7 +454,7 @@ navForAlbum size album ps newParents =
                             progInit size nAlbum.imageFirst w h
                     in
                     Cmd.batch
-                        [ cmdOf <| ViewAlbum (FullImage prevs nAlbum progModel size Nothing Nothing) newParents
+                        [ cmdOf <| ViewAlbum (FullImage prevs nAlbum progModel size Nothing Nothing) parentsNoScroll
                         , Cmd.map PageMsg <| Cmd.map FullMsg progCmd
                         ]
 
@@ -499,7 +503,7 @@ locFor model =
         LoadedAlbum albumPage parents _ _ _ ->
             Just
                 { entry = NewEntry
-                , url = hashForAlbum model albumPage parents
+                , url = hashForAlbum model albumPage <| List.map Tuple.first parents
                 }
 
         LoadedList albumListPage _ _ _ ->
@@ -517,7 +521,7 @@ hashForList model (AlbumListPage albumList _ parents) =
     if List.isEmpty parents then
         hashFromAlbumPath model [ "" ] []
     else
-        hashFromAlbumPath model [ albumList.listTitle ] parents
+        hashFromAlbumPath model [ albumList.listTitle ] <| List.map Tuple.first parents
 
 
 hashForAlbum : AlbumBootstrap -> AlbumPage -> List AlbumList -> String
@@ -685,8 +689,8 @@ subscriptions model =
                         [] ->
                             NoBootstrap
 
-                        parent :: grandParents ->
-                            ViewList <| AlbumListPage parent (pageSize albumPage) grandParents
+                        ( parent, scroll ) :: grandParents ->
+                            ViewList (AlbumListPage parent (pageSize albumPage) grandParents) scroll
             in
             Sub.batch
                 [ AlbumPage.subscriptions albumPage PageMsg showParent
@@ -698,11 +702,11 @@ subscriptions model =
                 [] ->
                     resizes Resize
 
-                parent :: grandParents ->
+                ( parent, scroll ) :: grandParents ->
                     let
                         upParent =
                             onEscape
-                                (ViewList <| AlbumListPage parent winSize grandParents)
+                                (ViewList (AlbumListPage parent winSize grandParents) scroll)
                                 NoBootstrap
                     in
                     Sub.batch [ upParent, resizes Resize ]
@@ -748,10 +752,10 @@ view albumBootstrap =
                             AlbumListPage
                                 list
                                 (pageSize albumPage)
-                                (dropThrough parents list)
+                                (dropThroughPred (\( p, _ ) -> p == list) parents)
                     )
                     PageMsg
-                    parents
+                    (List.map Tuple.first parents)
                     flags
 
         LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls ->
