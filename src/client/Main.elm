@@ -33,7 +33,7 @@ type AlbumBootstrap
     | Loading WinSize AlbumBootstrapFlags (Maybe String) (Maybe (List String))
     | LoadError AlbumBootstrapFlags Http.Error
     | LoadedList AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState)
-    | LoadedAlbum AlbumPage (List AlbumList) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState)
+    | LoadedAlbum AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState)
 
 
 type UrlLoadState
@@ -51,8 +51,8 @@ type AlbumBootstrapMsg
     | YesAlbum AlbumOrList
     | NoAlbum Http.Error
     | PageMsg AlbumPage.AlbumPageMsg
-    | ViewList AlbumListPage
-    | ViewAlbum AlbumPage (List AlbumList)
+    | ViewList AlbumListPage (Maybe Float)
+    | ViewAlbum AlbumPage (List ( AlbumList, Maybe Float ))
     | ImageLoaded String
     | ImageReadyToDisplay String
     | ImageFailed String Http.Error

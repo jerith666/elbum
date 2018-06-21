@@ -11,7 +11,7 @@ import WinSize exposing (..)
 
 
 type AlbumListPage
-    = AlbumListPage AlbumList WinSize (List AlbumList)
+    = AlbumListPage AlbumList WinSize (List ( AlbumList, Maybe Float ))
 
 
 view : AlbumListPage -> (AlbumList -> msg) -> (Album -> msg) -> AlbumBootstrapFlags -> Html msg
