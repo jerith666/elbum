@@ -1,4 +1,4 @@
-module ListUtils exposing (dictWithValues, dropThrough, encodePath, mapI, shiftLeft, shiftRight, shiftToBeginning)
+module ListUtils exposing (dictWithValues, dropThrough, dropThroughPred, encodePath, mapI, shiftLeft, shiftRight, shiftToBeginning)
 
 import Dict exposing (..)
 import Http exposing (encodeUri)
@@ -65,17 +65,25 @@ shiftLeft xLefts x xRights =
 {-| drop elements of the given list until the given element is found.
 if that element is not present, return the entire list.
 -}
-dropThrough : List a -> a -> List a
-dropThrough elems elem =
+dropThrough : a -> List a -> List a
+dropThrough elem elems =
+    dropThroughPred (\e -> e == elem) elems
+
+
+{-| drop elements of the given list until the given element is found.
+if that element is not present, return the entire list.
+-}
+dropThroughPred : (a -> Bool) -> List a -> List a
+dropThroughPred pred elems =
     case elems of
         [] ->
             []
 
         e :: es ->
-            if elem == e then
+            if pred e then
                 es
-            else if List.member elem elems then
-                dropThrough es elem
+            else if List.any pred elems then
+                dropThroughPred pred es
             else
                 elems
 

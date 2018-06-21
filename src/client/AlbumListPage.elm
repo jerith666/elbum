@@ -11,7 +11,7 @@ import WinSize exposing (..)
 
 
 type AlbumListPage
-    = AlbumListPage AlbumList WinSize (List AlbumList)
+    = AlbumListPage AlbumList WinSize (List ( AlbumList, Maybe Float ))
 
 
 view : AlbumListPage -> (AlbumList -> msg) -> (Album -> msg) -> AlbumBootstrapFlags -> Html msg
@@ -21,7 +21,7 @@ view (AlbumListPage albumList winSize parents) viewList viewAlbum flags =
         column
         []
     <|
-        [ albumTitle albumList.listTitle parents viewList [] [] ]
+        [ albumTitle albumList.listTitle (List.map Tuple.first parents) viewList [] [] ]
             ++ (List.reverse <|
                     [ viewAlbumOrList viewList viewAlbum albumList.childFirst ]
                         ++ List.map (viewAlbumOrList viewList viewAlbum) albumList.childRest
