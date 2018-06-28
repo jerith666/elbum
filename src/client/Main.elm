@@ -34,6 +34,7 @@ type AlbumBootstrap
     | LoadError AlbumBootstrapFlags Http.Error
     | LoadedList AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState)
     | LoadedAlbum AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState)
+    | GettingScrollBootstrap AlbumBootstrap (Float -> AlbumBootstrap -> ( AlbumBootstrap, AlbumBootstrapMsg ))
 
 
 type UrlLoadState
@@ -56,6 +57,7 @@ type AlbumBootstrapMsg
     | ImageLoaded String
     | ImageReadyToDisplay String
     | ImageFailed String Http.Error
+    | GotScroll Float
     | ScrollSucceeded
     | ScrollFailed Id
     | Nav (List String)
@@ -103,6 +105,13 @@ update msg model =
 
                 LoadError _ _ ->
                     ( model, Cmd.none )
+
+                GettingScrollBootstrap prevModel scrollUpdater ->
+                    let
+                        ( newPrevModel, _ ) =
+                            update msg prevModel
+                    in
+                    ( GettingScrollBootstrap newPrevModel scrollUpdater, Cmd.none )
 
                 LoadedAlbum albumPage parents flags home pendingUrls ->
                     case albumPage of
@@ -266,6 +275,18 @@ update msg model =
                 ]
             )
 
+        GotScroll scroll ->
+            case model of
+                GettingScrollBootstrap prevModel scrollUpdater ->
+                    let
+                        ( model, msg ) =
+                            scrollUpdater scroll prevModel
+                    in
+                    ( model, cmdOf msg )
+
+                _ ->
+                    ( model, Cmd.none )
+
         ScrollSucceeded ->
             ( model, Cmd.none )
 
@@ -315,6 +336,9 @@ flagsOf model =
         LoadError flags _ ->
             flags
 
+        GettingScrollBootstrap prevModel _ ->
+            flagsOf prevModel
+
         LoadedList _ flags _ _ ->
             flags
 
@@ -337,6 +361,9 @@ homeOf model =
         LoadError _ _ ->
             Nothing
 
+        GettingScrollBootstrap prevModel _ ->
+            homeOf prevModel
+
         LoadedList _ _ home _ ->
             home
 
@@ -357,6 +384,9 @@ withPaths model paths =
             Loading winSize flags home <| Just paths
 
         LoadError _ _ ->
+            model
+
+        GettingScrollBootstrap _ _ ->
             model
 
         LoadedList _ _ _ _ ->
@@ -385,6 +415,9 @@ pathsToCmd model mPaths =
 
                 LoadError _ _ ->
                     Debug.log "pathsToCmd LoadError, ignore" Cmd.none
+
+                GettingScrollBootstrap _ _ ->
+                    Debug.log "pathsToCmd GettingScrollBootstrap, ignore" Cmd.none
 
                 LoadedList (AlbumListPage albumList winSize parents) _ _ _ ->
                     --TODO maybe don't always prepend aTN here, only if at root?
@@ -751,6 +784,9 @@ view albumBootstrap =
 
         LoadError _ e ->
             text ("Error Loading Album: " ++ toString e)
+
+        GettingScrollBootstrap prevModel _ ->
+            view prevModel
 
         LoadedAlbum albumPage parents flags home pendingUrls ->
             withHomeLink home flags <|
