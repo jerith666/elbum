@@ -228,10 +228,18 @@ update msg model =
         ImageFailed url err ->
             updateImageResult model url <| Failed err
 
-        ViewList albumListPage ->
+        ViewList albumListPage maybeScroll ->
             let
                 newModel =
                     LoadedList albumListPage (flagsOf model) (homeOf model) Dict.empty
+
+                scrollCmd =
+                    case maybeScroll of
+                        Just pos ->
+                            Task.attempt (\_ -> NoBootstrap) <| toY rootDivId pos
+
+                        Nothing ->
+                            scrollToTop
 
                 title =
                     case albumListPage of
@@ -239,7 +247,7 @@ update msg model =
                             albumList.listTitle
             in
             ( newModel
-            , Cmd.batch [ scrollToTop, setTitle title ]
+            , Cmd.batch [ scrollCmd, setTitle title ]
             )
 
         ViewAlbum albumPage parents ->
