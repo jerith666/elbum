@@ -798,7 +798,13 @@ view albumBootstrap =
             withHomeLink home flags <|
                 AlbumPage.view
                     albumPage
-                    (viewList (pageSize albumPage) (\_ -> parents))
+                    (viewList
+                        albumBootstrap
+                        (pageSize albumPage)
+                        -- currently scrolled thing is the album;
+                        -- don't want to save that anywhere in the list of parents
+                        (\_ -> parents)
+                    )
                     PageMsg
                     (List.map Tuple.first parents)
                     flags
@@ -811,7 +817,11 @@ view albumBootstrap =
                         winSize
                         parents
                     )
-                    (viewList2 albumBootstrap winSize (\maybeScroll -> ( albumList, maybeScroll ) :: parents))
+                    (viewList
+                        albumBootstrap
+                        winSize
+                        (\maybeScroll -> ( albumList, maybeScroll ) :: parents)
+                    )
                     (\album ->
                         GetScroll albumBootstrap <|
                             \maybeScroll ->
@@ -827,20 +837,8 @@ view albumBootstrap =
                     flags
 
 
-viewList : WinSize -> (Maybe Float -> List ( AlbumList, Maybe Float )) -> AlbumList -> AlbumBootstrapMsg
-viewList winSize makeParents list =
-    ViewList
-        (AlbumListPage
-            list
-            winSize
-            (dropThroughPred (\( p, _ ) -> p == list) <| makeParents Nothing)
-        )
-        --TODO get scroll from elt of parents matching 'list'
-        Nothing
-
-
-viewList2 : AlbumBootstrap -> WinSize -> (Maybe Float -> List ( AlbumList, Maybe Float )) -> AlbumList -> AlbumBootstrapMsg
-viewList2 oldModel winSize makeParents list =
+viewList : AlbumBootstrap -> WinSize -> (Maybe Float -> List ( AlbumList, Maybe Float )) -> AlbumList -> AlbumBootstrapMsg
+viewList oldModel winSize makeParents list =
     GetScroll oldModel <|
         \maybeScroll ->
             \oldModel2 ->
@@ -852,9 +850,18 @@ viewList2 oldModel winSize makeParents list =
                             (makeParents maybeScroll)
                     )
                     (if List.member list (List.map Tuple.first <| makeParents maybeScroll) then
-                        maybeScroll
+                        --we're navigating up to a parent
+                        --look up and use saved scroll position of that parent
+                        case List.head <| List.filter (\e -> list == Tuple.first e) <| makeParents maybeScroll of
+                            Just p ->
+                                Tuple.second p
+
+                            Nothing ->
+                                Nothing
                      else
-                        --no scroll restoration when navigating down the tree
+                        --we're navigating down to a child; since we don't save
+                        --scroll positions of children, don't declare an explicit
+                        --target scroll position
                         Nothing
                     )
                 )
