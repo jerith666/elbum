@@ -798,16 +798,7 @@ view albumBootstrap =
             withHomeLink home flags <|
                 AlbumPage.view
                     albumPage
-                    (\list ->
-                        ViewList
-                            (AlbumListPage
-                                list
-                                (pageSize albumPage)
-                                (dropThroughPred (\( p, _ ) -> p == list) parents)
-                            )
-                            --TODO get scroll from elt of parents matching 'list'
-                            Nothing
-                    )
+                    (viewList (pageSize albumPage) (\_ -> parents))
                     PageMsg
                     (List.map Tuple.first parents)
                     flags
@@ -820,27 +811,7 @@ view albumBootstrap =
                         winSize
                         parents
                     )
-                    (\albumListChild ->
-                        GetScroll albumBootstrap <|
-                            \maybeScroll ->
-                                \oldModel ->
-                                    ( oldModel
-                                    , ViewList
-                                        (AlbumListPage albumListChild winSize <|
-                                            dropThroughPred
-                                                (\( p, _ ) -> p == albumListChild)
-                                                (( albumList, maybeScroll )
-                                                    :: parents
-                                                )
-                                        )
-                                        (if List.member albumListChild (List.map Tuple.first <| ( albumList, Nothing ) :: parents) then
-                                            maybeScroll
-                                         else
-                                            --no scroll restoration when navigating down the tree
-                                            Nothing
-                                        )
-                                    )
-                    )
+                    (viewList2 albumBootstrap winSize (\maybeScroll -> ( albumList, maybeScroll ) :: parents))
                     (\album ->
                         GetScroll albumBootstrap <|
                             \maybeScroll ->
@@ -854,6 +825,39 @@ view albumBootstrap =
                                     )
                     )
                     flags
+
+
+viewList : WinSize -> (Maybe Float -> List ( AlbumList, Maybe Float )) -> AlbumList -> AlbumBootstrapMsg
+viewList winSize makeParents list =
+    ViewList
+        (AlbumListPage
+            list
+            winSize
+            (dropThroughPred (\( p, _ ) -> p == list) <| makeParents Nothing)
+        )
+        --TODO get scroll from elt of parents matching 'list'
+        Nothing
+
+
+viewList2 : AlbumBootstrap -> WinSize -> (Maybe Float -> List ( AlbumList, Maybe Float )) -> AlbumList -> AlbumBootstrapMsg
+viewList2 oldModel winSize makeParents list =
+    GetScroll oldModel <|
+        \maybeScroll ->
+            \oldModel2 ->
+                ( oldModel2
+                , ViewList
+                    (AlbumListPage list winSize <|
+                        dropThroughPred
+                            (\( p, _ ) -> p == list)
+                            (makeParents maybeScroll)
+                    )
+                    (if List.member list (List.map Tuple.first <| makeParents maybeScroll) then
+                        maybeScroll
+                     else
+                        --no scroll restoration when navigating down the tree
+                        Nothing
+                    )
+                )
 
 
 withHomeLink : Maybe String -> AlbumBootstrapFlags -> Html AlbumBootstrapMsg -> Html AlbumBootstrapMsg
