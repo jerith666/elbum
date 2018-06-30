@@ -833,8 +833,12 @@ view albumBootstrap =
                                                     :: parents
                                                 )
                                         )
-                                        --no scroll restoration when navigating down the tree
-                                        Nothing
+                                        (if List.member albumListChild (List.map Tuple.first <| ( albumList, Nothing ) :: parents) then
+                                            maybeScroll
+                                         else
+                                            --no scroll restoration when navigating down the tree
+                                            Nothing
+                                        )
                                     )
                     )
                     (\album ->
