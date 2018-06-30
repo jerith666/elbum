@@ -838,11 +838,16 @@ view albumBootstrap =
                                     )
                     )
                     (\album ->
-                        ViewAlbum
-                            (Thumbs album winSize Set.empty Set.empty)
-                        <|
-                            ( albumList, {- TODO add scroll info here -} Nothing )
-                                :: parents
+                        GetScroll albumBootstrap <|
+                            \maybeScroll ->
+                                \oldModel ->
+                                    ( oldModel
+                                    , ViewAlbum
+                                        (Thumbs album winSize Set.empty Set.empty)
+                                      <|
+                                        ( albumList, maybeScroll )
+                                            :: parents
+                                    )
                     )
                     flags
 
