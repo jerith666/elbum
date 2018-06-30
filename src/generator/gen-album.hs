@@ -89,13 +89,15 @@ genAlbumOrList srcRoot src dest autoThumb = do
               return $ Left $ err
             Right a ->
               return $ Right $ Leaf a
-        else do
+        else if length subdirs > 0 then do
           en <- genNode srcRoot src dest autoThumb subdirs
           case en of
             Left err ->
               return $ Left $ err
             Right n ->
               return $ Right $ List n
+        else do
+          return $ Left $ "no images or subdirs in " ++ src
 
 genNode :: FilePath -> FilePath -> FilePath -> Bool -> [FilePath] -> IO (Either String AlbumList)
 genNode srcRoot src dest autoThumb dirs = do
