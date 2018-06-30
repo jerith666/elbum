@@ -34,7 +34,7 @@ type AlbumBootstrap
     | LoadError AlbumBootstrapFlags Http.Error
     | LoadedList AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState)
     | LoadedAlbum AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState)
-    | GettingScrollBootstrap AlbumBootstrap (Float -> AlbumBootstrap -> ( AlbumBootstrap, AlbumBootstrapMsg ))
+    | GettingScrollBootstrap AlbumBootstrap (Maybe Float -> AlbumBootstrap -> ( AlbumBootstrap, AlbumBootstrapMsg ))
 
 
 type UrlLoadState
@@ -57,7 +57,8 @@ type AlbumBootstrapMsg
     | ImageLoaded String
     | ImageReadyToDisplay String
     | ImageFailed String Http.Error
-    | GotScroll Float
+    | GetScroll AlbumBootstrap (Maybe Float -> AlbumBootstrap -> ( AlbumBootstrap, AlbumBootstrapMsg ))
+    | GotScroll (Maybe Float)
     | ScrollSucceeded
     | ScrollFailed Id
     | Nav (List String)
@@ -273,6 +274,11 @@ update msg model =
                 , getUrls Dict.empty urls
                 , setTitle <| titleOf albumPage
                 ]
+            )
+
+        GetScroll oldModel scrollUpdater ->
+            ( GettingScrollBootstrap oldModel scrollUpdater
+            , attempt (GotScroll << Result.toMaybe) <| y rootDivId
             )
 
         GotScroll scroll ->
@@ -799,7 +805,7 @@ view albumBootstrap =
                                 (pageSize albumPage)
                                 (dropThroughPred (\( p, _ ) -> p == list) parents)
                             )
-                            --TODO scroll
+                            --TODO get scroll from elt of parents matching 'list'
                             Nothing
                     )
                     PageMsg
@@ -815,16 +821,21 @@ view albumBootstrap =
                         parents
                     )
                     (\albumListChild ->
-                        ViewList
-                            (AlbumListPage albumListChild winSize <|
-                                dropThroughPred
-                                    (\( p, _ ) -> p == albumListChild)
-                                    (( albumList, {- TODO need scroll info here? -} Nothing )
-                                        :: parents
+                        GetScroll albumBootstrap <|
+                            \maybeScroll ->
+                                \oldModel ->
+                                    ( oldModel
+                                    , ViewList
+                                        (AlbumListPage albumListChild winSize <|
+                                            dropThroughPred
+                                                (\( p, _ ) -> p == albumListChild)
+                                                (( albumList, maybeScroll )
+                                                    :: parents
+                                                )
+                                        )
+                                        --no scroll restoration when navigating down the tree
+                                        Nothing
                                     )
-                            )
-                            --TODO scroll
-                            Nothing
                     )
                     (\album ->
                         ViewAlbum
