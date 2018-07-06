@@ -1,4 +1,4 @@
-module ThumbPage exposing (ThumbPageModel, albumTitle, colsWidth, urlsToGet, view, viewThumb)
+module ThumbPage exposing (ThumbPageModel, albumTitle, colsWidth, sizeForHeight, sizeForWidth, thumbStyles, urlsToGet, view, viewThumb)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -277,16 +277,21 @@ viewThumb width opasity extraStyles selectedMsg img =
         yScaled
         img.srcSetFirst
         img.srcSetRest
-        ([ borderRadius (px 5)
-         , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
-         , cursor pointer
-         ]
+        (thumbStyles
             ++ opacityStyles opasity
             ++ extraStyles
         )
         []
     <|
         Just selectedMsg
+
+
+thumbStyles : List Style
+thumbStyles =
+    [ borderRadius (px 5)
+    , boxShadow4 (px 1) (px 1) (px 2) (rgb 80 80 80)
+    , cursor pointer
+    ]
 
 
 stubThumb : Int -> Image -> Html msg
@@ -320,14 +325,24 @@ stubThumb width img =
 
 
 sizeForWidth : Int -> Image -> ( Int, Int )
-sizeForWidth width img =
+sizeForWidth width =
+    sizeForScaler <| \is1 -> toFloat width / toFloat is1.x
+
+
+sizeForHeight : Int -> Image -> ( Int, Int )
+sizeForHeight height =
+    sizeForScaler <| \is1 -> toFloat height / toFloat is1.y
+
+
+sizeForScaler : (ImgSrc -> Float) -> Image -> ( Int, Int )
+sizeForScaler scaler img =
     let
         is1 =
             img.srcSetFirst
     in
     let
         scale =
-            toFloat width / toFloat is1.x
+            scaler is1
 
         xScaled =
             Basics.round <| scale * toFloat is1.x

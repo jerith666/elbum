@@ -14,11 +14,11 @@ renderPresized margin w h i iRest s otherAttrs msg =
     render (smallestImageBiggerThan w h i iRest)
         --empty list disables use of srcsets; experiments indicate they don't really work
         []
-        (s
-            ++ [ Css.margin (px <| toFloat margin)
-               , Css.width (px (toFloat <| w - 2 * margin))
-               , Css.height (px (toFloat <| h - 2 * margin))
-               ]
+        ([ Css.margin (px <| toFloat margin)
+         , Css.width (px (toFloat <| w - 2 * margin))
+         , Css.height (px (toFloat <| h - 2 * margin))
+         ]
+            ++ s
         )
         otherAttrs
         msg
