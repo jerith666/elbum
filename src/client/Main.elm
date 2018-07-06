@@ -22,6 +22,7 @@ import RouteUrl exposing (..)
 import Set exposing (..)
 import Task exposing (..)
 import Time exposing (..)
+import Title exposing (..)
 import WinSize exposing (..)
 import Window exposing (..)
 
@@ -158,7 +159,10 @@ update msg model =
                                     LoadedList (AlbumListPage albumList winSize []) flags home Dict.empty
                             in
                             ( newModel
-                            , pathsToCmd newModel paths
+                            , Cmd.batch
+                                [ pathsToCmd newModel paths
+                                , setTitle albumList.listTitle
+                                ]
                             )
 
                         Leaf album ->
@@ -173,7 +177,11 @@ update msg model =
                                     LoadedAlbum albumPage [] flags home <| dictWithValues urls UrlRequested
                             in
                             ( newModel
-                            , Cmd.batch [ pathsToCmd newModel paths, getUrls Dict.empty urls ]
+                            , Cmd.batch
+                                [ pathsToCmd newModel paths
+                                , getUrls Dict.empty urls
+                                , setTitle album.title
+                                ]
                             )
 
                 _ ->
@@ -201,7 +209,11 @@ update msg model =
                             AlbumPage.urlsToGet newPage
                     in
                     ( LoadedAlbum newPage parents flags home <| Dict.union newPendingUrls <| dictWithValues urls UrlRequested
-                    , Cmd.batch [ getUrls newPendingUrls urls, Cmd.map PageMsg newPageCmd ]
+                    , Cmd.batch
+                        [ getUrls newPendingUrls urls
+                        , Cmd.map PageMsg newPageCmd
+                        , setTitle <| titleOf newPage
+                        ]
                     )
 
                 _ ->
@@ -220,8 +232,15 @@ update msg model =
             let
                 newModel =
                     LoadedList albumListPage (flagsOf model) (homeOf model) Dict.empty
+
+                title =
+                    case albumListPage of
+                        AlbumListPage albumList _ _ ->
+                            albumList.listTitle
             in
-            ( newModel, scrollToTop )
+            ( newModel
+            , Cmd.batch [ scrollToTop, setTitle title ]
+            )
 
         ViewAlbum albumPage parents ->
             let
@@ -232,7 +251,11 @@ update msg model =
                     LoadedAlbum albumPage parents (flagsOf model) (homeOf model) <| dictWithValues urls UrlRequested
             in
             ( newModel
-            , Cmd.batch [ scrollToTop, getUrls Dict.empty urls ]
+            , Cmd.batch
+                [ scrollToTop
+                , getUrls Dict.empty urls
+                , setTitle <| titleOf albumPage
+                ]
             )
 
         ScrollSucceeded ->

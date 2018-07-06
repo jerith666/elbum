@@ -12,7 +12,7 @@
   head.-->
   <head>
     <meta charset="UTF-8">
-    <title>Main</title>
+    <title>Album Loading</title>
     <style>
       html,head,body {
         padding:0; margin:0;
@@ -36,8 +36,11 @@
       testDiv.style.WebkitOverflowScrolling = 'touch';
       var scrollSupport = 'getComputedStyle' in window && window.getComputedStyle(testDiv)['-webkit-overflow-scrolling'] === 'touch';
       document.documentElement.removeChild(testDiv);
-      
-      Elm.Main.fullscreen({scrollSupport: scrollSupport});
+
+      var app = Elm.Main.fullscreen({scrollSupport: scrollSupport});
+      app.ports.setTitle.subscribe(function(title){
+        document.title = title;
+      });
     </script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), progInit, resetUrls, subscriptions, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -238,6 +238,19 @@ urlsToGet albumPage =
 
         _ ->
             empty
+
+
+titleOf : AlbumPage -> String
+titleOf albumPage =
+    case albumPage of
+        Thumbs album _ _ _ ->
+            album.title
+
+        GettingScroll album _ _ _ _ _ ->
+            album.title
+
+        FullImage _ album _ _ _ _ ->
+            album.imageFirst.altText
 
 
 view : AlbumPage -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> AlbumBootstrapFlags -> Html msg
