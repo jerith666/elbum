@@ -259,22 +259,26 @@ view albumPage showList wrapMsg parents flags =
                 flags
 
         FullImage prevImgs album progModel winSize _ dragInfo ->
-            Html.Styled.map wrapMsg <|
-                FullImagePage.view
-                    { prevMsg = Prev, nextMsg = Next, backToThumbsMsg = BackToThumbs }
-                    { touchStartMsg = TouchDragStart
-                    , touchContinueMsg = TouchDragContinue
-                    , touchPrevNextMsg = touchPrevNext dragInfo
-                    }
-                    NoUpdate
-                    FullMsg
-                    { prevImgs = prevImgs
-                    , album = album
-                    , winSize = winSize
-                    , progImgModel = progModel
-                    , offset = offsetFor dragInfo
-                    }
-                    flags
+            FullImagePage.view
+                { prevMsg = wrapMsg Prev
+                , nextMsg = wrapMsg Next
+                , backToThumbsMsg = wrapMsg BackToThumbs
+                , showList = showList
+                }
+                { touchStartMsg = wrapMsg << TouchDragStart
+                , touchContinueMsg = wrapMsg << TouchDragContinue
+                , touchPrevNextMsg = wrapMsg << touchPrevNext dragInfo
+                }
+                (wrapMsg NoUpdate)
+                (wrapMsg << FullMsg)
+                { prevImgs = prevImgs
+                , album = album
+                , winSize = winSize
+                , progImgModel = progModel
+                , offset = offsetFor dragInfo
+                }
+                parents
+                flags
 
 
 minDragLen : number

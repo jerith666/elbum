@@ -9,6 +9,7 @@ import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import ListUtils exposing (..)
 import ProgressiveImage exposing (..)
+import ThumbPage exposing (..)
 import TouchEvents exposing (..)
 import WinSize exposing (..)
 
@@ -26,6 +27,7 @@ type alias NavMsgs msg =
     { prevMsg : msg
     , nextMsg : msg
     , backToThumbsMsg : msg
+    , showList : AlbumList -> msg
     }
 
 
@@ -41,8 +43,8 @@ imgTitleHeight =
     5
 
 
-view : NavMsgs msg -> TouchMsgs msg -> msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> AlbumBootstrapFlags -> Html msg
-view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel flags =
+view : NavMsgs msg -> TouchMsgs msg -> msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> List AlbumList -> AlbumBootstrapFlags -> Html msg
+view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
     rootDivFlex
         flags
         column
@@ -59,7 +61,13 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel flags =
                 , lineHeight (px (imgTitleHeight / 100 * toFloat fullImagePageModel.winSize.height))
                 ]
             ]
-            [ Html.Styled.text fullImagePageModel.album.imageFirst.altText ]
+            [ albumTitle
+                fullImagePageModel.album.imageFirst.altText
+                parents
+                navMsgs.showList
+                [ albumParent getAlbumTitle (\_ -> navMsgs.backToThumbsMsg) fullImagePageModel.album ]
+                []
+            ]
         , viewImg navMsgs.nextMsg touchMsgs wrapProgMsg fullImagePageModel
         ]
             ++ navEltIf fullImagePageModel.prevImgs navMsgs.prevMsg "<" left
@@ -80,6 +88,11 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel flags =
                     ]
                     [ Html.Styled.text "⤓" ]
                ]
+
+
+getAlbumTitle : Album -> String
+getAlbumTitle a =
+    a.title
 
 
 navEltIf : List a -> msg -> String -> (Px -> Style) -> List (Html msg)

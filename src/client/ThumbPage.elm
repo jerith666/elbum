@@ -1,4 +1,4 @@
-module ThumbPage exposing (ThumbPageModel, albumTitle, colsWidth, sizeForHeight, sizeForWidth, thumbStyles, urlsToGet, view, viewThumb)
+module ThumbPage exposing (ThumbPageModel, albumParent, albumTitle, colsWidth, sizeForHeight, sizeForWidth, thumbStyles, urlsToGet, view, viewThumb)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -42,8 +42,8 @@ view imgChosenMsgr showList thumbPageModel flags =
         column
         [ overflowX Css.hidden ]
     <|
-        [ albumTitle thumbPageModel.album.title thumbPageModel.parents showList [ position fixed ]
-        , albumTitle thumbPageModel.album.title thumbPageModel.parents showList [ Css.property "visibility" "hidden" ]
+        [ albumTitle thumbPageModel.album.title thumbPageModel.parents showList [] [ position fixed ]
+        , albumTitle thumbPageModel.album.title thumbPageModel.parents showList [] [ Css.property "visibility" "hidden" ]
         , div
             [ styles
                 [ displayFlex
@@ -57,8 +57,8 @@ view imgChosenMsgr showList thumbPageModel flags =
         ]
 
 
-albumTitle : String -> List AlbumList -> (AlbumList -> msg) -> List Style -> Html msg
-albumTitle title parents showList extraStyles =
+albumTitle : String -> List AlbumList -> (AlbumList -> msg) -> List (Html msg) -> List Style -> Html msg
+albumTitle title parents showList extraHtml extraStyles =
     div
         [ styles <|
             [ color white
@@ -70,18 +70,24 @@ albumTitle title parents showList extraStyles =
                 ++ extraStyles
         ]
     <|
-        List.map (albumParent showList) (List.reverse parents)
+        List.map (albumParent getAlbumListTitle showList) (List.reverse parents)
+            ++ extraHtml
             ++ [ span [] [ Html.Styled.text title ] ]
 
 
-albumParent : (AlbumList -> msg) -> AlbumList -> Html msg
-albumParent showList albumList =
+getAlbumListTitle : AlbumList -> String
+getAlbumListTitle a =
+    a.listTitle
+
+
+albumParent : (a -> String) -> (a -> msg) -> a -> Html msg
+albumParent getTitle showList albumList =
     span []
         [ span
             [ onClick <| showList albumList
             , styles [ textDecoration underline, cursor pointer ]
             ]
-            [ Html.Styled.text albumList.listTitle ]
+            [ Html.Styled.text <| getTitle albumList ]
         , span
             [ styles [ padding2 (Css.em 0) (Css.em 0.5) ] ]
             [ Html.Styled.text "<" ]
