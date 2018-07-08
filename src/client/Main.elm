@@ -19,6 +19,7 @@ import LocationUtils exposing (..)
 import Navigation exposing (..)
 import ResultUtils exposing (..)
 import RouteUrl exposing (..)
+import Scroll exposing (getScroll)
 import Set exposing (..)
 import Task exposing (..)
 import Time exposing (..)
@@ -63,6 +64,7 @@ type AlbumBootstrapMsg
     | ScrollFailed Id
     | Nav (List String)
     | NoBootstrap
+    | LogScroll Float
 
 
 main : RouteUrlProgram AlbumBootstrapFlags AlbumBootstrap AlbumBootstrapMsg
@@ -304,6 +306,11 @@ update msg model =
 
         NoBootstrap ->
             ( model, Cmd.none )
+
+        LogScroll s ->
+            case Debug.log "scroll from port " s of
+                _ ->
+                    ( model, Cmd.none )
 
 
 gotHome : WinSize -> AlbumBootstrapFlags -> Maybe (List String) -> Maybe String -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
@@ -743,6 +750,7 @@ subscriptions model =
             Sub.batch
                 [ AlbumPage.subscriptions albumPage PageMsg showParent
                 , resizes Resize
+                , getScroll LogScroll
                 ]
 
         LoadedList (AlbumListPage albumList winSize parents) _ _ _ ->
@@ -757,7 +765,11 @@ subscriptions model =
                                 (ViewList (AlbumListPage parent winSize grandParents) scroll)
                                 NoBootstrap
                     in
-                    Sub.batch [ upParent, resizes Resize ]
+                    Sub.batch
+                        [ upParent
+                        , resizes Resize
+                        , getScroll LogScroll
+                        ]
 
         _ ->
             resizes Resize
