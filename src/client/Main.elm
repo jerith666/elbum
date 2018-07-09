@@ -19,7 +19,6 @@ import LocationUtils exposing (..)
 import Navigation exposing (..)
 import ResultUtils exposing (..)
 import RouteUrl exposing (..)
-import Scroll exposing (getScroll)
 import Set exposing (..)
 import Task exposing (..)
 import Time exposing (..)
@@ -750,7 +749,6 @@ subscriptions model =
             Sub.batch
                 [ AlbumPage.subscriptions albumPage PageMsg showParent
                 , resizes Resize
-                , getScroll LogScroll
                 ]
 
         LoadedList (AlbumListPage albumList winSize parents) _ _ _ ->
@@ -768,7 +766,6 @@ subscriptions model =
                     Sub.batch
                         [ upParent
                         , resizes Resize
-                        , getScroll LogScroll
                         ]
 
         _ ->
