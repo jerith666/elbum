@@ -41,9 +41,6 @@
       app.ports.setTitle.subscribe(function(title){
         document.title = title;
       });
-      window.onscroll = function(){
-        app.ports.getScroll.send(window.pageYOffset || document.body.scrollTop)
-      }
     </script>
   </body>
 </html>
