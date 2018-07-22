@@ -808,6 +808,7 @@ view albumBootstrap =
             withHomeLink home flags <|
                 AlbumPage.view
                     albumPage
+                    (\_ -> NoBootstrap)
                     (viewList
                         albumBootstrap
                         (pageSize albumPage)
@@ -844,6 +845,7 @@ view albumBootstrap =
                                             :: parents
                                     )
                     )
+                    (\_ -> NoBootstrap)
                     flags
 
 

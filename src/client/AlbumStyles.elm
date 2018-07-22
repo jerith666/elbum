@@ -5,6 +5,7 @@ import Css.Transitions exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events exposing (..)
+import Json.Decode exposing (..)
 import Time exposing (..)
 
 
@@ -57,8 +58,8 @@ rootPos flags =
         position absolute
 
 
-rootDiv : AlbumBootstrapFlags -> List Style -> List (Html msg) -> Html msg
-rootDiv flags extraStyles =
+rootDiv : AlbumBootstrapFlags -> (Float -> msg) -> List Style -> List (Html msg) -> Html msg
+rootDiv flags scrollMsgMaker extraStyles =
     div
         [ styles <|
             [ rootPos flags
@@ -71,12 +72,13 @@ rootDiv flags extraStyles =
             ]
                 ++ extraStyles
         , Html.Styled.Attributes.id rootDivId
+        , on "scroll" <| Json.Decode.map scrollMsgMaker <| Json.Decode.at [ "target", "scrollTop" ] Json.Decode.float
         ]
 
 
-rootDivFlex : AlbumBootstrapFlags -> FlexDirection compatible -> List Style -> List (Html msg) -> Html msg
-rootDivFlex flags dir extraStyles =
-    rootDiv flags <|
+rootDivFlex : AlbumBootstrapFlags -> FlexDirection compatible -> (Float -> msg) -> List Style -> List (Html msg) -> Html msg
+rootDivFlex flags dir scrollMsgMaker extraStyles =
+    rootDiv flags scrollMsgMaker <|
         [ displayFlex
         , flexDirection dir
         ]
