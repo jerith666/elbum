@@ -585,17 +585,46 @@ locFor model =
         LoadedAlbum albumPage parents _ _ _ _ ->
             Just
                 { entry = NewEntry
-                , url = hashForAlbum model albumPage <| List.map Tuple.first parents
+                , url = queryFor model ++ (hashForAlbum model albumPage <| List.map Tuple.first parents)
                 }
 
         LoadedList albumListPage _ _ _ _ ->
             Just
                 { entry = NewEntry
-                , url = hashForList model albumListPage
+                , url = queryFor model ++ hashForList model albumListPage
                 }
 
         _ ->
             Nothing
+
+
+queryFor : AlbumBootstrap -> String
+queryFor model =
+    let
+        queryForPos pos =
+            Maybe.withDefault "" <| Maybe.map (\p -> "?s=" ++ toString p) pos
+    in
+    case model of
+        Sizing _ _ ->
+            ""
+
+        LoadingHomeLink _ _ _ ->
+            ""
+
+        Loading _ _ _ _ ->
+            ""
+
+        LoadError _ _ ->
+            ""
+
+        GettingScrollBootstrap _ _ ->
+            ""
+
+        LoadedAlbum _ _ _ _ _ pos ->
+            queryForPos pos
+
+        LoadedList _ _ _ _ pos ->
+            queryForPos pos
 
 
 hashForList : AlbumBootstrap -> AlbumListPage -> String
