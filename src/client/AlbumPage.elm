@@ -253,14 +253,15 @@ titleOf albumPage =
             album.imageFirst.altText
 
 
-view : AlbumPage -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> AlbumBootstrapFlags -> Html msg
-view albumPage showList wrapMsg parents flags =
+view : AlbumPage -> (Float -> msg) -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> AlbumBootstrapFlags -> Html msg
+view albumPage scrollMsgMaker showList wrapMsg parents flags =
     case albumPage of
         GettingScroll _ _ _ _ _ underlyingModel ->
-            view underlyingModel showList wrapMsg parents flags
+            view underlyingModel scrollMsgMaker showList wrapMsg parents flags
 
         Thumbs album winSize justLoadedImages readyToDisplayImages ->
             ThumbPage.view
+                scrollMsgMaker
                 (\x -> \y -> \z -> wrapMsg (View x y z))
                 showList
                 { album = album
@@ -281,6 +282,7 @@ view albumPage showList wrapMsg parents flags =
                 { touchStartMsg = wrapMsg << TouchDragStart
                 , touchContinueMsg = wrapMsg << TouchDragContinue
                 , touchPrevNextMsg = wrapMsg << touchPrevNext dragInfo
+                , scrollMsgMaker = scrollMsgMaker
                 }
                 (wrapMsg NoUpdate)
                 (wrapMsg << FullMsg)

@@ -14,11 +14,12 @@ type AlbumListPage
     = AlbumListPage AlbumList WinSize (List ( AlbumList, Maybe Float ))
 
 
-view : AlbumListPage -> (AlbumList -> msg) -> (Album -> msg) -> AlbumBootstrapFlags -> Html msg
-view (AlbumListPage albumList winSize parents) viewList viewAlbum flags =
+view : AlbumListPage -> (AlbumList -> msg) -> (Album -> msg) -> (Float -> msg) -> AlbumBootstrapFlags -> Html msg
+view (AlbumListPage albumList winSize parents) viewList viewAlbum scrollMsgMaker flags =
     rootDivFlex
         flags
         column
+        scrollMsgMaker
         []
     <|
         [ albumTitle albumList.listTitle (List.map Tuple.first parents) viewList [] [] ]

@@ -35,6 +35,7 @@ type alias TouchMsgs msg =
     { touchStartMsg : Touch -> msg
     , touchContinueMsg : Touch -> msg
     , touchPrevNextMsg : Touch -> msg
+    , scrollMsgMaker : Float -> msg
     }
 
 
@@ -48,6 +49,7 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
     rootDivFlex
         flags
         column
+        touchMsgs.scrollMsgMaker
         [ overflow Css.hidden
         , alignItems center
         , Css.property "justify-content" "center"
