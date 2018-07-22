@@ -59,6 +59,7 @@ type AlbumBootstrapMsg
     | ImageFailed String Http.Error
     | GetScroll AlbumBootstrap (Maybe Float -> AlbumBootstrap -> ( AlbumBootstrap, AlbumBootstrapMsg ))
     | GotScroll (Maybe Float)
+    | ScrolledTo Float
     | ScrollSucceeded
     | ScrollFailed Id
     | Nav (List String)
@@ -299,6 +300,9 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        ScrolledTo pos ->
+            ( withScrollPos pos model, Cmd.none )
+
         ScrollSucceeded ->
             ( model, Cmd.none )
 
@@ -386,6 +390,31 @@ homeOf model =
 
         LoadedAlbum _ _ _ home _ _ ->
             home
+
+
+withScrollPos : Float -> AlbumBootstrap -> AlbumBootstrap
+withScrollPos pos model =
+    case model of
+        Sizing _ _ ->
+            model
+
+        LoadingHomeLink _ _ _ ->
+            model
+
+        Loading _ _ _ _ ->
+            model
+
+        LoadError _ _ ->
+            model
+
+        GettingScrollBootstrap _ _ ->
+            model
+
+        LoadedAlbum albumPage parents flags home pendingUrls _ ->
+            LoadedAlbum albumPage parents flags home pendingUrls <| Just pos
+
+        LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls _ ->
+            LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls <| Just pos
 
 
 withPaths : AlbumBootstrap -> List String -> AlbumBootstrap
@@ -817,7 +846,7 @@ view albumBootstrap =
             withHomeLink home flags <|
                 AlbumPage.view
                     albumPage
-                    (\_ -> NoBootstrap)
+                    ScrolledTo
                     (viewList
                         albumBootstrap
                         (pageSize albumPage)
@@ -854,7 +883,7 @@ view albumBootstrap =
                                             :: parents
                                     )
                     )
-                    (\_ -> NoBootstrap)
+                    ScrolledTo
                     flags
 
 
