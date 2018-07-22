@@ -35,11 +35,12 @@ grey =
     rgb 128 128 128
 
 
-view : (List Image -> Image -> List Image -> msg) -> (AlbumList -> msg) -> ThumbPageModel -> AlbumBootstrapFlags -> Html msg
-view imgChosenMsgr showList thumbPageModel flags =
+view : (Float -> msg) -> (List Image -> Image -> List Image -> msg) -> (AlbumList -> msg) -> ThumbPageModel -> AlbumBootstrapFlags -> Html msg
+view scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
     rootDivFlex
         flags
         column
+        scrollMsgMaker
         [ overflowX Css.hidden ]
     <|
         [ albumTitle thumbPageModel.album.title thumbPageModel.parents showList [] [ position fixed ]
