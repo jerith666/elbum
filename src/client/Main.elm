@@ -333,6 +333,9 @@ navToMsg loc =
     let
         parsedHash =
             Debug.log "parsedHash" <| parseHref loc.hash
+
+        parsedQuery =
+            Debug.log "parsedQuery" <| parseQuery loc.query
     in
     case parsedHash of
         Err _ ->

@@ -1,4 +1,4 @@
-module LocationUtils exposing (locToString, parseHref)
+module LocationUtils exposing (locToString, parseHref, parseQuery)
 
 import Combine exposing (..)
 import Http exposing (..)
@@ -22,6 +22,11 @@ parseHref href =
                         <* end
     in
     parse pathParser href
+
+
+parseQuery : String -> Result (ParseErr ()) (ParseOk () (List String))
+parseQuery query =
+    xxxx
 
 
 locToString : Location -> String
