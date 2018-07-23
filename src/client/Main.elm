@@ -74,7 +74,7 @@ main =
         , view = view >> toUnstyled
         , update = update
         , subscriptions = subscriptions
-        , delta2url = \_ -> locFor
+        , delta2url = locFor
         , location2messages = navToMsg
         }
 
@@ -585,18 +585,43 @@ cmdOf msg =
     Task.perform (\_ -> msg) <| Task.succeed ()
 
 
-locFor : AlbumBootstrap -> Maybe UrlChange
-locFor model =
+locFor : AlbumBootstrap -> AlbumBootstrap -> Maybe UrlChange
+locFor oldModel newModel =
+    let
+        model =
+            newModel
+
+        entry =
+            case oldModel of
+                LoadedList _ _ _ _ _ ->
+                    case newModel of
+                        LoadedList _ _ _ _ _ ->
+                            ModifyEntry
+
+                        _ ->
+                            NewEntry
+
+                LoadedAlbum _ _ _ _ _ _ ->
+                    case newModel of
+                        LoadedAlbum _ _ _ _ _ _ ->
+                            ModifyEntry
+
+                        _ ->
+                            NewEntry
+
+                _ ->
+                    NewEntry
+    in
     case model of
         LoadedAlbum albumPage parents _ _ _ _ ->
             Just
-                { entry = NewEntry
+                { entry = entry
                 , url = queryFor model ++ (hashForAlbum model albumPage <| List.map Tuple.first parents)
                 }
 
         LoadedList albumListPage _ _ _ _ ->
             Just
-                { entry = NewEntry
+                { entry = entry
                 , url = queryFor model ++ hashForList model albumListPage
                 }
 
