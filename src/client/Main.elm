@@ -28,9 +28,9 @@ import Window exposing (..)
 
 
 type AlbumBootstrap
-    = Sizing AlbumBootstrapFlags (Maybe (List String))
-    | LoadingHomeLink WinSize AlbumBootstrapFlags (Maybe (List String))
-    | Loading WinSize AlbumBootstrapFlags (Maybe String) (Maybe (List String))
+    = Sizing AlbumBootstrapFlags (Maybe (List String)) (Maybe Float)
+    | LoadingHomeLink WinSize AlbumBootstrapFlags (Maybe (List String)) (Maybe Float)
+    | Loading WinSize AlbumBootstrapFlags (Maybe String) (Maybe (List String)) (Maybe Float)
     | LoadError AlbumBootstrapFlags Http.Error
     | LoadedList AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float)
     | LoadedAlbum AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float)
@@ -82,7 +82,7 @@ main =
 
 init : AlbumBootstrapFlags -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 init flags =
-    ( Sizing flags Nothing
+    ( Sizing flags Nothing Nothing
     , Task.perform Resize Window.size
     )
 
@@ -92,18 +92,18 @@ update msg model =
     case msg of
         Resize size ->
             case model of
-                Sizing flags paths ->
-                    ( LoadingHomeLink (Debug.log "window size set" size) flags paths
+                Sizing flags paths scroll ->
+                    ( LoadingHomeLink (Debug.log "window size set" size) flags paths scroll
                     , Http.send (either NoHome YesHome) <| Http.getString "home"
                     )
 
-                LoadingHomeLink oldSize flags paths ->
-                    ( LoadingHomeLink size flags paths
+                LoadingHomeLink oldSize flags paths scroll ->
+                    ( LoadingHomeLink size flags paths scroll
                     , Cmd.none
                     )
 
-                Loading oldSize flags home paths ->
-                    ( Loading (Debug.log "window size updated during load" size) flags home paths
+                Loading oldSize flags home paths scroll ->
+                    ( Loading (Debug.log "window size updated during load" size) flags home paths scroll
                     , Cmd.none
                     )
 
@@ -153,23 +153,27 @@ update msg model =
 
         YesHome home ->
             case model of
-                LoadingHomeLink size flags path ->
-                    gotHome size flags path <| Just home
+                LoadingHomeLink size flags path scroll ->
+                    gotHome size flags path scroll <| Just home
 
                 _ ->
                     ( model, Cmd.none )
 
         NoHome err ->
             case model of
-                LoadingHomeLink size flags path ->
-                    gotHome size flags path Nothing
+                LoadingHomeLink size flags path scroll ->
+                    gotHome size flags path scroll Nothing
 
                 _ ->
                     ( model, Cmd.none )
 
         YesAlbum albumOrList ->
             case model of
-                Loading winSize flags home paths ->
+                Loading winSize flags home paths scroll ->
+                    let
+                        scrollCmd =
+                            Maybe.withDefault Cmd.none <| Maybe.map (\s -> Task.attempt (\_ -> NoBootstrap) <| toY rootDivId <| Debug.log "startup scroll to " s) scroll
+                    in
                     case albumOrList of
                         List albumList ->
                             let
@@ -178,8 +182,10 @@ update msg model =
                             in
                             ( newModel
                             , Cmd.batch
+                                --TODO need to scroll *after* pathsToCmd
                                 [ pathsToCmd newModel paths
                                 , setTitle albumList.listTitle
+                                , scrollCmd
                                 ]
                             )
 
@@ -196,9 +202,11 @@ update msg model =
                             in
                             ( newModel
                             , Cmd.batch
+                                --TODO need to scroll *after* pathsToCmd
                                 [ pathsToCmd newModel paths
                                 , getUrls Dict.empty urls
                                 , setTitle album.title
+                                , scrollCmd
                                 ]
                             )
 
@@ -311,7 +319,7 @@ update msg model =
             ( model, Cmd.none )
 
         Scroll s ->
-            ( model, Cmd.none )
+            ( withScroll model s, Cmd.none )
 
         Nav paths ->
             ( withPaths model paths, pathsToCmd model <| Just paths )
@@ -325,9 +333,9 @@ update msg model =
                     ( model, Cmd.none )
 
 
-gotHome : WinSize -> AlbumBootstrapFlags -> Maybe (List String) -> Maybe String -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
-gotHome size flags paths home =
-    ( Loading size flags home paths
+gotHome : WinSize -> AlbumBootstrapFlags -> Maybe (List String) -> Maybe Float -> Maybe String -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
+gotHome size flags paths scroll home =
+    ( Loading size flags home paths scroll
     , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecAlbumOrList))
     )
 
@@ -364,13 +372,13 @@ navToMsg loc =
 flagsOf : AlbumBootstrap -> AlbumBootstrapFlags
 flagsOf model =
     case model of
-        Sizing flags _ ->
+        Sizing flags _ _ ->
             flags
 
-        LoadingHomeLink _ flags _ ->
+        LoadingHomeLink _ flags _ _ ->
             flags
 
-        Loading _ flags _ _ ->
+        Loading _ flags _ _ _ ->
             flags
 
         LoadError flags _ ->
@@ -389,13 +397,13 @@ flagsOf model =
 homeOf : AlbumBootstrap -> Maybe String
 homeOf model =
     case model of
-        Sizing _ _ ->
+        Sizing _ _ _ ->
             Nothing
 
-        LoadingHomeLink _ _ _ ->
+        LoadingHomeLink _ _ _ _ ->
             Nothing
 
-        Loading _ _ home _ ->
+        Loading _ _ home _ _ ->
             home
 
         LoadError _ _ ->
@@ -414,13 +422,13 @@ homeOf model =
 withScrollPos : Float -> AlbumBootstrap -> AlbumBootstrap
 withScrollPos pos model =
     case model of
-        Sizing _ _ ->
+        Sizing _ _ _ ->
             model
 
-        LoadingHomeLink _ _ _ ->
+        LoadingHomeLink _ _ _ _ ->
             model
 
-        Loading _ _ _ _ ->
+        Loading _ _ _ _ _ ->
             model
 
         LoadError _ _ ->
@@ -439,14 +447,39 @@ withScrollPos pos model =
 withPaths : AlbumBootstrap -> List String -> AlbumBootstrap
 withPaths model paths =
     case model of
-        Sizing flags _ ->
-            Sizing flags <| Just paths
+        Sizing flags _ scroll ->
+            Sizing flags (Just paths) scroll
 
-        LoadingHomeLink winSize flags _ ->
-            LoadingHomeLink winSize flags <| Just paths
+        LoadingHomeLink winSize flags _ scroll ->
+            LoadingHomeLink winSize flags (Just paths) scroll
 
-        Loading winSize flags home _ ->
-            Loading winSize flags home <| Just paths
+        Loading winSize flags home _ scroll ->
+            Loading winSize flags home (Just paths) scroll
+
+        LoadError _ _ ->
+            model
+
+        GettingScrollBootstrap _ _ ->
+            model
+
+        LoadedList _ _ _ _ _ ->
+            model
+
+        LoadedAlbum _ _ _ _ _ _ ->
+            model
+
+
+withScroll : AlbumBootstrap -> Float -> AlbumBootstrap
+withScroll model scroll =
+    case model of
+        Sizing flags paths _ ->
+            Sizing flags paths <| Just scroll
+
+        LoadingHomeLink winSize flags paths _ ->
+            LoadingHomeLink winSize flags paths <| Just scroll
+
+        Loading winSize flags home paths _ ->
+            Loading winSize flags home paths <| Just scroll
 
         LoadError _ _ ->
             model
@@ -469,13 +502,13 @@ pathsToCmd model mPaths =
 
         Just paths ->
             case model of
-                Sizing _ _ ->
+                Sizing _ _ _ ->
                     Cmd.none
 
-                LoadingHomeLink _ _ _ ->
+                LoadingHomeLink _ _ _ _ ->
                     Cmd.none
 
-                Loading _ _ _ _ ->
+                Loading _ _ _ _ _ ->
                     Cmd.none
 
                 LoadError _ _ ->
@@ -655,13 +688,13 @@ queryFor model =
             Maybe.withDefault "" <| Maybe.map (\p -> "?s=" ++ toString p) pos
     in
     case model of
-        Sizing _ _ ->
+        Sizing _ _ _ ->
             ""
 
-        LoadingHomeLink _ _ _ ->
+        LoadingHomeLink _ _ _ _ ->
             ""
 
-        Loading _ _ _ _ ->
+        Loading _ _ _ _ _ ->
             ""
 
         LoadError _ _ ->
@@ -900,13 +933,13 @@ pageSize albumPage =
 view : AlbumBootstrap -> Html AlbumBootstrapMsg
 view albumBootstrap =
     case albumBootstrap of
-        Sizing _ _ ->
+        Sizing _ _ _ ->
             text "Album Starting"
 
-        LoadingHomeLink _ _ _ ->
+        LoadingHomeLink _ _ _ _ ->
             text "Home Loading ..."
 
-        Loading _ _ _ _ ->
+        Loading _ _ _ _ _ ->
             text "Album Loading ..."
 
         LoadError _ e ->
