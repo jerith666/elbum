@@ -1,4 +1,4 @@
-module ListUtils exposing (dictWithValues, dropThrough, dropThroughPred, encodePath, mapI, shiftLeft, shiftRight, shiftToBeginning)
+module ListUtils exposing (dictWithValues, dropThrough, dropThroughPred, encodePath, fromMaybe, mapI, shiftLeft, shiftRight, shiftToBeginning)
 
 import Dict exposing (..)
 import Http exposing (encodeUri)
@@ -100,3 +100,13 @@ mapI i map l =
                 a
     in
     List.map ifmap <| List.indexedMap (,) l
+
+
+fromMaybe : Maybe a -> List a
+fromMaybe m =
+    case m of
+        Nothing ->
+            []
+
+        Just x ->
+            [ x ]
