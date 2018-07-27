@@ -63,6 +63,7 @@ type AlbumBootstrapMsg
     | ScrollSucceeded
     | ScrollFailed Id
     | Nav (List String)
+    | Scroll Float
     | NoBootstrap
     | LogScroll Float
 
@@ -309,6 +310,9 @@ update msg model =
         ScrollFailed _ ->
             ( model, Cmd.none )
 
+        Scroll s ->
+            ( model, Cmd.none )
+
         Nav paths ->
             ( withPaths model paths, pathsToCmd model <| Just paths )
 
@@ -335,14 +339,26 @@ navToMsg loc =
             Debug.log "parsedHash" <| parseHref loc.hash
 
         parsedQuery =
-            Debug.log "parsedQuery" <| parseQuery loc.query
-    in
-    case parsedHash of
-        Err _ ->
-            []
+            Debug.log "parsedQuery" <| parseQuery loc.search
 
-        Ok ( _, _, paths ) ->
-            [ Nav paths ]
+        hashMsgs =
+            case parsedHash of
+                Err _ ->
+                    []
+
+                Ok ( _, _, paths ) ->
+                    [ Nav paths ]
+
+        queryMsgs =
+            case parsedQuery of
+                Err _ ->
+                    []
+
+                Ok ( _, _, scroll ) ->
+                    fromMaybe <|
+                        Maybe.map Scroll (scroll |> Maybe.andThen (Result.toMaybe << String.toFloat))
+    in
+    hashMsgs ++ queryMsgs
 
 
 flagsOf : AlbumBootstrap -> AlbumBootstrapFlags

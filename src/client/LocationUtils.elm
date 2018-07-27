@@ -24,9 +24,21 @@ parseHref href =
     parse pathParser href
 
 
-parseQuery : String -> Result (ParseErr ()) (ParseOk () (List String))
+parseQuery : String -> Result (ParseErr ()) (ParseOk () (Maybe String))
 parseQuery query =
-    xxxx
+    let
+        rest =
+            while (\_ -> True) <* end
+
+        qParser =
+            or
+                (end $> Nothing)
+            <|
+                Combine.map Just <|
+                    string "?s="
+                        *> rest
+    in
+    parse qParser query
 
 
 locToString : Location -> String
