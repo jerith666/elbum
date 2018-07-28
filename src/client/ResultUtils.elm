@@ -1,6 +1,7 @@
-module ResultUtils exposing (either)
+module ResultUtils exposing (either, serialize, toCmd)
 
 import Result exposing (..)
+import Task exposing (..)
 
 
 either : (a -> c) -> (b -> c) -> Result a b -> c
@@ -11,3 +12,8 @@ either errMapper okMapper r =
 
         Err error ->
             errMapper error
+
+
+toCmd : a -> Cmd a
+toCmd m =
+    Task.perform identity <| Task.succeed m
