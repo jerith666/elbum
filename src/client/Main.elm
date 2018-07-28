@@ -64,6 +64,7 @@ type AlbumBootstrapMsg
     | ScrollFailed Id
     | Nav (List String)
     | Scroll Float
+    | Sequence (Cmd AlbumBootstrapMsg) (List (Cmd AlbumBootstrapMsg))
     | NoBootstrap
 
 
@@ -178,13 +179,14 @@ update msg model =
                             let
                                 newModel =
                                     LoadedList (AlbumListPage albumList winSize []) flags home Dict.empty Nothing
+
+                                pathsThenScroll =
+                                    toCmd <| Sequence (pathsToCmd newModel paths) [ scrollCmd ]
                             in
                             ( newModel
                             , Cmd.batch
-                                --TODO need to scroll *after* pathsToCmd
-                                [ pathsToCmd newModel paths
-                                , setTitle albumList.listTitle
-                                , scrollCmd
+                                [ setTitle albumList.listTitle
+                                , pathsThenScroll
                                 ]
                             )
 
@@ -198,14 +200,15 @@ update msg model =
 
                                 newModel =
                                     LoadedAlbum albumPage [] flags home (dictWithValues urls UrlRequested) Nothing
+
+                                pathsThenScroll =
+                                    toCmd <| Sequence (pathsToCmd newModel paths) [ scrollCmd ]
                             in
                             ( newModel
                             , Cmd.batch
-                                --TODO need to scroll *after* pathsToCmd
-                                [ pathsToCmd newModel paths
-                                , getUrls Dict.empty urls
+                                [ getUrls Dict.empty urls
                                 , setTitle album.title
-                                , scrollCmd
+                                , pathsThenScroll
                                 ]
                             )
 
@@ -322,6 +325,18 @@ update msg model =
 
         Nav paths ->
             ( withPaths model paths, pathsToCmd model <| Just paths )
+
+        Sequence next rest ->
+            let
+                cmds =
+                    case rest of
+                        [] ->
+                            next
+
+                        r1 :: rs ->
+                            Cmd.batch [ next, toCmd <| Sequence r1 rs ]
+            in
+            ( model, cmds )
 
         NoBootstrap ->
             ( model, Cmd.none )
