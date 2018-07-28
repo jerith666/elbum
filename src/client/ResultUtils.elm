@@ -1,4 +1,4 @@
-module ResultUtils exposing (either, serialize, toCmd)
+module ResultUtils exposing (either, toCmd)
 
 import Result exposing (..)
 import Task exposing (..)
