@@ -308,7 +308,7 @@ update msg model =
                         ( model, msg ) =
                             scrollUpdater scroll prevModel
                     in
-                    ( model, cmdOf msg )
+                    ( model, toCmd msg )
 
                 _ ->
                     ( model, Cmd.none )
@@ -548,7 +548,7 @@ pathsToCmdImpl size parents paths =
             Cmd.none
 
         Just root ->
-            navFrom size root [] paths <| cmdOf <| ViewList (AlbumListPage root size []) Nothing
+            navFrom size root [] paths <| toCmd <| ViewList (AlbumListPage root size []) Nothing
 
 
 navFrom : WinSize -> AlbumList -> List AlbumList -> List String -> Cmd AlbumBootstrapMsg -> Cmd AlbumBootstrapMsg
@@ -575,7 +575,7 @@ navFrom size root parents paths defcmd =
                 Just pChild ->
                     case pChild of
                         List albumList ->
-                            navFrom size albumList newParents ps <| cmdOf <| ViewList (AlbumListPage albumList size <| List.map (\p -> ( p, Nothing )) newParents) Nothing
+                            navFrom size albumList newParents ps <| toCmd <| ViewList (AlbumListPage albumList size <| List.map (\p -> ( p, Nothing )) newParents) Nothing
 
                         Leaf album ->
                             navForAlbum size album ps newParents
@@ -589,7 +589,7 @@ navForAlbum size album ps newParents =
     in
     case ps of
         [] ->
-            cmdOf <| ViewAlbum (Thumbs album size Set.empty Set.empty) parentsNoScroll
+            toCmd <| ViewAlbum (Thumbs album size Set.empty Set.empty) parentsNoScroll
 
         i :: _ ->
             case findImg [] album i of
@@ -605,7 +605,7 @@ navForAlbum size album ps newParents =
                             progInit size nAlbum.imageFirst w h
                     in
                     Cmd.batch
-                        [ cmdOf <| ViewAlbum (FullImage prevs nAlbum progModel size Nothing Nothing) parentsNoScroll
+                        [ toCmd <| ViewAlbum (FullImage prevs nAlbum progModel size Nothing Nothing) parentsNoScroll
                         , Cmd.map PageMsg <| Cmd.map FullMsg progCmd
                         ]
 
@@ -641,11 +641,6 @@ findChild containingList name =
                     album.title == name
     in
     List.head <| List.filter f <| containingList.childFirst :: containingList.childRest
-
-
-cmdOf : a -> Cmd a
-cmdOf msg =
-    Task.perform (\_ -> msg) <| Task.succeed ()
 
 
 locFor : AlbumBootstrap -> AlbumBootstrap -> Maybe UrlChange
