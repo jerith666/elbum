@@ -173,7 +173,7 @@ update msg model =
                 Loading winSize flags home paths scroll ->
                     let
                         scrollCmd =
-                            Maybe.withDefault Cmd.none <| Maybe.map (\s -> Task.attempt (\_ -> NoBootstrap) <| toY rootDivId <| Debug.log "startup scroll to " s) scroll
+                            Maybe.withDefault Cmd.none <| Maybe.map (\s -> Task.attempt (\_ -> NoBootstrap) <| toY rootDivId <| Debug.log "startup scroll to" s) scroll
                     in
                     case albumOrList of
                         List albumList ->
@@ -182,7 +182,8 @@ update msg model =
                                     LoadedList (AlbumListPage albumList winSize []) flags home Dict.empty Nothing
 
                                 pathsThenScroll =
-                                    toCmd <| Sequence (pathsToCmd newModel paths) [ scrollCmd ]
+                                    --hack delay scroll a bit with NoBootstrap
+                                    toCmd <| Sequence (pathsToCmd newModel paths) [ toCmd NoBootstrap, scrollCmd ]
                             in
                             ( newModel
                             , Cmd.batch
@@ -203,7 +204,8 @@ update msg model =
                                     LoadedAlbum albumPage [] flags home (dictWithValues urls UrlRequested) Nothing
 
                                 pathsThenScroll =
-                                    toCmd <| Sequence (pathsToCmd newModel paths) [ scrollCmd ]
+                                    --hack delay scroll a bit with NoBootstrap
+                                    toCmd <| Sequence (pathsToCmd newModel paths) [ toCmd NoBootstrap, scrollCmd ]
                             in
                             ( newModel
                             , Cmd.batch
@@ -332,10 +334,10 @@ update msg model =
                 cmds =
                     case rest of
                         [] ->
-                            next
+                            Debug.log "sequenced cmd: last" next
 
                         r1 :: rs ->
-                            Cmd.batch [ next, toCmd <| Sequence r1 rs ]
+                            Cmd.batch [ Debug.log "sequenced cmd: next" next, toCmd <| Sequence r1 rs ]
             in
             ( model, cmds )
 
