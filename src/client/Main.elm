@@ -120,9 +120,6 @@ update msg model =
 
                 LoadedAlbum albumPage parents flags home pendingUrls scrollPos ->
                     case albumPage of
-                        GettingScroll _ _ _ _ _ underlyingModel ->
-                            update msg <| LoadedAlbum underlyingModel parents flags home pendingUrls scrollPos
-
                         Thumbs album oldSize justLoadedImages readyToDisplayImages ->
                             let
                                 model =
@@ -228,7 +225,7 @@ update msg model =
                 LoadedAlbum oldPage parents flags home oldPendingUrls scrollPos ->
                     let
                         ( newPage, newPageCmd ) =
-                            AlbumPage.update pageMsg oldPage
+                            AlbumPage.update pageMsg oldPage scrollPos
 
                         newPendingUrls =
                             if AlbumPage.resetUrls pageMsg then
@@ -747,9 +744,6 @@ hashForAlbum model albumPage parents =
     let
         titles =
             case albumPage of
-                GettingScroll album _ _ _ _ _ ->
-                    [ album.title ]
-
                 Thumbs album _ _ _ ->
                     [ album.title ]
 
@@ -944,9 +938,6 @@ subscriptions model =
 pageSize : AlbumPage -> WinSize
 pageSize albumPage =
     case albumPage of
-        GettingScroll _ _ _ _ winSize _ ->
-            winSize
-
         Thumbs _ winSize _ _ ->
             winSize
 

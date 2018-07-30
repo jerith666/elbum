@@ -19,13 +19,11 @@ import WinSize exposing (..)
 
 type AlbumPage
     = Thumbs Album WinSize (Set String) (Set String)
-    | GettingScroll Album (List Image) Image (List Image) WinSize AlbumPage
     | FullImage (List Image) Album ProgressiveImageModel WinSize (Maybe Float) (Maybe ( Touch, Touch ))
 
 
 type AlbumPageMsg
     = View (List Image) Image (List Image)
-    | GotScroll (Maybe Float)
     | TouchDragStart Touch
     | TouchDragContinue Touch
     | TouchDragAbandon
@@ -36,22 +34,12 @@ type AlbumPageMsg
     | NoUpdate
 
 
-update : AlbumPageMsg -> AlbumPage -> ( AlbumPage, Cmd AlbumPageMsg )
-update msg model =
+update : AlbumPageMsg -> AlbumPage -> Maybe Float -> ( AlbumPage, Cmd AlbumPageMsg )
+update msg model scroll =
     case msg of
         View prevImgs curImg nextImgs ->
             case model of
                 Thumbs album winSize _ _ ->
-                    ( GettingScroll album prevImgs curImg nextImgs winSize model
-                    , attempt (GotScroll << Result.toMaybe) <| y rootDivId
-                    )
-
-                _ ->
-                    ( model, Cmd.none )
-
-        GotScroll scroll ->
-            case model of
-                GettingScroll album prevImgs curImg nextImgs winSize underlyingModel ->
                     let
                         ( w, h ) =
                             fitImage curImg.srcSetFirst winSize.width winSize.height
@@ -246,9 +234,6 @@ titleOf albumPage =
         Thumbs album _ _ _ ->
             album.title
 
-        GettingScroll album _ _ _ _ _ ->
-            album.title
-
         FullImage _ album _ _ _ _ ->
             album.imageFirst.altText
 
@@ -256,9 +241,6 @@ titleOf albumPage =
 view : AlbumPage -> (Float -> msg) -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> AlbumBootstrapFlags -> Html msg
 view albumPage scrollMsgMaker showList wrapMsg parents flags =
     case albumPage of
-        GettingScroll _ _ _ _ _ underlyingModel ->
-            view underlyingModel scrollMsgMaker showList wrapMsg parents flags
-
         Thumbs album winSize justLoadedImages readyToDisplayImages ->
             ThumbPage.view
                 scrollMsgMaker
@@ -335,9 +317,6 @@ offsetFor dragInfo =
 subscriptions : AlbumPage -> (AlbumPageMsg -> msg) -> msg -> Sub msg
 subscriptions albumPage wrapper showParent =
     case albumPage of
-        GettingScroll _ _ _ _ _ underlyingModel ->
-            subscriptions underlyingModel wrapper showParent
-
         Thumbs _ _ _ _ ->
             onEscape showParent <| wrapper NoUpdate
 
