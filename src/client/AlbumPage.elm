@@ -282,7 +282,6 @@ view albumPage scrollMsgMaker showList wrapMsg parents flags =
                 { touchStartMsg = wrapMsg << TouchDragStart
                 , touchContinueMsg = wrapMsg << TouchDragContinue
                 , touchPrevNextMsg = wrapMsg << touchPrevNext dragInfo
-                , scrollMsgMaker = scrollMsgMaker
                 }
                 (wrapMsg NoUpdate)
                 (wrapMsg << FullMsg)
