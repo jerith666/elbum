@@ -58,9 +58,9 @@ rootPos flags =
         position absolute
 
 
-rootDiv : AlbumBootstrapFlags -> (Float -> msg) -> List Style -> List (Html msg) -> Html msg
+rootDiv : AlbumBootstrapFlags -> Maybe (Float -> msg) -> List Style -> List (Html msg) -> Html msg
 rootDiv flags scrollMsgMaker extraStyles =
-    div
+    div <|
         [ styles <|
             [ rootPos flags
             , Css.height (vh 100)
@@ -72,11 +72,17 @@ rootDiv flags scrollMsgMaker extraStyles =
             ]
                 ++ extraStyles
         , Html.Styled.Attributes.id rootDivId
-        , on "scroll" <| Json.Decode.map scrollMsgMaker <| Json.Decode.at [ "target", "scrollTop" ] Json.Decode.float
         ]
+            ++ (case scrollMsgMaker of
+                    Nothing ->
+                        []
+
+                    Just sMM ->
+                        [ on "scroll" <| Json.Decode.map sMM <| Json.Decode.at [ "target", "scrollTop" ] Json.Decode.float ]
+               )
 
 
-rootDivFlex : AlbumBootstrapFlags -> FlexDirection compatible -> (Float -> msg) -> List Style -> List (Html msg) -> Html msg
+rootDivFlex : AlbumBootstrapFlags -> FlexDirection compatible -> Maybe (Float -> msg) -> List Style -> List (Html msg) -> Html msg
 rootDivFlex flags dir scrollMsgMaker extraStyles =
     rootDiv flags scrollMsgMaker <|
         [ displayFlex

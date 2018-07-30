@@ -19,7 +19,7 @@ view (AlbumListPage albumList winSize parents) viewList viewAlbum scrollMsgMaker
     rootDivFlex
         flags
         column
-        scrollMsgMaker
+        (Just scrollMsgMaker)
         []
     <|
         [ albumTitle albumList.listTitle (List.map Tuple.first parents) viewList [] [] ]

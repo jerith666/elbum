@@ -40,7 +40,7 @@ view scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
     rootDivFlex
         flags
         column
-        scrollMsgMaker
+        (Just scrollMsgMaker)
         [ overflowX Css.hidden ]
     <|
         [ albumTitle thumbPageModel.album.title thumbPageModel.parents showList [] [ position fixed ]
