@@ -34,7 +34,6 @@ type AlbumBootstrap
     | LoadError AlbumBootstrapFlags Http.Error
     | LoadedList AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float)
     | LoadedAlbum AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float)
-    | GettingScrollBootstrap AlbumBootstrap (Maybe Float -> AlbumBootstrap -> ( AlbumBootstrap, AlbumBootstrapMsg ))
 
 
 type UrlLoadState
@@ -57,8 +56,6 @@ type AlbumBootstrapMsg
     | ImageLoaded String
     | ImageReadyToDisplay String
     | ImageFailed String Http.Error
-    | GetScroll AlbumBootstrap (Maybe Float -> AlbumBootstrap -> ( AlbumBootstrap, AlbumBootstrapMsg ))
-    | GotScroll (Maybe Float)
     | ScrolledTo Float
     | ScrollSucceeded
     | ScrollFailed Id
@@ -109,13 +106,6 @@ update msg model =
 
                 LoadError _ _ ->
                     ( model, Cmd.none )
-
-                GettingScrollBootstrap prevModel scrollUpdater ->
-                    let
-                        ( newPrevModel, _ ) =
-                            update msg prevModel
-                    in
-                    ( GettingScrollBootstrap newPrevModel scrollUpdater, Cmd.none )
 
                 LoadedAlbum albumPage parents flags home pendingUrls scrollPos ->
                     case albumPage of
@@ -293,23 +283,6 @@ update msg model =
                 ]
             )
 
-        GetScroll oldModel scrollUpdater ->
-            ( GettingScrollBootstrap oldModel scrollUpdater
-            , attempt (GotScroll << Result.toMaybe) <| y rootDivId
-            )
-
-        GotScroll scroll ->
-            case model of
-                GettingScrollBootstrap prevModel scrollUpdater ->
-                    let
-                        ( model, msg ) =
-                            scrollUpdater scroll prevModel
-                    in
-                    ( model, toCmd msg )
-
-                _ ->
-                    ( model, Cmd.none )
-
         ScrolledTo pos ->
             ( withScrollPos pos model, Cmd.none )
 
@@ -392,9 +365,6 @@ flagsOf model =
         LoadError flags _ ->
             flags
 
-        GettingScrollBootstrap prevModel _ ->
-            flagsOf prevModel
-
         LoadedList _ flags _ _ _ ->
             flags
 
@@ -417,9 +387,6 @@ homeOf model =
         LoadError _ _ ->
             Nothing
 
-        GettingScrollBootstrap prevModel _ ->
-            homeOf prevModel
-
         LoadedList _ _ home _ _ ->
             home
 
@@ -440,9 +407,6 @@ withScrollPos pos model =
             model
 
         LoadError _ _ ->
-            model
-
-        GettingScrollBootstrap _ _ ->
             model
 
         LoadedAlbum albumPage parents flags home pendingUrls _ ->
@@ -467,9 +431,6 @@ withPaths model paths =
         LoadError _ _ ->
             model
 
-        GettingScrollBootstrap _ _ ->
-            model
-
         LoadedList _ _ _ _ _ ->
             model
 
@@ -490,9 +451,6 @@ withScroll model scroll =
             Loading winSize flags home paths <| Just scroll
 
         LoadError _ _ ->
-            model
-
-        GettingScrollBootstrap _ _ ->
             model
 
         LoadedList _ _ _ _ _ ->
@@ -521,9 +479,6 @@ pathsToCmd model mPaths =
 
                 LoadError _ _ ->
                     Debug.log "pathsToCmd LoadError, ignore" Cmd.none
-
-                GettingScrollBootstrap _ _ ->
-                    Debug.log "pathsToCmd GettingScrollBootstrap, ignore" Cmd.none
 
                 LoadedList (AlbumListPage albumList winSize parents) _ _ _ _ ->
                     --TODO maybe don't always prepend aTN here, only if at root?
@@ -713,9 +668,6 @@ queryFor model =
             ""
 
         LoadError _ _ ->
-            ""
-
-        GettingScrollBootstrap _ _ ->
             ""
 
         LoadedAlbum _ _ _ _ _ pos ->
@@ -951,9 +903,6 @@ view albumBootstrap =
         LoadError _ e ->
             text ("Error Loading Album: " ++ toString e)
 
-        GettingScrollBootstrap prevModel _ ->
-            view prevModel
-
         LoadedAlbum albumPage parents flags home pendingUrls scrollPos ->
             withHomeLink home flags <|
                 AlbumPage.view
@@ -964,7 +913,7 @@ view albumBootstrap =
                         (pageSize albumPage)
                         -- currently scrolled thing is the album;
                         -- don't want to save that anywhere in the list of parents
-                        (\_ -> parents)
+                        parents
                     )
                     PageMsg
                     (List.map Tuple.first parents)
@@ -981,52 +930,42 @@ view albumBootstrap =
                     (viewList
                         albumBootstrap
                         winSize
-                        (\maybeScroll -> ( albumList, maybeScroll ) :: parents)
+                        (( albumList, scrollPos ) :: parents)
                     )
                     (\album ->
-                        GetScroll albumBootstrap <|
-                            \maybeScroll ->
-                                \oldModel ->
-                                    ( oldModel
-                                    , ViewAlbum
-                                        (Thumbs album winSize Set.empty Set.empty)
-                                      <|
-                                        ( albumList, maybeScroll )
-                                            :: parents
-                                    )
+                        ViewAlbum
+                            (Thumbs album winSize Set.empty Set.empty)
+                        <|
+                            ( albumList, scrollPos )
+                                :: parents
                     )
                     ScrolledTo
                     flags
 
 
-viewList : AlbumBootstrap -> WinSize -> (Maybe Float -> List ( AlbumList, Maybe Float )) -> AlbumList -> AlbumBootstrapMsg
-viewList oldModel winSize makeParents list =
-    GetScroll oldModel <|
-        \maybeScroll ->
-            \oldModel2 ->
-                ( oldModel2
-                , ViewList
-                    (AlbumListPage list winSize <|
-                        dropThroughPred
-                            (\( p, _ ) -> p == list)
-                            (makeParents maybeScroll)
-                    )
-                    (if List.member list (List.map Tuple.first <| makeParents maybeScroll) then
-                        --we're navigating up to a parent
-                        --look up and use saved scroll position of that parent
-                        case List.head <| List.filter (\e -> list == Tuple.first e) <| makeParents maybeScroll of
-                            Just p ->
-                                Tuple.second p
+viewList : AlbumBootstrap -> WinSize -> List ( AlbumList, Maybe Float ) -> AlbumList -> AlbumBootstrapMsg
+viewList oldModel winSize parents list =
+    ViewList
+        (AlbumListPage list winSize <|
+            dropThroughPred
+                (\( p, _ ) -> p == list)
+                parents
+        )
+        (if List.member list (List.map Tuple.first parents) then
+            --we're navigating up to a parent
+            --look up and use saved scroll position of that parent
+            case List.head <| List.filter (\e -> list == Tuple.first e) parents of
+                Just p ->
+                    Tuple.second p
 
-                            Nothing ->
-                                Nothing
-                     else
-                        --we're navigating down to a child; since we don't save
-                        --scroll positions of children, don't declare an explicit
-                        --target scroll position
-                        Nothing
-                    )
-                )
+                Nothing ->
+                    Nothing
+         else
+            --we're navigating down to a child; since we don't save
+            --scroll positions of children, don't declare an explicit
+            --target scroll position
+            Nothing
+        )
 
 
 withHomeLink : Maybe String -> AlbumBootstrapFlags -> Html AlbumBootstrapMsg -> Html AlbumBootstrapMsg
