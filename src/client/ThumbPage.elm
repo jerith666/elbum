@@ -104,15 +104,14 @@ urlsToGet thumbPageModel =
         srcs =
             List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
     in
-    Debug.log "urlsToGet" <|
-        Set.fromList <|
-            List.take 5 <|
-                List.filter
-                    (\url -> not <| member url <| Set.union thumbPageModel.justLoadedImages thumbPageModel.readyToDisplayImages)
-                <|
-                    List.map
-                        (\i -> i.url)
-                        srcs
+    Set.fromList <|
+        List.take 5 <|
+            List.filter
+                (\url -> not <| member url <| Set.union thumbPageModel.justLoadedImages thumbPageModel.readyToDisplayImages)
+            <|
+                List.map
+                    (\i -> i.url)
+                    srcs
 
 
 viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
@@ -138,10 +137,10 @@ colsWidth : WinSize -> ( Int, Int )
 colsWidth winSize =
     let
         maxCols =
-            Debug.log "maxCols" <| Basics.max (winSize.width // maxThumbWidth) 2
+            Basics.max (winSize.width // maxThumbWidth) 2
 
         thumbWidth =
-            Debug.log "thumbWidth" <| (winSize.width - scrollPad) // maxCols
+            (winSize.width - scrollPad) // maxCols
     in
     ( maxCols, thumbWidth )
 
@@ -151,18 +150,18 @@ convertImgChosenMsgr image1 images prevCurRestImgChosenMsgr =
     \i ->
         let
             prev =
-                Debug.log ("prev i=" ++ toString i) (List.take i images)
+                List.take i images
 
             cur =
                 case List.head (List.drop i images) of
                     Just img ->
-                        Debug.log ("cur i=" ++ toString i) img
+                        img
 
                     Nothing ->
-                        Debug.log ("cur NOTHING!!! i=" ++ toString i) image1
+                        image1
 
             next =
-                Debug.log ("next i=" ++ toString i) (List.drop (i + 1) images)
+                List.drop (i + 1) images
         in
         prevCurRestImgChosenMsgr prev cur next
 
@@ -213,19 +212,14 @@ insertImage : Int -> Int -> Image -> List (List ( Image, Int )) -> List (List ( 
 insertImage maxCols i nextImg alreadySpreadImages =
     if List.length alreadySpreadImages < maxCols then
         alreadySpreadImages
-            ++ [ [ ( Debug.log ("start column " ++ toString (List.length alreadySpreadImages) ++ " with image " ++ toString i)
-                        nextImg
-                   , i
-                   )
-                 ]
-               ]
+            ++ [ [ ( nextImg, i ) ] ]
     else
         let
             is =
                 findShortest alreadySpreadImages
 
             iShortest =
-                Debug.log ("image " ++ toString i ++ " goes in (col,height) ") is
+                is
         in
         mapI (Tuple.first iShortest) (\x -> x ++ [ ( nextImg, i ) ]) alreadySpreadImages
 
@@ -240,7 +234,7 @@ findShortest imageLists =
     List.foldr
         shorter
         shorterBaseCase
-        (Debug.log "heights" (List.indexedMap (,) (List.map (List.sum << List.map (imgHeight << Tuple.first)) imageLists)))
+        (List.indexedMap (,) (List.map (List.sum << List.map (imgHeight << Tuple.first)) imageLists))
 
 
 

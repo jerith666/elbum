@@ -818,7 +818,7 @@ getUrl url =
             (Http.request
                 { method = "GET"
                 , headers = []
-                , url = Debug.log "getUrl" <| encodePath url
+                , url = encodePath url
                 , body = emptyBody
                 , expect = expectStringResponse <| handleGetResponse url
                 , timeout = Nothing
