@@ -63,7 +63,6 @@ type AlbumBootstrapMsg
     | Scroll Float
     | Sequence (Cmd AlbumBootstrapMsg) (List (Cmd AlbumBootstrapMsg))
     | NoBootstrap
-    | LogScroll Float
 
 
 main : RouteUrlProgram AlbumBootstrapFlags AlbumBootstrap AlbumBootstrapMsg
@@ -313,11 +312,6 @@ update msg model =
 
         NoBootstrap ->
             ( model, Cmd.none )
-
-        LogScroll s ->
-            case Debug.log "scroll from port " s of
-                _ ->
-                    ( model, Cmd.none )
 
 
 gotHome : WinSize -> AlbumBootstrapFlags -> Maybe (List String) -> Maybe Float -> Maybe String -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
