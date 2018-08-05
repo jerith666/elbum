@@ -43,7 +43,7 @@ view imgChosenMsgr showList thumbPageModel flags =
         [ overflowX Css.hidden ]
     <|
         [ albumTitle thumbPageModel.album.title thumbPageModel.parents showList [] [ position fixed ]
-        , albumTitle thumbPageModel.album.title thumbPageModel.parents showList [] [ Css.property "visibility" "hidden" ]
+        , albumTitle thumbPageModel.album.title thumbPageModel.parents showList [] [ visibility hidden ]
         , div
             [ styles
                 [ displayFlex
