@@ -599,56 +599,54 @@ locFor : AlbumBootstrap -> AlbumBootstrap -> Maybe UrlChange
 locFor oldModel newModel =
     let
         model =
-            Debug.log "history newModel" newModel
+            newModel
 
         entry =
-            Debug.log "history entry type" <|
-                case Debug.log "history oldModel" oldModel of
-                    LoadedList _ _ _ _ _ ->
-                        case newModel of
-                            LoadedList _ _ _ _ _ ->
-                                case oldModel == newModel of
-                                    True ->
-                                        ModifyEntry
+            case oldModel of
+                LoadedList _ _ _ _ _ ->
+                    case newModel of
+                        LoadedList _ _ _ _ _ ->
+                            case oldModel == newModel of
+                                True ->
+                                    ModifyEntry
 
-                                    False ->
-                                        NewEntry
+                                False ->
+                                    NewEntry
 
-                            _ ->
-                                NewEntry
+                        _ ->
+                            NewEntry
 
-                    LoadedAlbum _ _ _ _ _ _ ->
-                        case newModel of
-                            LoadedAlbum _ _ _ _ _ _ ->
-                                case oldModel == newModel of
-                                    True ->
-                                        ModifyEntry
+                LoadedAlbum _ _ _ _ _ _ ->
+                    case newModel of
+                        LoadedAlbum _ _ _ _ _ _ ->
+                            case oldModel == newModel of
+                                True ->
+                                    ModifyEntry
 
-                                    False ->
-                                        NewEntry
+                                False ->
+                                    NewEntry
 
-                            _ ->
-                                NewEntry
+                        _ ->
+                            NewEntry
 
-                    _ ->
-                        NewEntry
+                _ ->
+                    NewEntry
     in
-    Debug.log "history update" <|
-        case model of
-            LoadedAlbum albumPage parents _ _ _ _ ->
-                Just
-                    { entry = entry
-                    , url = queryFor model ++ (hashForAlbum model albumPage <| List.map Tuple.first parents)
-                    }
+    case model of
+        LoadedAlbum albumPage parents _ _ _ _ ->
+            Just
+                { entry = entry
+                , url = queryFor model ++ (hashForAlbum model albumPage <| List.map Tuple.first parents)
+                }
 
-            LoadedList albumListPage _ _ _ _ ->
-                Just
-                    { entry = entry
-                    , url = queryFor model ++ hashForList model albumListPage
-                    }
+        LoadedList albumListPage _ _ _ _ ->
+            Just
+                { entry = entry
+                , url = queryFor model ++ hashForList model albumListPage
+                }
 
-            _ ->
-                Nothing
+        _ ->
+            Nothing
 
 
 queryFor : AlbumBootstrap -> String
