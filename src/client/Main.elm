@@ -438,7 +438,7 @@ pathsToCmdImpl : WinSize -> List AlbumList -> List String -> Cmd AlbumBootstrapM
 pathsToCmdImpl size parents paths =
     let
         mRoot =
-            Debug.log "mRoot" <| List.head <| List.reverse parents
+            List.head <| List.reverse parents
     in
     case mRoot of
         Nothing ->
@@ -537,7 +537,7 @@ findChild containingList name =
                 Leaf album ->
                     album.title == name
     in
-    Debug.log ("looking for " ++ name) <| List.head <| List.filter f <| containingList.childFirst :: containingList.childRest
+    List.head <| List.filter f <| containingList.childFirst :: containingList.childRest
 
 
 cmdOf : a -> Cmd a
@@ -697,7 +697,7 @@ getUrl url =
             (Http.request
                 { method = "GET"
                 , headers = []
-                , url = Debug.log "getUrl" <| encodePath url
+                , url = encodePath url
                 , body = emptyBody
                 , expect = expectStringResponse <| handleGetResponse url
                 , timeout = Nothing
