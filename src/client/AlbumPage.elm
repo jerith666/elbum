@@ -145,7 +145,7 @@ update msg model scroll =
             ( model, Cmd.none )
 
 
-progInit : WinSize -> Image -> Int -> Int -> ( ProgressiveImageModel, Cmd ProgressiveImageMsg )
+progInit : WinSize -> Image -> Int -> Int -> ( ProgressiveImageModel, ProgressiveImageMsg )
 progInit winSize i w h =
     let
         ( _, thumbWidth ) =

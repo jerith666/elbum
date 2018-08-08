@@ -293,13 +293,17 @@ update msg model =
             ( withPaths model paths, toCmd <| Maybe.withDefault NoBootstrap <| pathsToCmd model <| Just paths )
 
         Sequence next rest ->
+            --TODO invoke update directly for each msg in sequence,
+            --collect up resulting Cmds, and execute them once via Cmd.batch
             let
                 cmds =
                     case rest of
                         [] ->
+                            --TODO
                             toCmd <| Debug.log "sequenced cmd: last" next
 
                         r1 :: rs ->
+                            --TODO
                             Cmd.batch [ toCmd <| Debug.log "sequenced cmd: next" next, toCmd <| Sequence r1 rs ]
             in
             ( model, cmds )
@@ -532,18 +536,15 @@ scrollToCmd : AlbumBootstrap -> Maybe Float -> Maybe AlbumBootstrapMsg
 scrollToCmd model scroll =
     let
         scrollCmd =
-            Maybe.withDefault
-                Nothing
-            <|
-                Maybe.map
-                    (\s ->
-                        Task.attempt
-                            (\_ -> NoBootstrap)
-                        <|
-                            toY rootDivId <|
-                                Debug.log "startup scroll to" s
-                    )
-                    scroll
+            Maybe.map
+                (\s ->
+                    Task.attempt
+                        (\_ -> NoBootstrap)
+                    <|
+                        toY rootDivId <|
+                            Debug.log "startup scroll to" s
+                )
+                scroll
     in
     case model of
         Sizing _ _ _ ->
@@ -621,7 +622,7 @@ navForAlbum size album ps newParents =
                     Just <|
                         Sequence
                             (ViewAlbum (FullImage prevs nAlbum progModel size Nothing Nothing) parentsNoScroll)
-                            [ Cmd.map PageMsg <| Cmd.map FullMsg progCmd ]
+                            [ PageMsg <| FullMsg progCmd ]
 
 
 findImg : List Image -> Album -> String -> Maybe ( List Image, Album )
