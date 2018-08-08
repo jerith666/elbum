@@ -157,10 +157,6 @@ update msg model =
         YesAlbum albumOrList ->
             case model of
                 Loading winSize flags home paths scroll ->
-                    let
-                        scrollCmd =
-                            Maybe.withDefault Cmd.none <| Maybe.map (\s -> Task.attempt (\_ -> NoBootstrap) <| toY rootDivId <| Debug.log "startup scroll to" s) scroll
-                    in
                     case albumOrList of
                         List albumList ->
                             let
@@ -169,7 +165,7 @@ update msg model =
 
                                 pathsThenScroll =
                                     --hack delay scroll a bit with NoBootstrap
-                                    toCmd <| Sequence (pathsToCmd newModel paths) [ toCmd NoBootstrap, scrollCmd ]
+                                    toCmd <| Sequence (pathsToCmd newModel paths) [ toCmd NoBootstrap, scrollToCmd newModel scroll ]
                             in
                             ( newModel
                             , Cmd.batch
@@ -191,7 +187,7 @@ update msg model =
 
                                 pathsThenScroll =
                                     --hack delay scroll a bit with NoBootstrap
-                                    toCmd <| Sequence (pathsToCmd newModel paths) [ toCmd NoBootstrap, scrollCmd ]
+                                    toCmd <| Sequence (pathsToCmd newModel paths) [ toCmd NoBootstrap, scrollToCmd newModel scroll ]
                             in
                             ( newModel
                             , Cmd.batch
@@ -293,7 +289,7 @@ update msg model =
             ( model, Cmd.none )
 
         Scroll s ->
-            ( withScroll model s, Cmd.none )
+            ( withScroll model s, scrollToCmd model <| Just s )
 
         Nav paths ->
             ( withPaths model paths, pathsToCmd model <| Just paths )
@@ -501,6 +497,43 @@ pathsToCmdImpl size parents paths =
 
         Just root ->
             navFrom size root [] paths <| toCmd <| ViewList (AlbumListPage root size []) Nothing
+
+
+scrollToCmd : AlbumBootstrap -> Maybe Float -> Cmd AlbumBootstrapMsg
+scrollToCmd model scroll =
+    let
+        scrollCmd =
+            Maybe.withDefault
+                Cmd.none
+            <|
+                Maybe.map
+                    (\s ->
+                        Task.attempt
+                            (\_ -> NoBootstrap)
+                        <|
+                            toY rootDivId <|
+                                Debug.log "startup scroll to" s
+                    )
+                    scroll
+    in
+    case model of
+        Sizing _ _ _ ->
+            Cmd.none
+
+        LoadingHomeLink _ _ _ _ ->
+            Cmd.none
+
+        Loading _ _ _ _ _ ->
+            Cmd.none
+
+        LoadError _ _ ->
+            Debug.log "scrollToCmd LoadError, ignore" Cmd.none
+
+        LoadedList _ _ _ _ _ ->
+            scrollCmd
+
+        LoadedAlbum _ _ _ _ _ _ ->
+            scrollCmd
 
 
 navFrom : WinSize -> AlbumList -> List AlbumList -> List String -> Cmd AlbumBootstrapMsg -> Cmd AlbumBootstrapMsg
