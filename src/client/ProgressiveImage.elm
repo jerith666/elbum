@@ -11,6 +11,7 @@ import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)
+import ResultUtils exposing (..)
 import Time exposing (..)
 
 
@@ -90,7 +91,7 @@ showMsg =
     Animation.interrupt [ Animation.to shown, Animation.Messenger.send MainFadeinComplete ]
 
 
-init : ProgressiveImageData -> ( ProgressiveImageModel, Cmd ProgressiveImageMsg )
+init : ProgressiveImageData -> ( ProgressiveImageModel, ProgressiveImageMsg )
 init data =
     let
         animState =
@@ -219,23 +220,23 @@ updateModel msg ((ProgImgModel data status animState) as model) =
             ProgImgModel data status <| { animState | placeholder = Animation.update animMsg animState.placeholder }
 
 
-updateCmd : ProgressiveImageModel -> Cmd ProgressiveImageMsg
+updateCmd : ProgressiveImageModel -> Maybe ProgressiveImageMsg
 updateCmd (ProgImgModel data status animState) =
     case status of
         TryingCached _ trying _ ->
             Delay.after 200 millisecond <| Timeout trying
 
         LoadingFallback ->
-            Cmd.none
+            Nothing
 
         LoadingMain _ ->
-            Cmd.none
+            Nothing
 
         MainLoaded oldPlaceholder ->
-            Cmd.none
+            Nothing
 
         MainOnly ->
-            Cmd.none
+            Nothing
 
 
 subscriptions : ProgressiveImageModel -> Sub ProgressiveImageMsg
