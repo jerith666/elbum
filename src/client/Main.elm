@@ -343,7 +343,15 @@ navToMsg loc =
                     fromMaybe <|
                         Maybe.map Scroll (scroll |> Maybe.andThen (Result.toMaybe << String.toFloat))
     in
-    hashMsgs ++ queryMsgs
+    case hashMsgs ++ queryMsgs of
+        [] ->
+            []
+
+        [ c ] ->
+            [ c ]
+
+        c1 :: cs ->
+            [ Sequence (toCmd c1) <| List.map toCmd cs ]
 
 
 flagsOf : AlbumBootstrap -> AlbumBootstrapFlags
