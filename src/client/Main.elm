@@ -674,21 +674,22 @@ locFor oldModel newModel =
                 _ ->
                     NewEntry
     in
-    case model of
-        LoadedAlbum albumPage parents _ _ _ _ ->
-            Just
-                { entry = entry
-                , url = queryFor model ++ (hashForAlbum model albumPage <| List.map Tuple.first parents)
-                }
+    Debug.log "locFor" <|
+        case model of
+            LoadedAlbum albumPage parents _ _ _ _ ->
+                Just
+                    { entry = entry
+                    , url = queryFor model ++ (hashForAlbum model albumPage <| List.map Tuple.first parents)
+                    }
 
-        LoadedList albumListPage _ _ _ _ ->
-            Just
-                { entry = entry
-                , url = queryFor model ++ hashForList model albumListPage
-                }
+            LoadedList albumListPage _ _ _ _ ->
+                Just
+                    { entry = entry
+                    , url = queryFor model ++ hashForList model albumListPage
+                    }
 
-        _ ->
-            Nothing
+            _ ->
+                Nothing
 
 
 queryFor : AlbumBootstrap -> String
