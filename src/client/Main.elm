@@ -164,8 +164,7 @@ update msg model =
                                     LoadedList (AlbumListPage albumList winSize []) flags home Dict.empty Nothing
 
                                 pathsThenScroll =
-                                    --hack delay scroll a bit with NoBootstrap
-                                    toCmd <| Sequence (pathsToCmd newModel paths) [ toCmd NoBootstrap, scrollToCmd newModel scroll ]
+                                    toCmd <| Sequence (pathsToCmd newModel paths) [ scrollToCmd newModel scroll ]
                             in
                             ( newModel
                             , Cmd.batch
@@ -186,8 +185,7 @@ update msg model =
                                     LoadedAlbum albumPage [] flags home (dictWithValues urls UrlRequested) Nothing
 
                                 pathsThenScroll =
-                                    --hack delay scroll a bit with NoBootstrap
-                                    toCmd <| Sequence (pathsToCmd newModel paths) [ toCmd NoBootstrap, scrollToCmd newModel scroll ]
+                                    toCmd <| Sequence (pathsToCmd newModel paths) [ scrollToCmd newModel scroll ]
                             in
                             ( newModel
                             , Cmd.batch
@@ -340,8 +338,11 @@ navToMsg loc =
                     []
 
                 Ok ( _, _, scroll ) ->
-                    fromMaybe <|
-                        Maybe.map Scroll (scroll |> Maybe.andThen (Result.toMaybe << String.toFloat))
+                    NoBootstrap
+                        -- hack delay
+                        :: (fromMaybe <|
+                                Maybe.map Scroll (scroll |> Maybe.andThen (Result.toMaybe << String.toFloat))
+                           )
     in
     case hashMsgs ++ queryMsgs of
         [] ->
