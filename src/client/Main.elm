@@ -61,7 +61,7 @@ type AlbumBootstrapMsg
     | ScrollFailed Id
     | Nav (List String)
     | Scroll Float
-    | Sequence (Cmd AlbumBootstrapMsg) (List (Cmd AlbumBootstrapMsg))
+    | Sequence AlbumBootstrapMsg (List AlbumBootstrapMsg)
     | NoBootstrap
 
 
@@ -164,7 +164,7 @@ update msg model =
                                     LoadedList (AlbumListPage albumList winSize []) flags home Dict.empty Nothing
 
                                 pathsThenScroll =
-                                    toCmd <| Sequence (pathsToCmd newModel paths) [ scrollToCmd newModel scroll ]
+                                    toCmd <| sequence (pathsToCmd newModel paths) <| fromMaybe <| scrollToCmd newModel scroll
                             in
                             ( newModel
                             , Cmd.batch
@@ -185,7 +185,7 @@ update msg model =
                                     LoadedAlbum albumPage [] flags home (dictWithValues urls UrlRequested) Nothing
 
                                 pathsThenScroll =
-                                    toCmd <| Sequence (pathsToCmd newModel paths) [ scrollToCmd newModel scroll ]
+                                    toCmd <| sequence (pathsToCmd newModel paths) <| fromMaybe <| scrollToCmd newModel scroll
                             in
                             ( newModel
                             , Cmd.batch
@@ -287,25 +287,45 @@ update msg model =
             ( model, Cmd.none )
 
         Scroll s ->
-            ( withScroll model s, scrollToCmd model <| Just s )
+            ( withScroll model s, toCmd <| Maybe.withDefault NoBootstrap <| scrollToCmd model <| Just s )
 
         Nav paths ->
-            ( withPaths model paths, pathsToCmd model <| Just paths )
+            ( withPaths model paths, toCmd <| Maybe.withDefault NoBootstrap <| pathsToCmd model <| Just paths )
 
         Sequence next rest ->
             let
                 cmds =
                     case rest of
                         [] ->
-                            Debug.log "sequenced cmd: last" next
+                            toCmd <| Debug.log "sequenced cmd: last" next
 
                         r1 :: rs ->
-                            Cmd.batch [ Debug.log "sequenced cmd: next" next, toCmd <| Sequence r1 rs ]
+                            Cmd.batch [ toCmd <| Debug.log "sequenced cmd: next" next, toCmd <| Sequence r1 rs ]
             in
             ( model, cmds )
 
         NoBootstrap ->
             ( model, Cmd.none )
+
+
+sequence : Maybe AlbumBootstrapMsg -> List AlbumBootstrapMsg -> AlbumBootstrapMsg
+sequence mm1 ms =
+    case mm1 of
+        Nothing ->
+            case List.tail ms of
+                Nothing ->
+                    case List.head ms of
+                        Nothing ->
+                            NoBootstrap
+
+                        Just ms1 ->
+                            ms1
+
+                Just mst ->
+                    sequence (List.head ms) mst
+
+        Just m1 ->
+            Sequence m1 ms
 
 
 gotHome : WinSize -> AlbumBootstrapFlags -> Maybe (List String) -> Maybe Float -> Maybe String -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
@@ -352,7 +372,7 @@ navToMsg loc =
             [ c ]
 
         c1 :: cs ->
-            [ Sequence (toCmd c1) <| List.map toCmd cs ]
+            [ Sequence c1 cs ]
 
 
 flagsOf : AlbumBootstrap -> AlbumBootstrapFlags
@@ -465,25 +485,25 @@ withScroll model scroll =
             model
 
 
-pathsToCmd : AlbumBootstrap -> Maybe (List String) -> Cmd AlbumBootstrapMsg
+pathsToCmd : AlbumBootstrap -> Maybe (List String) -> Maybe AlbumBootstrapMsg
 pathsToCmd model mPaths =
     case mPaths of
         Nothing ->
-            Cmd.none
+            Nothing
 
         Just paths ->
             case model of
                 Sizing _ _ _ ->
-                    Cmd.none
+                    Nothing
 
                 LoadingHomeLink _ _ _ _ ->
-                    Cmd.none
+                    Nothing
 
                 Loading _ _ _ _ _ ->
-                    Cmd.none
+                    Nothing
 
                 LoadError _ _ ->
-                    Debug.log "pathsToCmd LoadError, ignore" Cmd.none
+                    Debug.log "pathsToCmd LoadError, ignore" Nothing
 
                 LoadedList (AlbumListPage albumList winSize parents) _ _ _ _ ->
                     --TODO maybe don't always prepend aTN here, only if at root?
@@ -494,7 +514,7 @@ pathsToCmd model mPaths =
                     pathsToCmdImpl (pageSize albumPage) (List.map Tuple.first parents) paths
 
 
-pathsToCmdImpl : WinSize -> List AlbumList -> List String -> Cmd AlbumBootstrapMsg
+pathsToCmdImpl : WinSize -> List AlbumList -> List String -> Maybe AlbumBootstrapMsg
 pathsToCmdImpl size parents paths =
     let
         mRoot =
@@ -502,18 +522,18 @@ pathsToCmdImpl size parents paths =
     in
     case mRoot of
         Nothing ->
-            Cmd.none
+            Nothing
 
         Just root ->
-            navFrom size root [] paths <| toCmd <| ViewList (AlbumListPage root size []) Nothing
+            navFrom size root [] paths <| Just <| ViewList (AlbumListPage root size []) Nothing
 
 
-scrollToCmd : AlbumBootstrap -> Maybe Float -> Cmd AlbumBootstrapMsg
+scrollToCmd : AlbumBootstrap -> Maybe Float -> Maybe AlbumBootstrapMsg
 scrollToCmd model scroll =
     let
         scrollCmd =
             Maybe.withDefault
-                Cmd.none
+                Nothing
             <|
                 Maybe.map
                     (\s ->
@@ -527,16 +547,16 @@ scrollToCmd model scroll =
     in
     case model of
         Sizing _ _ _ ->
-            Cmd.none
+            Nothing
 
         LoadingHomeLink _ _ _ _ ->
-            Cmd.none
+            Nothing
 
         Loading _ _ _ _ _ ->
-            Cmd.none
+            Nothing
 
         LoadError _ _ ->
-            Debug.log "scrollToCmd LoadError, ignore" Cmd.none
+            Debug.log "scrollToCmd LoadError, ignore" Nothing
 
         LoadedList _ _ _ _ _ ->
             scrollCmd
@@ -545,7 +565,7 @@ scrollToCmd model scroll =
             scrollCmd
 
 
-navFrom : WinSize -> AlbumList -> List AlbumList -> List String -> Cmd AlbumBootstrapMsg -> Cmd AlbumBootstrapMsg
+navFrom : WinSize -> AlbumList -> List AlbumList -> List String -> Maybe AlbumBootstrapMsg -> Maybe AlbumBootstrapMsg
 navFrom size root parents paths defcmd =
     case paths of
         [] ->
@@ -569,13 +589,13 @@ navFrom size root parents paths defcmd =
                 Just pChild ->
                     case pChild of
                         List albumList ->
-                            navFrom size albumList newParents ps <| toCmd <| ViewList (AlbumListPage albumList size <| List.map (\p -> ( p, Nothing )) newParents) Nothing
+                            navFrom size albumList newParents ps <| Just <| ViewList (AlbumListPage albumList size <| List.map (\p -> ( p, Nothing )) newParents) Nothing
 
                         Leaf album ->
                             navForAlbum size album ps newParents
 
 
-navForAlbum : WinSize -> Album -> List String -> List AlbumList -> Cmd AlbumBootstrapMsg
+navForAlbum : WinSize -> Album -> List String -> List AlbumList -> Maybe AlbumBootstrapMsg
 navForAlbum size album ps newParents =
     let
         parentsNoScroll =
@@ -583,12 +603,12 @@ navForAlbum size album ps newParents =
     in
     case ps of
         [] ->
-            toCmd <| ViewAlbum (Thumbs album size Set.empty Set.empty) parentsNoScroll
+            Just <| ViewAlbum (Thumbs album size Set.empty Set.empty) parentsNoScroll
 
         i :: _ ->
             case findImg [] album i of
                 Nothing ->
-                    Cmd.none
+                    Nothing
 
                 Just ( prevs, nAlbum ) ->
                     let
@@ -598,10 +618,10 @@ navForAlbum size album ps newParents =
                         ( progModel, progCmd ) =
                             progInit size nAlbum.imageFirst w h
                     in
-                    Cmd.batch
-                        [ toCmd <| ViewAlbum (FullImage prevs nAlbum progModel size Nothing Nothing) parentsNoScroll
-                        , Cmd.map PageMsg <| Cmd.map FullMsg progCmd
-                        ]
+                    Just <|
+                        Sequence
+                            (ViewAlbum (FullImage prevs nAlbum progModel size Nothing Nothing) parentsNoScroll)
+                            [ Cmd.map PageMsg <| Cmd.map FullMsg progCmd ]
 
 
 findImg : List Image -> Album -> String -> Maybe ( List Image, Album )
