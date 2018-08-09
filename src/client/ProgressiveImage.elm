@@ -60,6 +60,7 @@ type ProgressiveImageModel
 
 type ProgressiveImageMsg
     = Loaded ImgSrc
+    | ScheduleTimeout Float Time ImgSrc
     | Timeout ImgSrc
     | MainFadeinComplete
     | AnimatePlaceholder Animation.Msg
@@ -91,7 +92,7 @@ showMsg =
     Animation.interrupt [ Animation.to shown, Animation.Messenger.send MainFadeinComplete ]
 
 
-init : ProgressiveImageData -> ( ProgressiveImageModel, ProgressiveImageMsg )
+init : ProgressiveImageData -> ( ProgressiveImageModel, Maybe ProgressiveImageMsg )
 init data =
     let
         animState =
@@ -123,12 +124,15 @@ update msg ((ProgImgModel data status animState) as oldModel) =
             in
             ( ProgImgModel data status <| { animState | main = newMainState }, animCmd )
 
+        ScheduleTimeout n unit img ->
+            ( oldModel, Delay.after n unit <| Timeout img )
+
         _ ->
             let
                 newModel =
                     updateModel msg oldModel
             in
-            ( newModel, updateCmd newModel )
+            ( newModel, Maybe.withDefault Cmd.none <| Maybe.map toCmd <| updateCmd newModel )
 
 
 updateModel : ProgressiveImageMsg -> ProgressiveImageModel -> ProgressiveImageModel
@@ -191,6 +195,9 @@ updateModel msg ((ProgImgModel data status animState) as model) =
                     --shouldn't happen
                     model
 
+        ScheduleTimeout _ _ _ ->
+            model
+
         MainFadeinComplete ->
             case status of
                 MainLoaded _ ->
@@ -224,7 +231,7 @@ updateCmd : ProgressiveImageModel -> Maybe ProgressiveImageMsg
 updateCmd (ProgImgModel data status animState) =
     case status of
         TryingCached _ trying _ ->
-            Delay.after 200 millisecond <| Timeout trying
+            Just <| ScheduleTimeout 200 millisecond trying
 
         LoadingFallback ->
             Nothing

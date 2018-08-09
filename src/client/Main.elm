@@ -622,7 +622,9 @@ navForAlbum size album ps newParents =
                     Just <|
                         Sequence
                             (ViewAlbum (FullImage prevs nAlbum progModel size Nothing Nothing) parentsNoScroll)
-                            [ PageMsg <| FullMsg progCmd ]
+                        <|
+                            fromMaybe <|
+                                Maybe.map (PageMsg << FullMsg) progCmd
 
 
 findImg : List Image -> Album -> String -> Maybe ( List Image, Album )
