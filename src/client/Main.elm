@@ -308,20 +308,20 @@ update msg model =
             ( withPaths model paths, toCmd <| Maybe.withDefault NoBootstrap <| pathsToCmd model <| Just paths )
 
         Sequence next rest ->
-            --TODO invoke update directly for each msg in sequence,
-            --collect up resulting Cmds, and execute them once via Cmd.batch
             let
-                cmds =
-                    case rest of
-                        [] ->
-                            --TODO
-                            toCmd <| Debug.log "sequenced cmd: last" next
-
-                        r1 :: rs ->
-                            --TODO
-                            Cmd.batch [ toCmd <| Debug.log "sequenced cmd: next" next, toCmd <| Sequence r1 rs ]
+                ( nextModel, nextCmd ) =
+                    update next model
             in
-            ( model, cmds )
+            case rest of
+                [] ->
+                    ( nextModel, nextCmd )
+
+                r1 :: rs ->
+                    let
+                        ( fModel, rCmds ) =
+                            update r1 nextModel
+                    in
+                    ( fModel, Cmd.batch [ nextCmd, rCmds ] )
 
         NoBootstrap ->
             ( model, Cmd.none )
