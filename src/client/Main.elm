@@ -87,7 +87,7 @@ init flags =
 
 update : AlbumBootstrapMsg -> AlbumBootstrap -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 update msg model =
-    case msg of
+    case Debug.log "update msg" msg of
         Resize size ->
             case model of
                 Sizing flags paths scroll ->
@@ -314,14 +314,26 @@ update msg model =
             in
             case rest of
                 [] ->
-                    ( nextModel, nextCmd )
+                    ( nextModel, Debug.log ("sequence msg " ++ toString next ++ " (last) produces cmd") nextCmd )
 
                 r1 :: rs ->
                     let
-                        ( fModel, rCmds ) =
+                        ( r1Model, r1Cmds ) =
                             update r1 nextModel
+
+                        ( rModel, rCmds ) =
+                            case rs of
+                                [] ->
+                                    ( r1Model, r1Cmds )
+
+                                rs1 :: rss ->
+                                    let
+                                        ( rsModel, rsCmds ) =
+                                            update (Sequence rs1 rss) r1Model
+                                    in
+                                    ( rsModel, Cmd.batch [ r1Cmds, rsCmds ] )
                     in
-                    ( fModel, Cmd.batch [ nextCmd, rCmds ] )
+                    ( rModel, Cmd.batch [ Debug.log ("sequence msg " ++ toString next ++ " (cont'd) produces cmd") nextCmd, rCmds ] )
 
         NoBootstrap ->
             ( model, Cmd.none )
