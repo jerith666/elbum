@@ -10,6 +10,7 @@ import Keyboard exposing (..)
 import KeyboardUtils exposing (onEscape)
 import ListUtils exposing (..)
 import ProgressiveImage exposing (..)
+import ResultUtils exposing (..)
 import Set exposing (..)
 import Task exposing (..)
 import ThumbPage exposing (..)
@@ -58,7 +59,7 @@ update msg model scroll =
                         winSize
                         scroll
                         Nothing
-                    , Cmd.map FullMsg progCmd
+                    , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd progCmd
                     )
 
                 _ ->
@@ -145,7 +146,7 @@ update msg model scroll =
             ( model, Cmd.none )
 
 
-progInit : WinSize -> Image -> Int -> Int -> ( ProgressiveImageModel, ProgressiveImageMsg )
+progInit : WinSize -> Image -> Int -> Int -> ( ProgressiveImageModel, Maybe ProgressiveImageMsg )
 progInit winSize i w h =
     let
         ( _, thumbWidth ) =
@@ -173,7 +174,7 @@ updatePrevNext model shifter =
 
                 ( newProgModel, newCmd ) =
                     if album.imageFirst == newCur then
-                        ( oldProgModel, Cmd.none )
+                        ( oldProgModel, Nothing )
                     else
                         let
                             ( w, h ) =
@@ -192,7 +193,7 @@ updatePrevNext model shifter =
                 winSize
                 savedScroll
                 Nothing
-            , Cmd.map FullMsg newCmd
+            , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd newCmd
             )
 
         _ ->
