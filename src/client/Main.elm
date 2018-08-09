@@ -63,6 +63,7 @@ type AlbumBootstrapMsg
     | Nav (List String)
     | Scroll Float
     | Sequence AlbumBootstrapMsg (List AlbumBootstrapMsg)
+    | SequenceCmd (Cmd AlbumBootstrapMsg) (List (Cmd AlbumBootstrapMsg))
     | NoBootstrap
 
 
@@ -331,9 +332,21 @@ update msg model =
                                         ( rsModel, rsCmds ) =
                                             update (Sequence rs1 rss) r1Model
                                     in
-                                    ( rsModel, Cmd.batch [ r1Cmds, rsCmds ] )
+                                    ( rsModel, toCmd <| SequenceCmd r1Cmds [ rsCmds ] )
                     in
-                    ( rModel, Cmd.batch [ Debug.log ("sequence msg " ++ toString next ++ " (cont'd) produces cmd") nextCmd, rCmds ] )
+                    ( rModel, toCmd <| SequenceCmd (Debug.log ("sequence msg " ++ toString next ++ " (cont'd) produces cmd") nextCmd) [ rCmds ] )
+
+        SequenceCmd next rest ->
+            let
+                cmds =
+                    case rest of
+                        [] ->
+                            Debug.log "sequenced cmd: last" next
+
+                        r1 :: rs ->
+                            Cmd.batch [ Debug.log "sequenced cmd: next" next, toCmd <| SequenceCmd r1 rs ]
+            in
+            ( model, cmds )
 
         NoBootstrap ->
             ( model, Cmd.none )
