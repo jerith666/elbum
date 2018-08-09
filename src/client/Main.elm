@@ -56,6 +56,7 @@ type AlbumBootstrapMsg
     | ImageLoaded String
     | ImageReadyToDisplay String
     | ImageFailed String Http.Error
+    | ScheduleScroll (Maybe Float)
     | ScrolledTo Float
     | ScrollSucceeded
     | ScrollFailed Id
@@ -279,6 +280,20 @@ update msg model =
 
         ScrolledTo pos ->
             ( withScrollPos pos model, Cmd.none )
+
+        ScheduleScroll scroll ->
+            ( model
+            , Maybe.withDefault Cmd.none <|
+                Maybe.map
+                    (\s ->
+                        Task.attempt
+                            (\_ -> NoBootstrap)
+                        <|
+                            toY rootDivId <|
+                                Debug.log "startup scroll to" s
+                    )
+                    scroll
+            )
 
         ScrollSucceeded ->
             ( model, Cmd.none )
@@ -536,15 +551,7 @@ scrollToCmd : AlbumBootstrap -> Maybe Float -> Maybe AlbumBootstrapMsg
 scrollToCmd model scroll =
     let
         scrollCmd =
-            Maybe.map
-                (\s ->
-                    Task.attempt
-                        (\_ -> NoBootstrap)
-                    <|
-                        toY rootDivId <|
-                            Debug.log "startup scroll to" s
-                )
-                scroll
+            Just <| ScheduleScroll scroll
     in
     case model of
         Sizing _ _ _ ->
