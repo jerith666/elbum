@@ -706,10 +706,10 @@ locFor oldModel newModel =
 
         entry =
             case oldModel of
-                LoadedList _ _ _ _ _ _ ->
+                LoadedList oAlbumListPage _ _ _ _ _ ->
                     case newModel of
-                        LoadedList _ _ _ _ _ _ ->
-                            case oldModel == newModel of
+                        LoadedList nAlbumListPage _ _ _ _ _ ->
+                            case oAlbumListPage == nAlbumListPage of
                                 True ->
                                     ModifyEntry
 
@@ -719,10 +719,10 @@ locFor oldModel newModel =
                         _ ->
                             NewEntry
 
-                LoadedAlbum _ _ _ _ _ _ _ ->
+                LoadedAlbum oAlbumPage oParents _ _ _ _ _ ->
                     case newModel of
-                        LoadedAlbum _ _ _ _ _ _ _ ->
-                            case oldModel == newModel of
+                        LoadedAlbum nAlbumPage nParents _ _ _ _ _ ->
+                            case oAlbumPage == nAlbumPage && oParents == nParents of
                                 True ->
                                     ModifyEntry
 
