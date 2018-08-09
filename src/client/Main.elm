@@ -32,8 +32,13 @@ type AlbumBootstrap
     | LoadingHomeLink WinSize AlbumBootstrapFlags (Maybe (List String)) (Maybe Float)
     | Loading WinSize AlbumBootstrapFlags (Maybe String) (Maybe (List String)) (Maybe Float)
     | LoadError AlbumBootstrapFlags Http.Error
-    | LoadedList AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float)
-    | LoadedAlbum AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float)
+    | LoadedList AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float) PostLoadNavState
+    | LoadedAlbum AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float) PostLoadNavState
+
+
+type PostLoadNavState
+    = NavInProgress
+    | NavInactive
 
 
 type UrlLoadState
@@ -109,7 +114,7 @@ update msg model =
                 LoadError _ _ ->
                     ( model, Cmd.none )
 
-                LoadedAlbum albumPage parents flags home pendingUrls scrollPos ->
+                LoadedAlbum albumPage parents flags home pendingUrls scrollPos postLoadNavState ->
                     case albumPage of
                         Thumbs album oldSize justLoadedImages readyToDisplayImages ->
                             let
@@ -127,16 +132,17 @@ update msg model =
                                     dictWithValues urls UrlRequested
                                 )
                                 scrollPos
+                                postLoadNavState
                             , getUrls pendingUrls urls
                             )
 
                         FullImage album index loaded oldSize savedScroll dragInfo ->
-                            ( LoadedAlbum (FullImage album index loaded (Debug.log "window size updated for full" size) savedScroll dragInfo) parents flags home pendingUrls scrollPos
+                            ( LoadedAlbum (FullImage album index loaded (Debug.log "window size updated for full" size) savedScroll dragInfo) parents flags home pendingUrls scrollPos postLoadNavState
                             , Cmd.none
                             )
 
-                LoadedList (AlbumListPage albumList oldSize parentLists) flags home pendingUrls scrollPos ->
-                    ( LoadedList (AlbumListPage albumList size parentLists) flags home pendingUrls scrollPos
+                LoadedList (AlbumListPage albumList oldSize parentLists) flags home pendingUrls scrollPos postLoadNavState ->
+                    ( LoadedList (AlbumListPage albumList size parentLists) flags home pendingUrls scrollPos postLoadNavState
                     , Cmd.none
                     )
 
@@ -163,7 +169,7 @@ update msg model =
                         List albumList ->
                             let
                                 newModel =
-                                    LoadedList (AlbumListPage albumList winSize []) flags home Dict.empty Nothing
+                                    LoadedList (AlbumListPage albumList winSize []) flags home Dict.empty Nothing NavInactive
 
                                 pathsThenScroll =
                                     toCmd <| sequence (pathsToCmd newModel paths) <| fromMaybe <| scrollToCmd newModel scroll
@@ -184,7 +190,7 @@ update msg model =
                                     AlbumPage.urlsToGet albumPage
 
                                 newModel =
-                                    LoadedAlbum albumPage [] flags home (dictWithValues urls UrlRequested) Nothing
+                                    LoadedAlbum albumPage [] flags home (dictWithValues urls UrlRequested) Nothing NavInactive
 
                                 pathsThenScroll =
                                     toCmd <| sequence (pathsToCmd newModel paths) <| fromMaybe <| scrollToCmd newModel scroll
@@ -207,7 +213,7 @@ update msg model =
 
         PageMsg pageMsg ->
             case model of
-                LoadedAlbum oldPage parents flags home oldPendingUrls scrollPos ->
+                LoadedAlbum oldPage parents flags home oldPendingUrls scrollPos postLoadNavState ->
                     let
                         ( newPage, newPageCmd ) =
                             AlbumPage.update pageMsg oldPage scrollPos
@@ -221,7 +227,7 @@ update msg model =
                         urls =
                             AlbumPage.urlsToGet newPage
                     in
-                    ( LoadedAlbum newPage parents flags home (Dict.union newPendingUrls <| dictWithValues urls UrlRequested) scrollPos
+                    ( LoadedAlbum newPage parents flags home (Dict.union newPendingUrls <| dictWithValues urls UrlRequested) scrollPos postLoadNavState
                     , Cmd.batch
                         [ getUrls newPendingUrls urls
                         , Cmd.map PageMsg newPageCmd
@@ -244,7 +250,7 @@ update msg model =
         ViewList albumListPage maybeScroll ->
             let
                 newModel =
-                    LoadedList albumListPage (flagsOf model) (homeOf model) Dict.empty Nothing
+                    LoadedList albumListPage (flagsOf model) (homeOf model) Dict.empty Nothing NavInactive
 
                 scrollCmd =
                     case maybeScroll of
@@ -269,7 +275,7 @@ update msg model =
                     AlbumPage.urlsToGet albumPage
 
                 newModel =
-                    LoadedAlbum albumPage parents (flagsOf model) (homeOf model) (dictWithValues urls UrlRequested) Nothing
+                    LoadedAlbum albumPage parents (flagsOf model) (homeOf model) (dictWithValues urls UrlRequested) Nothing NavInactive
             in
             ( newModel
             , Cmd.batch
@@ -434,10 +440,10 @@ flagsOf model =
         LoadError flags _ ->
             flags
 
-        LoadedList _ flags _ _ _ ->
+        LoadedList _ flags _ _ _ _ ->
             flags
 
-        LoadedAlbum _ _ flags _ _ _ ->
+        LoadedAlbum _ _ flags _ _ _ _ ->
             flags
 
 
@@ -456,10 +462,10 @@ homeOf model =
         LoadError _ _ ->
             Nothing
 
-        LoadedList _ _ home _ _ ->
+        LoadedList _ _ home _ _ _ ->
             home
 
-        LoadedAlbum _ _ _ home _ _ ->
+        LoadedAlbum _ _ _ home _ _ _ ->
             home
 
 
@@ -478,11 +484,11 @@ withScrollPos pos model =
         LoadError _ _ ->
             model
 
-        LoadedAlbum albumPage parents flags home pendingUrls _ ->
-            LoadedAlbum albumPage parents flags home pendingUrls <| Just pos
+        LoadedAlbum albumPage parents flags home pendingUrls _ postLoadNavState ->
+            LoadedAlbum albumPage parents flags home pendingUrls (Just pos) postLoadNavState
 
-        LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls _ ->
-            LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls <| Just pos
+        LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls _ postLoadNavState ->
+            LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls (Just pos) postLoadNavState
 
 
 withPaths : AlbumBootstrap -> List String -> AlbumBootstrap
@@ -500,11 +506,11 @@ withPaths model paths =
         LoadError _ _ ->
             model
 
-        LoadedList _ _ _ _ _ ->
-            model
+        LoadedList albumListPage flags home pendingUrls scroll _ ->
+            LoadedList albumListPage flags home pendingUrls scroll NavInProgress
 
-        LoadedAlbum _ _ _ _ _ _ ->
-            model
+        LoadedAlbum albumPage parents flags home pendingUrls scroll _ ->
+            LoadedAlbum albumPage parents flags home pendingUrls scroll NavInProgress
 
 
 withScroll : AlbumBootstrap -> Float -> AlbumBootstrap
@@ -522,10 +528,10 @@ withScroll model scroll =
         LoadError _ _ ->
             model
 
-        LoadedList _ _ _ _ _ ->
+        LoadedList _ _ _ _ _ _ ->
             model
 
-        LoadedAlbum _ _ _ _ _ _ ->
+        LoadedAlbum _ _ _ _ _ _ _ ->
             model
 
 
@@ -549,12 +555,12 @@ pathsToCmd model mPaths =
                 LoadError _ _ ->
                     Debug.log "pathsToCmd LoadError, ignore" Nothing
 
-                LoadedList (AlbumListPage albumList winSize parents) _ _ _ _ ->
+                LoadedList (AlbumListPage albumList winSize parents) _ _ _ _ _ ->
                     --TODO maybe don't always prepend aTN here, only if at root?
                     --TODO I think it's okay to drop the scroll positions here, should only happen at initial load (?)
                     pathsToCmdImpl winSize (albumList :: List.map Tuple.first parents) paths
 
-                LoadedAlbum albumPage parents _ _ _ _ ->
+                LoadedAlbum albumPage parents _ _ _ _ _ ->
                     pathsToCmdImpl (pageSize albumPage) (List.map Tuple.first parents) paths
 
 
@@ -591,10 +597,10 @@ scrollToCmd model scroll =
         LoadError _ _ ->
             Debug.log "scrollToCmd LoadError, ignore" Nothing
 
-        LoadedList _ _ _ _ _ ->
+        LoadedList _ _ _ _ _ _ ->
             scrollCmd
 
-        LoadedAlbum _ _ _ _ _ _ ->
+        LoadedAlbum _ _ _ _ _ _ _ ->
             scrollCmd
 
 
@@ -700,9 +706,9 @@ locFor oldModel newModel =
 
         entry =
             case oldModel of
-                LoadedList _ _ _ _ _ ->
+                LoadedList _ _ _ _ _ _ ->
                     case newModel of
-                        LoadedList _ _ _ _ _ ->
+                        LoadedList _ _ _ _ _ _ ->
                             case oldModel == newModel of
                                 True ->
                                     ModifyEntry
@@ -713,9 +719,9 @@ locFor oldModel newModel =
                         _ ->
                             NewEntry
 
-                LoadedAlbum _ _ _ _ _ _ ->
+                LoadedAlbum _ _ _ _ _ _ _ ->
                     case newModel of
-                        LoadedAlbum _ _ _ _ _ _ ->
+                        LoadedAlbum _ _ _ _ _ _ _ ->
                             case oldModel == newModel of
                                 True ->
                                     ModifyEntry
@@ -728,20 +734,30 @@ locFor oldModel newModel =
 
                 _ ->
                     NewEntry
+
+        checkNavState state nav =
+            case state of
+                NavInProgress ->
+                    Nothing
+
+                NavInactive ->
+                    nav
     in
     Debug.log "locFor" <|
         case model of
-            LoadedAlbum albumPage parents _ _ _ _ ->
-                Just
-                    { entry = entry
-                    , url = queryFor model ++ (hashForAlbum model albumPage <| List.map Tuple.first parents)
-                    }
+            LoadedAlbum albumPage parents _ _ _ _ postLoadNavState ->
+                checkNavState postLoadNavState <|
+                    Just
+                        { entry = entry
+                        , url = queryFor model ++ (hashForAlbum model albumPage <| List.map Tuple.first parents)
+                        }
 
-            LoadedList albumListPage _ _ _ _ ->
-                Just
-                    { entry = entry
-                    , url = queryFor model ++ hashForList model albumListPage
-                    }
+            LoadedList albumListPage _ _ _ _ postLoadNavState ->
+                checkNavState postLoadNavState <|
+                    Just
+                        { entry = entry
+                        , url = queryFor model ++ hashForList model albumListPage
+                        }
 
             _ ->
                 Nothing
@@ -766,10 +782,10 @@ queryFor model =
         LoadError _ _ ->
             ""
 
-        LoadedAlbum _ _ _ _ _ pos ->
+        LoadedAlbum _ _ _ _ _ pos _ ->
             queryForPos pos
 
-        LoadedList _ _ _ _ pos ->
+        LoadedList _ _ _ _ pos _ ->
             queryForPos pos
 
 
@@ -831,7 +847,7 @@ scrollToTop =
 updateImageResult : AlbumBootstrap -> String -> UrlLoadState -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 updateImageResult model url result =
     case model of
-        LoadedAlbum albumPage parents flags home pendingUrls scrollPos ->
+        LoadedAlbum albumPage parents flags home pendingUrls scrollPos postLoadNavState ->
             case albumPage of
                 Thumbs album size justLoadedImages readyToDisplayImages ->
                     let
@@ -850,6 +866,7 @@ updateImageResult model url result =
                                 dictWithValues urls UrlRequested
                         )
                         scrollPos
+                        postLoadNavState
                     , Cmd.batch
                         [ getUrls pendingUrls urls
                         , urlNextState url result
@@ -941,7 +958,7 @@ decodeUrlResult origUrl result =
 subscriptions : AlbumBootstrap -> Sub AlbumBootstrapMsg
 subscriptions model =
     case model of
-        LoadedAlbum albumPage parents _ _ _ _ ->
+        LoadedAlbum albumPage parents _ _ _ _ _ ->
             let
                 showParent =
                     case parents of
@@ -956,7 +973,7 @@ subscriptions model =
                 , resizes Resize
                 ]
 
-        LoadedList (AlbumListPage albumList winSize parents) _ _ _ _ ->
+        LoadedList (AlbumListPage albumList winSize parents) _ _ _ _ _ ->
             case parents of
                 [] ->
                     resizes Resize
@@ -999,7 +1016,7 @@ view albumBootstrap =
         LoadError _ e ->
             text ("Error Loading Album: " ++ toString e)
 
-        LoadedAlbum albumPage parents flags home pendingUrls scrollPos ->
+        LoadedAlbum albumPage parents flags home pendingUrls scrollPos postLoadNavState ->
             withHomeLink home flags <|
                 AlbumPage.view
                     albumPage
@@ -1015,7 +1032,7 @@ view albumBootstrap =
                     (List.map Tuple.first parents)
                     flags
 
-        LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls scrollPos ->
+        LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls scrollPos postLoadNavState ->
             withHomeLink home flags <|
                 AlbumListPage.view
                     (AlbumListPage
