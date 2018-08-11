@@ -1,4 +1,4 @@
-module LocationUtils exposing (locToString, parseHref)
+module LocationUtils exposing (locToString, parseHref, parseQuery)
 
 import Combine exposing (..)
 import Http exposing (..)
@@ -22,6 +22,23 @@ parseHref href =
                         <* end
     in
     parse pathParser href
+
+
+parseQuery : String -> Result (ParseErr ()) (ParseOk () (Maybe String))
+parseQuery query =
+    let
+        rest =
+            while (\_ -> True) <* end
+
+        qParser =
+            or
+                (end $> Nothing)
+            <|
+                Combine.map Just <|
+                    string "?s="
+                        *> rest
+    in
+    parse qParser query
 
 
 locToString : Location -> String

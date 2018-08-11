@@ -48,6 +48,7 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
     rootDivFlex
         flags
         column
+        Nothing
         [ overflow Css.hidden
         , alignItems center
         , Css.property "justify-content" "center"
