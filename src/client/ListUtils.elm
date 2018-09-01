@@ -82,8 +82,10 @@ dropThroughPred pred elems =
         e :: es ->
             if pred e then
                 es
+
             else if List.any pred elems then
                 dropThroughPred pred es
+
             else
                 elems
 
@@ -96,10 +98,11 @@ mapI i map l =
         ifmap ( j, a ) =
             if i == j then
                 map a
+
             else
                 a
     in
-    List.map ifmap <| List.indexedMap (,) l
+    List.map ifmap <| List.indexedMap (\a b -> ( a, b )) l
 
 
 fromMaybe : Maybe a -> List a

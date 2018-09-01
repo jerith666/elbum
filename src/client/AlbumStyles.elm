@@ -1,4 +1,4 @@
-module AlbumStyles exposing (..)
+module AlbumStyles exposing (AlbumBootstrapFlags, ImgLoadState(..), black, navBoxStyles, navElement, navEltSize, opacityAnimatedTo, opacityDuration, opacityStyles, rootDiv, rootDivFlex, rootDivId, rootPos, styles, white)
 
 import Css exposing (..)
 import Css.Transitions exposing (..)
@@ -54,6 +54,7 @@ rootPos : AlbumBootstrapFlags -> Style
 rootPos flags =
     if flags.scrollSupport then
         position fixed
+
     else
         position absolute
 

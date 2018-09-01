@@ -143,6 +143,7 @@ updateModel msg ((ProgImgModel data status animState) as model) =
                 TryingCached tried trying upnext ->
                     if imgSrc == trying then
                         ProgImgModel data (LoadingMain trying) { animState | placeholder = show animState.placeholder }
+
                     else
                         --maybe some earlier tried image?  ignore
                         model
@@ -150,6 +151,7 @@ updateModel msg ((ProgImgModel data status animState) as model) =
                 LoadingFallback ->
                     if imgSrc == data.fallback then
                         ProgImgModel data (LoadingMain data.fallback) { animState | placeholder = show animState.placeholder }
+
                     else
                         --maybe some earlier tryingCached?  ignore
                         model
@@ -157,6 +159,7 @@ updateModel msg ((ProgImgModel data status animState) as model) =
                 LoadingMain placeholder ->
                     if imgSrc == data.mainImg then
                         ProgImgModel data (MainLoaded placeholder) { animState | main = showMsg animState.main }
+
                     else
                         --something stale, ignore
                         model

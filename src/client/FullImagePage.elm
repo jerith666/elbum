@@ -100,6 +100,7 @@ navEltIf : List a -> msg -> String -> (Px -> Style) -> List (Html msg)
 navEltIf lst navMsg navTxt navAlign =
     if List.isEmpty lst then
         []
+
     else
         [ navElement navMsg navTxt navAlign ]
 
@@ -148,6 +149,7 @@ fitImage is winWidth winHeight =
         scale =
             if winAspect <= imgAspect then
                 toFloat winWidth / toFloat is.x
+
             else
                 toFloat winHeight / toFloat is.y
     in

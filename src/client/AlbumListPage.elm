@@ -61,6 +61,7 @@ renderListImage selectedMsg img =
         ( xScaled, yScaled ) =
             if img.srcSetFirst.x > img.srcSetFirst.y then
                 ThumbPage.sizeForWidth 200 img
+
             else
                 ThumbPage.sizeForHeight 200 img
 

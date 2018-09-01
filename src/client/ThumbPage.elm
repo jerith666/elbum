@@ -179,11 +179,13 @@ viewThumbColumn thumbWidth imgChosenMsgr justLoadedImages readyToDisplayImages i
                     opacity =
                         if member src.url justLoadedImages then
                             Partial ( 99, Nothing )
+
                         else
                             Completed
                 in
                 viewThumb thumbWidth opacity [] (imgChosenMsgr i) img
                 --TODO opacity
+
             else
                 stubThumb thumbWidth img
     in
@@ -213,6 +215,7 @@ insertImage maxCols i nextImg alreadySpreadImages =
     if List.length alreadySpreadImages < maxCols then
         alreadySpreadImages
             ++ [ [ ( nextImg, i ) ] ]
+
     else
         let
             is =
@@ -234,7 +237,7 @@ findShortest imageLists =
     List.foldr
         shorter
         shorterBaseCase
-        (List.indexedMap (,) (List.map (List.sum << List.map (imgHeight << Tuple.first)) imageLists))
+        (List.indexedMap (\a b -> ( a, b )) (List.map (List.sum << List.map (imgHeight << Tuple.first)) imageLists))
 
 
 
@@ -245,6 +248,7 @@ shorter : ( Int, Int ) -> ( Int, Int ) -> ( Int, Int )
 shorter ( i1, h1 ) ( i2, h2 ) =
     if h1 <= h2 then
         ( i1, h1 )
+
     else
         ( i2, h2 )
 

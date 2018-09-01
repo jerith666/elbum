@@ -1,4 +1,4 @@
-module Main exposing (..)
+module Main exposing (AlbumBootstrap(..), AlbumBootstrapMsg(..), PostLoadNavState(..), UrlLoadState(..), decodeAlbumRequest, decodeUrlResult, findChild, findImg, flagsOf, getUrl, getUrls, gotHome, handleGetResponse, hashForAlbum, hashForList, hashFromAlbumPath, homeOf, init, justLoadedReadyToDisplayNextState, locFor, main, navForAlbum, navFrom, navToMsg, pageSize, pathsToCmd, pathsToCmdImpl, queryFor, scrollToCmd, scrollToTop, sequence, subscriptions, update, updateImageResult, urlNextState, view, viewList, withHomeLink, withPaths, withScroll, withScrollPos)
 
 import Album exposing (..)
 import AlbumListPage exposing (..)
@@ -221,6 +221,7 @@ update msg model =
                         newPendingUrls =
                             if AlbumPage.resetUrls pageMsg then
                                 Dict.empty
+
                             else
                                 oldPendingUrls
 
@@ -669,6 +670,7 @@ findImg : List Image -> Album -> String -> Maybe ( List Image, Album )
 findImg prevs album img =
     if album.imageFirst.altText == img then
         Just ( prevs, album )
+
     else
         case album.imageRest of
             [] ->
@@ -793,6 +795,7 @@ hashForList : AlbumBootstrap -> AlbumListPage -> String
 hashForList model (AlbumListPage albumList _ parents) =
     if List.isEmpty parents then
         hashFromAlbumPath model [ "" ] []
+
     else
         hashFromAlbumPath model [ albumList.listTitle ] <| List.map Tuple.first parents
 
@@ -1073,6 +1076,7 @@ viewList oldModel winSize parents list =
 
                 Nothing ->
                     Nothing
+
          else
             --we're navigating down to a child; since we don't save
             --scroll positions of children, don't declare an explicit

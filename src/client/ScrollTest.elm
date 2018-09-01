@@ -1,4 +1,4 @@
-module ScrollTest exposing (..)
+module ScrollTest exposing (Model(..), Msg(..), main, update, view)
 
 import AlbumStyles exposing (..)
 import Css exposing (..)

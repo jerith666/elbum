@@ -175,6 +175,7 @@ updatePrevNext model shifter =
                 ( newProgModel, newCmd ) =
                     if album.imageFirst == newCur then
                         ( oldProgModel, Nothing )
+
                     else
                         let
                             ( w, h ) =
@@ -301,6 +302,7 @@ touchPrevNext dragInfo touch =
 
                     _ ->
                         TouchDragAbandon
+
             else
                 TouchDragAbandon
 
