@@ -1,7 +1,7 @@
-{ nixpkgs ? <nixpkgs>
-, config ? {} }:
+{ config ? {}
+, nixpkgs ? import <nixpkgs> config }:
 
-with (import nixpkgs config);
+with nixpkgs;
 
 let
   albumTypes = import ./album-types-gen.nix {};

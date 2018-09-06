@@ -1,8 +1,10 @@
-with import <nixpkgs> {};
+{ nixpkgs ? import <nixpkgs> {} }:
+
+with nixpkgs;
 
 let
-  client = import src/client/default.nix {};
-  generator = import src/generator/default.nix {};
+  client = import src/client/default.nix { inherit nixpkgs; };
+  generator = import src/generator/default.nix { inherit nixpkgs; };
 
 in
 
