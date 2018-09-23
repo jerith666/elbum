@@ -1,9 +1,9 @@
 #to produce Album.elm, run:
 #nix-build -o Album.elm.dir album-types-gen.nix
 
-with import <nixpkgs> {};
+{ nixpkgs ? import <nixpkgs> {} }:
 
-{} :
+with nixpkgs;
 
 let
   ghc = pkgs.haskellPackages.ghcWithPackages (ps: with ps; [

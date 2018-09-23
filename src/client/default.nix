@@ -4,7 +4,7 @@
 with nixpkgs;
 
 let
-  albumTypes = import ./album-types-gen.nix {};
+  albumTypes = import ./album-types-gen.nix { inherit nixpkgs; };
 
   mkDerivation =
     { srcs ? ./elm-srcs.nix
