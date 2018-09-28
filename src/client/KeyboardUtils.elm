@@ -1,17 +1,22 @@
 module KeyboardUtils exposing (onEscape)
 
---import Keyboard exposing (downs)
+import Browser.Events exposing (onKeyDown)
+import Json.Decode exposing (..)
 
 
 onEscape : msg -> msg -> Sub msg
 onEscape action noop =
-    downs
-        (\keycode ->
-            case keycode of
-                27 ->
-                    --escape
-                    action
+    onKeyDown <|
+        map
+            (\k ->
+                case k of
+                    "Escape" ->
+                        action
 
-                _ ->
-                    noop
-        )
+                    _ ->
+                        noop
+            )
+        <|
+            field
+                "key"
+                string
