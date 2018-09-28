@@ -1,8 +1,12 @@
 module LocationUtils exposing (locToString, parseHref, parseQuery)
 
-import Combine exposing (..)
+--import Combine exposing (..)
+
 import Http exposing (..)
-import Navigation exposing (..)
+
+
+
+--import Navigation exposing (..)
 
 
 parseHref : String -> Result (ParseErr ()) (ParseOk () (List String))

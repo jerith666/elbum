@@ -1,6 +1,6 @@
 module KeyboardUtils exposing (onEscape)
 
-import Keyboard exposing (downs)
+--import Keyboard exposing (downs)
 
 
 onEscape : msg -> msg -> Sub msg
