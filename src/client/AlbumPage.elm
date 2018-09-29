@@ -1,9 +1,8 @@
 module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
 
--- import Dom.Scroll exposing (..)
-
 import Album exposing (..)
 import AlbumStyles exposing (..)
+import Browser.Dom exposing (..)
 import Browser.Events exposing (..)
 import FullImagePage exposing (..)
 import Html.Styled exposing (..)
@@ -86,7 +85,7 @@ update msg model scroll =
                                     Cmd.none
 
                                 Just pos ->
-                                    Task.attempt (\_ -> NoUpdate) <| toY rootDivId pos
+                                    Task.attempt (\_ -> NoUpdate) <| setViewportOf rootDivId 0 pos
                     in
                     ( Thumbs
                         { title = album.title
