@@ -1,31 +1,28 @@
 module LocationUtils exposing (locToString, parseHref, parseQuery)
 
---import Combine exposing (..)
-
+import Browser.Navigation exposing (..)
 import Http exposing (..)
-
-
-
---import Navigation exposing (..)
+import Parser exposing (..)
+import Url exposing (..)
 
 
 parseHref : String -> Result (ParseErr ()) (ParseOk () (List String))
 parseHref href =
     let
         pathParser =
-            or
-                (end $> [])
-            <|
-                Combine.map
-                    (List.filterMap identity)
-                <|
-                    string "#"
-                        *> sepBy
-                            (string "/")
-                            (Combine.map decodeUri <| regex "[^/]*")
-                        <* end
+            oneOf
+                [ succeed (\_ -> []) end
+                , sequence
+                    { start = "#"
+                    , separator = "/"
+                    , end = ""
+                    , spaces = end
+                    , item = map percentEncode getChompedString <| succeed () |. chompWhile (\_ -> True)
+                    , trailing = Optional
+                    }
+                ]
     in
-    parse pathParser href
+    run pathParser href
 
 
 parseQuery : String -> Result (ParseErr ()) (ParseOk () (Maybe String))
@@ -42,7 +39,7 @@ parseQuery query =
                     string "?s="
                         *> rest
     in
-    parse qParser query
+    run qParser query
 
 
 locToString : Location -> String
