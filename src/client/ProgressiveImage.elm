@@ -60,7 +60,7 @@ type ProgressiveImageModel
 
 type ProgressiveImageMsg
     = Loaded ImgSrc
-    | ScheduleTimeout Float Time ImgSrc
+    | ScheduleTimeout Float TimeUnit ImgSrc
     | Timeout ImgSrc
     | MainFadeinComplete
     | AnimatePlaceholder Animation.Msg
@@ -234,7 +234,7 @@ updateCmd : ProgressiveImageModel -> Maybe ProgressiveImageMsg
 updateCmd (ProgImgModel data status animState) =
     case status of
         TryingCached _ trying _ ->
-            Just <| ScheduleTimeout 200 millisecond trying
+            Just <| ScheduleTimeout 200 Millisecond trying
 
         LoadingFallback ->
             Nothing
