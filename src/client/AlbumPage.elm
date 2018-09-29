@@ -153,8 +153,8 @@ progInit winSize i w h =
         ( _, thumbWidth ) =
             colsWidth winSize
 
-        smBiggerThan w h =
-            smallestImageBiggerThan w h i.srcSetFirst i.srcSetRest
+        smBiggerThan wMax hMax =
+            smallestImageBiggerThan wMax hMax i.srcSetFirst i.srcSetRest
     in
     ProgressiveImage.init
         { mainImg = smBiggerThan w h
