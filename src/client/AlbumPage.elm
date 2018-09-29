@@ -1,13 +1,14 @@
 module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
 
---import Keyboard exposing (..)
 -- import Dom.Scroll exposing (..)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
+import Browser.Events exposing (..)
 import FullImagePage exposing (..)
 import Html.Styled exposing (..)
 import ImageViews exposing (..)
+import Json.Decode exposing (..)
 import KeyboardUtils exposing (onEscape)
 import ListUtils exposing (..)
 import ProgressiveImage exposing (..)
@@ -328,22 +329,22 @@ subscriptions albumPage wrapper showParent =
             Sub.batch
                 [ Sub.map wrapper <| Sub.map FullMsg <| ProgressiveImage.subscriptions progImgModel
                 , Sub.map wrapper <|
-                    downs
-                        (\keycode ->
-                            case keycode of
-                                39 ->
-                                    -- right arrow
-                                    Next
+                    onKeyDown <|
+                        Json.Decode.map
+                            (\k ->
+                                case k of
+                                    "ArrowRight" ->
+                                        Next
 
-                                37 ->
-                                    -- left arrow
-                                    Prev
+                                    "ArrowLeft" ->
+                                        Prev
 
-                                27 ->
-                                    -- escape
-                                    BackToThumbs
+                                    "Escape" ->
+                                        BackToThumbs
 
-                                _ ->
-                                    NoUpdate
-                        )
+                                    _ ->
+                                        NoUpdate
+                            )
+                        <|
+                            field "key" string
                 ]
