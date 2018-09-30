@@ -11,15 +11,17 @@ parseHref href =
     let
         pathParser =
             oneOf
-                [ succeed (\_ -> []) end
-                , sequence
-                    { start = "#"
-                    , separator = "/"
-                    , end = ""
-                    , spaces = end
-                    , item = map percentEncode getChompedString <| succeed () |. chompWhile (\_ -> True)
-                    , trailing = Optional
-                    }
+                [ succeed [] |. end
+                , succeed identity
+                    |= sequence
+                        { start = "#"
+                        , separator = "/"
+                        , end = ""
+                        , spaces = end
+                        , item = map percentEncode <| getChompedString <| succeed () |. chompWhile (\_ -> True)
+                        , trailing = Optional
+                        }
+                    |. end
                 ]
     in
     run pathParser href
@@ -30,13 +32,14 @@ parseQuery query =
     let
         qParser =
             oneOf
-                [ succeed (\_ -> Nothing) end
-                , succeed identity
+                [ succeed Nothing |. end
+                , succeed Just
                     |. symbol "?s="
-                    |= getChompedString
-                  <|
-                    succeed ()
-                        |. chompWhile (\_ -> True)
+                    |= (getChompedString <|
+                            succeed ()
+                                |. chompWhile (\_ -> True)
+                       )
+                    |. end
                 ]
     in
     run qParser query
