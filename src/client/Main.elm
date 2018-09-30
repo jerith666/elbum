@@ -54,7 +54,7 @@ type UrlLoadState
 
 
 type AlbumBootstrapMsg
-    = Resize Size
+    = Resize { x : Float, y : Float }
     | YesHome String
     | NoHome Http.Error
     | YesAlbum AlbumOrList
@@ -68,7 +68,7 @@ type AlbumBootstrapMsg
     | ScheduleScroll (Maybe Float)
     | ScrolledTo Float
     | ScrollSucceeded
-    | ScrollFailed Id
+    | ScrollFailed String
     | Nav (List String)
     | Scroll Float
     | Sequence AlbumBootstrapMsg (List AlbumBootstrapMsg)
