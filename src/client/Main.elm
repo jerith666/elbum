@@ -122,13 +122,13 @@ update msg model =
                     case albumPage of
                         Thumbs album oldSize justLoadedImages readyToDisplayImages ->
                             let
-                                model =
+                                newModel =
                                     Thumbs album (Debug.log "window size updated for thumbs" size) justLoadedImages readyToDisplayImages
 
                                 urls =
-                                    AlbumPage.urlsToGet model
+                                    AlbumPage.urlsToGet newModel
                             in
-                            ( LoadedAlbum model
+                            ( LoadedAlbum newModel
                                 parents
                                 flags
                                 home
@@ -618,10 +618,10 @@ navFrom size root parents paths defcmd =
         [ "#" ] ->
             defcmd
 
-        p :: ps ->
+        p1 :: ps ->
             let
                 mChild =
-                    findChild root p
+                    findChild root p1
 
                 newParents =
                     root :: parents
@@ -858,13 +858,13 @@ updateImageResult model url result =
             case albumPage of
                 Thumbs album size justLoadedImages readyToDisplayImages ->
                     let
-                        model =
+                        newModel =
                             justLoadedReadyToDisplayNextState album size justLoadedImages readyToDisplayImages url result
 
                         urls =
-                            AlbumPage.urlsToGet model
+                            AlbumPage.urlsToGet newModel
                     in
-                    ( LoadedAlbum model
+                    ( LoadedAlbum newModel
                         parents
                         flags
                         home
