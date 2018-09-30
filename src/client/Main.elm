@@ -326,7 +326,7 @@ update msg model =
             in
             case rest of
                 [] ->
-                    ( nextModel, Debug.log ("sequence msg " ++ toString next ++ " (last) produces cmd") nextCmd )
+                    ( nextModel, Debug.log ("sequence msg " ++ Debug.toString next ++ " (last) produces cmd") nextCmd )
 
                 r1 :: rs ->
                     let
@@ -345,7 +345,7 @@ update msg model =
                                     in
                                     ( rsModel, toCmd <| SequenceCmd r1Cmds [ rsCmds ] )
                     in
-                    ( rModel, toCmd <| SequenceCmd (Debug.log ("sequence msg " ++ toString next ++ " (cont'd) produces cmd") nextCmd) [ rCmds ] )
+                    ( rModel, toCmd <| SequenceCmd (Debug.log ("sequence msg " ++ Debug.toString next ++ " (cont'd) produces cmd") nextCmd) [ rCmds ] )
 
         SequenceCmd next rest ->
             let
@@ -773,7 +773,7 @@ queryFor : AlbumBootstrap -> String
 queryFor model =
     let
         queryForPos pos =
-            Maybe.withDefault "" <| Maybe.map (\p -> "?s=" ++ toString p) pos
+            Maybe.withDefault "" <| Maybe.map (\p -> "?s=" ++ String.fromInt p) pos
     in
     case model of
         Sizing _ _ _ ->
