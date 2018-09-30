@@ -904,7 +904,7 @@ urlNextState : String -> UrlLoadState -> Cmd AlbumBootstrapMsg
 urlNextState url result =
     case result of
         JustCompleted ->
-            Delay.after 100 millisecond <| ImageReadyToDisplay url
+            Delay.after 100 Millisecond <| ImageReadyToDisplay url
 
         _ ->
             Cmd.none
