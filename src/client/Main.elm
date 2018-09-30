@@ -2,13 +2,13 @@ module Main exposing (AlbumBootstrap(..), AlbumBootstrapMsg(..), PostLoadNavStat
 
 --import RouteUrl exposing (..)
 -- import Navigation exposing (..)
--- import Dom.Scroll exposing (..)
 -- import Dom exposing (..)
 
 import Album exposing (..)
 import AlbumListPage exposing (..)
 import AlbumPage exposing (..)
 import AlbumStyles exposing (..)
+import Browser.Dom exposing (..)
 import Css exposing (..)
 import Delay exposing (..)
 import Dict exposing (..)
@@ -261,7 +261,7 @@ update msg model =
                 scrollCmd =
                     case maybeScroll of
                         Just pos ->
-                            Task.attempt (\_ -> NoBootstrap) <| toY rootDivId pos
+                            Task.attempt (\_ -> NoBootstrap) <| setViewportOf rootDivId 0 pos
 
                         Nothing ->
                             scrollToTop
@@ -302,7 +302,7 @@ update msg model =
                         Task.attempt
                             (\_ -> NoBootstrap)
                         <|
-                            toY rootDivId <|
+                            setViewportOf rootDivId 0 <|
                                 Debug.log "startup scroll to" s
                     )
                     scroll
@@ -849,7 +849,7 @@ scrollToTop =
                     ScrollFailed rootDivId
         )
     <|
-        Dom.Scroll.toTop rootDivId
+        setViewportOf rootDivId 0 0
 
 
 updateImageResult : AlbumBootstrap -> String -> UrlLoadState -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
