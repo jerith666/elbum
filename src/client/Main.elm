@@ -24,6 +24,7 @@ import Set exposing (..)
 import Task exposing (..)
 import Time exposing (..)
 import Title exposing (..)
+import Url exposing (..)
 import WinSize exposing (..)
 
 
@@ -824,7 +825,7 @@ hashFromAlbumPath model titles parents =
         ++ String.concat
             (List.intersperse "/"
                 (List.map
-                    encodeUri
+                    percentEncode
                     (List.append
                         (List.map
                             (\p -> p.listTitle)
