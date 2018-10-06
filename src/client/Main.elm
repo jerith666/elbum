@@ -9,6 +9,7 @@ import AlbumListPage exposing (..)
 import AlbumPage exposing (..)
 import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
+import Browser.Events exposing (..)
 import Css exposing (..)
 import Delay exposing (..)
 import Dict exposing (..)
@@ -26,10 +27,6 @@ import Time exposing (..)
 import Title exposing (..)
 import Url exposing (..)
 import WinSize exposing (..)
-
-
-
---import Window exposing (..)
 
 
 type AlbumBootstrap
@@ -92,7 +89,7 @@ main =
 init : AlbumBootstrapFlags -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 init flags =
     ( Sizing flags Nothing Nothing
-    , Task.perform Resize Window.size
+    , Task.perform Resize getViewport
     )
 
 
@@ -978,13 +975,13 @@ subscriptions model =
             in
             Sub.batch
                 [ AlbumPage.subscriptions albumPage PageMsg showParent
-                , resizes Resize
+                , onResize Resize
                 ]
 
         LoadedList (AlbumListPage albumList winSize parents) _ _ _ _ _ ->
             case parents of
                 [] ->
-                    resizes Resize
+                    onResize Resize
 
                 ( parent, scroll ) :: grandParents ->
                     let
@@ -993,10 +990,10 @@ subscriptions model =
                                 (ViewList (AlbumListPage parent winSize grandParents) scroll)
                                 NoBootstrap
                     in
-                    Sub.batch [ upParent, resizes Resize ]
+                    Sub.batch [ upParent, onResize Resize ]
 
         _ ->
-            resizes Resize
+            onResize Resize
 
 
 pageSize : AlbumPage -> WinSize
