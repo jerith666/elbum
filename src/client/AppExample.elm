@@ -4,7 +4,9 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Url
+import Url.Builder exposing (..)
 
 
 
@@ -30,12 +32,13 @@ main =
 type alias Model =
     { key : Nav.Key
     , url : Url.Url
+    , n : Int
     }
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
-    ( Model key url, Cmd.none )
+    ( Model key url 0, Cmd.none )
 
 
 
@@ -45,6 +48,7 @@ init flags url key =
 type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
+    | Goto Url.Url
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -59,8 +63,13 @@ update msg model =
                     ( model, Nav.load href )
 
         UrlChanged url ->
-            ( { model | url = url }
+            ( { model | url = url, n = model.n + 1 }
             , Cmd.none
+            )
+
+        Goto url ->
+            ( { model | url = url, n = model.n + 1 }
+            , Nav.pushUrl model.key <| Url.toString url
             )
 
 
@@ -79,9 +88,16 @@ subscriptions _ =
 
 view : Model -> Browser.Document Msg
 view model =
+    let
+        oldUrl =
+            model.url
+
+        newUrl =
+            { oldUrl | path = "/foo" }
+    in
     { title = "URL Interceptor"
     , body =
-        [ text "The current URL is: "
+        [ text <| "N = " ++ String.fromInt model.n ++ "; The current URL is: "
         , b [] [ text (Url.toString model.url) ]
         , ul []
             [ viewLink "/home"
@@ -90,6 +106,7 @@ view model =
             , viewLink "/reviews/public-opinion"
             , viewLink "/reviews/shah-of-shahs"
             ]
+        , div [ onClick <| Goto newUrl ] [ text "/foo" ]
         ]
     }
 
