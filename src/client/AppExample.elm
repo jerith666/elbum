@@ -63,9 +63,14 @@ update msg model =
                     ( model, Nav.load href )
 
         UrlChanged url ->
-            ( { model | url = url, n = model.n + 1 }
-            , Cmd.none
-            )
+            case url == model.url of
+                True ->
+                    ( model, Cmd.none )
+
+                False ->
+                    ( { model | url = url, n = model.n + 1 }
+                    , Cmd.none
+                    )
 
         Goto url ->
             ( { model | url = url, n = model.n + 1 }
