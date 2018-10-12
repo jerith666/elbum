@@ -388,14 +388,14 @@ gotHome size flags paths scroll home =
     )
 
 
-navToMsg : Location -> List AlbumBootstrapMsg
+navToMsg : Url -> List AlbumBootstrapMsg
 navToMsg loc =
     let
         parsedHash =
-            Debug.log "parsedHash" <| parseHref loc.hash
+            Debug.log "parsedHash" <| parseHref loc.fragment
 
         parsedQuery =
-            Debug.log "parsedQuery" <| parseQuery loc.search
+            Debug.log "parsedQuery" <| parseQuery loc.query
 
         hashMsgs =
             case parsedHash of
