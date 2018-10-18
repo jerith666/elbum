@@ -413,7 +413,7 @@ navToMsg loc =
                     NoBootstrap
                         -- hack delay
                         :: (fromMaybe <|
-                                Maybe.map Scroll (scroll |> Maybe.andThen (Result.toMaybe << String.toFloat))
+                                Maybe.map Scroll (scroll |> Maybe.andThen String.toFloat)
                            )
     in
     case hashMsgs ++ queryMsgs of
