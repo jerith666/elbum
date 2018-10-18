@@ -2,20 +2,20 @@ module AlbumListPage exposing (AlbumListPage(..), view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
+import Browser.Dom exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import ThumbPage exposing (albumTitle, viewThumb)
-import WinSize exposing (..)
 
 
 type AlbumListPage
-    = AlbumListPage AlbumList WinSize (List ( AlbumList, Maybe Float ))
+    = AlbumListPage AlbumList Viewport (List ( AlbumList, Maybe Float ))
 
 
 view : AlbumListPage -> (AlbumList -> msg) -> (Album -> msg) -> (Float -> msg) -> AlbumBootstrapFlags -> Html msg
-view (AlbumListPage albumList winSize parents) viewList viewAlbum scrollMsgMaker flags =
+view (AlbumListPage albumList viewport parents) viewList viewAlbum scrollMsgMaker flags =
     rootDivFlex
         flags
         column

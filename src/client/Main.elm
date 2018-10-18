@@ -654,7 +654,7 @@ navForAlbum viewport album ps newParents =
                 Just ( prevs, nAlbum ) ->
                     let
                         ( w, h ) =
-                            fitImage nAlbum.imageFirst.srcSetFirst viewport.viewport.width viewport.viewport.height
+                            fitImage nAlbum.imageFirst.srcSetFirst (floor viewport.viewport.width) (floor viewport.viewport.height)
 
                         ( progModel, progCmd ) =
                             progInit viewport nAlbum.imageFirst w h
@@ -974,13 +974,13 @@ subscriptions model =
             in
             Sub.batch
                 [ AlbumPage.subscriptions albumPage PageMsg showParent
-                , onResize Resize
+                , onResize <| newSize <| pageSize albumPage
                 ]
 
         LoadedList (AlbumListPage albumList viewport parents) _ _ _ _ _ ->
             case parents of
                 [] ->
-                    onResize Resize
+                    onResize <| newSize viewport
 
                 ( parent, scroll ) :: grandParents ->
                     let
@@ -989,10 +989,36 @@ subscriptions model =
                                 (ViewList (AlbumListPage parent viewport grandParents) scroll)
                                 NoBootstrap
                     in
-                    Sub.batch [ upParent, onResize Resize ]
+                    Sub.batch [ upParent, onResize <| newSize viewport ]
 
-        _ ->
-            onResize Resize
+        LoadingHomeLink viewport _ _ _ ->
+            onResize <| newSize viewport
+
+        Loading viewport _ _ _ _ ->
+            onResize <| newSize viewport
+
+        LoadError _ _ ->
+            Sub.none
+
+        Sizing _ _ _ ->
+            Sub.none
+
+
+newSize : Viewport -> Int -> Int -> AlbumBootstrapMsg
+newSize v x y =
+    Resize <| viewportWithNewSize v x y
+
+
+viewportWithNewSize : Viewport -> Int -> Int -> Viewport
+viewportWithNewSize oldViewport newWidth newHeight =
+    let
+        ov =
+            oldViewport.viewport
+
+        newViewport =
+            { ov | width = toFloat newWidth, height = toFloat newHeight }
+    in
+    { oldViewport | viewport = newViewport }
 
 
 pageSize : AlbumPage -> Viewport

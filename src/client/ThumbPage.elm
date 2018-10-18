@@ -2,19 +2,19 @@ module ThumbPage exposing (ThumbPageModel, albumParent, albumTitle, colsWidth, s
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
+import Browser.Dom exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import ListUtils exposing (..)
 import Set exposing (..)
-import WinSize exposing (..)
 
 
 type alias ThumbPageModel =
     { album : Album
     , parents : List AlbumList
-    , winSize : WinSize
+    , viewport : Viewport
     , justLoadedImages : Set String
     , readyToDisplayImages : Set String
     }
@@ -99,7 +99,7 @@ urlsToGet : ThumbPageModel -> Set String
 urlsToGet thumbPageModel =
     let
         ( _, thumbWidth ) =
-            colsWidth thumbPageModel.winSize
+            colsWidth thumbPageModel.viewport
 
         srcs =
             List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
@@ -118,7 +118,7 @@ viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> Lis
 viewThumbs imgChosenMsgr thumbPageModel =
     let
         ( maxCols, thumbWidth ) =
-            colsWidth thumbPageModel.winSize
+            colsWidth thumbPageModel.viewport
 
         imgs =
             thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
@@ -133,14 +133,14 @@ viewThumbs imgChosenMsgr thumbPageModel =
         spreadThumbs maxCols imgs []
 
 
-colsWidth : WinSize -> ( Int, Int )
-colsWidth winSize =
+colsWidth : Viewport -> ( Int, Int )
+colsWidth viewport =
     let
         maxCols =
-            Basics.max (winSize.width // maxThumbWidth) 2
+            Basics.max (floor viewport.viewport.width // maxThumbWidth) 2
 
         thumbWidth =
-            (winSize.width - scrollPad) // maxCols
+            (floor viewport.viewport.width - scrollPad) // maxCols
     in
     ( maxCols, thumbWidth )
 
