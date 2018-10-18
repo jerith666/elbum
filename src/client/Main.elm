@@ -770,7 +770,7 @@ queryFor : AlbumBootstrap -> String
 queryFor model =
     let
         queryForPos pos =
-            Maybe.withDefault "" <| Maybe.map (\p -> "?s=" ++ String.fromInt p) pos
+            Maybe.withDefault "" <| Maybe.map (\p -> "?s=" ++ String.fromFloat p) pos
     in
     case model of
         Sizing _ _ _ ->
