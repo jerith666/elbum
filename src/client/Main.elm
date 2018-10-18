@@ -1044,7 +1044,25 @@ view albumBootstrap =
             text "Album Loading ..."
 
         LoadError _ e ->
-            text ("Error Loading Album: " ++ toString e)
+            let
+                eStr =
+                    case e of
+                        BadUrl s ->
+                            "bad url: " ++ s
+
+                        Timeout ->
+                            "timeout"
+
+                        NetworkError ->
+                            "network error"
+
+                        BadStatus response ->
+                            "bad status: " ++ response.status.message ++ ": " ++ response.body
+
+                        BadPayload s response ->
+                            "bad payload: " ++ s
+            in
+            text ("Error Loading Album: " ++ eStr)
 
         LoadedAlbum albumPage parents flags home pendingUrls scrollPos postLoadNavState ->
             withHomeLink home flags <|
