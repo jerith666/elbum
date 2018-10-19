@@ -1009,6 +1009,11 @@ newSize v x y =
     Resize <| viewportWithNewSize v x y
 
 
+
+--TODO won't other things about the viewport change if the resize causes the page to reflow???
+--TODO why int vs. float confusion?
+
+
 viewportWithNewSize : Viewport -> Int -> Int -> Viewport
 viewportWithNewSize oldViewport newWidth newHeight =
     let
