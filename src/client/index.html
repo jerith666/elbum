@@ -38,9 +38,6 @@
       document.documentElement.removeChild(testDiv);
 
       var app = Elm.Main.init({flags:{scrollSupport: scrollSupport}});
-      app.ports.setTitle.subscribe(function(title){
-        document.title = title;
-      });
     </script>
   </body>
 </html>
