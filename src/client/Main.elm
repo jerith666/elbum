@@ -391,10 +391,10 @@ navToMsg : Url -> List AlbumBootstrapMsg
 navToMsg loc =
     let
         parsedHash =
-            Debug.log "parsedHash" <| parseHref loc.fragment
+            Debug.log "parsedHash" <| parseHref <| Maybe.withDefault "" loc.fragment
 
         parsedQuery =
-            Debug.log "parsedQuery" <| parseQuery loc.query
+            Debug.log "parsedQuery" <| parseQuery <| Maybe.withDefault "" loc.query
 
         hashMsgs =
             case parsedHash of
