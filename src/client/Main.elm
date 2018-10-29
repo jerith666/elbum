@@ -401,7 +401,7 @@ navToMsg loc =
                 Err _ ->
                     []
 
-                Ok ( _, _, paths ) ->
+                Ok paths ->
                     [ Nav paths ]
 
         queryMsgs =
@@ -409,7 +409,7 @@ navToMsg loc =
                 Err _ ->
                     []
 
-                Ok ( _, _, scroll ) ->
+                Ok scroll ->
                     NoBootstrap
                         -- hack delay
                         :: (fromMaybe <|
