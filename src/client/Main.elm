@@ -1074,22 +1074,19 @@ onUrlRequest request =
 view : AlbumBootstrap -> Document AlbumBootstrapMsg
 view albumBootstrap =
     let
-        defTitle =
-            "default title"
-
         title =
             case albumBootstrap of
                 Sizing _ _ _ _ ->
-                    defTitle
+                    "Album Starting"
 
                 LoadingHomeLink _ _ _ _ _ ->
-                    defTitle
+                    "Home Loading ..."
 
                 Loading _ _ _ _ _ _ ->
-                    defTitle
+                    "Album Loading ..."
 
                 LoadError _ _ _ ->
-                    defTitle
+                    "Error Loading Album"
 
                 LoadedList _ (AlbumListPage albumList _ _) _ _ _ _ _ ->
                     albumList.listTitle
