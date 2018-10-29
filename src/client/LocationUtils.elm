@@ -1,4 +1,4 @@
-module LocationUtils exposing (locToString, parseHref, parseQuery)
+module LocationUtils exposing (locToString, parseHash, parseQuery)
 
 import Browser.Navigation exposing (..)
 import Http exposing (..)
@@ -6,10 +6,10 @@ import Parser exposing (..)
 import Url exposing (..)
 
 
-parseHref : String -> Result (List DeadEnd) (List String)
-parseHref href =
+parseHash : String -> Result (List DeadEnd) (List String)
+parseHash href =
     let
-        pathParser =
+        hashParser =
             oneOf
                 [ succeed [] |. end
                 , succeed identity
@@ -24,7 +24,7 @@ parseHref href =
                     |. end
                 ]
     in
-    run pathParser href
+    run hashParser href
 
 
 parseQuery : String -> Result (List DeadEnd) (Maybe String)
