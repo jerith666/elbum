@@ -791,7 +791,7 @@ queryFor : AlbumBootstrap -> String
 queryFor model =
     let
         queryForPos pos =
-            Maybe.withDefault "" <| Maybe.map (\p -> "?s=" ++ String.fromFloat p) pos
+            Maybe.withDefault "" <| Maybe.map (\p -> "s=" ++ String.fromFloat p) pos
     in
     case model of
         Sizing _ _ _ _ ->
@@ -838,20 +838,19 @@ hashForAlbum model albumPage parents =
 
 hashFromAlbumPath : AlbumBootstrap -> List String -> List AlbumList -> String
 hashFromAlbumPath model titles parents =
-    "#"
-        ++ String.concat
-            (List.intersperse "/"
-                (List.map
-                    percentEncode
-                    (List.append
-                        (List.map
-                            (\p -> p.listTitle)
-                            (List.drop 1 (List.reverse parents))
-                        )
-                        titles
+    String.concat
+        (List.intersperse "/"
+            (List.map
+                percentEncode
+                (List.append
+                    (List.map
+                        (\p -> p.listTitle)
+                        (List.drop 1 (List.reverse parents))
                     )
+                    titles
                 )
             )
+        )
 
 
 scrollToTop : Cmd AlbumBootstrapMsg
