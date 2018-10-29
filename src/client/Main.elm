@@ -7,6 +7,7 @@ import Album exposing (..)
 import AlbumListPage exposing (..)
 import AlbumPage exposing (..)
 import AlbumStyles exposing (..)
+import Browser exposing (..)
 import Browser.Dom exposing (..)
 import Browser.Events exposing (..)
 import Browser.Navigation exposing (..)
@@ -25,7 +26,6 @@ import RouteUrl exposing (..)
 import Set exposing (..)
 import Task exposing (..)
 import Time exposing (..)
-import Title exposing (..)
 import Url exposing (..)
 
 
@@ -78,7 +78,7 @@ main : RouteUrlProgram AlbumBootstrapFlags AlbumBootstrap AlbumBootstrapMsg
 main =
     RouteUrl.programWithFlags
         { init = init
-        , view = view >> toUnstyled
+        , view = view
         , update = update
         , subscriptions = subscriptions
         , delta2url = locFor
@@ -178,10 +178,7 @@ update msg model =
                                     toCmd <| sequence (pathsToCmd newModel paths) <| fromMaybe <| scrollToCmd newModel scroll
                             in
                             ( newModel
-                            , Cmd.batch
-                                [ setTitle albumList.listTitle
-                                , pathsThenScroll
-                                ]
+                            , pathsThenScroll
                             )
 
                         Leaf album ->
@@ -201,7 +198,6 @@ update msg model =
                             ( newModel
                             , Cmd.batch
                                 [ getUrls Dict.empty urls
-                                , setTitle album.title
                                 , pathsThenScroll
                                 ]
                             )
@@ -235,7 +231,6 @@ update msg model =
                     , Cmd.batch
                         [ getUrls newPendingUrls urls
                         , Cmd.map PageMsg newPageCmd
-                        , setTitle <| titleOf newPage
                         ]
                     )
 
@@ -270,7 +265,7 @@ update msg model =
                             albumList.listTitle
             in
             ( newModel
-            , Cmd.batch [ scrollCmd, setTitle title ]
+            , scrollCmd
             )
 
         ViewAlbum albumPage parents ->
@@ -285,7 +280,6 @@ update msg model =
             , Cmd.batch
                 [ scrollToTop
                 , getUrls Dict.empty urls
-                , setTitle <| titleOf albumPage
                 ]
             )
 
@@ -1063,8 +1057,39 @@ pageSize albumPage =
             viewport
 
 
-view : AlbumBootstrap -> Html AlbumBootstrapMsg
+view : AlbumBootstrap -> Document AlbumBootstrapMsg
 view albumBootstrap =
+    let
+        defTitle =
+            "default title"
+
+        title =
+            case albumBootstrap of
+                Sizing _ _ _ _ ->
+                    defTitle
+
+                LoadingHomeLink _ _ _ _ _ ->
+                    defTitle
+
+                Loading _ _ _ _ _ _ ->
+                    defTitle
+
+                LoadError _ _ _ ->
+                    defTitle
+
+                LoadedList _ (AlbumListPage albumList _ _) _ _ _ _ _ ->
+                    albumList.listTitle
+
+                LoadedAlbum _ albumPage _ _ _ _ _ _ ->
+                    titleOf albumPage
+    in
+    { title = title
+    , body = [ viewImpl albumBootstrap |> toUnstyled ]
+    }
+
+
+viewImpl : AlbumBootstrap -> Html AlbumBootstrapMsg
+viewImpl albumBootstrap =
     case albumBootstrap of
         Sizing _ _ _ _ ->
             text "Album Starting"
