@@ -14,7 +14,7 @@ parseHref href =
                 [ succeed [] |. end
                 , succeed identity
                     |= sequence
-                        { start = "#"
+                        { start = ""
                         , separator = "/"
                         , end = ""
                         , spaces = end
@@ -34,7 +34,7 @@ parseQuery query =
             oneOf
                 [ succeed Nothing |. end
                 , succeed Just
-                    |. symbol "?s="
+                    |. symbol "s="
                     |= (getChompedString <|
                             succeed ()
                                 |. chompWhile (\_ -> True)
