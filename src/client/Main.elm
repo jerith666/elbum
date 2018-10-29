@@ -81,6 +81,7 @@ main =
         , view = view
         , update = update
         , subscriptions = subscriptions
+        , onUrlRequest = onUrlRequest
         , delta2url = locFor
         , location2messages = navToMsg
         }
@@ -1055,6 +1056,20 @@ pageSize albumPage =
 
         FullImage _ _ _ viewport _ _ ->
             viewport
+
+
+onUrlRequest : UrlRequest -> AlbumBootstrapMsg
+onUrlRequest request =
+    let
+        durl =
+            case request of
+                Internal url ->
+                    toString url
+
+                External url ->
+                    url
+    in
+    Debug.log ("no-op onUrlRequest " ++ durl) <| NoBootstrap
 
 
 view : AlbumBootstrap -> Document AlbumBootstrapMsg
