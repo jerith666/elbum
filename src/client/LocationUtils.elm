@@ -18,7 +18,7 @@ parseHash href =
                         , separator = "/"
                         , end = ""
                         , spaces = end
-                        , item = map percentEncode <| getChompedString <| succeed () |. chompWhile (\_ -> True)
+                        , item = map percentEncode <| getChompedString <| succeed () |. chompWhile (\c -> c /= '/')
                         , trailing = Optional
                         }
                     |. end
