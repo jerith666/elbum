@@ -560,7 +560,7 @@ pathsToCmd : AlbumBootstrap -> Maybe (List String) -> Maybe AlbumBootstrapMsg
 pathsToCmd model mPaths =
     case mPaths of
         Nothing ->
-            Nothing
+            Debug.log "pathsToCmd has no paths" Nothing
 
         Just paths ->
             case model of
@@ -593,7 +593,7 @@ pathsToCmdImpl viewport parents paths =
     in
     case mRoot of
         Nothing ->
-            Nothing
+            Debug.log "pathsToCmdImpl has no root" Nothing
 
         Just root ->
             navFrom viewport root [] paths <| Just <| ViewList (AlbumListPage root viewport []) Nothing
@@ -629,10 +629,10 @@ navFrom : Viewport -> AlbumList -> List AlbumList -> List String -> Maybe AlbumB
 navFrom viewport root parents paths defcmd =
     case paths of
         [] ->
-            defcmd
+            Debug.log "navFrom has no paths" defcmd
 
         [ "#" ] ->
-            defcmd
+            Debug.log "navFrom has only # path" defcmd
 
         p1 :: ps ->
             let
@@ -644,7 +644,7 @@ navFrom viewport root parents paths defcmd =
             in
             case mChild of
                 Nothing ->
-                    defcmd
+                    Debug.log ("navFrom can't find child " ++ p1) defcmd
 
                 Just pChild ->
                     case pChild of
@@ -668,7 +668,7 @@ navForAlbum viewport album ps newParents =
         i :: _ ->
             case findImg [] album i of
                 Nothing ->
-                    Nothing
+                    Debug.log ("navForAlbum can't find image " ++ i) Nothing
 
                 Just ( prevs, nAlbum ) ->
                     let
