@@ -17,7 +17,7 @@ parseHash href =
                         { start = ""
                         , separator = "/"
                         , end = ""
-                        , spaces = end
+                        , spaces = succeed ()
                         , item = map percentEncode <| getChompedString <| succeed () |. chompWhile (\c -> c /= '/')
                         , trailing = Optional
                         }
