@@ -764,24 +764,33 @@ locFor oldModel newModel =
 
                 NavInactive ->
                     nav
+
+        newQorF meta modl fragment =
+            case queryFor modl of
+                "" ->
+                    NewFragment meta fragment
+
+                q ->
+                    NewQuery meta { query = q, fragment = Just fragment }
     in
     Debug.log "locFor" <|
         case model of
             LoadedAlbum key albumPage parents _ _ _ _ postLoadNavState ->
                 checkNavState postLoadNavState <|
                     Just <|
-                        NewQuery { entry = entry, key = key }
-                            { query = queryFor model
-                            , fragment = Just <| hashForAlbum model albumPage <| List.map Tuple.first parents
-                            }
+                        newQorF { entry = entry, key = key }
+                            model
+                        <|
+                            hashForAlbum model albumPage <|
+                                List.map Tuple.first parents
 
             LoadedList key albumListPage _ _ _ _ postLoadNavState ->
                 checkNavState postLoadNavState <|
                     Just <|
-                        NewQuery { entry = entry, key = key }
-                            { query = queryFor model
-                            , fragment = Just <| hashForList model albumListPage
-                            }
+                        newQorF { entry = entry, key = key }
+                            model
+                        <|
+                            hashForList model albumListPage
 
             _ ->
                 Nothing
