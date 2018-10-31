@@ -733,32 +733,32 @@ locFor oldModel newModel =
                         LoadedList _ nAlbumListPage _ _ _ _ _ ->
                             case oAlbumListPage == nAlbumListPage of
                                 True ->
-                                    ModifyEntry
+                                    Debug.log "locFor LoadedList same" ModifyEntry
 
                                 False ->
-                                    NewEntry
+                                    Debug.log "locFor LoadedList dift" NewEntry
 
                         _ ->
-                            NewEntry
+                            Debug.log "locFor LoadedList -> something else" NewEntry
 
                 LoadedAlbum _ oAlbumPage oParents _ _ _ _ _ ->
                     case newModel of
                         LoadedAlbum _ nAlbumPage nParents _ _ _ _ _ ->
                             case oAlbumPage == nAlbumPage && oParents == nParents of
                                 True ->
-                                    ModifyEntry
+                                    Debug.log "locFor LoadedAlbum same" ModifyEntry
 
                                 False ->
-                                    NewEntry
+                                    Debug.log "locFor LoadedAlbum dift" NewEntry
 
                         _ ->
-                            NewEntry
+                            Debug.log "locFor LoadedAlbum -> something else" NewEntry
 
                 _ ->
-                    NewEntry
+                    Debug.log "locFor something els -> *" NewEntry
 
         checkNavState state nav =
-            case state of
+            case Debug.log "checkNavState" state of
                 NavInProgress ->
                     Nothing
 
