@@ -69,6 +69,7 @@ type AlbumBootstrapMsg
     | Scroll Float
     | Sequence AlbumBootstrapMsg (List AlbumBootstrapMsg)
     | SequenceCmd (Cmd AlbumBootstrapMsg) (List (Cmd AlbumBootstrapMsg))
+    | LinkClicked UrlRequest
     | NoBootstrap
 
 
@@ -79,7 +80,7 @@ main =
         , view = view
         , update = update
         , subscriptions = subscriptions
-        , onUrlRequest = onUrlRequest
+        , onUrlRequest = LinkClicked
         , delta2url = locFor
         , location2messages = navToMsg
         }
@@ -151,7 +152,7 @@ update msg model =
         YesHome home ->
             case model of
                 LoadingHomeLink key size flags path scroll ->
-                    gotHome key size flags path scroll <| Just home
+                    gotHome key size flags path scroll <| Just <| String.trim home
 
                 _ ->
                     ( model, Cmd.none )
@@ -350,6 +351,25 @@ update msg model =
                             Cmd.batch [ log "sequenced cmd: next" next, toCmd <| SequenceCmd r1 rs ]
             in
             ( model, cmds )
+
+        LinkClicked urlRequest ->
+            case urlRequest of
+                Internal url ->
+                    --home link might count as internal if it's on the same domain
+                    let
+                        hUrl =
+                            Maybe.andThen Url.fromString <| homeOf model
+                    in
+                    case Maybe.withDefault False <| Maybe.map (\h -> h == url) <| hUrl of
+                        True ->
+                            ( model, load <| toString url )
+
+                        False ->
+                            ( log ("ignoring unexpected internal url request not for home url (" ++ (Maybe.withDefault "home not set" <| homeOf model) ++ ") " ++ toString url) model, Cmd.none )
+
+                External url ->
+                    --home link should be only external link in our app
+                    ( model, load url )
 
         NoBootstrap ->
             ( model, Cmd.none )
@@ -1062,20 +1082,6 @@ pageSize albumPage =
 
         FullImage _ _ _ viewport _ _ ->
             viewport
-
-
-onUrlRequest : UrlRequest -> AlbumBootstrapMsg
-onUrlRequest request =
-    let
-        durl =
-            case request of
-                Internal url ->
-                    toString url
-
-                External url ->
-                    url
-    in
-    log ("no-op onUrlRequest " ++ durl) <| NoBootstrap
 
 
 view : AlbumBootstrap -> Document AlbumBootstrapMsg
