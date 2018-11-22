@@ -1203,7 +1203,16 @@ viewProgress progress =
             "starting"
 
         Some data ->
-            String.fromInt data.bytes ++ " of " ++ String.fromInt data.bytesExpected
+            case data.bytesExpected > 0 of
+                True ->
+                    let
+                        pct =
+                            toFloat data.bytes / toFloat data.bytesExpected
+                    in
+                    String.fromFloat pct ++ "%"
+
+                False ->
+                    String.fromInt data.bytes ++ " bytes received"
 
         Fail _ ->
             "failed"
