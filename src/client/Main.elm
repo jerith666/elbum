@@ -16,7 +16,6 @@ import FullImagePage exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Http exposing (..)
-import Http.Progress exposing (..)
 import KeyboardUtils exposing (onEscape)
 import ListUtils exposing (..)
 import LocationUtils exposing (..)
@@ -31,7 +30,7 @@ import Url exposing (..)
 type AlbumBootstrap
     = Sizing Key AlbumBootstrapFlags (Maybe (List String)) (Maybe Float)
     | LoadingHomeLink Key Viewport AlbumBootstrapFlags (Maybe (List String)) (Maybe Float)
-    | Loading Key Viewport (Progress AlbumOrList) AlbumBootstrapFlags (Maybe String) (Maybe (List String)) (Maybe Float)
+    | Loading Key Viewport (Maybe Progress) AlbumBootstrapFlags (Maybe String) (Maybe (List String)) (Maybe Float)
     | LoadError Key AlbumBootstrapFlags Http.Error
     | LoadedList Key AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float) PostLoadNavState
     | LoadedAlbum Key AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float) PostLoadNavState
@@ -54,7 +53,7 @@ type AlbumBootstrapMsg
     = Resize Viewport
     | YesHome String
     | NoHome Http.Error
-    | LoadAlbumProgress (Progress AlbumOrList)
+    | LoadAlbumProgress Progress
     | YesAlbum AlbumOrList
     | NoAlbum Http.Error
     | PageMsg AlbumPage.AlbumPageMsg
@@ -73,6 +72,11 @@ type AlbumBootstrapMsg
     | SequenceCmd (Cmd AlbumBootstrapMsg) (List (Cmd AlbumBootstrapMsg))
     | LinkClicked UrlRequest
     | NoBootstrap
+
+
+albumJson : String
+albumJson =
+    "album.json"
 
 
 main : RouteUrlProgram AlbumBootstrapFlags AlbumBootstrap AlbumBootstrapMsg
@@ -169,16 +173,8 @@ update msg model =
 
         LoadAlbumProgress progress ->
             case model of
-                Loading key viewport oldProgress flags home paths scroll ->
-                    case progress of
-                        Done albumOrList ->
-                            update (YesAlbum albumOrList) model
-
-                        Fail err ->
-                            update (NoAlbum err) model
-
-                        _ ->
-                            ( Loading key viewport progress flags home paths scroll, Cmd.none )
+                Loading key viewport _ flags home paths scroll ->
+                    ( Loading key viewport (Just progress) flags home paths scroll, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
@@ -415,8 +411,16 @@ sequence mm1 ms =
 
 gotHome : Key -> Viewport -> AlbumBootstrapFlags -> Maybe (List String) -> Maybe Float -> Maybe String -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 gotHome key viewport flags paths scroll home =
-    ( Loading key viewport flags home paths scroll
-    , Http.get { url = "album.json", expect = expectJson decodeAlbumRequest jsonDecAlbumOrList }
+    ( Loading key viewport Nothing flags home paths scroll
+    , Http.request
+        { method = "GET"
+        , headers = []
+        , url = albumJson
+        , body = emptyBody
+        , expect = expectJson (either NoAlbum YesAlbum) jsonDecAlbumOrList
+        , timeout = Nothing
+        , tracker = Just albumJson
+        }
     )
 
 
@@ -1034,9 +1038,7 @@ subscriptions model =
         Loading _ viewport progress _ _ _ _ ->
             Sub.batch
                 [ onResize <| newSize viewport
-
-                -- TODO case on progress?
-                , Http.Progress.track "" LoadAlbumProgress <| Http.get "album.json" jsonDecAlbumOrList
+                , Http.track albumJson LoadAlbumProgress
                 ]
 
         LoadError _ _ _ ->
@@ -1090,7 +1092,7 @@ view albumBootstrap =
                     "Home Loading ..."
 
                 Loading _ _ progress _ _ _ _ ->
-                    "Album Loading: " ++ viewProgress progress
+                    viewProgress "Album Loading" progress
 
                 LoadError _ _ _ ->
                     "Error Loading Album"
@@ -1116,7 +1118,7 @@ viewImpl albumBootstrap =
             text "Home Loading ..."
 
         Loading _ _ progress _ _ _ _ ->
-            text <| "Album Loading: " ++ viewProgress progress
+            text <| viewProgress "Album Loading" progress
 
         LoadError _ _ e ->
             let
@@ -1179,29 +1181,28 @@ viewImpl albumBootstrap =
                     flags
 
 
-viewProgress : Progress a -> String
-viewProgress progress =
-    case progress of
-        None ->
-            "starting"
+viewProgress : String -> Maybe Progress -> String
+viewProgress prefix mProgress =
+    let
+        pct num denom =
+            (String.fromInt <| Basics.round <| 100 * toFloat num / toFloat denom) ++ "%"
+    in
+    case mProgress of
+        Nothing ->
+            prefix
 
-        Some data ->
-            case data.bytesExpected > 0 of
-                True ->
-                    let
-                        pct =
-                            Basics.round <| 100 * toFloat data.bytes / toFloat data.bytesExpected
-                    in
-                    String.fromInt pct ++ "%"
+        Just progress ->
+            case progress of
+                Sending s ->
+                    prefix ++ ": sent " ++ pct s.sent s.size
 
-                False ->
-                    String.fromInt data.bytes ++ " bytes received"
+                Receiving r ->
+                    case r.size of
+                        Nothing ->
+                            prefix ++ ": " ++ String.fromInt r.received ++ " bytes received"
 
-        Fail _ ->
-            "failed"
-
-        Done _ ->
-            "complete"
+                        Just size ->
+                            prefix ++ ": received " ++ pct r.received size
 
 
 viewList : AlbumBootstrap -> Viewport -> List ( AlbumList, Maybe Float ) -> AlbumList -> AlbumBootstrapMsg
