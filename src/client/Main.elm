@@ -1,4 +1,4 @@
-module Main exposing (AlbumBootstrap(..), AlbumBootstrapMsg(..), PostLoadNavState(..), UrlLoadState(..), decodeAlbumRequest, decodeUrlResult, findChild, findImg, flagsOf, getUrl, getUrls, gotHome, handleGetResponse, hashForAlbum, hashForList, hashFromAlbumPath, homeOf, init, justLoadedReadyToDisplayNextState, locFor, main, navForAlbum, navFrom, navToMsg, pageSize, pathsToCmd, pathsToCmdImpl, queryFor, scrollToCmd, scrollToTop, sequence, subscriptions, update, updateImageResult, urlNextState, view, viewList, withHomeLink, withPaths, withScroll, withScrollPos)
+module Main exposing (main)
 
 import Album exposing (..)
 import AlbumListPage exposing (..)
@@ -100,7 +100,7 @@ update msg model =
             case model of
                 Sizing key flags paths scroll ->
                     ( LoadingHomeLink key (log "window size set" viewport) flags paths scroll
-                    , Http.send (either NoHome YesHome) <| Http.getString "home"
+                    , Http.get { url = "home", expect = expectString <| either NoHome YesHome }
                     )
 
                 LoadingHomeLink key oldSize flags paths scroll ->
@@ -398,7 +398,7 @@ sequence mm1 ms =
 gotHome : Key -> Viewport -> AlbumBootstrapFlags -> Maybe (List String) -> Maybe Float -> Maybe String -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 gotHome key viewport flags paths scroll home =
     ( Loading key viewport flags home paths scroll
-    , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecAlbumOrList))
+    , Http.get { url = "album.json", expect = expectJson decodeAlbumRequest jsonDecAlbumOrList }
     )
 
 
@@ -972,36 +972,17 @@ getUrls existingUrls newUrls =
 
 getUrl : String -> Cmd AlbumBootstrapMsg
 getUrl url =
-    Task.attempt (decodeUrlResult url)
-        (Http.toTask
-            (Http.request
-                { method = "GET"
-                , headers = []
-                , url = encodePath url
-                , body = emptyBody
-                , expect = expectStringResponse <| handleGetResponse url
-                , timeout = Nothing
-                , withCredentials = False
-                }
-            )
-        )
+    Http.get
+        { url = encodePath url
+        , expect = expectWhatever <| decodeUrlResult url
+        }
 
 
-handleGetResponse : String -> Response String -> Result String String
-handleGetResponse url r =
-    case r.status.code of
-        200 ->
-            Ok url
-
-        _ ->
-            Err <| "err " ++ r.status.message
-
-
-decodeUrlResult : String -> Result Http.Error String -> AlbumBootstrapMsg
+decodeUrlResult : String -> Result Http.Error () -> AlbumBootstrapMsg
 decodeUrlResult origUrl result =
     case result of
-        Ok url ->
-            ImageLoaded url
+        Ok _ ->
+            ImageLoaded origUrl
 
         Err e ->
             ImageFailed origUrl e
@@ -1137,10 +1118,10 @@ viewImpl albumBootstrap =
                         NetworkError ->
                             "network error"
 
-                        BadStatus response ->
-                            "bad status: " ++ response.status.message ++ ": " ++ response.body
+                        BadStatus code ->
+                            "bad status: " ++ String.fromInt code
 
-                        BadPayload s response ->
+                        BadBody s ->
                             "bad payload: " ++ s
             in
             text ("Error Loading Album: " ++ eStr)
