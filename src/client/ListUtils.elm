@@ -1,15 +1,15 @@
 module ListUtils exposing (dictWithValues, dropThrough, dropThroughPred, encodePath, fromMaybe, mapI, shiftLeft, shiftRight, shiftToBeginning)
 
 import Dict exposing (..)
-import Http exposing (encodeUri)
 import Set exposing (..)
+import Url exposing (percentEncode)
 
 
 {-| splits the path on "/"s, calls encodeUri on each path segment, then reassembles it.
 -}
 encodePath : String -> String
 encodePath =
-    String.split "/" >> List.map encodeUri >> String.join "/"
+    String.split "/" >> List.map percentEncode >> String.join "/"
 
 
 dictWithValues : Set comparable -> a -> Dict comparable a
@@ -82,8 +82,10 @@ dropThroughPred pred elems =
         e :: es ->
             if pred e then
                 es
+
             else if List.any pred elems then
                 dropThroughPred pred es
+
             else
                 elems
 
@@ -96,10 +98,11 @@ mapI i map l =
         ifmap ( j, a ) =
             if i == j then
                 map a
+
             else
                 a
     in
-    List.map ifmap <| List.indexedMap (,) l
+    List.map ifmap <| List.indexedMap (\a b -> ( a, b )) l
 
 
 fromMaybe : Maybe a -> List a

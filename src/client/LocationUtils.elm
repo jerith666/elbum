@@ -1,46 +1,54 @@
-module LocationUtils exposing (locToString, parseHref, parseQuery)
+module LocationUtils exposing (locToString, parseHash, parseQuery)
 
-import Combine exposing (..)
+import Browser.Navigation exposing (..)
 import Http exposing (..)
-import Navigation exposing (..)
+import Parser exposing (..)
+import Url exposing (..)
 
 
-parseHref : String -> Result (ParseErr ()) (ParseOk () (List String))
-parseHref href =
+parseHash : String -> Result (List DeadEnd) (List String)
+parseHash href =
     let
-        pathParser =
-            or
-                (end $> [])
-            <|
-                Combine.map
-                    (List.filterMap identity)
-                <|
-                    string "#"
-                        *> sepBy
-                            (string "/")
-                            (Combine.map decodeUri <| regex "[^/]*")
-                        <* end
+        hashParser =
+            oneOf
+                [ succeed [] |. end
+                , succeed identity
+                    |= sequence
+                        { start = ""
+                        , separator = "/"
+                        , end = ""
+                        , spaces = succeed ()
+                        , item =
+                            map (\p -> Maybe.withDefault p <| percentDecode p) <|
+                                getChompedString <|
+                                    succeed ()
+                                        |. chompWhile (\c -> c /= '/')
+                        , trailing = Optional
+                        }
+                    |. end
+                ]
     in
-    parse pathParser href
+    run hashParser href
 
 
-parseQuery : String -> Result (ParseErr ()) (ParseOk () (Maybe String))
+parseQuery : String -> Result (List DeadEnd) (Maybe String)
 parseQuery query =
     let
-        rest =
-            while (\_ -> True) <* end
-
         qParser =
-            or
-                (end $> Nothing)
-            <|
-                Combine.map Just <|
-                    string "?s="
-                        *> rest
+            oneOf
+                [ succeed Nothing |. end
+                , succeed Just
+                    |. symbol "s="
+                    |= (getChompedString <|
+                            succeed ()
+                                |. chompWhile (\_ -> True)
+                       )
+                    |. end
+                ]
     in
-    parse qParser query
+    run qParser query
 
 
-locToString : Location -> String
-locToString loc =
-    loc.protocol ++ "//" ++ loc.host ++ loc.pathname ++ loc.search ++ loc.hash
+locToString : Url -> String
+locToString =
+    toString

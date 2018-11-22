@@ -1,4 +1,4 @@
-module AlbumStyles exposing (..)
+module AlbumStyles exposing (AlbumBootstrapFlags, ImgLoadState(..), black, navBoxStyles, navElement, navEltSize, opacityAnimatedTo, opacityStyles, rootDiv, rootDivFlex, rootDivId, rootPos, styles, white)
 
 import Css exposing (..)
 import Css.Transitions exposing (..)
@@ -54,6 +54,7 @@ rootPos : AlbumBootstrapFlags -> Style
 rootPos flags =
     if flags.scrollSupport then
         position fixed
+
     else
         position absolute
 
@@ -110,9 +111,9 @@ opacityStyles imgLoadedState =
             opacityAnimatedTo 0
 
 
-opacityDuration : Float
-opacityDuration =
-    1
+opacityDurationMillis : Float
+opacityDurationMillis =
+    1000
 
 
 opacityAnimatedTo : Float -> List Style
@@ -120,7 +121,7 @@ opacityAnimatedTo opasity =
     [ Css.opacity (num opasity)
     , transition
         [ Css.Transitions.opacity3
-            (opacityDuration * Time.second)
+            opacityDurationMillis
             0
             easeInOut
         ]

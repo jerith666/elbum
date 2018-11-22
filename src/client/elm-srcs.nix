@@ -1,170 +1,78 @@
-{ fetchzip }: {
-  "Bogdanp/elm-combine" = {
-    src = fetchzip {
-      url = "https://github.com/Bogdanp/elm-combine/archive/3.1.1.zip";
-      sha256 = "0cpd50qab54hlnc1c3pf2j7j45cr3y4nhkf53p8d1w7rm7kyqssb";
-    };
-    version = "3.1.1";
-  };
-  "Skinney/murmur3" = {
-    src = fetchzip {
-      url = "https://github.com/Skinney/murmur3/archive/2.0.6.zip";
-      sha256 = "1fsb30871fhav809kmmj5zd2lwln10lpz8112l8dxhw301rk0nb1";
-    };
-    version = "2.0.6";
-  };
+{
   "andrewMacmurray/elm-delay" = {
-    src = fetchzip {
-      url = "https://github.com/andrewMacmurray/elm-delay/archive/2.0.3.zip";
-      sha256 = "0cznf7f4kls3x23qnlmmard35lnppgim1qcy2nyag4a684srn358";
-    };
-    version = "2.0.3";
+    version = "3.0.0";
+    sha256 = "0cizz1l370aambnygvycn7fv0zbgdjrf1fzvnzimswbwd8n38i1j";
   };
   "bartavelle/json-helpers" = {
-    src = fetchzip {
-      url = "https://github.com/bartavelle/json-helpers/archive/1.4.0.zip";
-      sha256 = "13wc7vxdcf3ap33xsgvl63d20791380whvk032p1iyg5wfapc7p5";
-    };
-    version = "1.4.0";
+    version = "2.0.0";
+    sha256 = "0cx1nbzd97pqk4srmad28md29yb6gx3yarn5fijp1xsn58krd06d";
   };
   "ccapndave/elm-update-extra" = {
-    src = fetchzip {
-      url = "https://github.com/ccapndave/elm-update-extra/archive/3.0.0.zip";
-      sha256 = "177y4hyl0wbxxlkhm15nih9wz0pr28xwnd51gm0yb5q6vnnyjh6q";
-    };
-    version = "3.0.0";
+    version = "4.0.0";
+    sha256 = "03dv58ppc4hvx0yriwl9mcaxynvcrbz45906jga39921a9gcbf6s";
   };
-  "elm-community/basics-extra" = {
-    src = fetchzip {
-      url = "https://github.com/elm-community/basics-extra/archive/2.2.0.zip";
-      sha256 = "0q4pw7wwsf13gakzyxqagy6v5dj6ch0n9mhx2slq8w1l19mf1z0i";
-    };
-    version = "2.2.0";
-  };
-  "elm-lang/animation-frame" = {
-    src = fetchzip {
-      url = "https://github.com/elm-lang/animation-frame/archive/1.0.1.zip";
-      sha256 = "1rlhpz64sh2f3l9bq9h2qqgpvcqz661ynda4l13fbqpxxfcdcpy2";
-    };
-    version = "1.0.1";
-  };
-  "elm-lang/core" = {
-    src = fetchzip {
-      url = "https://github.com/elm-lang/core/archive/5.1.1.zip";
-      sha256 = "0iww5kfxwymwj1748q0i629vyr1yjdqsx1fvymra6866gr2m3n19";
-    };
-    version = "5.1.1";
-  };
-  "elm-lang/dom" = {
-    src = fetchzip {
-      url = "https://github.com/elm-lang/dom/archive/1.1.1.zip";
-      sha256 = "181yams19hf391dgvjxvamfxdkh49i83qfdwj9big243ljd08mpv";
-    };
-    version = "1.1.1";
-  };
-  "elm-lang/html" = {
-    src = fetchzip {
-      url = "https://github.com/elm-lang/html/archive/2.0.0.zip";
-      sha256 = "08mxkcb1548fcvc1p7r3g1ycrdwmfkyma24jf72238lf7j4ps4ng";
-    };
-    version = "2.0.0";
-  };
-  "elm-lang/http" = {
-    src = fetchzip {
-      url = "https://github.com/elm-lang/http/archive/1.0.0.zip";
-      sha256 = "1bhhh81ih7psvs324i5cdac5w79nc9jmykm76cmy6awfp7zhqb4b";
-    };
+  "elm/browser" = {
     version = "1.0.0";
+    sha256 = "1apmvyax93nvmagwj00y16zx10kfv640cxpi64xgqbgy7d2wphy4";
   };
-  "elm-lang/keyboard" = {
-    src = fetchzip {
-      url = "https://github.com/elm-lang/keyboard/archive/1.0.1.zip";
-      sha256 = "14cd450j44him2cj523kj1fnq843sxkidqdxjs8hkf6vqzvrc6sy";
-    };
-    version = "1.0.1";
+  "elm/core" = {
+    version = "1.0.0";
+    sha256 = "10kr86h4v5h4p0586q406a5wbl8xvr1jyrf6097zp2wb8sv21ylw";
   };
-  "elm-lang/lazy" = {
-    src = fetchzip {
-      url = "https://github.com/elm-lang/lazy/archive/2.0.0.zip";
-      sha256 = "09439a2pkzbwvk2lfrg229jwjvc4d5dc32562q276z012bw1a2lc";
-    };
-    version = "2.0.0";
+  "elm/html" = {
+    version = "1.0.0";
+    sha256 = "1n3gpzmpqqdsldys4ipgyl1zacn0kbpc3g4v3hdpiyfjlgh8bf3k";
   };
-  "elm-lang/navigation" = {
-    src = fetchzip {
-      url = "https://github.com/elm-lang/navigation/archive/2.1.0.zip";
-      sha256 = "08rb6b740yxz5jpgkf5qad1raf7qqnx77hzn3bkk0s4kqyirhfcl";
-    };
-    version = "2.1.0";
+  "elm/http" = {
+    version = "1.0.0";
+    sha256 = "1igmm89ialzrjib1j8xagkxalq1x2gj4l0hfxcd66mpwmvg7psl8";
   };
-  "elm-lang/svg" = {
-    src = fetchzip {
-      url = "https://github.com/elm-lang/svg/archive/2.0.0.zip";
-      sha256 = "1asb89d2y554ma84dnd0x7a9g29nzdv355bji91s1zrajr96gcc5";
-    };
-    version = "2.0.0";
+  "elm/json" = {
+    version = "1.0.0";
+    sha256 = "1g0hafkqf2q633r7ir9wxpb1lnlzskhpsyi0h5bkzj0gl072zfnb";
   };
-  "elm-lang/virtual-dom" = {
-    src = fetchzip {
-      url = "https://github.com/elm-lang/virtual-dom/archive/2.0.4.zip";
-      sha256 = "1zydzzhpxivpzddnxjsjlwc18kaya1l4f8zsgs22wkq25izkin33";
-    };
-    version = "2.0.4";
+  "elm/parser" = {
+    version = "1.1.0";
+    sha256 = "0a3cxrvbm7mwg9ykynhp7vjid58zsw03r63qxipxp3z09qks7512";
   };
-  "elm-lang/window" = {
-    src = fetchzip {
-      url = "https://github.com/elm-lang/window/archive/1.0.1.zip";
-      sha256 = "1w6s8bqpwy2nkg70dflijl9jzamybqrs5iv9f537pw6r8fl8dr34";
-    };
-    version = "1.0.1";
+  "elm/random" = {
+    version = "1.0.0";
+    sha256 = "138n2455wdjwa657w6sjq18wx2r0k60ibpc4frhbqr50sncxrfdl";
   };
-  "knledg/touch-events" = {
-    src = fetchzip {
-      url = "https://github.com/knledg/touch-events/archive/2.1.2.zip";
-      sha256 = "0c4by39abgd3pscj9c2wj0fawm5cqvwphmw9w16fha8i3fcl5l43";
-    };
-    version = "2.1.2";
+  "elm/regex" = {
+    version = "1.0.0";
+    sha256 = "0lijsp50w7n1n57mjg6clpn9phly8vvs07h0qh2rqcs0f1jqvsa2";
+  };
+  "elm/time" = {
+    version = "1.0.0";
+    sha256 = "0vch7i86vn0x8b850w1p69vplll1bnbkp8s383z7pinyg94cm2z1";
+  };
+  "elm/url" = {
+    version = "1.0.0";
+    sha256 = "0av8x5syid40sgpl5vd7pry2rq0q4pga28b4yykn9gd9v12rs3l4";
   };
   "mdgriffith/elm-style-animation" = {
-    src = fetchzip {
-      url = "https://github.com/mdgriffith/elm-style-animation/archive/3.5.5.zip";
-      sha256 = "0m3n0xa5bqlwnd0235x145h1crcr3vv507i3j8457xq2550d3c7d";
-    };
-    version = "3.5.5";
-  };
-  "rgrempel/elm-route-url" = {
-    src = fetchzip {
-      url = "https://github.com/rgrempel/elm-route-url/archive/4.0.0.zip";
-      sha256 = "11af0f0s1a70jaqp9n673fji1sahsa87x47c21yck1gix17ppzy5";
-    };
     version = "4.0.0";
+    sha256 = "1sph37fji07dl40rvpgbnij01zg4h7ywapxar433cdh0lay26xhb";
   };
   "rtfeldman/elm-css" = {
-    src = fetchzip {
-      url = "https://github.com/rtfeldman/elm-css/archive/14.0.0.zip";
-      sha256 = "0di4ypcd0rn3d34932drfl3fhp4bkk1kgrhx52vqjskxmkwsip4y";
-    };
-    version = "14.0.0";
+    version = "15.1.0";
+    sha256 = "0jzi6ygg1mgjihmxk2lal5rbjb6g96iqw3g9f6hb5hqgw5a5crq3";
   };
-  "rtfeldman/elm-css-util" = {
-    src = fetchzip {
-      url = "https://github.com/rtfeldman/elm-css-util/archive/1.0.2.zip";
-      sha256 = "1ng4k7gs09qllxhi7injj8n148jl745h4y4gn54fgdw9m87gp6yi";
-    };
-    version = "1.0.2";
+  "Skinney/murmur3" = {
+    version = "2.0.7";
+    sha256 = "0qdbi1rkl2gl63wkpjjmhfq6sjgshp9wbw0px5j57g4psk2xac0l";
   };
-  "rtfeldman/hex" = {
-    src = fetchzip {
-      url = "https://github.com/rtfeldman/hex/archive/1.0.0.zip";
-      sha256 = "1lvc6kz5y976gi469a2c3d9bzjbjb6pf8a4qdzgq680wfw7y1hz7";
-    };
+  "elm/svg" = {
     version = "1.0.0";
+    sha256 = "08x0v8p9wm699jjmsnbq69pxv3jh60j4f6fg7y6hyr7xxj85y390";
   };
-  "sporto/erl" = {
-    src = fetchzip {
-      url = "https://github.com/sporto/erl/archive/13.0.2.zip";
-      sha256 = "11fcxk3f61ikccglrl60xwgp3zzhr595ypj4anpczv47q9li930z";
-    };
-    version = "13.0.2";
+  "elm/virtual-dom" = {
+    version = "1.0.0";
+    sha256 = "0hm8g92h7z39km325dlnhk8n00nlyjkqp3r3jppr37k2k13md6aq";
+  };
+  "rtfeldman/elm-hex" = {
+    version = "1.0.0";
+    sha256 = "1y0aa16asvwdqmgbskh5iba6psp43lkcjjw9mgzj3gsrg33lp00d";
   };
 }

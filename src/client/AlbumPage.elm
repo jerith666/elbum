@@ -2,11 +2,12 @@ module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), progInit, resetUrls,
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
-import Dom.Scroll exposing (..)
+import Browser.Dom exposing (..)
+import Browser.Events exposing (..)
 import FullImagePage exposing (..)
 import Html.Styled exposing (..)
 import ImageViews exposing (..)
-import Keyboard exposing (..)
+import Json.Decode exposing (..)
 import KeyboardUtils exposing (onEscape)
 import ListUtils exposing (..)
 import ProgressiveImage exposing (..)
@@ -15,12 +16,11 @@ import Set exposing (..)
 import Task exposing (..)
 import ThumbPage exposing (..)
 import TouchEvents exposing (..)
-import WinSize exposing (..)
 
 
 type AlbumPage
-    = Thumbs Album WinSize (Set String) (Set String)
-    | FullImage (List Image) Album ProgressiveImageModel WinSize (Maybe Float) (Maybe ( Touch, Touch ))
+    = Thumbs Album Viewport (Set String) (Set String)
+    | FullImage (List Image) Album ProgressiveImageModel Viewport (Maybe Float) (Maybe ( Touch, Touch ))
 
 
 type AlbumPageMsg
@@ -40,13 +40,13 @@ update msg model scroll =
     case msg of
         View prevImgs curImg nextImgs ->
             case model of
-                Thumbs album winSize _ _ ->
+                Thumbs album viewport _ _ ->
                     let
                         ( w, h ) =
-                            fitImage curImg.srcSetFirst winSize.width winSize.height
+                            fitImage curImg.srcSetFirst (floor viewport.viewport.width) (floor viewport.viewport.height)
 
                         ( progModel, progCmd ) =
-                            progInit winSize curImg w h
+                            progInit viewport curImg w h
                     in
                     ( FullImage
                         prevImgs
@@ -56,7 +56,7 @@ update msg model scroll =
                         , thumbnail = album.thumbnail
                         }
                         progModel
-                        winSize
+                        viewport
                         scroll
                         Nothing
                     , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd progCmd
@@ -73,7 +73,7 @@ update msg model scroll =
 
         BackToThumbs ->
             case model of
-                FullImage prevImgs album _ winSize savedScroll _ ->
+                FullImage prevImgs album _ viewport savedScroll _ ->
                     let
                         ( newFirst, newRest ) =
                             shiftToBeginning prevImgs album.imageFirst album.imageRest
@@ -84,7 +84,7 @@ update msg model scroll =
                                     Cmd.none
 
                                 Just pos ->
-                                    Task.attempt (\_ -> NoUpdate) <| toY rootDivId pos
+                                    Task.attempt (\_ -> NoUpdate) <| setViewportOf rootDivId 0 pos
                     in
                     ( Thumbs
                         { title = album.title
@@ -92,7 +92,7 @@ update msg model scroll =
                         , imageRest = newRest
                         , thumbnail = album.thumbnail
                         }
-                        winSize
+                        viewport
                         empty
                         empty
                     , scrollCmd
@@ -103,41 +103,41 @@ update msg model scroll =
 
         TouchDragStart pos ->
             case model of
-                FullImage prevImgs album progModel winSize savedScroll dragInfo ->
-                    ( FullImage prevImgs album progModel winSize savedScroll (Just ( pos, pos )), Cmd.none )
+                FullImage prevImgs album progModel viewport savedScroll dragInfo ->
+                    ( FullImage prevImgs album progModel viewport savedScroll (Just ( pos, pos )), Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
         TouchDragContinue pos ->
             case model of
-                FullImage prevImgs album progModel winSize savedScroll dragInfo ->
+                FullImage prevImgs album progModel viewport savedScroll dragInfo ->
                     case dragInfo of
                         Nothing ->
-                            ( FullImage prevImgs album progModel winSize savedScroll (Just ( pos, pos )), Cmd.none )
+                            ( FullImage prevImgs album progModel viewport savedScroll (Just ( pos, pos )), Cmd.none )
 
                         Just ( start, cur ) ->
-                            ( FullImage prevImgs album progModel winSize savedScroll (Just ( start, pos )), Cmd.none )
+                            ( FullImage prevImgs album progModel viewport savedScroll (Just ( start, pos )), Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
         TouchDragAbandon ->
             case model of
-                FullImage prevImgs album progModel winSize savedScroll _ ->
-                    ( FullImage prevImgs album progModel winSize savedScroll Nothing, Cmd.none )
+                FullImage prevImgs album progModel viewport savedScroll _ ->
+                    ( FullImage prevImgs album progModel viewport savedScroll Nothing, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
         FullMsg progImgMsg ->
             case model of
-                FullImage prevImgs album progModel winSize savedScroll dragInfo ->
+                FullImage prevImgs album progModel viewport savedScroll dragInfo ->
                     let
                         ( newProgModel, newProgCmd ) =
                             ProgressiveImage.update progImgMsg progModel
                     in
-                    ( FullImage prevImgs album newProgModel winSize savedScroll dragInfo, Cmd.map FullMsg newProgCmd )
+                    ( FullImage prevImgs album newProgModel viewport savedScroll dragInfo, Cmd.map FullMsg newProgCmd )
 
                 _ ->
                     ( model, Cmd.none )
@@ -146,14 +146,14 @@ update msg model scroll =
             ( model, Cmd.none )
 
 
-progInit : WinSize -> Image -> Int -> Int -> ( ProgressiveImageModel, Maybe ProgressiveImageMsg )
-progInit winSize i w h =
+progInit : Viewport -> Image -> Int -> Int -> ( ProgressiveImageModel, Maybe ProgressiveImageMsg )
+progInit viewport i w h =
     let
         ( _, thumbWidth ) =
-            colsWidth winSize
+            colsWidth viewport
 
-        smBiggerThan w h =
-            smallestImageBiggerThan w h i.srcSetFirst i.srcSetRest
+        smBiggerThan wMax hMax =
+            smallestImageBiggerThan wMax hMax i.srcSetFirst i.srcSetRest
     in
     ProgressiveImage.init
         { mainImg = smBiggerThan w h
@@ -167,7 +167,7 @@ progInit winSize i w h =
 updatePrevNext : AlbumPage -> (List Image -> Image -> List Image -> ( List Image, Image, List Image )) -> ( AlbumPage, Cmd AlbumPageMsg )
 updatePrevNext model shifter =
     case model of
-        FullImage prevImgs album oldProgModel winSize savedScroll _ ->
+        FullImage prevImgs album oldProgModel viewport savedScroll _ ->
             let
                 ( newPrev, newCur, newRest ) =
                     shifter prevImgs album.imageFirst album.imageRest
@@ -175,12 +175,13 @@ updatePrevNext model shifter =
                 ( newProgModel, newCmd ) =
                     if album.imageFirst == newCur then
                         ( oldProgModel, Nothing )
+
                     else
                         let
                             ( w, h ) =
-                                fitImage newCur.srcSetFirst winSize.width winSize.height
+                                fitImage newCur.srcSetFirst (floor viewport.viewport.width) (floor viewport.viewport.height)
                         in
-                        progInit winSize newCur w h
+                        progInit viewport newCur w h
             in
             ( FullImage
                 newPrev
@@ -190,7 +191,7 @@ updatePrevNext model shifter =
                 , thumbnail = album.thumbnail
                 }
                 newProgModel
-                winSize
+                viewport
                 savedScroll
                 Nothing
             , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd newCmd
@@ -216,11 +217,11 @@ resetUrls msg =
 urlsToGet : AlbumPage -> Set String
 urlsToGet albumPage =
     case albumPage of
-        Thumbs album winSize justLoadedImages readyToDisplayImages ->
+        Thumbs album viewport justLoadedImages readyToDisplayImages ->
             ThumbPage.urlsToGet
                 { album = album
                 , parents = []
-                , winSize = winSize
+                , viewport = viewport
                 , justLoadedImages = justLoadedImages
                 , readyToDisplayImages = readyToDisplayImages
                 }
@@ -242,20 +243,20 @@ titleOf albumPage =
 view : AlbumPage -> (Float -> msg) -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> AlbumBootstrapFlags -> Html msg
 view albumPage scrollMsgMaker showList wrapMsg parents flags =
     case albumPage of
-        Thumbs album winSize justLoadedImages readyToDisplayImages ->
+        Thumbs album viewport justLoadedImages readyToDisplayImages ->
             ThumbPage.view
                 scrollMsgMaker
                 (\x -> \y -> \z -> wrapMsg (View x y z))
                 showList
                 { album = album
                 , parents = parents
-                , winSize = winSize
+                , viewport = viewport
                 , justLoadedImages = justLoadedImages
                 , readyToDisplayImages = readyToDisplayImages
                 }
                 flags
 
-        FullImage prevImgs album progModel winSize _ dragInfo ->
+        FullImage prevImgs album progModel viewport _ dragInfo ->
             FullImagePage.view
                 { prevMsg = wrapMsg Prev
                 , nextMsg = wrapMsg Next
@@ -270,7 +271,7 @@ view albumPage scrollMsgMaker showList wrapMsg parents flags =
                 (wrapMsg << FullMsg)
                 { prevImgs = prevImgs
                 , album = album
-                , winSize = winSize
+                , viewport = viewport
                 , progImgModel = progModel
                 , offset = offsetFor dragInfo
                 }
@@ -301,6 +302,7 @@ touchPrevNext dragInfo touch =
 
                     _ ->
                         TouchDragAbandon
+
             else
                 TouchDragAbandon
 
@@ -325,22 +327,22 @@ subscriptions albumPage wrapper showParent =
             Sub.batch
                 [ Sub.map wrapper <| Sub.map FullMsg <| ProgressiveImage.subscriptions progImgModel
                 , Sub.map wrapper <|
-                    downs
-                        (\keycode ->
-                            case keycode of
-                                39 ->
-                                    -- right arrow
-                                    Next
+                    onKeyDown <|
+                        Json.Decode.map
+                            (\k ->
+                                case k of
+                                    "ArrowRight" ->
+                                        Next
 
-                                37 ->
-                                    -- left arrow
-                                    Prev
+                                    "ArrowLeft" ->
+                                        Prev
 
-                                27 ->
-                                    -- escape
-                                    BackToThumbs
+                                    "Escape" ->
+                                        BackToThumbs
 
-                                _ ->
-                                    NoUpdate
-                        )
+                                    _ ->
+                                        NoUpdate
+                            )
+                        <|
+                            field "key" string
                 ]

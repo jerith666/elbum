@@ -72,4 +72,4 @@ encodeSrcSet is =
 
 encodeSrc : ImgSrc -> String
 encodeSrc is =
-    encodePath is.url ++ " " ++ toString is.x ++ "w"
+    encodePath is.url ++ " " ++ String.fromInt is.x ++ "w"

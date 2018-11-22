@@ -37,10 +37,7 @@
       var scrollSupport = 'getComputedStyle' in window && window.getComputedStyle(testDiv)['-webkit-overflow-scrolling'] === 'touch';
       document.documentElement.removeChild(testDiv);
 
-      var app = Elm.Main.fullscreen({scrollSupport: scrollSupport});
-      app.ports.setTitle.subscribe(function(title){
-        document.title = title;
-      });
+      var app = Elm.Main.init({flags:{scrollSupport: scrollSupport}});
     </script>
   </body>
 </html>

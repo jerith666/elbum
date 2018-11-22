@@ -2,6 +2,7 @@ module FullImagePage exposing (FullImagePageModel, fitImage, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
+import Browser.Dom exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -11,13 +12,12 @@ import ListUtils exposing (..)
 import ProgressiveImage exposing (..)
 import ThumbPage exposing (..)
 import TouchEvents exposing (..)
-import WinSize exposing (..)
 
 
 type alias FullImagePageModel =
     { prevImgs : List Image
     , album : Album
-    , winSize : WinSize
+    , viewport : Viewport
     , progImgModel : ProgressiveImageModel
     , offset : ( Float, Float )
     }
@@ -59,7 +59,7 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
                 [ color white
                 , textAlign center
                 , Css.height (pct imgTitleHeight)
-                , lineHeight (px (imgTitleHeight / 100 * toFloat fullImagePageModel.winSize.height))
+                , lineHeight (px (imgTitleHeight / 100 * fullImagePageModel.viewport.viewport.height))
                 ]
             ]
             [ albumTitle
@@ -100,6 +100,7 @@ navEltIf : List a -> msg -> String -> (Px -> Style) -> List (Html msg)
 navEltIf lst navMsg navTxt navAlign =
     if List.isEmpty lst then
         []
+
     else
         [ navElement navMsg navTxt navAlign ]
 
@@ -113,9 +114,9 @@ viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
         ( w, h ) =
             fitImage
                 img.srcSetFirst
-                fullImagePageModel.winSize.width
+                (floor fullImagePageModel.viewport.viewport.width)
             <|
-                Basics.round (toFloat fullImagePageModel.winSize.height * (1 - imgTitleHeight / 100))
+                Basics.round (fullImagePageModel.viewport.viewport.height * (1 - imgTitleHeight / 100))
 
         imgSrc =
             smallestImageBiggerThan w h img.srcSetFirst img.srcSetRest
@@ -148,6 +149,7 @@ fitImage is winWidth winHeight =
         scale =
             if winAspect <= imgAspect then
                 toFloat winWidth / toFloat is.x
+
             else
                 toFloat winHeight / toFloat is.y
     in

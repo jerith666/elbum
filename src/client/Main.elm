@@ -1,14 +1,17 @@
-module Main exposing (..)
+module Main exposing (AlbumBootstrap(..), AlbumBootstrapMsg(..), PostLoadNavState(..), UrlLoadState(..), decodeAlbumRequest, decodeUrlResult, findChild, findImg, flagsOf, getUrl, getUrls, gotHome, handleGetResponse, hashForAlbum, hashForList, hashFromAlbumPath, homeOf, init, justLoadedReadyToDisplayNextState, locFor, main, navForAlbum, navFrom, navToMsg, pageSize, pathsToCmd, pathsToCmdImpl, queryFor, scrollToCmd, scrollToTop, sequence, subscriptions, update, updateImageResult, urlNextState, view, viewList, withHomeLink, withPaths, withScroll, withScrollPos)
 
 import Album exposing (..)
 import AlbumListPage exposing (..)
 import AlbumPage exposing (..)
 import AlbumStyles exposing (..)
+import Browser exposing (..)
+import Browser.Dom exposing (..)
+import Browser.Events exposing (..)
+import Browser.Navigation exposing (..)
 import Css exposing (..)
+import DebugSupport exposing (debugString, log)
 import Delay exposing (..)
 import Dict exposing (..)
-import Dom exposing (..)
-import Dom.Scroll exposing (..)
 import FullImagePage exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -16,24 +19,21 @@ import Http exposing (..)
 import KeyboardUtils exposing (onEscape)
 import ListUtils exposing (..)
 import LocationUtils exposing (..)
-import Navigation exposing (..)
 import ResultUtils exposing (..)
 import RouteUrl exposing (..)
 import Set exposing (..)
 import Task exposing (..)
 import Time exposing (..)
-import Title exposing (..)
-import WinSize exposing (..)
-import Window exposing (..)
+import Url exposing (..)
 
 
 type AlbumBootstrap
-    = Sizing AlbumBootstrapFlags (Maybe (List String)) (Maybe Float)
-    | LoadingHomeLink WinSize AlbumBootstrapFlags (Maybe (List String)) (Maybe Float)
-    | Loading WinSize AlbumBootstrapFlags (Maybe String) (Maybe (List String)) (Maybe Float)
-    | LoadError AlbumBootstrapFlags Http.Error
-    | LoadedList AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float) PostLoadNavState
-    | LoadedAlbum AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float) PostLoadNavState
+    = Sizing Key AlbumBootstrapFlags (Maybe (List String)) (Maybe Float)
+    | LoadingHomeLink Key Viewport AlbumBootstrapFlags (Maybe (List String)) (Maybe Float)
+    | Loading Key Viewport AlbumBootstrapFlags (Maybe String) (Maybe (List String)) (Maybe Float)
+    | LoadError Key AlbumBootstrapFlags Http.Error
+    | LoadedList Key AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float) PostLoadNavState
+    | LoadedAlbum Key AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float) PostLoadNavState
 
 
 type PostLoadNavState
@@ -50,7 +50,7 @@ type UrlLoadState
 
 
 type AlbumBootstrapMsg
-    = Resize Size
+    = Resize Viewport
     | YesHome String
     | NoHome Http.Error
     | YesAlbum AlbumOrList
@@ -64,11 +64,12 @@ type AlbumBootstrapMsg
     | ScheduleScroll (Maybe Float)
     | ScrolledTo Float
     | ScrollSucceeded
-    | ScrollFailed Id
+    | ScrollFailed String
     | Nav (List String)
     | Scroll Float
     | Sequence AlbumBootstrapMsg (List AlbumBootstrapMsg)
     | SequenceCmd (Cmd AlbumBootstrapMsg) (List (Cmd AlbumBootstrapMsg))
+    | LinkClicked UrlRequest
     | NoBootstrap
 
 
@@ -76,55 +77,57 @@ main : RouteUrlProgram AlbumBootstrapFlags AlbumBootstrap AlbumBootstrapMsg
 main =
     RouteUrl.programWithFlags
         { init = init
-        , view = view >> toUnstyled
+        , view = view
         , update = update
         , subscriptions = subscriptions
+        , onUrlRequest = LinkClicked
         , delta2url = locFor
         , location2messages = navToMsg
         }
 
 
-init : AlbumBootstrapFlags -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
-init flags =
-    ( Sizing flags Nothing Nothing
-    , Task.perform Resize Window.size
+init : AlbumBootstrapFlags -> Key -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
+init flags key =
+    ( Sizing key flags Nothing Nothing
+    , Task.perform Resize getViewport
     )
 
 
 update : AlbumBootstrapMsg -> AlbumBootstrap -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 update msg model =
-    case Debug.log "update msg" msg of
-        Resize size ->
+    case log "update msg" msg of
+        Resize viewport ->
             case model of
-                Sizing flags paths scroll ->
-                    ( LoadingHomeLink (Debug.log "window size set" size) flags paths scroll
+                Sizing key flags paths scroll ->
+                    ( LoadingHomeLink key (log "window size set" viewport) flags paths scroll
                     , Http.send (either NoHome YesHome) <| Http.getString "home"
                     )
 
-                LoadingHomeLink oldSize flags paths scroll ->
-                    ( LoadingHomeLink size flags paths scroll
+                LoadingHomeLink key oldSize flags paths scroll ->
+                    ( LoadingHomeLink key viewport flags paths scroll
                     , Cmd.none
                     )
 
-                Loading oldSize flags home paths scroll ->
-                    ( Loading (Debug.log "window size updated during load" size) flags home paths scroll
+                Loading key oldSize flags home paths scroll ->
+                    ( Loading key (log "window size updated during load" viewport) flags home paths scroll
                     , Cmd.none
                     )
 
-                LoadError _ _ ->
+                LoadError _ _ _ ->
                     ( model, Cmd.none )
 
-                LoadedAlbum albumPage parents flags home pendingUrls scrollPos postLoadNavState ->
+                LoadedAlbum key albumPage parents flags home pendingUrls scrollPos postLoadNavState ->
                     case albumPage of
                         Thumbs album oldSize justLoadedImages readyToDisplayImages ->
                             let
-                                model =
-                                    Thumbs album (Debug.log "window size updated for thumbs" size) justLoadedImages readyToDisplayImages
+                                newModel =
+                                    Thumbs album (log "window size updated for thumbs" viewport) justLoadedImages readyToDisplayImages
 
                                 urls =
-                                    AlbumPage.urlsToGet model
+                                    AlbumPage.urlsToGet newModel
                             in
-                            ( LoadedAlbum model
+                            ( LoadedAlbum key
+                                newModel
                                 parents
                                 flags
                                 home
@@ -137,60 +140,57 @@ update msg model =
                             )
 
                         FullImage album index loaded oldSize savedScroll dragInfo ->
-                            ( LoadedAlbum (FullImage album index loaded (Debug.log "window size updated for full" size) savedScroll dragInfo) parents flags home pendingUrls scrollPos postLoadNavState
+                            ( LoadedAlbum key (FullImage album index loaded (log "window size updated for full" viewport) savedScroll dragInfo) parents flags home pendingUrls scrollPos postLoadNavState
                             , Cmd.none
                             )
 
-                LoadedList (AlbumListPage albumList oldSize parentLists) flags home pendingUrls scrollPos postLoadNavState ->
-                    ( LoadedList (AlbumListPage albumList size parentLists) flags home pendingUrls scrollPos postLoadNavState
+                LoadedList key (AlbumListPage albumList oldSize parentLists) flags home pendingUrls scrollPos postLoadNavState ->
+                    ( LoadedList key (AlbumListPage albumList viewport parentLists) flags home pendingUrls scrollPos postLoadNavState
                     , Cmd.none
                     )
 
         YesHome home ->
             case model of
-                LoadingHomeLink size flags path scroll ->
-                    gotHome size flags path scroll <| Just home
+                LoadingHomeLink key size flags path scroll ->
+                    gotHome key size flags path scroll <| Just <| String.trim home
 
                 _ ->
                     ( model, Cmd.none )
 
         NoHome err ->
             case model of
-                LoadingHomeLink size flags path scroll ->
-                    gotHome size flags path scroll Nothing
+                LoadingHomeLink key size flags path scroll ->
+                    gotHome key size flags path scroll Nothing
 
                 _ ->
                     ( model, Cmd.none )
 
         YesAlbum albumOrList ->
             case model of
-                Loading winSize flags home paths scroll ->
+                Loading key viewport flags home paths scroll ->
                     case albumOrList of
                         List albumList ->
                             let
                                 newModel =
-                                    LoadedList (AlbumListPage albumList winSize []) flags home Dict.empty Nothing NavInactive
+                                    LoadedList key (AlbumListPage albumList viewport []) flags home Dict.empty Nothing NavInactive
 
                                 pathsThenScroll =
                                     toCmd <| sequence (pathsToCmd newModel paths) <| fromMaybe <| scrollToCmd newModel scroll
                             in
                             ( newModel
-                            , Cmd.batch
-                                [ setTitle albumList.listTitle
-                                , pathsThenScroll
-                                ]
+                            , pathsThenScroll
                             )
 
                         Leaf album ->
                             let
                                 albumPage =
-                                    Thumbs album winSize Set.empty Set.empty
+                                    Thumbs album viewport Set.empty Set.empty
 
                                 urls =
                                     AlbumPage.urlsToGet albumPage
 
                                 newModel =
-                                    LoadedAlbum albumPage [] flags home (dictWithValues urls UrlRequested) Nothing NavInactive
+                                    LoadedAlbum key albumPage [] flags home (dictWithValues urls UrlRequested) Nothing NavInactive
 
                                 pathsThenScroll =
                                     toCmd <| sequence (pathsToCmd newModel paths) <| fromMaybe <| scrollToCmd newModel scroll
@@ -198,7 +198,6 @@ update msg model =
                             ( newModel
                             , Cmd.batch
                                 [ getUrls Dict.empty urls
-                                , setTitle album.title
                                 , pathsThenScroll
                                 ]
                             )
@@ -207,13 +206,13 @@ update msg model =
                     ( model, Cmd.none )
 
         NoAlbum err ->
-            ( LoadError (flagsOf model) err
+            ( LoadError (keyOf model) (flagsOf model) err
             , Cmd.none
             )
 
         PageMsg pageMsg ->
             case model of
-                LoadedAlbum oldPage parents flags home oldPendingUrls scrollPos postLoadNavState ->
+                LoadedAlbum key oldPage parents flags home oldPendingUrls scrollPos postLoadNavState ->
                     let
                         ( newPage, newPageCmd ) =
                             AlbumPage.update pageMsg oldPage scrollPos
@@ -221,17 +220,17 @@ update msg model =
                         newPendingUrls =
                             if AlbumPage.resetUrls pageMsg then
                                 Dict.empty
+
                             else
                                 oldPendingUrls
 
                         urls =
                             AlbumPage.urlsToGet newPage
                     in
-                    ( LoadedAlbum newPage parents flags home (Dict.union newPendingUrls <| dictWithValues urls UrlRequested) scrollPos postLoadNavState
+                    ( LoadedAlbum key newPage parents flags home (Dict.union newPendingUrls <| dictWithValues urls UrlRequested) scrollPos postLoadNavState
                     , Cmd.batch
                         [ getUrls newPendingUrls urls
                         , Cmd.map PageMsg newPageCmd
-                        , setTitle <| titleOf newPage
                         ]
                     )
 
@@ -250,12 +249,12 @@ update msg model =
         ViewList albumListPage maybeScroll ->
             let
                 newModel =
-                    LoadedList albumListPage (flagsOf model) (homeOf model) Dict.empty Nothing NavInactive
+                    LoadedList (keyOf model) albumListPage (flagsOf model) (homeOf model) Dict.empty Nothing NavInactive
 
                 scrollCmd =
                     case maybeScroll of
                         Just pos ->
-                            Task.attempt (\_ -> NoBootstrap) <| toY rootDivId pos
+                            Task.attempt (\_ -> NoBootstrap) <| setViewportOf rootDivId 0 pos
 
                         Nothing ->
                             scrollToTop
@@ -266,7 +265,7 @@ update msg model =
                             albumList.listTitle
             in
             ( newModel
-            , Cmd.batch [ scrollCmd, setTitle title ]
+            , scrollCmd
             )
 
         ViewAlbum albumPage parents ->
@@ -275,13 +274,12 @@ update msg model =
                     AlbumPage.urlsToGet albumPage
 
                 newModel =
-                    LoadedAlbum albumPage parents (flagsOf model) (homeOf model) (dictWithValues urls UrlRequested) Nothing NavInactive
+                    LoadedAlbum (keyOf model) albumPage parents (flagsOf model) (homeOf model) (dictWithValues urls UrlRequested) Nothing NavInactive
             in
             ( newModel
             , Cmd.batch
                 [ scrollToTop
                 , getUrls Dict.empty urls
-                , setTitle <| titleOf albumPage
                 ]
             )
 
@@ -296,8 +294,8 @@ update msg model =
                         Task.attempt
                             (\_ -> NoBootstrap)
                         <|
-                            toY rootDivId <|
-                                Debug.log "startup scroll to" s
+                            setViewportOf rootDivId 0 <|
+                                log "startup scroll to" s
                     )
                     scroll
             )
@@ -321,7 +319,7 @@ update msg model =
             in
             case rest of
                 [] ->
-                    ( nextModel, Debug.log ("sequence msg " ++ toString next ++ " (last) produces cmd") nextCmd )
+                    ( nextModel, log ("sequence msg " ++ debugString next ++ " (last) produces cmd") nextCmd )
 
                 r1 :: rs ->
                     let
@@ -340,19 +338,38 @@ update msg model =
                                     in
                                     ( rsModel, toCmd <| SequenceCmd r1Cmds [ rsCmds ] )
                     in
-                    ( rModel, toCmd <| SequenceCmd (Debug.log ("sequence msg " ++ toString next ++ " (cont'd) produces cmd") nextCmd) [ rCmds ] )
+                    ( rModel, toCmd <| SequenceCmd (log ("sequence msg " ++ debugString next ++ " (cont'd) produces cmd") nextCmd) [ rCmds ] )
 
         SequenceCmd next rest ->
             let
                 cmds =
                     case rest of
                         [] ->
-                            Debug.log "sequenced cmd: last" next
+                            log "sequenced cmd: last" next
 
                         r1 :: rs ->
-                            Cmd.batch [ Debug.log "sequenced cmd: next" next, toCmd <| SequenceCmd r1 rs ]
+                            Cmd.batch [ log "sequenced cmd: next" next, toCmd <| SequenceCmd r1 rs ]
             in
             ( model, cmds )
+
+        LinkClicked urlRequest ->
+            case urlRequest of
+                Internal url ->
+                    --home link might count as internal if it's on the same domain
+                    let
+                        hUrl =
+                            Maybe.andThen Url.fromString <| homeOf model
+                    in
+                    case Maybe.withDefault False <| Maybe.map (\h -> h == url) <| hUrl of
+                        True ->
+                            ( model, load <| toString url )
+
+                        False ->
+                            ( log ("ignoring unexpected internal url request not for home url (" ++ (Maybe.withDefault "home not set" <| homeOf model) ++ ") " ++ toString url) model, Cmd.none )
+
+                External url ->
+                    --home link should be only external link in our app
+                    ( model, load url )
 
         NoBootstrap ->
             ( model, Cmd.none )
@@ -378,28 +395,28 @@ sequence mm1 ms =
             Sequence m1 ms
 
 
-gotHome : WinSize -> AlbumBootstrapFlags -> Maybe (List String) -> Maybe Float -> Maybe String -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
-gotHome size flags paths scroll home =
-    ( Loading size flags home paths scroll
+gotHome : Key -> Viewport -> AlbumBootstrapFlags -> Maybe (List String) -> Maybe Float -> Maybe String -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
+gotHome key viewport flags paths scroll home =
+    ( Loading key viewport flags home paths scroll
     , Task.attempt decodeAlbumRequest (Http.toTask (Http.get "album.json" jsonDecAlbumOrList))
     )
 
 
-navToMsg : Location -> List AlbumBootstrapMsg
+navToMsg : Url -> List AlbumBootstrapMsg
 navToMsg loc =
     let
         parsedHash =
-            Debug.log "parsedHash" <| parseHref loc.hash
+            log ("parsedHash from " ++ Maybe.withDefault "<no fragment>" loc.fragment) <| parseHash <| Maybe.withDefault "" loc.fragment
 
         parsedQuery =
-            Debug.log "parsedQuery" <| parseQuery loc.search
+            log ("parsedQuery from " ++ Maybe.withDefault "<no query>" loc.query) <| parseQuery <| Maybe.withDefault "" loc.query
 
         hashMsgs =
             case parsedHash of
                 Err _ ->
                     []
 
-                Ok ( _, _, paths ) ->
+                Ok paths ->
                     [ Nav paths ]
 
         queryMsgs =
@@ -407,11 +424,11 @@ navToMsg loc =
                 Err _ ->
                     []
 
-                Ok ( _, _, scroll ) ->
+                Ok scroll ->
                     NoBootstrap
                         -- hack delay
                         :: (fromMaybe <|
-                                Maybe.map Scroll (scroll |> Maybe.andThen (Result.toMaybe << String.toFloat))
+                                Maybe.map Scroll (scroll |> Maybe.andThen String.toFloat)
                            )
     in
     case hashMsgs ++ queryMsgs of
@@ -428,110 +445,132 @@ navToMsg loc =
 flagsOf : AlbumBootstrap -> AlbumBootstrapFlags
 flagsOf model =
     case model of
-        Sizing flags _ _ ->
+        Sizing _ flags _ _ ->
             flags
 
-        LoadingHomeLink _ flags _ _ ->
+        LoadingHomeLink _ _ flags _ _ ->
             flags
 
-        Loading _ flags _ _ _ ->
+        Loading _ _ flags _ _ _ ->
             flags
 
-        LoadError flags _ ->
+        LoadError _ flags _ ->
             flags
 
-        LoadedList _ flags _ _ _ _ ->
+        LoadedList _ _ flags _ _ _ _ ->
             flags
 
-        LoadedAlbum _ _ flags _ _ _ _ ->
+        LoadedAlbum _ _ _ flags _ _ _ _ ->
             flags
 
 
 homeOf : AlbumBootstrap -> Maybe String
 homeOf model =
     case model of
-        Sizing _ _ _ ->
+        Sizing _ _ _ _ ->
             Nothing
 
-        LoadingHomeLink _ _ _ _ ->
+        LoadingHomeLink _ _ _ _ _ ->
             Nothing
 
-        Loading _ _ home _ _ ->
+        Loading _ _ _ home _ _ ->
             home
 
-        LoadError _ _ ->
+        LoadError _ _ _ ->
             Nothing
 
-        LoadedList _ _ home _ _ _ ->
+        LoadedList _ _ _ home _ _ _ ->
             home
 
-        LoadedAlbum _ _ _ home _ _ _ ->
+        LoadedAlbum _ _ _ _ home _ _ _ ->
             home
+
+
+keyOf : AlbumBootstrap -> Key
+keyOf model =
+    case model of
+        Sizing key _ _ _ ->
+            key
+
+        LoadingHomeLink key _ _ _ _ ->
+            key
+
+        Loading key _ _ _ _ _ ->
+            key
+
+        LoadError key _ _ ->
+            key
+
+        LoadedList key _ _ _ _ _ _ ->
+            key
+
+        LoadedAlbum key _ _ _ _ _ _ _ ->
+            key
 
 
 withScrollPos : Float -> AlbumBootstrap -> AlbumBootstrap
 withScrollPos pos model =
     case model of
-        Sizing _ _ _ ->
+        Sizing _ _ _ _ ->
             model
 
-        LoadingHomeLink _ _ _ _ ->
+        LoadingHomeLink _ _ _ _ _ ->
             model
 
-        Loading _ _ _ _ _ ->
+        Loading _ _ _ _ _ _ ->
             model
 
-        LoadError _ _ ->
+        LoadError _ _ _ ->
             model
 
-        LoadedAlbum albumPage parents flags home pendingUrls _ postLoadNavState ->
-            LoadedAlbum albumPage parents flags home pendingUrls (Just pos) postLoadNavState
+        LoadedAlbum key albumPage parents flags home pendingUrls _ postLoadNavState ->
+            LoadedAlbum key albumPage parents flags home pendingUrls (Just pos) postLoadNavState
 
-        LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls _ postLoadNavState ->
-            LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls (Just pos) postLoadNavState
+        LoadedList key (AlbumListPage albumList viewport parents) flags home pendingUrls _ postLoadNavState ->
+            LoadedList key (AlbumListPage albumList viewport parents) flags home pendingUrls (Just pos) postLoadNavState
 
 
 withPaths : AlbumBootstrap -> List String -> AlbumBootstrap
 withPaths model paths =
     case model of
-        Sizing flags _ scroll ->
-            Sizing flags (Just paths) scroll
+        Sizing key flags _ scroll ->
+            Sizing key flags (Just paths) scroll
 
-        LoadingHomeLink winSize flags _ scroll ->
-            LoadingHomeLink winSize flags (Just paths) scroll
+        LoadingHomeLink key viewport flags _ scroll ->
+            LoadingHomeLink key viewport flags (Just paths) scroll
 
-        Loading winSize flags home _ scroll ->
-            Loading winSize flags home (Just paths) scroll
+        Loading key viewport flags home _ scroll ->
+            Loading key viewport flags home (Just paths) scroll
 
-        LoadError _ _ ->
+        LoadError _ _ _ ->
             model
 
-        LoadedList albumListPage flags home pendingUrls scroll _ ->
-            LoadedList albumListPage flags home pendingUrls scroll NavInProgress
+        LoadedList key albumListPage flags home pendingUrls scroll _ ->
+            LoadedList key albumListPage flags home pendingUrls scroll NavInProgress
 
-        LoadedAlbum albumPage parents flags home pendingUrls scroll _ ->
-            LoadedAlbum albumPage parents flags home pendingUrls scroll NavInProgress
+        LoadedAlbum key albumPage parents flags home pendingUrls scroll _ ->
+            LoadedAlbum key albumPage parents flags home pendingUrls scroll NavInProgress
 
 
 withScroll : AlbumBootstrap -> Float -> AlbumBootstrap
 withScroll model scroll =
     case model of
-        Sizing flags paths _ ->
-            Sizing flags paths <| Just scroll
+        Sizing key flags paths _ ->
+            Sizing key flags paths <| Just scroll
 
-        LoadingHomeLink winSize flags paths _ ->
-            LoadingHomeLink winSize flags paths <| Just scroll
+        LoadingHomeLink key viewport flags paths _ ->
+            LoadingHomeLink key viewport flags paths <| Just scroll
 
-        Loading winSize flags home paths _ ->
-            Loading winSize flags home paths <| Just scroll
+        Loading key viewport flags home paths _ ->
+            Loading key viewport flags home paths <| Just scroll
 
-        LoadError _ _ ->
+        LoadError _ _ _ ->
             model
 
-        LoadedList _ _ _ _ _ _ ->
+        LoadedList _ _ _ _ _ _ _ ->
             model
 
-        LoadedAlbum _ _ _ _ _ _ _ ->
+        LoadedAlbum _ _ _ _ _ _ _ _ ->
             model
 
 
@@ -539,43 +578,43 @@ pathsToCmd : AlbumBootstrap -> Maybe (List String) -> Maybe AlbumBootstrapMsg
 pathsToCmd model mPaths =
     case mPaths of
         Nothing ->
-            Nothing
+            log "pathsToCmd has no paths" Nothing
 
         Just paths ->
             case model of
-                Sizing _ _ _ ->
+                Sizing _ _ _ _ ->
                     Nothing
 
-                LoadingHomeLink _ _ _ _ ->
+                LoadingHomeLink _ _ _ _ _ ->
                     Nothing
 
-                Loading _ _ _ _ _ ->
+                Loading _ _ _ _ _ _ ->
                     Nothing
 
-                LoadError _ _ ->
-                    Debug.log "pathsToCmd LoadError, ignore" Nothing
+                LoadError _ _ _ ->
+                    log "pathsToCmd LoadError, ignore" Nothing
 
-                LoadedList (AlbumListPage albumList winSize parents) _ _ _ _ _ ->
+                LoadedList _ (AlbumListPage albumList viewport parents) _ _ _ _ _ ->
                     --TODO maybe don't always prepend aTN here, only if at root?
                     --TODO I think it's okay to drop the scroll positions here, should only happen at initial load (?)
-                    pathsToCmdImpl winSize (albumList :: List.map Tuple.first parents) paths
+                    pathsToCmdImpl viewport (albumList :: List.map Tuple.first parents) paths
 
-                LoadedAlbum albumPage parents _ _ _ _ _ ->
+                LoadedAlbum _ albumPage parents _ _ _ _ _ ->
                     pathsToCmdImpl (pageSize albumPage) (List.map Tuple.first parents) paths
 
 
-pathsToCmdImpl : WinSize -> List AlbumList -> List String -> Maybe AlbumBootstrapMsg
-pathsToCmdImpl size parents paths =
+pathsToCmdImpl : Viewport -> List AlbumList -> List String -> Maybe AlbumBootstrapMsg
+pathsToCmdImpl viewport parents paths =
     let
         mRoot =
             List.head <| List.reverse parents
     in
     case mRoot of
         Nothing ->
-            Nothing
+            log "pathsToCmdImpl has no root" Nothing
 
         Just root ->
-            navFrom size root [] paths <| Just <| ViewList (AlbumListPage root size []) Nothing
+            navFrom viewport root [] paths <| Just <| ViewList (AlbumListPage root viewport []) Nothing
 
 
 scrollToCmd : AlbumBootstrap -> Maybe Float -> Maybe AlbumBootstrapMsg
@@ -585,81 +624,81 @@ scrollToCmd model scroll =
             Just <| ScheduleScroll scroll
     in
     case model of
-        Sizing _ _ _ ->
+        Sizing _ _ _ _ ->
             Nothing
 
-        LoadingHomeLink _ _ _ _ ->
+        LoadingHomeLink _ _ _ _ _ ->
             Nothing
 
-        Loading _ _ _ _ _ ->
+        Loading _ _ _ _ _ _ ->
             Nothing
 
-        LoadError _ _ ->
-            Debug.log "scrollToCmd LoadError, ignore" Nothing
+        LoadError _ _ _ ->
+            log "scrollToCmd LoadError, ignore" Nothing
 
-        LoadedList _ _ _ _ _ _ ->
+        LoadedList _ _ _ _ _ _ _ ->
             scrollCmd
 
-        LoadedAlbum _ _ _ _ _ _ _ ->
+        LoadedAlbum _ _ _ _ _ _ _ _ ->
             scrollCmd
 
 
-navFrom : WinSize -> AlbumList -> List AlbumList -> List String -> Maybe AlbumBootstrapMsg -> Maybe AlbumBootstrapMsg
-navFrom size root parents paths defcmd =
+navFrom : Viewport -> AlbumList -> List AlbumList -> List String -> Maybe AlbumBootstrapMsg -> Maybe AlbumBootstrapMsg
+navFrom viewport root parents paths defcmd =
     case paths of
         [] ->
-            defcmd
+            log "navFrom has no paths" defcmd
 
         [ "#" ] ->
-            defcmd
+            log "navFrom has only # path" defcmd
 
-        p :: ps ->
+        p1 :: ps ->
             let
                 mChild =
-                    findChild root p
+                    findChild root p1
 
                 newParents =
                     root :: parents
             in
             case mChild of
                 Nothing ->
-                    defcmd
+                    log ("navFrom can't find child " ++ p1) defcmd
 
                 Just pChild ->
                     case pChild of
                         List albumList ->
-                            navFrom size albumList newParents ps <| Just <| ViewList (AlbumListPage albumList size <| List.map (\p -> ( p, Nothing )) newParents) Nothing
+                            navFrom viewport albumList newParents ps <| Just <| ViewList (AlbumListPage albumList viewport <| List.map (\p -> ( p, Nothing )) newParents) Nothing
 
                         Leaf album ->
-                            navForAlbum size album ps newParents
+                            navForAlbum viewport album ps newParents
 
 
-navForAlbum : WinSize -> Album -> List String -> List AlbumList -> Maybe AlbumBootstrapMsg
-navForAlbum size album ps newParents =
+navForAlbum : Viewport -> Album -> List String -> List AlbumList -> Maybe AlbumBootstrapMsg
+navForAlbum viewport album ps newParents =
     let
         parentsNoScroll =
             List.map (\p -> ( p, Nothing )) newParents
     in
     case ps of
         [] ->
-            Just <| ViewAlbum (Thumbs album size Set.empty Set.empty) parentsNoScroll
+            Just <| ViewAlbum (Thumbs album viewport Set.empty Set.empty) parentsNoScroll
 
         i :: _ ->
             case findImg [] album i of
                 Nothing ->
-                    Nothing
+                    log ("navForAlbum can't find image " ++ i) Nothing
 
                 Just ( prevs, nAlbum ) ->
                     let
                         ( w, h ) =
-                            fitImage nAlbum.imageFirst.srcSetFirst size.width size.height
+                            fitImage nAlbum.imageFirst.srcSetFirst (floor viewport.viewport.width) (floor viewport.viewport.height)
 
                         ( progModel, progCmd ) =
-                            progInit size nAlbum.imageFirst w h
+                            progInit viewport nAlbum.imageFirst w h
                     in
                     Just <|
                         Sequence
-                            (ViewAlbum (FullImage prevs nAlbum progModel size Nothing Nothing) parentsNoScroll)
+                            (ViewAlbum (FullImage prevs nAlbum progModel viewport Nothing Nothing) parentsNoScroll)
                         <|
                             fromMaybe <|
                                 Maybe.map (PageMsg << FullMsg) progCmd
@@ -669,6 +708,7 @@ findImg : List Image -> Album -> String -> Maybe ( List Image, Album )
 findImg prevs album img =
     if album.imageFirst.altText == img then
         Just ( prevs, album )
+
     else
         case album.imageRest of
             [] ->
@@ -706,58 +746,69 @@ locFor oldModel newModel =
 
         entry =
             case oldModel of
-                LoadedList oAlbumListPage _ _ _ _ _ ->
+                LoadedList _ oAlbumListPage _ _ _ _ _ ->
                     case newModel of
-                        LoadedList nAlbumListPage _ _ _ _ _ ->
+                        LoadedList _ nAlbumListPage _ _ _ _ _ ->
                             case oAlbumListPage == nAlbumListPage of
                                 True ->
-                                    ModifyEntry
+                                    log "locFor LoadedList same" ModifyEntry
 
                                 False ->
-                                    NewEntry
+                                    log "locFor LoadedList dift" NewEntry
 
                         _ ->
-                            NewEntry
+                            log "locFor LoadedList -> something else" NewEntry
 
-                LoadedAlbum oAlbumPage oParents _ _ _ _ _ ->
+                LoadedAlbum _ oAlbumPage oParents _ _ _ _ _ ->
                     case newModel of
-                        LoadedAlbum nAlbumPage nParents _ _ _ _ _ ->
+                        LoadedAlbum _ nAlbumPage nParents _ _ _ _ _ ->
                             case oAlbumPage == nAlbumPage && oParents == nParents of
                                 True ->
-                                    ModifyEntry
+                                    log "locFor LoadedAlbum same" ModifyEntry
 
                                 False ->
-                                    NewEntry
+                                    log "locFor LoadedAlbum dift" NewEntry
 
                         _ ->
-                            NewEntry
+                            log "locFor LoadedAlbum -> something else" NewEntry
 
                 _ ->
-                    NewEntry
+                    log "locFor something els -> *" NewEntry
 
         checkNavState state nav =
-            case state of
+            case log "checkNavState" state of
                 NavInProgress ->
                     Nothing
 
                 NavInactive ->
                     nav
-    in
-    Debug.log "locFor" <|
-        case model of
-            LoadedAlbum albumPage parents _ _ _ _ postLoadNavState ->
-                checkNavState postLoadNavState <|
-                    Just
-                        { entry = entry
-                        , url = queryFor model ++ (hashForAlbum model albumPage <| List.map Tuple.first parents)
-                        }
 
-            LoadedList albumListPage _ _ _ _ postLoadNavState ->
+        newQorF meta modl fragment =
+            case queryFor modl of
+                "" ->
+                    NewFragment meta fragment
+
+                q ->
+                    NewQuery meta { query = q, fragment = Just fragment }
+    in
+    log "locFor" <|
+        case model of
+            LoadedAlbum key albumPage parents _ _ _ _ postLoadNavState ->
                 checkNavState postLoadNavState <|
-                    Just
-                        { entry = entry
-                        , url = queryFor model ++ hashForList model albumListPage
-                        }
+                    Just <|
+                        newQorF { entry = entry, key = key }
+                            model
+                        <|
+                            hashForAlbum model albumPage <|
+                                List.map Tuple.first parents
+
+            LoadedList key albumListPage _ _ _ _ postLoadNavState ->
+                checkNavState postLoadNavState <|
+                    Just <|
+                        newQorF { entry = entry, key = key }
+                            model
+                        <|
+                            hashForList model albumListPage
 
             _ ->
                 Nothing
@@ -767,25 +818,25 @@ queryFor : AlbumBootstrap -> String
 queryFor model =
     let
         queryForPos pos =
-            Maybe.withDefault "" <| Maybe.map (\p -> "?s=" ++ toString p) pos
+            Maybe.withDefault "" <| Maybe.map (\p -> "s=" ++ String.fromFloat p) pos
     in
     case model of
-        Sizing _ _ _ ->
+        Sizing _ _ _ _ ->
             ""
 
-        LoadingHomeLink _ _ _ _ ->
+        LoadingHomeLink _ _ _ _ _ ->
             ""
 
-        Loading _ _ _ _ _ ->
+        Loading _ _ _ _ _ _ ->
             ""
 
-        LoadError _ _ ->
+        LoadError _ _ _ ->
             ""
 
-        LoadedAlbum _ _ _ _ _ pos _ ->
+        LoadedAlbum _ _ _ _ _ _ pos _ ->
             queryForPos pos
 
-        LoadedList _ _ _ _ pos _ ->
+        LoadedList _ _ _ _ _ pos _ ->
             queryForPos pos
 
 
@@ -793,6 +844,7 @@ hashForList : AlbumBootstrap -> AlbumListPage -> String
 hashForList model (AlbumListPage albumList _ parents) =
     if List.isEmpty parents then
         hashFromAlbumPath model [ "" ] []
+
     else
         hashFromAlbumPath model [ albumList.listTitle ] <| List.map Tuple.first parents
 
@@ -813,20 +865,19 @@ hashForAlbum model albumPage parents =
 
 hashFromAlbumPath : AlbumBootstrap -> List String -> List AlbumList -> String
 hashFromAlbumPath model titles parents =
-    "#"
-        ++ String.concat
-            (List.intersperse "/"
-                (List.map
-                    encodeUri
-                    (List.append
-                        (List.map
-                            (\p -> p.listTitle)
-                            (List.drop 1 (List.reverse parents))
-                        )
-                        titles
+    String.concat
+        (List.intersperse "/"
+            (List.map
+                percentEncode
+                (List.append
+                    (List.map
+                        (\p -> p.listTitle)
+                        (List.drop 1 (List.reverse parents))
                     )
+                    titles
                 )
             )
+        )
 
 
 scrollToTop : Cmd AlbumBootstrapMsg
@@ -841,23 +892,24 @@ scrollToTop =
                     ScrollFailed rootDivId
         )
     <|
-        Dom.Scroll.toTop rootDivId
+        setViewportOf rootDivId 0 0
 
 
 updateImageResult : AlbumBootstrap -> String -> UrlLoadState -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 updateImageResult model url result =
     case model of
-        LoadedAlbum albumPage parents flags home pendingUrls scrollPos postLoadNavState ->
+        LoadedAlbum key albumPage parents flags home pendingUrls scrollPos postLoadNavState ->
             case albumPage of
-                Thumbs album size justLoadedImages readyToDisplayImages ->
+                Thumbs album viewport justLoadedImages readyToDisplayImages ->
                     let
-                        model =
-                            justLoadedReadyToDisplayNextState album size justLoadedImages readyToDisplayImages url result
+                        newModel =
+                            justLoadedReadyToDisplayNextState album viewport justLoadedImages readyToDisplayImages url result
 
                         urls =
-                            AlbumPage.urlsToGet model
+                            AlbumPage.urlsToGet newModel
                     in
-                    ( LoadedAlbum model
+                    ( LoadedAlbum key
+                        newModel
                         parents
                         flags
                         home
@@ -880,24 +932,24 @@ updateImageResult model url result =
             ( model, Cmd.none )
 
 
-justLoadedReadyToDisplayNextState : Album -> WinSize -> Set String -> Set String -> String -> UrlLoadState -> AlbumPage
-justLoadedReadyToDisplayNextState album size justLoadedImages readyToDisplayImages url result =
+justLoadedReadyToDisplayNextState : Album -> Viewport -> Set String -> Set String -> String -> UrlLoadState -> AlbumPage
+justLoadedReadyToDisplayNextState album viewport justLoadedImages readyToDisplayImages url result =
     case result of
         JustCompleted ->
-            Thumbs album size (Set.insert url justLoadedImages) readyToDisplayImages
+            Thumbs album viewport (Set.insert url justLoadedImages) readyToDisplayImages
 
         ReadyToDisplay ->
-            Thumbs album size (Set.remove url justLoadedImages) <| Set.insert url readyToDisplayImages
+            Thumbs album viewport (Set.remove url justLoadedImages) <| Set.insert url readyToDisplayImages
 
         _ ->
-            Thumbs album size justLoadedImages readyToDisplayImages
+            Thumbs album viewport justLoadedImages readyToDisplayImages
 
 
 urlNextState : String -> UrlLoadState -> Cmd AlbumBootstrapMsg
 urlNextState url result =
     case result of
         JustCompleted ->
-            Delay.after 100 millisecond <| ImageReadyToDisplay url
+            Delay.after 100 Millisecond <| ImageReadyToDisplay url
 
         _ ->
             Cmd.none
@@ -958,7 +1010,7 @@ decodeUrlResult origUrl result =
 subscriptions : AlbumBootstrap -> Sub AlbumBootstrapMsg
 subscriptions model =
     case model of
-        LoadedAlbum albumPage parents _ _ _ _ _ ->
+        LoadedAlbum _ albumPage parents _ _ _ _ _ ->
             let
                 showParent =
                     case parents of
@@ -970,53 +1022,130 @@ subscriptions model =
             in
             Sub.batch
                 [ AlbumPage.subscriptions albumPage PageMsg showParent
-                , resizes Resize
+                , onResize <| newSize <| pageSize albumPage
                 ]
 
-        LoadedList (AlbumListPage albumList winSize parents) _ _ _ _ _ ->
+        LoadedList _ (AlbumListPage albumList viewport parents) _ _ _ _ _ ->
             case parents of
                 [] ->
-                    resizes Resize
+                    onResize <| newSize viewport
 
                 ( parent, scroll ) :: grandParents ->
                     let
                         upParent =
                             onEscape
-                                (ViewList (AlbumListPage parent winSize grandParents) scroll)
+                                (ViewList (AlbumListPage parent viewport grandParents) scroll)
                                 NoBootstrap
                     in
-                    Sub.batch [ upParent, resizes Resize ]
+                    Sub.batch [ upParent, onResize <| newSize viewport ]
 
-        _ ->
-            resizes Resize
+        LoadingHomeLink _ viewport _ _ _ ->
+            onResize <| newSize viewport
+
+        Loading _ viewport _ _ _ _ ->
+            onResize <| newSize viewport
+
+        LoadError _ _ _ ->
+            Sub.none
+
+        Sizing _ _ _ _ ->
+            Sub.none
 
 
-pageSize : AlbumPage -> WinSize
+newSize : Viewport -> Int -> Int -> AlbumBootstrapMsg
+newSize v x y =
+    Resize <| viewportWithNewSize v x y
+
+
+
+--TODO won't other things about the viewport change if the resize causes the page to reflow???
+--TODO why int vs. float confusion?
+
+
+viewportWithNewSize : Viewport -> Int -> Int -> Viewport
+viewportWithNewSize oldViewport newWidth newHeight =
+    let
+        ov =
+            oldViewport.viewport
+
+        newViewport =
+            { ov | width = toFloat newWidth, height = toFloat newHeight }
+    in
+    { oldViewport | viewport = newViewport }
+
+
+pageSize : AlbumPage -> Viewport
 pageSize albumPage =
     case albumPage of
-        Thumbs _ winSize _ _ ->
-            winSize
+        Thumbs _ viewport _ _ ->
+            viewport
 
-        FullImage _ _ _ winSize _ _ ->
-            winSize
+        FullImage _ _ _ viewport _ _ ->
+            viewport
 
 
-view : AlbumBootstrap -> Html AlbumBootstrapMsg
+view : AlbumBootstrap -> Document AlbumBootstrapMsg
 view albumBootstrap =
+    let
+        title =
+            case albumBootstrap of
+                Sizing _ _ _ _ ->
+                    "Album Starting"
+
+                LoadingHomeLink _ _ _ _ _ ->
+                    "Home Loading ..."
+
+                Loading _ _ _ _ _ _ ->
+                    "Album Loading ..."
+
+                LoadError _ _ _ ->
+                    "Error Loading Album"
+
+                LoadedList _ (AlbumListPage albumList _ _) _ _ _ _ _ ->
+                    albumList.listTitle
+
+                LoadedAlbum _ albumPage _ _ _ _ _ _ ->
+                    titleOf albumPage
+    in
+    { title = title
+    , body = [ viewImpl albumBootstrap |> toUnstyled ]
+    }
+
+
+viewImpl : AlbumBootstrap -> Html AlbumBootstrapMsg
+viewImpl albumBootstrap =
     case albumBootstrap of
-        Sizing _ _ _ ->
+        Sizing _ _ _ _ ->
             text "Album Starting"
 
-        LoadingHomeLink _ _ _ _ ->
+        LoadingHomeLink _ _ _ _ _ ->
             text "Home Loading ..."
 
-        Loading _ _ _ _ _ ->
+        Loading _ _ _ _ _ _ ->
             text "Album Loading ..."
 
-        LoadError _ e ->
-            text ("Error Loading Album: " ++ toString e)
+        LoadError _ _ e ->
+            let
+                eStr =
+                    case e of
+                        BadUrl s ->
+                            "bad url: " ++ s
 
-        LoadedAlbum albumPage parents flags home pendingUrls scrollPos postLoadNavState ->
+                        Timeout ->
+                            "timeout"
+
+                        NetworkError ->
+                            "network error"
+
+                        BadStatus response ->
+                            "bad status: " ++ response.status.message ++ ": " ++ response.body
+
+                        BadPayload s response ->
+                            "bad payload: " ++ s
+            in
+            text ("Error Loading Album: " ++ eStr)
+
+        LoadedAlbum _ albumPage parents flags home pendingUrls scrollPos postLoadNavState ->
             withHomeLink home flags <|
                 AlbumPage.view
                     albumPage
@@ -1032,22 +1161,22 @@ view albumBootstrap =
                     (List.map Tuple.first parents)
                     flags
 
-        LoadedList (AlbumListPage albumList winSize parents) flags home pendingUrls scrollPos postLoadNavState ->
+        LoadedList _ (AlbumListPage albumList viewport parents) flags home pendingUrls scrollPos postLoadNavState ->
             withHomeLink home flags <|
                 AlbumListPage.view
                     (AlbumListPage
                         albumList
-                        winSize
+                        viewport
                         parents
                     )
                     (viewList
                         albumBootstrap
-                        winSize
+                        viewport
                         (( albumList, scrollPos ) :: parents)
                     )
                     (\album ->
                         ViewAlbum
-                            (Thumbs album winSize Set.empty Set.empty)
+                            (Thumbs album viewport Set.empty Set.empty)
                         <|
                             ( albumList, scrollPos )
                                 :: parents
@@ -1056,10 +1185,10 @@ view albumBootstrap =
                     flags
 
 
-viewList : AlbumBootstrap -> WinSize -> List ( AlbumList, Maybe Float ) -> AlbumList -> AlbumBootstrapMsg
-viewList oldModel winSize parents list =
+viewList : AlbumBootstrap -> Viewport -> List ( AlbumList, Maybe Float ) -> AlbumList -> AlbumBootstrapMsg
+viewList oldModel viewport parents list =
     ViewList
-        (AlbumListPage list winSize <|
+        (AlbumListPage list viewport <|
             dropThroughPred
                 (\( p, _ ) -> p == list)
                 parents
@@ -1073,6 +1202,7 @@ viewList oldModel winSize parents list =
 
                 Nothing ->
                     Nothing
+
          else
             --we're navigating down to a child; since we don't save
             --scroll positions of children, don't declare an explicit
