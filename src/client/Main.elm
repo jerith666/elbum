@@ -1207,9 +1207,9 @@ viewProgress progress =
                 True ->
                     let
                         pct =
-                            toFloat data.bytes / toFloat data.bytesExpected
+                            Basics.round <| 100 * toFloat data.bytes / toFloat data.bytesExpected
                     in
-                    String.fromFloat pct ++ "%"
+                    String.fromInt pct ++ "%"
 
                 False ->
                     String.fromInt data.bytes ++ " bytes received"
