@@ -103,6 +103,28 @@ urlsToGet thumbPageModel =
 
         srcs =
             List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
+
+        scrollPct =
+            thumbPageModel.viewport.viewport.x / thumbPageModel.viewport.scene.height
+
+        viewPct =
+            thumbPageModel.viewport.viewport.height / thumbPageModel.viewport.scene.height
+
+        srcCount =
+            List.length srcs
+
+        score i =
+            let
+                iPct =
+                    toFloat i / toFloat srcCount
+            in
+            iPct
+
+        scoredSrcs =
+            List.indexedMap (\i -> \img -> ( score i, img )) srcs
+
+        prioritySrcs =
+            List.map Tuple.second <| List.sortBy Tuple.first scoredSrcs
     in
     Set.fromList <|
         List.take 5 <|
@@ -111,7 +133,7 @@ urlsToGet thumbPageModel =
             <|
                 List.map
                     (\i -> i.url)
-                    srcs
+                    prioritySrcs
 
 
 viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
