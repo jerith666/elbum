@@ -14,7 +14,7 @@ type AlbumListPage
     = AlbumListPage AlbumList Viewport (List ( AlbumList, Maybe Float ))
 
 
-view : AlbumListPage -> (AlbumList -> msg) -> (Album -> msg) -> (Float -> msg) -> AlbumBootstrapFlags -> Html msg
+view : AlbumListPage -> (AlbumList -> msg) -> (Album -> msg) -> (Viewport -> msg) -> AlbumBootstrapFlags -> Html msg
 view (AlbumListPage albumList viewport parents) viewList viewAlbum scrollMsgMaker flags =
     rootDivFlex
         flags

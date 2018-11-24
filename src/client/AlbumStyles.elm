@@ -1,5 +1,6 @@
 module AlbumStyles exposing (AlbumBootstrapFlags, ImgLoadState(..), black, navBoxStyles, navElement, navEltSize, opacityAnimatedTo, opacityStyles, rootDiv, rootDivFlex, rootDivId, rootPos, styles, white)
 
+import Browser.Dom exposing (..)
 import Css exposing (..)
 import Css.Transitions exposing (..)
 import Html.Styled exposing (..)
@@ -59,7 +60,7 @@ rootPos flags =
         position absolute
 
 
-rootDiv : AlbumBootstrapFlags -> Maybe (Float -> msg) -> List Style -> List (Html msg) -> Html msg
+rootDiv : AlbumBootstrapFlags -> Maybe (Viewport -> msg) -> List Style -> List (Html msg) -> Html msg
 rootDiv flags scrollMsgMaker extraStyles =
     div <|
         [ styles <|
@@ -79,11 +80,29 @@ rootDiv flags scrollMsgMaker extraStyles =
                         []
 
                     Just sMM ->
-                        [ on "scroll" <| Json.Decode.map sMM <| Json.Decode.at [ "target", "scrollTop" ] Json.Decode.float ]
+                        [ on "scroll" <| Json.Decode.map sMM viewportDecoder ]
                )
 
 
-rootDivFlex : AlbumBootstrapFlags -> FlexDirection compatible -> Maybe (Float -> msg) -> List Style -> List (Html msg) -> Html msg
+viewportDecoder : Decoder Viewport
+viewportDecoder =
+    map2 Viewport
+        (field "scene" <|
+            map2 (\width -> \height -> { width = width, height = height })
+                (field "scrollWidth" Json.Decode.float)
+                (field "scrollHeight" Json.Decode.float)
+        )
+        (field "viewport" <|
+            map4
+                (\x -> \y -> \width -> \height -> { x = x, y = y, width = width, height = height })
+                (field "scrollLeft" Json.Decode.float)
+                (field "scrollTop" Json.Decode.float)
+                (field "clientWidth" Json.Decode.float)
+                (field "cleintHeight" Json.Decode.float)
+        )
+
+
+rootDivFlex : AlbumBootstrapFlags -> FlexDirection compatible -> Maybe (Viewport -> msg) -> List Style -> List (Html msg) -> Html msg
 rootDivFlex flags dir scrollMsgMaker extraStyles =
     rootDiv flags scrollMsgMaker <|
         [ displayFlex

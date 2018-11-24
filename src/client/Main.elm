@@ -32,8 +32,8 @@ type AlbumBootstrap
     | LoadingHomeLink Key Viewport AlbumBootstrapFlags (Maybe (List String)) (Maybe Float)
     | Loading Key Viewport (Maybe Progress) AlbumBootstrapFlags (Maybe String) (Maybe (List String)) (Maybe Float)
     | LoadError Key AlbumBootstrapFlags Http.Error
-    | LoadedList Key AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float) PostLoadNavState
-    | LoadedAlbum Key AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Float) PostLoadNavState
+    | LoadedList Key AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Viewport) PostLoadNavState
+    | LoadedAlbum Key AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Viewport) PostLoadNavState
 
 
 type PostLoadNavState
@@ -63,7 +63,7 @@ type AlbumBootstrapMsg
     | ImageReadyToDisplay String
     | ImageFailed String Http.Error
     | ScheduleScroll (Maybe Float)
-    | ScrolledTo Float
+    | ScrolledTo Viewport
     | ScrollSucceeded
     | ScrollFailed String
     | Nav (List String)
@@ -226,10 +226,10 @@ update msg model =
 
         PageMsg pageMsg ->
             case model of
-                LoadedAlbum key oldPage parents flags home oldPendingUrls scrollPos postLoadNavState ->
+                LoadedAlbum key oldPage parents flags home oldPendingUrls rootDivViewport postLoadNavState ->
                     let
                         ( newPage, newPageCmd ) =
-                            AlbumPage.update pageMsg oldPage scrollPos
+                            AlbumPage.update pageMsg oldPage <| Maybe.map scrollPosOf rootDivViewport
 
                         newPendingUrls =
                             if AlbumPage.resetUrls pageMsg then
@@ -241,7 +241,7 @@ update msg model =
                         urls =
                             AlbumPage.urlsToGet newPage
                     in
-                    ( LoadedAlbum key newPage parents flags home (Dict.union newPendingUrls <| dictWithValues urls UrlRequested) scrollPos postLoadNavState
+                    ( LoadedAlbum key newPage parents flags home (Dict.union newPendingUrls <| dictWithValues urls UrlRequested) rootDivViewport postLoadNavState
                     , Cmd.batch
                         [ getUrls newPendingUrls urls
                         , Cmd.map PageMsg newPageCmd
@@ -297,8 +297,8 @@ update msg model =
                 ]
             )
 
-        ScrolledTo pos ->
-            ( withScrollPos pos model, Cmd.none )
+        ScrolledTo viewport ->
+            ( withScrollPos viewport model, Cmd.none )
 
         ScheduleScroll scroll ->
             ( model
@@ -530,8 +530,8 @@ keyOf model =
             key
 
 
-withScrollPos : Float -> AlbumBootstrap -> AlbumBootstrap
-withScrollPos pos model =
+withScrollPos : Viewport -> AlbumBootstrap -> AlbumBootstrap
+withScrollPos rootDivViewport model =
     case model of
         Sizing _ _ _ _ ->
             model
@@ -546,10 +546,10 @@ withScrollPos pos model =
             model
 
         LoadedAlbum key albumPage parents flags home pendingUrls _ postLoadNavState ->
-            LoadedAlbum key albumPage parents flags home pendingUrls (Just pos) postLoadNavState
+            LoadedAlbum key albumPage parents flags home pendingUrls (Just rootDivViewport) postLoadNavState
 
-        LoadedList key (AlbumListPage albumList viewport parents) flags home pendingUrls _ postLoadNavState ->
-            LoadedList key (AlbumListPage albumList viewport parents) flags home pendingUrls (Just pos) postLoadNavState
+        LoadedList key (AlbumListPage albumList bodyViewport parents) flags home pendingUrls _ postLoadNavState ->
+            LoadedList key (AlbumListPage albumList bodyViewport parents) flags home pendingUrls (Just rootDivViewport) postLoadNavState
 
 
 withPaths : AlbumBootstrap -> List String -> AlbumBootstrap
@@ -855,11 +855,11 @@ queryFor model =
         LoadError _ _ _ ->
             ""
 
-        LoadedAlbum _ _ _ _ _ _ pos _ ->
-            queryForPos pos
+        LoadedAlbum _ _ _ _ _ _ rootDivViewport _ ->
+            queryForPos <| Maybe.map scrollPosOf rootDivViewport
 
-        LoadedList _ _ _ _ _ pos _ ->
-            queryForPos pos
+        LoadedList _ _ _ _ _ rootDivViewport _ ->
+            queryForPos <| Maybe.map scrollPosOf rootDivViewport
 
 
 hashForList : AlbumBootstrap -> AlbumListPage -> String
@@ -1080,6 +1080,11 @@ pageSize albumPage =
             viewport
 
 
+scrollPosOf : Viewport -> Float
+scrollPosOf viewport =
+    viewport.viewport.y
+
+
 view : AlbumBootstrap -> Document AlbumBootstrapMsg
 view albumBootstrap =
     let
@@ -1157,7 +1162,7 @@ viewImpl albumBootstrap =
                     (List.map Tuple.first parents)
                     flags
 
-        LoadedList _ (AlbumListPage albumList viewport parents) flags home pendingUrls scrollPos postLoadNavState ->
+        LoadedList _ (AlbumListPage albumList viewport parents) flags home pendingUrls rootDivViewport postLoadNavState ->
             withHomeLink home flags <|
                 AlbumListPage.view
                     (AlbumListPage
@@ -1168,13 +1173,13 @@ viewImpl albumBootstrap =
                     (viewList
                         albumBootstrap
                         viewport
-                        (( albumList, scrollPos ) :: parents)
+                        (( albumList, Maybe.map scrollPosOf rootDivViewport ) :: parents)
                     )
                     (\album ->
                         ViewAlbum
                             (Thumbs album viewport Set.empty Set.empty)
                         <|
-                            ( albumList, scrollPos )
+                            ( albumList, Maybe.map scrollPosOf rootDivViewport )
                                 :: parents
                     )
                     ScrolledTo

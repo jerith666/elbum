@@ -240,7 +240,7 @@ titleOf albumPage =
             album.imageFirst.altText
 
 
-view : AlbumPage -> (Float -> msg) -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> AlbumBootstrapFlags -> Html msg
+view : AlbumPage -> (Viewport -> msg) -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> AlbumBootstrapFlags -> Html msg
 view albumPage scrollMsgMaker showList wrapMsg parents flags =
     case albumPage of
         Thumbs album viewport justLoadedImages readyToDisplayImages ->
