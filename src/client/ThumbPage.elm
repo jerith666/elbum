@@ -108,7 +108,7 @@ urlsToGet thumbPageModel =
             thumbPageModel.viewport
 
         scrollPct =
-            (vp.viewport.height + vp.viewport.x) / 2 / vp.scene.height
+            (vp.viewport.x + (vp.viewport.height + vp.viewport.x) / 2) / vp.scene.height
 
         score i =
             let
