@@ -109,14 +109,14 @@ urlsToGet thumbPageModel =
             log "viewport: " thumbPageModel.viewport
 
         scrollPct =
-            log "scrollPct: " (vp.viewport.x + (vp.viewport.height + vp.viewport.x) / 2) / vp.scene.height
+            log "scrollPct: " <| (vp.viewport.x + (vp.viewport.height + vp.viewport.x) / 2) / vp.scene.height
 
         score i =
             let
                 iPct =
                     toFloat i / (toFloat <| List.length srcs)
             in
-            log ("score " ++ String.fromInt i ++ ": ") abs (scrollPct - iPct)
+            log ("score " ++ String.fromInt i ++ ": ") <| abs (scrollPct - iPct)
 
         scoredSrcs =
             List.indexedMap (\i -> \img -> ( score i, img )) srcs
