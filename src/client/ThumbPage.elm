@@ -4,6 +4,7 @@ import Album exposing (..)
 import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
+import DebugSupport exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
@@ -105,17 +106,17 @@ urlsToGet thumbPageModel =
             List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
 
         vp =
-            thumbPageModel.viewport
+            log "viewport: " thumbPageModel.viewport
 
         scrollPct =
-            (vp.viewport.x + (vp.viewport.height + vp.viewport.x) / 2) / vp.scene.height
+            log "scrollPct: " (vp.viewport.x + (vp.viewport.height + vp.viewport.x) / 2) / vp.scene.height
 
         score i =
             let
                 iPct =
                     toFloat i / (toFloat <| List.length srcs)
             in
-            abs (scrollPct - iPct)
+            log ("score " ++ String.fromInt i ++ ": ") abs (scrollPct - iPct)
 
         scoredSrcs =
             List.indexedMap (\i -> \img -> ( score i, img )) srcs
