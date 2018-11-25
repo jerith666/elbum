@@ -80,26 +80,37 @@ rootDiv flags scrollMsgMaker extraStyles =
                         []
 
                     Just sMM ->
-                        [ on "scroll" <| Json.Decode.map sMM viewportDecoder ]
+                        [ on "scroll" <| Json.Decode.map sMM <| Json.Decode.at [ "target" ] viewportDecoder ]
                )
 
 
 viewportDecoder : Decoder Viewport
 viewportDecoder =
-    map2 Viewport
-        (field "scene" <|
-            map2 (\width -> \height -> { width = width, height = height })
-                (field "scrollWidth" Json.Decode.float)
-                (field "scrollHeight" Json.Decode.float)
+    map6
+        (\width ->
+            \height ->
+                \x ->
+                    \y ->
+                        \vwidth ->
+                            \vheight ->
+                                { scene =
+                                    { width = width
+                                    , height = height
+                                    }
+                                , viewport =
+                                    { x = x
+                                    , y = y
+                                    , width = vwidth
+                                    , height = vheight
+                                    }
+                                }
         )
-        (field "viewport" <|
-            map4
-                (\x -> \y -> \width -> \height -> { x = x, y = y, width = width, height = height })
-                (field "scrollLeft" Json.Decode.float)
-                (field "scrollTop" Json.Decode.float)
-                (field "clientWidth" Json.Decode.float)
-                (field "cleintHeight" Json.Decode.float)
-        )
+        (field "scrollWidth" Json.Decode.float)
+        (field "scrollHeight" Json.Decode.float)
+        (field "scrollLeft" Json.Decode.float)
+        (field "scrollTop" Json.Decode.float)
+        (field "clientWidth" Json.Decode.float)
+        (field "clientHeight" Json.Decode.float)
 
 
 rootDivFlex : AlbumBootstrapFlags -> FlexDirection compatible -> Maybe (Viewport -> msg) -> List Style -> List (Html msg) -> Html msg
