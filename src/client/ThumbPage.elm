@@ -15,7 +15,8 @@ import Set exposing (..)
 type alias ThumbPageModel =
     { album : Album
     , parents : List AlbumList
-    , viewport : Viewport
+    , bodyViewport : Viewport
+    , rootDivViewport : Maybe Viewport
     , justLoadedImages : Set String
     , readyToDisplayImages : Set String
     }
@@ -100,16 +101,23 @@ urlsToGet : ThumbPageModel -> Set String
 urlsToGet thumbPageModel =
     let
         ( _, thumbWidth ) =
-            colsWidth thumbPageModel.viewport
+            colsWidth thumbPageModel.bodyViewport
 
         srcs =
             List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
 
-        vp =
-            log "viewport: " thumbPageModel.viewport
+        vPort =
+            log "viewport: " thumbPageModel.rootDivViewport
 
         scrollPct =
-            log "scrollPct: " <| (vp.viewport.x + (vp.viewport.height + vp.viewport.x) / 2) / vp.scene.height
+            log "scrollPct: " <|
+                Maybe.withDefault 0 <|
+                    Maybe.map
+                        (\vp ->
+                            (vp.viewport.x + (vp.viewport.height + vp.viewport.x) / 2)
+                                / vp.scene.height
+                        )
+                        vPort
 
         score i =
             let
@@ -138,7 +146,7 @@ viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> Lis
 viewThumbs imgChosenMsgr thumbPageModel =
     let
         ( maxCols, thumbWidth ) =
-            colsWidth thumbPageModel.viewport
+            colsWidth thumbPageModel.bodyViewport
 
         imgs =
             thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest

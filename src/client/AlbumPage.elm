@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -19,8 +19,12 @@ import TouchEvents exposing (..)
 
 
 type AlbumPage
-    = Thumbs Album Viewport (Set String) (Set String)
-    | FullImage (List Image) Album ProgressiveImageModel Viewport (Maybe Float) (Maybe ( Touch, Touch ))
+    = Thumbs Album ViewportInfo (Set String) (Set String)
+    | FullImage (List Image) Album ProgressiveImageModel ViewportInfo (Maybe Float) (Maybe ( Touch, Touch ))
+
+
+type alias ViewportInfo =
+    { bodyViewport : Viewport, rootDivViewport : Maybe Viewport }
 
 
 type AlbumPageMsg
@@ -40,13 +44,13 @@ update msg model scroll =
     case msg of
         View prevImgs curImg nextImgs ->
             case model of
-                Thumbs album viewport _ _ ->
+                Thumbs album vpInfo _ _ ->
                     let
                         ( w, h ) =
-                            fitImage curImg.srcSetFirst (floor viewport.viewport.width) (floor viewport.viewport.height)
+                            fitImage curImg.srcSetFirst (floor vpInfo.bodyViewport.viewport.width) (floor vpInfo.bodyViewport.viewport.height)
 
                         ( progModel, progCmd ) =
-                            progInit viewport curImg w h
+                            progInit vpInfo.bodyViewport curImg w h
                     in
                     ( FullImage
                         prevImgs
@@ -56,7 +60,7 @@ update msg model scroll =
                         , thumbnail = album.thumbnail
                         }
                         progModel
-                        viewport
+                        vpInfo
                         scroll
                         Nothing
                     , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd progCmd
@@ -167,7 +171,7 @@ progInit viewport i w h =
 updatePrevNext : AlbumPage -> (List Image -> Image -> List Image -> ( List Image, Image, List Image )) -> ( AlbumPage, Cmd AlbumPageMsg )
 updatePrevNext model shifter =
     case model of
-        FullImage prevImgs album oldProgModel viewport savedScroll _ ->
+        FullImage prevImgs album oldProgModel vpInfo savedScroll _ ->
             let
                 ( newPrev, newCur, newRest ) =
                     shifter prevImgs album.imageFirst album.imageRest
@@ -179,9 +183,9 @@ updatePrevNext model shifter =
                     else
                         let
                             ( w, h ) =
-                                fitImage newCur.srcSetFirst (floor viewport.viewport.width) (floor viewport.viewport.height)
+                                fitImage newCur.srcSetFirst (floor vpInfo.bodyViewport.viewport.width) (floor vpInfo.bodyViewport.viewport.height)
                         in
-                        progInit viewport newCur w h
+                        progInit vpInfo.bodyViewport newCur w h
             in
             ( FullImage
                 newPrev
@@ -191,7 +195,7 @@ updatePrevNext model shifter =
                 , thumbnail = album.thumbnail
                 }
                 newProgModel
-                viewport
+                vpInfo
                 savedScroll
                 Nothing
             , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd newCmd
@@ -217,11 +221,12 @@ resetUrls msg =
 urlsToGet : AlbumPage -> Set String
 urlsToGet albumPage =
     case albumPage of
-        Thumbs album viewport justLoadedImages readyToDisplayImages ->
+        Thumbs album vpInfo justLoadedImages readyToDisplayImages ->
             ThumbPage.urlsToGet
                 { album = album
                 , parents = []
-                , viewport = viewport
+                , bodyViewport = vpInfo.bodyViewport
+                , rootDivViewport = vpInfo.rootDivViewport
                 , justLoadedImages = justLoadedImages
                 , readyToDisplayImages = readyToDisplayImages
                 }
@@ -243,20 +248,21 @@ titleOf albumPage =
 view : AlbumPage -> (Viewport -> msg) -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> AlbumBootstrapFlags -> Html msg
 view albumPage scrollMsgMaker showList wrapMsg parents flags =
     case albumPage of
-        Thumbs album viewport justLoadedImages readyToDisplayImages ->
+        Thumbs album vpInfo justLoadedImages readyToDisplayImages ->
             ThumbPage.view
                 scrollMsgMaker
                 (\x -> \y -> \z -> wrapMsg (View x y z))
                 showList
                 { album = album
                 , parents = parents
-                , viewport = viewport
+                , bodyViewport = vpInfo.bodyViewport
+                , rootDivViewport = vpInfo.rootDivViewport
                 , justLoadedImages = justLoadedImages
                 , readyToDisplayImages = readyToDisplayImages
                 }
                 flags
 
-        FullImage prevImgs album progModel viewport _ dragInfo ->
+        FullImage prevImgs album progModel vpInfo _ dragInfo ->
             FullImagePage.view
                 { prevMsg = wrapMsg Prev
                 , nextMsg = wrapMsg Next
@@ -271,7 +277,7 @@ view albumPage scrollMsgMaker showList wrapMsg parents flags =
                 (wrapMsg << FullMsg)
                 { prevImgs = prevImgs
                 , album = album
-                , viewport = viewport
+                , viewport = vpInfo.bodyViewport
                 , progImgModel = progModel
                 , offset = offsetFor dragInfo
                 }

@@ -127,7 +127,7 @@ update msg model =
                         Thumbs album oldSize justLoadedImages readyToDisplayImages ->
                             let
                                 newModel =
-                                    Thumbs album (log "window size updated for thumbs" viewport) justLoadedImages readyToDisplayImages
+                                    Thumbs album { oldSize | bodyViewport = log "window size updated for thumbs" viewport } justLoadedImages readyToDisplayImages
 
                                 urls =
                                     AlbumPage.urlsToGet newModel
@@ -146,7 +146,7 @@ update msg model =
                             )
 
                         FullImage album index loaded oldSize savedScroll dragInfo ->
-                            ( LoadedAlbum key (FullImage album index loaded (log "window size updated for full" viewport) savedScroll dragInfo) parents flags home pendingUrls scrollPos postLoadNavState
+                            ( LoadedAlbum key (FullImage album index loaded { oldSize | bodyViewport = log "window size updated for full" viewport } savedScroll dragInfo) parents flags home pendingUrls scrollPos postLoadNavState
                             , Cmd.none
                             )
 
@@ -198,7 +198,7 @@ update msg model =
                         Leaf album ->
                             let
                                 albumPage =
-                                    Thumbs album viewport Set.empty Set.empty
+                                    Thumbs album { bodyViewport = viewport, rootDivViewport = Nothing } Set.empty Set.empty
 
                                 urls =
                                     AlbumPage.urlsToGet albumPage
@@ -616,16 +616,16 @@ pathsToCmd model mPaths =
                 LoadError _ _ _ ->
                     log "pathsToCmd LoadError, ignore" Nothing
 
-                LoadedList _ (AlbumListPage albumList viewport parents) _ _ _ _ _ ->
+                LoadedList _ (AlbumListPage albumList viewport parents) _ _ _ rootDivViewport _ ->
                     --TODO maybe don't always prepend aTN here, only if at root?
                     --TODO I think it's okay to drop the scroll positions here, should only happen at initial load (?)
-                    pathsToCmdImpl viewport (albumList :: List.map Tuple.first parents) paths
+                    pathsToCmdImpl { bodyViewport = viewport, rootDivViewport = rootDivViewport } (albumList :: List.map Tuple.first parents) paths
 
                 LoadedAlbum _ albumPage parents _ _ _ _ _ ->
                     pathsToCmdImpl (pageSize albumPage) (List.map Tuple.first parents) paths
 
 
-pathsToCmdImpl : Viewport -> List AlbumList -> List String -> Maybe AlbumBootstrapMsg
+pathsToCmdImpl : ViewportInfo -> List AlbumList -> List String -> Maybe AlbumBootstrapMsg
 pathsToCmdImpl viewport parents paths =
     let
         mRoot =
@@ -636,7 +636,7 @@ pathsToCmdImpl viewport parents paths =
             log "pathsToCmdImpl has no root" Nothing
 
         Just root ->
-            navFrom viewport root [] paths <| Just <| ViewList (AlbumListPage root viewport []) Nothing
+            navFrom viewport root [] paths <| Just <| ViewList (AlbumListPage root viewport.bodyViewport []) Nothing
 
 
 scrollToCmd : AlbumBootstrap -> Maybe Float -> Maybe AlbumBootstrapMsg
@@ -665,7 +665,7 @@ scrollToCmd model scroll =
             scrollCmd
 
 
-navFrom : Viewport -> AlbumList -> List AlbumList -> List String -> Maybe AlbumBootstrapMsg -> Maybe AlbumBootstrapMsg
+navFrom : ViewportInfo -> AlbumList -> List AlbumList -> List String -> Maybe AlbumBootstrapMsg -> Maybe AlbumBootstrapMsg
 navFrom viewport root parents paths defcmd =
     case paths of
         [] ->
@@ -689,21 +689,21 @@ navFrom viewport root parents paths defcmd =
                 Just pChild ->
                     case pChild of
                         List albumList ->
-                            navFrom viewport albumList newParents ps <| Just <| ViewList (AlbumListPage albumList viewport <| List.map (\p -> ( p, Nothing )) newParents) Nothing
+                            navFrom viewport albumList newParents ps <| Just <| ViewList (AlbumListPage albumList viewport.bodyViewport <| List.map (\p -> ( p, Nothing )) newParents) Nothing
 
                         Leaf album ->
                             navForAlbum viewport album ps newParents
 
 
-navForAlbum : Viewport -> Album -> List String -> List AlbumList -> Maybe AlbumBootstrapMsg
-navForAlbum viewport album ps newParents =
+navForAlbum : ViewportInfo -> Album -> List String -> List AlbumList -> Maybe AlbumBootstrapMsg
+navForAlbum vpInfo album ps newParents =
     let
         parentsNoScroll =
             List.map (\p -> ( p, Nothing )) newParents
     in
     case ps of
         [] ->
-            Just <| ViewAlbum (Thumbs album viewport Set.empty Set.empty) parentsNoScroll
+            Just <| ViewAlbum (Thumbs album vpInfo Set.empty Set.empty) parentsNoScroll
 
         i :: _ ->
             case findImg [] album i of
@@ -713,14 +713,14 @@ navForAlbum viewport album ps newParents =
                 Just ( prevs, nAlbum ) ->
                     let
                         ( w, h ) =
-                            fitImage nAlbum.imageFirst.srcSetFirst (floor viewport.viewport.width) (floor viewport.viewport.height)
+                            fitImage nAlbum.imageFirst.srcSetFirst (floor vpInfo.bodyViewport.viewport.width) (floor vpInfo.bodyViewport.viewport.height)
 
                         ( progModel, progCmd ) =
-                            progInit viewport nAlbum.imageFirst w h
+                            progInit vpInfo.bodyViewport nAlbum.imageFirst w h
                     in
                     Just <|
                         Sequence
-                            (ViewAlbum (FullImage prevs nAlbum progModel viewport Nothing Nothing) parentsNoScroll)
+                            (ViewAlbum (FullImage prevs nAlbum progModel vpInfo Nothing Nothing) parentsNoScroll)
                         <|
                             fromMaybe <|
                                 Maybe.map (PageMsg << FullMsg) progCmd
@@ -922,10 +922,10 @@ updateImageResult model url result =
     case model of
         LoadedAlbum key albumPage parents flags home pendingUrls scrollPos postLoadNavState ->
             case albumPage of
-                Thumbs album viewport justLoadedImages readyToDisplayImages ->
+                Thumbs album vpInfo justLoadedImages readyToDisplayImages ->
                     let
                         newModel =
-                            justLoadedReadyToDisplayNextState album viewport justLoadedImages readyToDisplayImages url result
+                            justLoadedReadyToDisplayNextState album vpInfo justLoadedImages readyToDisplayImages url result
 
                         urls =
                             AlbumPage.urlsToGet newModel
@@ -954,7 +954,7 @@ updateImageResult model url result =
             ( model, Cmd.none )
 
 
-justLoadedReadyToDisplayNextState : Album -> Viewport -> Set String -> Set String -> String -> UrlLoadState -> AlbumPage
+justLoadedReadyToDisplayNextState : Album -> ViewportInfo -> Set String -> Set String -> String -> UrlLoadState -> AlbumPage
 justLoadedReadyToDisplayNextState album viewport justLoadedImages readyToDisplayImages url result =
     case result of
         JustCompleted ->
@@ -1011,11 +1011,11 @@ subscriptions model =
                             NoBootstrap
 
                         ( parent, scroll ) :: grandParents ->
-                            ViewList (AlbumListPage parent (pageSize albumPage) grandParents) scroll
+                            ViewList (AlbumListPage parent (pageSize albumPage).bodyViewport grandParents) scroll
             in
             Sub.batch
                 [ AlbumPage.subscriptions albumPage PageMsg showParent
-                , onResize <| newSize <| pageSize albumPage
+                , onResize <| newSize <| (pageSize albumPage).bodyViewport
                 ]
 
         LoadedList _ (AlbumListPage albumList viewport parents) _ _ _ _ _ ->
@@ -1070,7 +1070,7 @@ viewportWithNewSize oldViewport newWidth newHeight =
     { oldViewport | viewport = newViewport }
 
 
-pageSize : AlbumPage -> Viewport
+pageSize : AlbumPage -> ViewportInfo
 pageSize albumPage =
     case albumPage of
         Thumbs _ viewport _ _ ->
@@ -1153,7 +1153,7 @@ viewImpl albumBootstrap =
                     ScrolledTo
                     (viewList
                         albumBootstrap
-                        (pageSize albumPage)
+                        (pageSize albumPage).bodyViewport
                         -- currently scrolled thing is the album;
                         -- don't want to save that anywhere in the list of parents
                         parents
@@ -1177,7 +1177,7 @@ viewImpl albumBootstrap =
                     )
                     (\album ->
                         ViewAlbum
-                            (Thumbs album viewport Set.empty Set.empty)
+                            (Thumbs album { bodyViewport = viewport, rootDivViewport = rootDivViewport } Set.empty Set.empty)
                         <|
                             ( albumList, Maybe.map scrollPosOf rootDivViewport )
                                 :: parents
