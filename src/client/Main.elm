@@ -546,7 +546,12 @@ withScrollPos rootDivViewport model =
             model
 
         LoadedAlbum key albumPage parents flags home pendingUrls _ postLoadNavState ->
-            LoadedAlbum key albumPage parents flags home pendingUrls (Just rootDivViewport) postLoadNavState
+            case albumPage of
+                Thumbs album vpInfo justLoadedImages readyToDisplayImages ->
+                    LoadedAlbum key (Thumbs album { vpInfo | rootDivViewport = Just rootDivViewport } justLoadedImages readyToDisplayImages) parents flags home pendingUrls (Just rootDivViewport) postLoadNavState
+
+                FullImage prevImgs album progModel vpInfo savedScroll dragInfo ->
+                    LoadedAlbum key (FullImage prevImgs album progModel { vpInfo | rootDivViewport = Just rootDivViewport } savedScroll dragInfo) parents flags home pendingUrls (Just rootDivViewport) postLoadNavState
 
         LoadedList key (AlbumListPage albumList bodyViewport parents) flags home pendingUrls _ postLoadNavState ->
             LoadedList key (AlbumListPage albumList bodyViewport parents) flags home pendingUrls (Just rootDivViewport) postLoadNavState

@@ -124,7 +124,7 @@ urlsToGet thumbPageModel =
                 iPct =
                     toFloat i / (toFloat <| List.length srcs)
             in
-            log ("score " ++ String.fromInt i ++ ": ") <| abs (scrollPct - iPct)
+            log ("score " ++ String.fromInt i ++ ": ") <| (-1 * abs (scrollPct - iPct))
 
         scoredSrcs =
             List.indexedMap (\i -> \img -> ( score i, img )) srcs
