@@ -298,7 +298,7 @@ update msg model =
             )
 
         ScrolledTo viewport ->
-            ( withScrollPos viewport model, Cmd.none )
+            ( withScrollPos (log "ScrolledTo: " viewport) model, Cmd.none )
 
         ScheduleScroll scroll ->
             ( model
