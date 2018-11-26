@@ -114,7 +114,7 @@ urlsToGet thumbPageModel =
                 Maybe.withDefault 0 <|
                     Maybe.map
                         (\vp ->
-                            (vp.viewport.y + (vp.viewport.height + vp.viewport.y) / 2)
+                            (vp.viewport.y + vp.viewport.height / 2)
                                 / vp.scene.height
                         )
                         vPort
