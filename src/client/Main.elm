@@ -789,7 +789,7 @@ locFor oldModel newModel =
                 LoadedAlbum _ oAlbumPage oParents _ _ _ _ _ ->
                     case newModel of
                         LoadedAlbum _ nAlbumPage nParents _ _ _ _ _ ->
-                            case oAlbumPage == nAlbumPage && oParents == nParents of
+                            case eqIgnoringVpInfo oAlbumPage nAlbumPage && oParents == nParents of
                                 True ->
                                     log "locFor LoadedAlbum same" ModifyEntry
 

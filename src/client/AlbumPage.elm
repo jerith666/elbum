@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, eqIgnoringVpInfo, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -352,3 +352,23 @@ subscriptions albumPage wrapper showParent =
                         <|
                             field "key" string
                 ]
+
+
+eqIgnoringVpInfo : AlbumPage -> AlbumPage -> Bool
+eqIgnoringVpInfo aPage1 aPage2 =
+    case aPage1 of
+        Thumbs album1 _ justLoadedImages1 readyToDisplayImages1 ->
+            case aPage2 of
+                Thumbs album2 _ justLoadedImages2 readyToDisplayImages2 ->
+                    album1 == album2 && justLoadedImages1 == justLoadedImages2 && readyToDisplayImages1 == readyToDisplayImages2
+
+                FullImage _ _ _ _ _ _ ->
+                    False
+
+        FullImage prevImages1 album1 progModel1 _ savedScroll1 dragInfo1 ->
+            case aPage2 of
+                Thumbs _ _ _ _ ->
+                    False
+
+                FullImage prevImages2 album2 progModel2 _ savedScroll2 dragInfo2 ->
+                    prevImages1 == prevImages2 && album1 == album2 && progModel1 == progModel2 && savedScroll1 == savedScroll2 && dragInfo1 == dragInfo2
