@@ -232,7 +232,15 @@ update msg model =
                         List albumList ->
                             let
                                 newModel =
-                                    LoadedList { key = ld.key, listPage = AlbumListPage { albumList = albumList, bodyViewport = ld.bodyViewport, parents = [] }, flags = ld.flags, home = ld.home, pendingUrls = Dict.empty, rootDivViewport = Nothing, navState = NavInactive }
+                                    LoadedList
+                                        { key = ld.key
+                                        , listPage = AlbumListPage { albumList = albumList, bodyViewport = ld.bodyViewport, parents = [] }
+                                        , flags = ld.flags
+                                        , home = ld.home
+                                        , pendingUrls = Dict.empty
+                                        , rootDivViewport = Nothing
+                                        , navState = NavInactive
+                                        }
 
                                 pathsThenScroll =
                                     toCmd <| sequence (pathsToCmd newModel ld.paths) <| fromMaybe <| scrollToCmd newModel ld.scroll
@@ -255,7 +263,16 @@ update msg model =
                                     AlbumPage.urlsToGet albumPage
 
                                 newModel =
-                                    LoadedAlbum { key = ld.key, albumPage = albumPage, parents = [], flags = ld.flags, home = ld.home, pendingUrls = dictWithValues urls UrlRequested, rootDivViewport = Nothing, navState = NavInactive }
+                                    LoadedAlbum
+                                        { key = ld.key
+                                        , albumPage = albumPage
+                                        , parents = []
+                                        , flags = ld.flags
+                                        , home = ld.home
+                                        , pendingUrls = dictWithValues urls UrlRequested
+                                        , rootDivViewport = Nothing
+                                        , navState = NavInactive
+                                        }
 
                                 pathsThenScroll =
                                     toCmd <| sequence (pathsToCmd newModel ld.paths) <| fromMaybe <| scrollToCmd newModel ld.scroll
@@ -314,7 +331,15 @@ update msg model =
         ViewList albumListPage maybeScroll ->
             let
                 newModel =
-                    LoadedList { key = keyOf model, listPage = albumListPage, flags = flagsOf model, home = homeOf model, pendingUrls = Dict.empty, rootDivViewport = Nothing, navState = NavInactive }
+                    LoadedList
+                        { key = keyOf model
+                        , listPage = albumListPage
+                        , flags = flagsOf model
+                        , home = homeOf model
+                        , pendingUrls = Dict.empty
+                        , rootDivViewport = Nothing
+                        , navState = NavInactive
+                        }
 
                 scrollCmd =
                     case maybeScroll of
@@ -339,7 +364,16 @@ update msg model =
                     AlbumPage.urlsToGet albumPage
 
                 newModel =
-                    LoadedAlbum { key = keyOf model, albumPage = albumPage, parents = parents, flags = flagsOf model, home = homeOf model, pendingUrls = dictWithValues urls UrlRequested, rootDivViewport = Nothing, navState = NavInactive }
+                    LoadedAlbum
+                        { key = keyOf model
+                        , albumPage = albumPage
+                        , parents = parents
+                        , flags = flagsOf model
+                        , home = homeOf model
+                        , pendingUrls = dictWithValues urls UrlRequested
+                        , rootDivViewport = Nothing
+                        , navState = NavInactive
+                        }
             in
             ( newModel
             , Cmd.batch
