@@ -30,7 +30,7 @@ import Url exposing (..)
 type AlbumBootstrap
     = Sizing { key : Key, flags : AlbumBootstrapFlags, paths : Maybe (List String), scroll : Maybe Float }
     | LoadingHomeLink { key : Key, bodyViewport : Viewport, flags : AlbumBootstrapFlags, paths : Maybe (List String), scroll : Maybe Float }
-    | Loading Key Viewport (Maybe Progress) AlbumBootstrapFlags (Maybe String) (Maybe (List String)) (Maybe Float)
+    | Loading { key : Key, bodyViewport : Viewport, progress : Maybe Progress, flags : AlbumBootstrapFlags, home : Maybe String, paths : Maybe (List String), scroll : Maybe Float }
     | LoadError Key AlbumBootstrapFlags Http.Error
     | LoadedList Key AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Viewport) PostLoadNavState
     | LoadedAlbum Key AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Viewport) PostLoadNavState
@@ -114,8 +114,8 @@ update msg model =
                     , Cmd.none
                     )
 
-                Loading key oldSize progress flags home paths scroll ->
-                    ( Loading key (log "window size updated during load" viewport) progress flags home paths scroll
+                Loading ld ->
+                    ( Loading { ld | bodyViewport = log "window size updated during load" viewport }
                     , Cmd.none
                     )
 
@@ -173,23 +173,23 @@ update msg model =
 
         LoadAlbumProgress progress ->
             case model of
-                Loading key viewport _ flags home paths scroll ->
-                    ( Loading key viewport (Just progress) flags home paths scroll, Cmd.none )
+                Loading ld ->
+                    ( Loading { ld | progress = Just progress }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
         YesAlbum albumOrList ->
             case model of
-                Loading key viewport _ flags home paths scroll ->
+                Loading ld ->
                     case albumOrList of
                         List albumList ->
                             let
                                 newModel =
-                                    LoadedList key (AlbumListPage albumList viewport []) flags home Dict.empty Nothing NavInactive
+                                    LoadedList ld.key (AlbumListPage albumList ld.bodyViewport []) ld.flags ld.home Dict.empty Nothing NavInactive
 
                                 pathsThenScroll =
-                                    toCmd <| sequence (pathsToCmd newModel paths) <| fromMaybe <| scrollToCmd newModel scroll
+                                    toCmd <| sequence (pathsToCmd newModel ld.paths) <| fromMaybe <| scrollToCmd newModel ld.scroll
                             in
                             ( newModel
                             , pathsThenScroll
@@ -198,16 +198,16 @@ update msg model =
                         Leaf album ->
                             let
                                 albumPage =
-                                    Thumbs album { bodyViewport = viewport, rootDivViewport = Nothing } Set.empty Set.empty
+                                    Thumbs album { bodyViewport = ld.bodyViewport, rootDivViewport = Nothing } Set.empty Set.empty
 
                                 urls =
                                     AlbumPage.urlsToGet albumPage
 
                                 newModel =
-                                    LoadedAlbum key albumPage [] flags home (dictWithValues urls UrlRequested) Nothing NavInactive
+                                    LoadedAlbum ld.key albumPage [] ld.flags ld.home (dictWithValues urls UrlRequested) Nothing NavInactive
 
                                 pathsThenScroll =
-                                    toCmd <| sequence (pathsToCmd newModel paths) <| fromMaybe <| scrollToCmd newModel scroll
+                                    toCmd <| sequence (pathsToCmd newModel ld.paths) <| fromMaybe <| scrollToCmd newModel ld.scroll
                             in
                             ( newModel
                             , Cmd.batch
@@ -410,7 +410,7 @@ sequence mm1 ms =
 
 
 gotHome lh home =
-    ( Loading lh.key lh.bodyViewport Nothing lh.flags home lh.paths lh.scroll
+    ( Loading { key = lh.key, bodyViewport = lh.bodyViewport, progress = Nothing, flags = lh.flags, home = home, paths = lh.paths, scroll = lh.scroll }
     , Http.request
         { method = "GET"
         , headers = []
@@ -472,8 +472,8 @@ flagsOf model =
         LoadingHomeLink lh ->
             lh.flags
 
-        Loading _ _ _ flags _ _ _ ->
-            flags
+        Loading ld ->
+            ld.flags
 
         LoadError _ flags _ ->
             flags
@@ -494,8 +494,8 @@ homeOf model =
         LoadingHomeLink _ ->
             Nothing
 
-        Loading _ _ _ _ home _ _ ->
-            home
+        Loading ld ->
+            ld.home
 
         LoadError _ _ _ ->
             Nothing
@@ -516,8 +516,8 @@ keyOf model =
         LoadingHomeLink lh ->
             lh.key
 
-        Loading key _ _ _ _ _ _ ->
-            key
+        Loading ld ->
+            ld.key
 
         LoadError key _ _ ->
             key
@@ -538,7 +538,7 @@ withScrollPos rootDivViewport model =
         LoadingHomeLink _ ->
             model
 
-        Loading _ _ _ _ _ _ _ ->
+        Loading _ ->
             model
 
         LoadError _ _ _ ->
@@ -565,8 +565,8 @@ withPaths model paths =
         LoadingHomeLink lh ->
             LoadingHomeLink { lh | paths = Just paths }
 
-        Loading key viewport progress flags home _ scroll ->
-            Loading key viewport progress flags home (Just paths) scroll
+        Loading ld ->
+            Loading { ld | paths = Just paths }
 
         LoadError _ _ _ ->
             model
@@ -587,8 +587,8 @@ withScroll model scroll =
         LoadingHomeLink lh ->
             LoadingHomeLink { lh | scroll = Just scroll }
 
-        Loading key viewport progress flags home paths _ ->
-            Loading key viewport progress flags home paths <| Just scroll
+        Loading ld ->
+            Loading { ld | scroll = Just scroll }
 
         LoadError _ _ _ ->
             model
@@ -614,7 +614,7 @@ pathsToCmd model mPaths =
                 LoadingHomeLink _ ->
                     Nothing
 
-                Loading _ _ _ _ _ _ _ ->
+                Loading _ ->
                     Nothing
 
                 LoadError _ _ _ ->
@@ -656,7 +656,7 @@ scrollToCmd model scroll =
         LoadingHomeLink _ ->
             Nothing
 
-        Loading _ _ _ _ _ _ _ ->
+        Loading _ ->
             Nothing
 
         LoadError _ _ _ ->
@@ -853,7 +853,7 @@ queryFor model =
         LoadingHomeLink _ ->
             ""
 
-        Loading _ _ _ _ _ _ _ ->
+        Loading _ ->
             ""
 
         LoadError _ _ _ ->
@@ -1039,9 +1039,9 @@ subscriptions model =
         LoadingHomeLink lh ->
             onResize <| newSize lh.bodyViewport
 
-        Loading _ viewport progress _ _ _ _ ->
+        Loading ld ->
             Sub.batch
-                [ onResize <| newSize viewport
+                [ onResize <| newSize ld.bodyViewport
                 , Http.track albumJson LoadAlbumProgress
                 ]
 
@@ -1100,8 +1100,8 @@ view albumBootstrap =
                 LoadingHomeLink _ ->
                     "Home Loading ..."
 
-                Loading _ _ progress _ _ _ _ ->
-                    viewProgress "Album Loading" progress
+                Loading ld ->
+                    viewProgress "Album Loading" ld.progress
 
                 LoadError _ _ _ ->
                     "Error Loading Album"
@@ -1126,8 +1126,8 @@ viewImpl albumBootstrap =
         LoadingHomeLink _ ->
             text "Home Loading ..."
 
-        Loading _ _ progress _ _ _ _ ->
-            text <| viewProgress "Album Loading" progress
+        Loading ld ->
+            text <| viewProgress "Album Loading" ld.progress
 
         LoadError _ _ e ->
             let
