@@ -28,12 +28,52 @@ import Url exposing (..)
 
 
 type AlbumBootstrap
-    = Sizing { key : Key, flags : AlbumBootstrapFlags, paths : Maybe (List String), scroll : Maybe Float }
-    | LoadingHomeLink { key : Key, bodyViewport : Viewport, flags : AlbumBootstrapFlags, paths : Maybe (List String), scroll : Maybe Float }
-    | Loading { key : Key, bodyViewport : Viewport, progress : Maybe Progress, flags : AlbumBootstrapFlags, home : Maybe String, paths : Maybe (List String), scroll : Maybe Float }
-    | LoadError { key : Key, flags : AlbumBootstrapFlags, error : Http.Error }
-    | LoadedList { key : Key, listPage : AlbumListPage, flags : AlbumBootstrapFlags, home : Maybe String, pendingUrls : Dict String UrlLoadState, rootDivViewport : Maybe Viewport, navState : PostLoadNavState }
-    | LoadedAlbum { key : Key, albumPage : AlbumPage, parents : List ( AlbumList, Maybe Float ), flags : AlbumBootstrapFlags, home : Maybe String, pendingUrls : Dict String UrlLoadState, rootDivViewport : Maybe Viewport, navState : PostLoadNavState }
+    = Sizing
+        { key : Key
+        , flags : AlbumBootstrapFlags
+        , paths : Maybe (List String)
+        , scroll : Maybe Float
+        }
+    | LoadingHomeLink
+        { key : Key
+        , bodyViewport : Viewport
+        , flags : AlbumBootstrapFlags
+        , paths : Maybe (List String)
+        , scroll : Maybe Float
+        }
+    | Loading
+        { key : Key
+        , bodyViewport : Viewport
+        , progress : Maybe Progress
+        , flags : AlbumBootstrapFlags
+        , home : Maybe String
+        , paths : Maybe (List String)
+        , scroll : Maybe Float
+        }
+    | LoadError
+        { key : Key
+        , flags : AlbumBootstrapFlags
+        , error : Http.Error
+        }
+    | LoadedList
+        { key : Key
+        , listPage : AlbumListPage
+        , flags : AlbumBootstrapFlags
+        , home : Maybe String
+        , pendingUrls : Dict String UrlLoadState
+        , rootDivViewport : Maybe Viewport
+        , navState : PostLoadNavState
+        }
+    | LoadedAlbum
+        { key : Key
+        , albumPage : AlbumPage
+        , parents : List ( AlbumList, Maybe Float )
+        , flags : AlbumBootstrapFlags
+        , home : Maybe String
+        , pendingUrls : Dict String UrlLoadState
+        , rootDivViewport : Maybe Viewport
+        , navState : PostLoadNavState
+        }
 
 
 type PostLoadNavState
