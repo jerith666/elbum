@@ -11,21 +11,21 @@ import ThumbPage exposing (albumTitle, viewThumb)
 
 
 type AlbumListPage
-    = AlbumListPage AlbumList Viewport (List ( AlbumList, Maybe Float ))
+    = AlbumListPage { albumList : AlbumList, bodyViewport : Viewport, parents : List ( AlbumList, Maybe Float ) }
 
 
 view : AlbumListPage -> (AlbumList -> msg) -> (Album -> msg) -> (Viewport -> msg) -> AlbumBootstrapFlags -> Html msg
-view (AlbumListPage albumList viewport parents) viewList viewAlbum scrollMsgMaker flags =
+view (AlbumListPage alp) viewList viewAlbum scrollMsgMaker flags =
     rootDivFlex
         flags
         column
         (Just scrollMsgMaker)
         []
     <|
-        [ albumTitle albumList.listTitle (List.map Tuple.first parents) viewList [] [] ]
+        [ albumTitle alp.albumList.listTitle (List.map Tuple.first alp.parents) viewList [] [] ]
             ++ (List.reverse <|
-                    [ viewAlbumOrList viewList viewAlbum albumList.childFirst ]
-                        ++ List.map (viewAlbumOrList viewList viewAlbum) albumList.childRest
+                    [ viewAlbumOrList viewList viewAlbum alp.albumList.childFirst ]
+                        ++ List.map (viewAlbumOrList viewList viewAlbum) alp.albumList.childRest
                )
 
 

@@ -156,8 +156,8 @@ update msg model =
 
                 LoadedList ll ->
                     case ll.listPage of
-                        AlbumListPage albumList oldSize parentLists ->
-                            ( LoadedList { ll | listPage = AlbumListPage albumList viewport parentLists }
+                        AlbumListPage alp ->
+                            ( LoadedList { ll | listPage = AlbumListPage { alp | bodyViewport = viewport } }
                             , Cmd.none
                             )
 
@@ -192,7 +192,7 @@ update msg model =
                         List albumList ->
                             let
                                 newModel =
-                                    LoadedList { key = ld.key, listPage = AlbumListPage albumList ld.bodyViewport [], flags = ld.flags, home = ld.home, pendingUrls = Dict.empty, rootDivViewport = Nothing, navState = NavInactive }
+                                    LoadedList { key = ld.key, listPage = AlbumListPage { albumList = albumList, bodyViewport = ld.bodyViewport, parents = [] }, flags = ld.flags, home = ld.home, pendingUrls = Dict.empty, rootDivViewport = Nothing, navState = NavInactive }
 
                                 pathsThenScroll =
                                     toCmd <| sequence (pathsToCmd newModel ld.paths) <| fromMaybe <| scrollToCmd newModel ld.scroll
@@ -286,8 +286,8 @@ update msg model =
 
                 title =
                     case albumListPage of
-                        AlbumListPage albumList _ _ ->
-                            albumList.listTitle
+                        AlbumListPage alp ->
+                            alp.albumList.listTitle
             in
             ( newModel
             , scrollCmd
@@ -649,10 +649,10 @@ pathsToCmd model mPaths =
 
                 LoadedList ll ->
                     case ll.listPage of
-                        AlbumListPage albumList viewport parents ->
+                        AlbumListPage alp ->
                             --TODO maybe don't always prepend aTN here, only if at root?
                             --TODO I think it's okay to drop the scroll positions here, should only happen at initial load (?)
-                            pathsToCmdImpl { bodyViewport = viewport, rootDivViewport = ll.rootDivViewport } (albumList :: List.map Tuple.first parents) paths
+                            pathsToCmdImpl { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport } (alp.albumList :: List.map Tuple.first alp.parents) paths
 
                 LoadedAlbum la ->
                     pathsToCmdImpl (pageSize la.albumPage) (List.map Tuple.first la.parents) paths
@@ -669,7 +669,7 @@ pathsToCmdImpl viewport parents paths =
             log "pathsToCmdImpl has no root" Nothing
 
         Just root ->
-            navFrom viewport root [] paths <| Just <| ViewList (AlbumListPage root viewport.bodyViewport []) Nothing
+            navFrom viewport root [] paths <| Just <| ViewList (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] }) Nothing
 
 
 scrollToCmd : AlbumBootstrap -> Maybe Float -> Maybe AlbumBootstrapMsg
@@ -722,7 +722,7 @@ navFrom viewport root parents paths defcmd =
                 Just pChild ->
                     case pChild of
                         List albumList ->
-                            navFrom viewport albumList newParents ps <| Just <| ViewList (AlbumListPage albumList viewport.bodyViewport <| List.map (\p -> ( p, Nothing )) newParents) Nothing
+                            navFrom viewport albumList newParents ps <| Just <| ViewList (AlbumListPage { albumList = albumList, bodyViewport = viewport.bodyViewport, parents = List.map (\p -> ( p, Nothing )) newParents }) Nothing
 
                         Leaf album ->
                             navForAlbum viewport album ps newParents
@@ -896,12 +896,12 @@ queryFor model =
 
 
 hashForList : AlbumBootstrap -> AlbumListPage -> String
-hashForList model (AlbumListPage albumList _ parents) =
-    if List.isEmpty parents then
+hashForList model (AlbumListPage alp) =
+    if List.isEmpty alp.parents then
         hashFromAlbumPath model [ "" ] []
 
     else
-        hashFromAlbumPath model [ albumList.listTitle ] <| List.map Tuple.first parents
+        hashFromAlbumPath model [ alp.albumList.listTitle ] <| List.map Tuple.first alp.parents
 
 
 hashForAlbum : AlbumBootstrap -> AlbumPage -> List AlbumList -> String
@@ -1040,7 +1040,7 @@ subscriptions model =
                             NoBootstrap
 
                         ( parent, scroll ) :: grandParents ->
-                            ViewList (AlbumListPage parent (pageSize la.albumPage).bodyViewport grandParents) scroll
+                            ViewList (AlbumListPage { albumList = parent, bodyViewport = (pageSize la.albumPage).bodyViewport, parents = grandParents }) scroll
             in
             Sub.batch
                 [ AlbumPage.subscriptions la.albumPage PageMsg showParent
@@ -1049,19 +1049,19 @@ subscriptions model =
 
         LoadedList ll ->
             case ll.listPage of
-                AlbumListPage albumList viewport parents ->
-                    case parents of
+                AlbumListPage alp ->
+                    case alp.parents of
                         [] ->
-                            onResize <| newSize viewport
+                            onResize <| newSize alp.bodyViewport
 
                         ( parent, scroll ) :: grandParents ->
                             let
                                 upParent =
                                     onEscape
-                                        (ViewList (AlbumListPage parent viewport grandParents) scroll)
+                                        (ViewList (AlbumListPage { alp | albumList = parent, parents = grandParents }) scroll)
                                         NoBootstrap
                             in
-                            Sub.batch [ upParent, onResize <| newSize viewport ]
+                            Sub.batch [ upParent, onResize <| newSize alp.bodyViewport ]
 
         LoadingHomeLink lh ->
             onResize <| newSize lh.bodyViewport
@@ -1135,8 +1135,8 @@ view albumBootstrap =
 
                 LoadedList ll ->
                     case ll.listPage of
-                        AlbumListPage albumList _ _ ->
-                            albumList.listTitle
+                        AlbumListPage alp ->
+                            alp.albumList.listTitle
 
                 LoadedAlbum la ->
                     titleOf la.albumPage
@@ -1197,25 +1197,21 @@ viewImpl albumBootstrap =
 
         LoadedList ll ->
             case ll.listPage of
-                AlbumListPage albumList viewport parents ->
+                AlbumListPage alp ->
                     withHomeLink ll.home ll.flags <|
                         AlbumListPage.view
-                            (AlbumListPage
-                                albumList
-                                viewport
-                                parents
-                            )
+                            (AlbumListPage alp)
                             (viewList
                                 albumBootstrap
-                                viewport
-                                (( albumList, Maybe.map scrollPosOf ll.rootDivViewport ) :: parents)
+                                alp.bodyViewport
+                                (( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport ) :: alp.parents)
                             )
                             (\album ->
                                 ViewAlbum
-                                    (Thumbs { album = album, vpInfo = { bodyViewport = viewport, rootDivViewport = ll.rootDivViewport }, justLoadedImages = Set.empty, readyToDisplayImages = Set.empty })
+                                    (Thumbs { album = album, vpInfo = { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }, justLoadedImages = Set.empty, readyToDisplayImages = Set.empty })
                                 <|
-                                    ( albumList, Maybe.map scrollPosOf ll.rootDivViewport )
-                                        :: parents
+                                    ( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport )
+                                        :: alp.parents
                             )
                             ScrolledTo
                             ll.flags
@@ -1248,10 +1244,14 @@ viewProgress prefix mProgress =
 viewList : AlbumBootstrap -> Viewport -> List ( AlbumList, Maybe Float ) -> AlbumList -> AlbumBootstrapMsg
 viewList oldModel viewport parents list =
     ViewList
-        (AlbumListPage list viewport <|
-            dropThroughPred
-                (\( p, _ ) -> p == list)
-                parents
+        (AlbumListPage
+            { albumList = list
+            , bodyViewport = viewport
+            , parents =
+                dropThroughPred
+                    (\( p, _ ) -> p == list)
+                    parents
+            }
         )
         (if List.member list (List.map Tuple.first parents) then
             --we're navigating up to a parent
