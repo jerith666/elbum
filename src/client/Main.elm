@@ -29,7 +29,7 @@ import Url exposing (..)
 
 type AlbumBootstrap
     = Sizing { key : Key, flags : AlbumBootstrapFlags, paths : Maybe (List String), scroll : Maybe Float }
-    | LoadingHomeLink Key Viewport AlbumBootstrapFlags (Maybe (List String)) (Maybe Float)
+    | LoadingHomeLink { key : Key, bodyViewport : Viewport, flags : AlbumBootstrapFlags, paths : Maybe (List String), scroll : Maybe Float }
     | Loading Key Viewport (Maybe Progress) AlbumBootstrapFlags (Maybe String) (Maybe (List String)) (Maybe Float)
     | LoadError Key AlbumBootstrapFlags Http.Error
     | LoadedList Key AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Viewport) PostLoadNavState
@@ -105,12 +105,12 @@ update msg model =
         Resize viewport ->
             case model of
                 Sizing sz ->
-                    ( LoadingHomeLink sz.key (log "window size set" viewport) sz.flags sz.paths sz.scroll
+                    ( LoadingHomeLink { key = sz.key, bodyViewport = log "window size set" viewport, flags = sz.flags, paths = sz.paths, scroll = sz.scroll }
                     , Http.get { url = "home", expect = expectString <| either NoHome YesHome }
                     )
 
-                LoadingHomeLink key oldSize flags paths scroll ->
-                    ( LoadingHomeLink key viewport flags paths scroll
+                LoadingHomeLink lh ->
+                    ( LoadingHomeLink { lh | bodyViewport = viewport }
                     , Cmd.none
                     )
 
@@ -157,16 +157,16 @@ update msg model =
 
         YesHome home ->
             case model of
-                LoadingHomeLink key size flags path scroll ->
-                    gotHome key size flags path scroll <| Just <| String.trim home
+                LoadingHomeLink lh ->
+                    gotHome lh <| Just <| String.trim home
 
                 _ ->
                     ( model, Cmd.none )
 
         NoHome err ->
             case model of
-                LoadingHomeLink key size flags path scroll ->
-                    gotHome key size flags path scroll Nothing
+                LoadingHomeLink lh ->
+                    gotHome lh Nothing
 
                 _ ->
                     ( model, Cmd.none )
@@ -409,9 +409,8 @@ sequence mm1 ms =
             Sequence m1 ms
 
 
-gotHome : Key -> Viewport -> AlbumBootstrapFlags -> Maybe (List String) -> Maybe Float -> Maybe String -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
-gotHome key viewport flags paths scroll home =
-    ( Loading key viewport Nothing flags home paths scroll
+gotHome lh home =
+    ( Loading lh.key lh.bodyViewport Nothing lh.flags home lh.paths lh.scroll
     , Http.request
         { method = "GET"
         , headers = []
@@ -470,8 +469,8 @@ flagsOf model =
         Sizing sz ->
             sz.flags
 
-        LoadingHomeLink _ _ flags _ _ ->
-            flags
+        LoadingHomeLink lh ->
+            lh.flags
 
         Loading _ _ _ flags _ _ _ ->
             flags
@@ -492,7 +491,7 @@ homeOf model =
         Sizing _ ->
             Nothing
 
-        LoadingHomeLink _ _ _ _ _ ->
+        LoadingHomeLink _ ->
             Nothing
 
         Loading _ _ _ _ home _ _ ->
@@ -514,8 +513,8 @@ keyOf model =
         Sizing sz ->
             sz.key
 
-        LoadingHomeLink key _ _ _ _ ->
-            key
+        LoadingHomeLink lh ->
+            lh.key
 
         Loading key _ _ _ _ _ _ ->
             key
@@ -536,7 +535,7 @@ withScrollPos rootDivViewport model =
         Sizing _ ->
             model
 
-        LoadingHomeLink _ _ _ _ _ ->
+        LoadingHomeLink _ ->
             model
 
         Loading _ _ _ _ _ _ _ ->
@@ -563,8 +562,8 @@ withPaths model paths =
         Sizing sz ->
             Sizing { sz | paths = Just paths }
 
-        LoadingHomeLink key viewport flags _ scroll ->
-            LoadingHomeLink key viewport flags (Just paths) scroll
+        LoadingHomeLink lh ->
+            LoadingHomeLink { lh | paths = Just paths }
 
         Loading key viewport progress flags home _ scroll ->
             Loading key viewport progress flags home (Just paths) scroll
@@ -585,8 +584,8 @@ withScroll model scroll =
         Sizing sz ->
             Sizing { sz | scroll = Just scroll }
 
-        LoadingHomeLink key viewport flags paths _ ->
-            LoadingHomeLink key viewport flags paths <| Just scroll
+        LoadingHomeLink lh ->
+            LoadingHomeLink { lh | scroll = Just scroll }
 
         Loading key viewport progress flags home paths _ ->
             Loading key viewport progress flags home paths <| Just scroll
@@ -612,7 +611,7 @@ pathsToCmd model mPaths =
                 Sizing _ ->
                     Nothing
 
-                LoadingHomeLink _ _ _ _ _ ->
+                LoadingHomeLink _ ->
                     Nothing
 
                 Loading _ _ _ _ _ _ _ ->
@@ -654,7 +653,7 @@ scrollToCmd model scroll =
         Sizing _ ->
             Nothing
 
-        LoadingHomeLink _ _ _ _ _ ->
+        LoadingHomeLink _ ->
             Nothing
 
         Loading _ _ _ _ _ _ _ ->
@@ -851,7 +850,7 @@ queryFor model =
         Sizing _ ->
             ""
 
-        LoadingHomeLink _ _ _ _ _ ->
+        LoadingHomeLink _ ->
             ""
 
         Loading _ _ _ _ _ _ _ ->
@@ -1037,8 +1036,8 @@ subscriptions model =
                     in
                     Sub.batch [ upParent, onResize <| newSize viewport ]
 
-        LoadingHomeLink _ viewport _ _ _ ->
-            onResize <| newSize viewport
+        LoadingHomeLink lh ->
+            onResize <| newSize lh.bodyViewport
 
         Loading _ viewport progress _ _ _ _ ->
             Sub.batch
@@ -1098,7 +1097,7 @@ view albumBootstrap =
                 Sizing _ ->
                     "Album Starting"
 
-                LoadingHomeLink _ _ _ _ _ ->
+                LoadingHomeLink _ ->
                     "Home Loading ..."
 
                 Loading _ _ progress _ _ _ _ ->
@@ -1124,7 +1123,7 @@ viewImpl albumBootstrap =
         Sizing _ ->
             text "Album Starting"
 
-        LoadingHomeLink _ _ _ _ _ ->
+        LoadingHomeLink _ ->
             text "Home Loading ..."
 
         Loading _ _ progress _ _ _ _ ->
