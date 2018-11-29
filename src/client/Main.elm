@@ -31,7 +31,7 @@ type AlbumBootstrap
     = Sizing { key : Key, flags : AlbumBootstrapFlags, paths : Maybe (List String), scroll : Maybe Float }
     | LoadingHomeLink { key : Key, bodyViewport : Viewport, flags : AlbumBootstrapFlags, paths : Maybe (List String), scroll : Maybe Float }
     | Loading { key : Key, bodyViewport : Viewport, progress : Maybe Progress, flags : AlbumBootstrapFlags, home : Maybe String, paths : Maybe (List String), scroll : Maybe Float }
-    | LoadError Key AlbumBootstrapFlags Http.Error
+    | LoadError { key : Key, flags : AlbumBootstrapFlags, error : Http.Error }
     | LoadedList Key AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Viewport) PostLoadNavState
     | LoadedAlbum Key AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Viewport) PostLoadNavState
 
@@ -119,7 +119,7 @@ update msg model =
                     , Cmd.none
                     )
 
-                LoadError _ _ _ ->
+                LoadError _ ->
                     ( model, Cmd.none )
 
                 LoadedAlbum key albumPage parents flags home pendingUrls scrollPos postLoadNavState ->
@@ -220,7 +220,7 @@ update msg model =
                     ( model, Cmd.none )
 
         NoAlbum err ->
-            ( LoadError (keyOf model) (flagsOf model) err
+            ( LoadError { key = keyOf model, flags = flagsOf model, error = err }
             , Cmd.none
             )
 
@@ -475,8 +475,8 @@ flagsOf model =
         Loading ld ->
             ld.flags
 
-        LoadError _ flags _ ->
-            flags
+        LoadError le ->
+            le.flags
 
         LoadedList _ _ flags _ _ _ _ ->
             flags
@@ -497,7 +497,7 @@ homeOf model =
         Loading ld ->
             ld.home
 
-        LoadError _ _ _ ->
+        LoadError _ ->
             Nothing
 
         LoadedList _ _ _ home _ _ _ ->
@@ -519,8 +519,8 @@ keyOf model =
         Loading ld ->
             ld.key
 
-        LoadError key _ _ ->
-            key
+        LoadError le ->
+            le.key
 
         LoadedList key _ _ _ _ _ _ ->
             key
@@ -541,7 +541,7 @@ withScrollPos rootDivViewport model =
         Loading _ ->
             model
 
-        LoadError _ _ _ ->
+        LoadError _ ->
             model
 
         LoadedAlbum key albumPage parents flags home pendingUrls _ postLoadNavState ->
@@ -568,7 +568,7 @@ withPaths model paths =
         Loading ld ->
             Loading { ld | paths = Just paths }
 
-        LoadError _ _ _ ->
+        LoadError _ ->
             model
 
         LoadedList key albumListPage flags home pendingUrls scroll _ ->
@@ -590,7 +590,7 @@ withScroll model scroll =
         Loading ld ->
             Loading { ld | scroll = Just scroll }
 
-        LoadError _ _ _ ->
+        LoadError _ ->
             model
 
         LoadedList _ _ _ _ _ _ _ ->
@@ -617,7 +617,7 @@ pathsToCmd model mPaths =
                 Loading _ ->
                     Nothing
 
-                LoadError _ _ _ ->
+                LoadError _ ->
                     log "pathsToCmd LoadError, ignore" Nothing
 
                 LoadedList _ (AlbumListPage albumList viewport parents) _ _ _ rootDivViewport _ ->
@@ -659,7 +659,7 @@ scrollToCmd model scroll =
         Loading _ ->
             Nothing
 
-        LoadError _ _ _ ->
+        LoadError _ ->
             log "scrollToCmd LoadError, ignore" Nothing
 
         LoadedList _ _ _ _ _ _ _ ->
@@ -856,7 +856,7 @@ queryFor model =
         Loading _ ->
             ""
 
-        LoadError _ _ _ ->
+        LoadError _ ->
             ""
 
         LoadedAlbum _ _ _ _ _ _ rootDivViewport _ ->
@@ -1045,7 +1045,7 @@ subscriptions model =
                 , Http.track albumJson LoadAlbumProgress
                 ]
 
-        LoadError _ _ _ ->
+        LoadError _ ->
             Sub.none
 
         Sizing _ ->
@@ -1103,7 +1103,7 @@ view albumBootstrap =
                 Loading ld ->
                     viewProgress "Album Loading" ld.progress
 
-                LoadError _ _ _ ->
+                LoadError _ ->
                     "Error Loading Album"
 
                 LoadedList _ (AlbumListPage albumList _ _) _ _ _ _ _ ->
@@ -1129,10 +1129,10 @@ viewImpl albumBootstrap =
         Loading ld ->
             text <| viewProgress "Album Loading" ld.progress
 
-        LoadError _ _ e ->
+        LoadError le ->
             let
                 eStr =
-                    case e of
+                    case le.error of
                         BadUrl s ->
                             "bad url: " ++ s
 
