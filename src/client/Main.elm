@@ -32,7 +32,7 @@ type AlbumBootstrap
     | LoadingHomeLink { key : Key, bodyViewport : Viewport, flags : AlbumBootstrapFlags, paths : Maybe (List String), scroll : Maybe Float }
     | Loading { key : Key, bodyViewport : Viewport, progress : Maybe Progress, flags : AlbumBootstrapFlags, home : Maybe String, paths : Maybe (List String), scroll : Maybe Float }
     | LoadError { key : Key, flags : AlbumBootstrapFlags, error : Http.Error }
-    | LoadedList Key AlbumListPage AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Viewport) PostLoadNavState
+    | LoadedList { key : Key, listPage : AlbumListPage, flags : AlbumBootstrapFlags, home : Maybe String, pendingUrls : Dict String UrlLoadState, rootDivViewport : Maybe Viewport, navState : PostLoadNavState }
     | LoadedAlbum Key AlbumPage (List ( AlbumList, Maybe Float )) AlbumBootstrapFlags (Maybe String) (Dict String UrlLoadState) (Maybe Viewport) PostLoadNavState
 
 
@@ -150,10 +150,12 @@ update msg model =
                             , Cmd.none
                             )
 
-                LoadedList key (AlbumListPage albumList oldSize parentLists) flags home pendingUrls scrollPos postLoadNavState ->
-                    ( LoadedList key (AlbumListPage albumList viewport parentLists) flags home pendingUrls scrollPos postLoadNavState
-                    , Cmd.none
-                    )
+                LoadedList ll ->
+                    case ll.listPage of
+                        AlbumListPage albumList oldSize parentLists ->
+                            ( LoadedList { ll | listPage = AlbumListPage albumList viewport parentLists }
+                            , Cmd.none
+                            )
 
         YesHome home ->
             case model of
@@ -186,7 +188,7 @@ update msg model =
                         List albumList ->
                             let
                                 newModel =
-                                    LoadedList ld.key (AlbumListPage albumList ld.bodyViewport []) ld.flags ld.home Dict.empty Nothing NavInactive
+                                    LoadedList { key = ld.key, listPage = AlbumListPage albumList ld.bodyViewport [], flags = ld.flags, home = ld.home, pendingUrls = Dict.empty, rootDivViewport = Nothing, navState = NavInactive }
 
                                 pathsThenScroll =
                                     toCmd <| sequence (pathsToCmd newModel ld.paths) <| fromMaybe <| scrollToCmd newModel ld.scroll
@@ -263,7 +265,7 @@ update msg model =
         ViewList albumListPage maybeScroll ->
             let
                 newModel =
-                    LoadedList (keyOf model) albumListPage (flagsOf model) (homeOf model) Dict.empty Nothing NavInactive
+                    LoadedList { key = keyOf model, listPage = albumListPage, flags = flagsOf model, home = homeOf model, pendingUrls = Dict.empty, rootDivViewport = Nothing, navState = NavInactive }
 
                 scrollCmd =
                     case maybeScroll of
@@ -478,8 +480,8 @@ flagsOf model =
         LoadError le ->
             le.flags
 
-        LoadedList _ _ flags _ _ _ _ ->
-            flags
+        LoadedList ll ->
+            ll.flags
 
         LoadedAlbum _ _ _ flags _ _ _ _ ->
             flags
@@ -500,8 +502,8 @@ homeOf model =
         LoadError _ ->
             Nothing
 
-        LoadedList _ _ _ home _ _ _ ->
-            home
+        LoadedList ll ->
+            ll.home
 
         LoadedAlbum _ _ _ _ home _ _ _ ->
             home
@@ -522,8 +524,8 @@ keyOf model =
         LoadError le ->
             le.key
 
-        LoadedList key _ _ _ _ _ _ ->
-            key
+        LoadedList ll ->
+            ll.key
 
         LoadedAlbum key _ _ _ _ _ _ _ ->
             key
@@ -552,8 +554,8 @@ withScrollPos rootDivViewport model =
                 FullImage prevImgs album progModel vpInfo savedScroll dragInfo ->
                     LoadedAlbum key (FullImage prevImgs album progModel { vpInfo | rootDivViewport = Just rootDivViewport } savedScroll dragInfo) parents flags home pendingUrls (Just rootDivViewport) postLoadNavState
 
-        LoadedList key (AlbumListPage albumList bodyViewport parents) flags home pendingUrls _ postLoadNavState ->
-            LoadedList key (AlbumListPage albumList bodyViewport parents) flags home pendingUrls (Just rootDivViewport) postLoadNavState
+        LoadedList ll ->
+            LoadedList { ll | rootDivViewport = Just rootDivViewport }
 
 
 withPaths : AlbumBootstrap -> List String -> AlbumBootstrap
@@ -571,8 +573,8 @@ withPaths model paths =
         LoadError _ ->
             model
 
-        LoadedList key albumListPage flags home pendingUrls scroll _ ->
-            LoadedList key albumListPage flags home pendingUrls scroll NavInProgress
+        LoadedList ll ->
+            LoadedList { ll | navState = NavInProgress }
 
         LoadedAlbum key albumPage parents flags home pendingUrls scroll _ ->
             LoadedAlbum key albumPage parents flags home pendingUrls scroll NavInProgress
@@ -593,7 +595,7 @@ withScroll model scroll =
         LoadError _ ->
             model
 
-        LoadedList _ _ _ _ _ _ _ ->
+        LoadedList _ ->
             model
 
         LoadedAlbum _ _ _ _ _ _ _ _ ->
@@ -620,10 +622,12 @@ pathsToCmd model mPaths =
                 LoadError _ ->
                     log "pathsToCmd LoadError, ignore" Nothing
 
-                LoadedList _ (AlbumListPage albumList viewport parents) _ _ _ rootDivViewport _ ->
-                    --TODO maybe don't always prepend aTN here, only if at root?
-                    --TODO I think it's okay to drop the scroll positions here, should only happen at initial load (?)
-                    pathsToCmdImpl { bodyViewport = viewport, rootDivViewport = rootDivViewport } (albumList :: List.map Tuple.first parents) paths
+                LoadedList ll ->
+                    case ll.listPage of
+                        AlbumListPage albumList viewport parents ->
+                            --TODO maybe don't always prepend aTN here, only if at root?
+                            --TODO I think it's okay to drop the scroll positions here, should only happen at initial load (?)
+                            pathsToCmdImpl { bodyViewport = viewport, rootDivViewport = ll.rootDivViewport } (albumList :: List.map Tuple.first parents) paths
 
                 LoadedAlbum _ albumPage parents _ _ _ _ _ ->
                     pathsToCmdImpl (pageSize albumPage) (List.map Tuple.first parents) paths
@@ -662,7 +666,7 @@ scrollToCmd model scroll =
         LoadError _ ->
             log "scrollToCmd LoadError, ignore" Nothing
 
-        LoadedList _ _ _ _ _ _ _ ->
+        LoadedList _ ->
             scrollCmd
 
         LoadedAlbum _ _ _ _ _ _ _ _ ->
@@ -772,10 +776,10 @@ locFor oldModel newModel =
 
         entry =
             case oldModel of
-                LoadedList _ oAlbumListPage _ _ _ _ _ ->
+                LoadedList ll ->
                     case newModel of
-                        LoadedList _ nAlbumListPage _ _ _ _ _ ->
-                            case oAlbumListPage == nAlbumListPage of
+                        LoadedList ll2 ->
+                            case ll.listPage == ll2.listPage of
                                 True ->
                                     log "locFor LoadedList same" ModifyEntry
 
@@ -828,13 +832,13 @@ locFor oldModel newModel =
                             hashForAlbum model albumPage <|
                                 List.map Tuple.first parents
 
-            LoadedList key albumListPage _ _ _ _ postLoadNavState ->
-                checkNavState postLoadNavState <|
+            LoadedList ll ->
+                checkNavState ll.navState <|
                     Just <|
-                        newQorF { entry = entry, key = key }
+                        newQorF { entry = entry, key = ll.key }
                             model
                         <|
-                            hashForList model albumListPage
+                            hashForList model ll.listPage
 
             _ ->
                 Nothing
@@ -862,8 +866,8 @@ queryFor model =
         LoadedAlbum _ _ _ _ _ _ rootDivViewport _ ->
             queryForPos <| Maybe.map scrollPosOf rootDivViewport
 
-        LoadedList _ _ _ _ _ rootDivViewport _ ->
-            queryForPos <| Maybe.map scrollPosOf rootDivViewport
+        LoadedList ll ->
+            queryForPos <| Maybe.map scrollPosOf ll.rootDivViewport
 
 
 hashForList : AlbumBootstrap -> AlbumListPage -> String
@@ -1022,19 +1026,21 @@ subscriptions model =
                 , onResize <| newSize <| (pageSize albumPage).bodyViewport
                 ]
 
-        LoadedList _ (AlbumListPage albumList viewport parents) _ _ _ _ _ ->
-            case parents of
-                [] ->
-                    onResize <| newSize viewport
+        LoadedList ll ->
+            case ll.listPage of
+                AlbumListPage albumList viewport parents ->
+                    case parents of
+                        [] ->
+                            onResize <| newSize viewport
 
-                ( parent, scroll ) :: grandParents ->
-                    let
-                        upParent =
-                            onEscape
-                                (ViewList (AlbumListPage parent viewport grandParents) scroll)
-                                NoBootstrap
-                    in
-                    Sub.batch [ upParent, onResize <| newSize viewport ]
+                        ( parent, scroll ) :: grandParents ->
+                            let
+                                upParent =
+                                    onEscape
+                                        (ViewList (AlbumListPage parent viewport grandParents) scroll)
+                                        NoBootstrap
+                            in
+                            Sub.batch [ upParent, onResize <| newSize viewport ]
 
         LoadingHomeLink lh ->
             onResize <| newSize lh.bodyViewport
@@ -1106,8 +1112,10 @@ view albumBootstrap =
                 LoadError _ ->
                     "Error Loading Album"
 
-                LoadedList _ (AlbumListPage albumList _ _) _ _ _ _ _ ->
-                    albumList.listTitle
+                LoadedList ll ->
+                    case ll.listPage of
+                        AlbumListPage albumList _ _ ->
+                            albumList.listTitle
 
                 LoadedAlbum _ albumPage _ _ _ _ _ _ ->
                     titleOf albumPage
@@ -1166,28 +1174,30 @@ viewImpl albumBootstrap =
                     (List.map Tuple.first parents)
                     flags
 
-        LoadedList _ (AlbumListPage albumList viewport parents) flags home pendingUrls rootDivViewport postLoadNavState ->
-            withHomeLink home flags <|
-                AlbumListPage.view
-                    (AlbumListPage
-                        albumList
-                        viewport
-                        parents
-                    )
-                    (viewList
-                        albumBootstrap
-                        viewport
-                        (( albumList, Maybe.map scrollPosOf rootDivViewport ) :: parents)
-                    )
-                    (\album ->
-                        ViewAlbum
-                            (Thumbs album { bodyViewport = viewport, rootDivViewport = rootDivViewport } Set.empty Set.empty)
-                        <|
-                            ( albumList, Maybe.map scrollPosOf rootDivViewport )
-                                :: parents
-                    )
-                    ScrolledTo
-                    flags
+        LoadedList ll ->
+            case ll.listPage of
+                AlbumListPage albumList viewport parents ->
+                    withHomeLink ll.home ll.flags <|
+                        AlbumListPage.view
+                            (AlbumListPage
+                                albumList
+                                viewport
+                                parents
+                            )
+                            (viewList
+                                albumBootstrap
+                                viewport
+                                (( albumList, Maybe.map scrollPosOf ll.rootDivViewport ) :: parents)
+                            )
+                            (\album ->
+                                ViewAlbum
+                                    (Thumbs album { bodyViewport = viewport, rootDivViewport = ll.rootDivViewport } Set.empty Set.empty)
+                                <|
+                                    ( albumList, Maybe.map scrollPosOf ll.rootDivViewport )
+                                        :: parents
+                            )
+                            ScrolledTo
+                            ll.flags
 
 
 viewProgress : String -> Maybe Progress -> String
