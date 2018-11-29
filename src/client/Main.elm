@@ -124,10 +124,13 @@ update msg model =
 
                 LoadedAlbum la ->
                     case la.albumPage of
-                        Thumbs album oldSize justLoadedImages readyToDisplayImages ->
+                        Thumbs th ->
                             let
+                                oldVpInfo =
+                                    th.vpInfo
+
                                 newModel =
-                                    Thumbs album { oldSize | bodyViewport = log "window size updated for thumbs" viewport } justLoadedImages readyToDisplayImages
+                                    Thumbs { th | vpInfo = { oldVpInfo | bodyViewport = log "window size updated for thumbs" viewport } }
 
                                 urls =
                                     AlbumPage.urlsToGet newModel
@@ -142,8 +145,12 @@ update msg model =
                             , getUrls la.pendingUrls urls
                             )
 
-                        FullImage album index loaded oldSize savedScroll dragInfo ->
-                            ( LoadedAlbum { la | albumPage = FullImage album index loaded { oldSize | bodyViewport = log "window size updated for full" viewport } savedScroll dragInfo }
+                        FullImage fi ->
+                            let
+                                oldVpInfo =
+                                    fi.vpInfo
+                            in
+                            ( LoadedAlbum { la | albumPage = FullImage { fi | vpInfo = { oldVpInfo | bodyViewport = log "window size updated for full" viewport } } }
                             , Cmd.none
                             )
 
@@ -197,7 +204,12 @@ update msg model =
                         Leaf album ->
                             let
                                 albumPage =
-                                    Thumbs album { bodyViewport = ld.bodyViewport, rootDivViewport = Nothing } Set.empty Set.empty
+                                    Thumbs
+                                        { album = album
+                                        , vpInfo = { bodyViewport = ld.bodyViewport, rootDivViewport = Nothing }
+                                        , justLoadedImages = Set.empty
+                                        , readyToDisplayImages = Set.empty
+                                        }
 
                                 urls =
                                     AlbumPage.urlsToGet albumPage
@@ -545,11 +557,27 @@ withScrollPos rootDivViewport model =
 
         LoadedAlbum la ->
             case la.albumPage of
-                Thumbs album vpInfo justLoadedImages readyToDisplayImages ->
-                    LoadedAlbum { la | albumPage = Thumbs album { vpInfo | rootDivViewport = Just rootDivViewport } justLoadedImages readyToDisplayImages, rootDivViewport = Just rootDivViewport }
+                Thumbs th ->
+                    let
+                        oldVpInfo =
+                            th.vpInfo
+                    in
+                    LoadedAlbum
+                        { la
+                            | albumPage = Thumbs { th | vpInfo = { oldVpInfo | rootDivViewport = Just rootDivViewport } }
+                            , rootDivViewport = Just rootDivViewport
+                        }
 
-                FullImage prevImgs album progModel vpInfo savedScroll dragInfo ->
-                    LoadedAlbum { la | albumPage = FullImage prevImgs album progModel { vpInfo | rootDivViewport = Just rootDivViewport } savedScroll dragInfo, rootDivViewport = Just rootDivViewport }
+                FullImage fi ->
+                    let
+                        oldVpInfo =
+                            fi.vpInfo
+                    in
+                    LoadedAlbum
+                        { la
+                            | albumPage = FullImage { fi | vpInfo = { oldVpInfo | rootDivViewport = Just rootDivViewport } }
+                            , rootDivViewport = Just rootDivViewport
+                        }
 
         LoadedList ll ->
             LoadedList { ll | rootDivViewport = Just rootDivViewport }
@@ -708,7 +736,7 @@ navForAlbum vpInfo album ps newParents =
     in
     case ps of
         [] ->
-            Just <| ViewAlbum (Thumbs album vpInfo Set.empty Set.empty) parentsNoScroll
+            Just <| ViewAlbum (Thumbs { album = album, vpInfo = vpInfo, justLoadedImages = Set.empty, readyToDisplayImages = Set.empty }) parentsNoScroll
 
         i :: _ ->
             case findImg [] album i of
@@ -725,7 +753,7 @@ navForAlbum vpInfo album ps newParents =
                     in
                     Just <|
                         Sequence
-                            (ViewAlbum (FullImage prevs nAlbum progModel vpInfo Nothing Nothing) parentsNoScroll)
+                            (ViewAlbum (FullImage { prevImgs = prevs, album = nAlbum, progModel = progModel, vpInfo = vpInfo, scroll = Nothing, dragInfo = Nothing }) parentsNoScroll)
                         <|
                             fromMaybe <|
                                 Maybe.map (PageMsg << FullMsg) progCmd
@@ -881,11 +909,11 @@ hashForAlbum model albumPage parents =
     let
         titles =
             case albumPage of
-                Thumbs album _ _ _ ->
-                    [ album.title ]
+                Thumbs th ->
+                    [ th.album.title ]
 
-                FullImage _ album _ _ _ _ ->
-                    [ album.title, album.imageFirst.altText ]
+                FullImage fi ->
+                    [ fi.album.title, fi.album.imageFirst.altText ]
     in
     hashFromAlbumPath model titles parents
 
@@ -927,10 +955,10 @@ updateImageResult model url result =
     case model of
         LoadedAlbum la ->
             case la.albumPage of
-                Thumbs album vpInfo justLoadedImages readyToDisplayImages ->
+                Thumbs th ->
                     let
                         newModel =
-                            justLoadedReadyToDisplayNextState album vpInfo justLoadedImages readyToDisplayImages url result
+                            justLoadedReadyToDisplayNextState th url result
 
                         urls =
                             AlbumPage.urlsToGet newModel
@@ -956,17 +984,16 @@ updateImageResult model url result =
             ( model, Cmd.none )
 
 
-justLoadedReadyToDisplayNextState : Album -> ViewportInfo -> Set String -> Set String -> String -> UrlLoadState -> AlbumPage
-justLoadedReadyToDisplayNextState album viewport justLoadedImages readyToDisplayImages url result =
+justLoadedReadyToDisplayNextState th url result =
     case result of
         JustCompleted ->
-            Thumbs album viewport (Set.insert url justLoadedImages) readyToDisplayImages
+            Thumbs { th | justLoadedImages = Set.insert url th.justLoadedImages }
 
         ReadyToDisplay ->
-            Thumbs album viewport (Set.remove url justLoadedImages) <| Set.insert url readyToDisplayImages
+            Thumbs { th | justLoadedImages = Set.remove url th.justLoadedImages, readyToDisplayImages = Set.insert url th.readyToDisplayImages }
 
         _ ->
-            Thumbs album viewport justLoadedImages readyToDisplayImages
+            Thumbs th
 
 
 urlNextState : String -> UrlLoadState -> Cmd AlbumBootstrapMsg
@@ -1077,11 +1104,11 @@ viewportWithNewSize oldViewport newWidth newHeight =
 pageSize : AlbumPage -> ViewportInfo
 pageSize albumPage =
     case albumPage of
-        Thumbs _ viewport _ _ ->
-            viewport
+        Thumbs th ->
+            th.vpInfo
 
-        FullImage _ _ _ viewport _ _ ->
-            viewport
+        FullImage fi ->
+            fi.vpInfo
 
 
 scrollPosOf : Viewport -> Float
@@ -1185,7 +1212,7 @@ viewImpl albumBootstrap =
                             )
                             (\album ->
                                 ViewAlbum
-                                    (Thumbs album { bodyViewport = viewport, rootDivViewport = ll.rootDivViewport } Set.empty Set.empty)
+                                    (Thumbs { album = album, vpInfo = { bodyViewport = viewport, rootDivViewport = ll.rootDivViewport }, justLoadedImages = Set.empty, readyToDisplayImages = Set.empty })
                                 <|
                                     ( albumList, Maybe.map scrollPosOf ll.rootDivViewport )
                                         :: parents
