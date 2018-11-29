@@ -9,6 +9,7 @@ import Browser.Dom exposing (..)
 import Browser.Events exposing (..)
 import Browser.Navigation exposing (..)
 import Css exposing (..)
+import Debouncer.Messages exposing (..)
 import DebugSupport exposing (debugString, log)
 import Delay exposing (..)
 import Dict exposing (..)
@@ -63,6 +64,7 @@ type AlbumBootstrap
         , pendingUrls : Dict String UrlLoadState
         , rootDivViewport : Maybe Viewport
         , navState : PostLoadNavState
+        , debouncer : Debouncer AlbumBootstrapMsg
         }
     | LoadedAlbum
         { key : Key
@@ -73,6 +75,7 @@ type AlbumBootstrap
         , pendingUrls : Dict String UrlLoadState
         , rootDivViewport : Maybe Viewport
         , navState : PostLoadNavState
+        , debouncer : Debouncer AlbumBootstrapMsg
         }
 
 
@@ -104,6 +107,7 @@ type AlbumBootstrapMsg
     | ImageFailed String Http.Error
     | ScheduleScroll (Maybe Float)
     | ScrolledTo Viewport
+    | DebouncerMsg (Debouncer.Messages.Msg AlbumBootstrapMsg)
     | ScrollSucceeded
     | ScrollFailed String
     | Nav (List String)
@@ -240,6 +244,7 @@ update msg model =
                                         , pendingUrls = Dict.empty
                                         , rootDivViewport = Nothing
                                         , navState = NavInactive
+                                        , debouncer = debouncer
                                         }
 
                                 pathsThenScroll =
@@ -272,6 +277,7 @@ update msg model =
                                         , pendingUrls = dictWithValues urls UrlRequested
                                         , rootDivViewport = Nothing
                                         , navState = NavInactive
+                                        , debouncer = debouncer
                                         }
 
                                 pathsThenScroll =
@@ -339,6 +345,7 @@ update msg model =
                         , pendingUrls = Dict.empty
                         , rootDivViewport = Nothing
                         , navState = NavInactive
+                        , debouncer = debouncer
                         }
 
                 scrollCmd =
@@ -373,6 +380,7 @@ update msg model =
                         , pendingUrls = dictWithValues urls UrlRequested
                         , rootDivViewport = Nothing
                         , navState = NavInactive
+                        , debouncer = debouncer
                         }
             in
             ( newModel
@@ -384,6 +392,35 @@ update msg model =
 
         ScrolledTo viewport ->
             ( withScrollPos (log "ScrolledTo: " viewport) model, Cmd.none )
+
+        DebouncerMsg subMsg ->
+            Debouncer.Messages.update update
+                { mapMsg = DebouncerMsg
+                , getDebouncer =
+                    \aModel ->
+                        case aModel of
+                            LoadedList ll ->
+                                ll.debouncer
+
+                            LoadedAlbum la ->
+                                la.debouncer
+
+                            _ ->
+                                debouncer
+                , setDebouncer =
+                    \newDebouncer aModel ->
+                        case aModel of
+                            LoadedList ll ->
+                                LoadedList { ll | debouncer = newDebouncer }
+
+                            LoadedAlbum la ->
+                                LoadedAlbum { la | debouncer = newDebouncer }
+
+                            _ ->
+                                aModel
+                }
+                subMsg
+                model
 
         ScheduleScroll scroll ->
             ( model
@@ -472,6 +509,25 @@ update msg model =
 
         NoBootstrap ->
             ( model, Cmd.none )
+
+
+{-| allow at most 100 scroll updates in 30 seconds
+<https://bugs.webkit.org/show_bug.cgi?id=156115>
+f = 100/30s
+T = 30s/100
+T = 0.3s
+T = 300ms
+-}
+debouncer : Debouncer AlbumBootstrapMsg
+debouncer =
+    --toDebouncer <| throttle (fromSeconds <| 30 / 100)
+    --toDebouncer <| throttle (fromSeconds 1)
+    toDebouncer <| throttle <| fromSeconds 0.3
+
+
+throttledScrolledTo : Viewport -> AlbumBootstrapMsg
+throttledScrolledTo =
+    ScrolledTo >> provideInput >> DebouncerMsg
 
 
 sequence : Maybe AlbumBootstrapMsg -> List AlbumBootstrapMsg -> AlbumBootstrapMsg
@@ -1257,7 +1313,7 @@ viewImpl albumBootstrap =
             withHomeLink la.home la.flags <|
                 AlbumPage.view
                     la.albumPage
-                    ScrolledTo
+                    throttledScrolledTo
                     (viewList
                         albumBootstrap
                         (pageSize la.albumPage).bodyViewport
@@ -1287,7 +1343,7 @@ viewImpl albumBootstrap =
                                     ( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport )
                                         :: alp.parents
                             )
-                            ScrolledTo
+                            throttledScrolledTo
                             ll.flags
 
 
