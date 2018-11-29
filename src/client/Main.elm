@@ -28,7 +28,7 @@ import Url exposing (..)
 
 
 type AlbumBootstrap
-    = Sizing Key AlbumBootstrapFlags (Maybe (List String)) (Maybe Float)
+    = Sizing { key : Key, flags : AlbumBootstrapFlags, paths : Maybe (List String), scroll : Maybe Float }
     | LoadingHomeLink Key Viewport AlbumBootstrapFlags (Maybe (List String)) (Maybe Float)
     | Loading Key Viewport (Maybe Progress) AlbumBootstrapFlags (Maybe String) (Maybe (List String)) (Maybe Float)
     | LoadError Key AlbumBootstrapFlags Http.Error
@@ -94,7 +94,7 @@ main =
 
 init : AlbumBootstrapFlags -> Key -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 init flags key =
-    ( Sizing key flags Nothing Nothing
+    ( Sizing { key = key, flags = flags, paths = Nothing, scroll = Nothing }
     , Task.perform Resize getViewport
     )
 
@@ -104,8 +104,8 @@ update msg model =
     case log "update msg" msg of
         Resize viewport ->
             case model of
-                Sizing key flags paths scroll ->
-                    ( LoadingHomeLink key (log "window size set" viewport) flags paths scroll
+                Sizing sz ->
+                    ( LoadingHomeLink sz.key (log "window size set" viewport) sz.flags sz.paths sz.scroll
                     , Http.get { url = "home", expect = expectString <| either NoHome YesHome }
                     )
 
@@ -467,8 +467,8 @@ navToMsg loc =
 flagsOf : AlbumBootstrap -> AlbumBootstrapFlags
 flagsOf model =
     case model of
-        Sizing _ flags _ _ ->
-            flags
+        Sizing sz ->
+            sz.flags
 
         LoadingHomeLink _ _ flags _ _ ->
             flags
@@ -489,7 +489,7 @@ flagsOf model =
 homeOf : AlbumBootstrap -> Maybe String
 homeOf model =
     case model of
-        Sizing _ _ _ _ ->
+        Sizing _ ->
             Nothing
 
         LoadingHomeLink _ _ _ _ _ ->
@@ -511,8 +511,8 @@ homeOf model =
 keyOf : AlbumBootstrap -> Key
 keyOf model =
     case model of
-        Sizing key _ _ _ ->
-            key
+        Sizing sz ->
+            sz.key
 
         LoadingHomeLink key _ _ _ _ ->
             key
@@ -533,7 +533,7 @@ keyOf model =
 withScrollPos : Viewport -> AlbumBootstrap -> AlbumBootstrap
 withScrollPos rootDivViewport model =
     case model of
-        Sizing _ _ _ _ ->
+        Sizing _ ->
             model
 
         LoadingHomeLink _ _ _ _ _ ->
@@ -560,8 +560,8 @@ withScrollPos rootDivViewport model =
 withPaths : AlbumBootstrap -> List String -> AlbumBootstrap
 withPaths model paths =
     case model of
-        Sizing key flags _ scroll ->
-            Sizing key flags (Just paths) scroll
+        Sizing sz ->
+            Sizing { sz | paths = Just paths }
 
         LoadingHomeLink key viewport flags _ scroll ->
             LoadingHomeLink key viewport flags (Just paths) scroll
@@ -582,8 +582,8 @@ withPaths model paths =
 withScroll : AlbumBootstrap -> Float -> AlbumBootstrap
 withScroll model scroll =
     case model of
-        Sizing key flags paths _ ->
-            Sizing key flags paths <| Just scroll
+        Sizing sz ->
+            Sizing { sz | scroll = Just scroll }
 
         LoadingHomeLink key viewport flags paths _ ->
             LoadingHomeLink key viewport flags paths <| Just scroll
@@ -609,7 +609,7 @@ pathsToCmd model mPaths =
 
         Just paths ->
             case model of
-                Sizing _ _ _ _ ->
+                Sizing _ ->
                     Nothing
 
                 LoadingHomeLink _ _ _ _ _ ->
@@ -651,7 +651,7 @@ scrollToCmd model scroll =
             Just <| ScheduleScroll scroll
     in
     case model of
-        Sizing _ _ _ _ ->
+        Sizing _ ->
             Nothing
 
         LoadingHomeLink _ _ _ _ _ ->
@@ -848,7 +848,7 @@ queryFor model =
             Maybe.withDefault "" <| Maybe.map (\p -> "s=" ++ String.fromFloat p) pos
     in
     case model of
-        Sizing _ _ _ _ ->
+        Sizing _ ->
             ""
 
         LoadingHomeLink _ _ _ _ _ ->
@@ -1049,7 +1049,7 @@ subscriptions model =
         LoadError _ _ _ ->
             Sub.none
 
-        Sizing _ _ _ _ ->
+        Sizing _ ->
             Sub.none
 
 
@@ -1095,7 +1095,7 @@ view albumBootstrap =
     let
         title =
             case albumBootstrap of
-                Sizing _ _ _ _ ->
+                Sizing _ ->
                     "Album Starting"
 
                 LoadingHomeLink _ _ _ _ _ ->
@@ -1121,7 +1121,7 @@ view albumBootstrap =
 viewImpl : AlbumBootstrap -> Html AlbumBootstrapMsg
 viewImpl albumBootstrap =
     case albumBootstrap of
-        Sizing _ _ _ _ ->
+        Sizing _ ->
             text "Album Starting"
 
         LoadingHomeLink _ _ _ _ _ ->
