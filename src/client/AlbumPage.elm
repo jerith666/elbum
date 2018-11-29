@@ -19,8 +19,8 @@ import TouchEvents exposing (..)
 
 
 type AlbumPage
-    = Thumbs Album ViewportInfo (Set String) (Set String)
-    | FullImage (List Image) Album ProgressiveImageModel ViewportInfo (Maybe Float) (Maybe ( Touch, Touch ))
+    = Thumbs { album : Album, vpInfo : ViewportInfo, justLoadedImages : Set String, readyToDisplayImages : Set String }
+    | FullImage { prevImgs : List Image, album : Album, progModel : ProgressiveImageModel, vpInfo : ViewportInfo, scroll : Maybe Float, dragInfo : Maybe ( Touch, Touch ) }
 
 
 type alias ViewportInfo =
@@ -44,25 +44,27 @@ update msg model scroll =
     case msg of
         View prevImgs curImg nextImgs ->
             case model of
-                Thumbs album vpInfo _ _ ->
+                Thumbs th ->
                     let
                         ( w, h ) =
-                            fitImage curImg.srcSetFirst (floor vpInfo.bodyViewport.viewport.width) (floor vpInfo.bodyViewport.viewport.height)
+                            fitImage curImg.srcSetFirst (floor th.vpInfo.bodyViewport.viewport.width) (floor th.vpInfo.bodyViewport.viewport.height)
 
                         ( progModel, progCmd ) =
-                            progInit vpInfo.bodyViewport curImg w h
+                            progInit th.vpInfo.bodyViewport curImg w h
                     in
                     ( FullImage
-                        prevImgs
-                        { title = album.title
-                        , imageFirst = curImg
-                        , imageRest = nextImgs
-                        , thumbnail = album.thumbnail
+                        { prevImgs = prevImgs
+                        , album =
+                            { title = th.album.title
+                            , imageFirst = curImg
+                            , imageRest = nextImgs
+                            , thumbnail = th.album.thumbnail
+                            }
+                        , progModel = progModel
+                        , vpInfo = th.vpInfo
+                        , scroll = scroll
+                        , dragInfo = Nothing
                         }
-                        progModel
-                        vpInfo
-                        scroll
-                        Nothing
                     , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd progCmd
                     )
 
@@ -77,13 +79,13 @@ update msg model scroll =
 
         BackToThumbs ->
             case model of
-                FullImage prevImgs album _ viewport savedScroll _ ->
+                FullImage fi ->
                     let
                         ( newFirst, newRest ) =
-                            shiftToBeginning prevImgs album.imageFirst album.imageRest
+                            shiftToBeginning fi.prevImgs fi.album.imageFirst fi.album.imageRest
 
                         scrollCmd =
-                            case savedScroll of
+                            case fi.scroll of
                                 Nothing ->
                                     Cmd.none
 
@@ -91,14 +93,16 @@ update msg model scroll =
                                     Task.attempt (\_ -> NoUpdate) <| setViewportOf rootDivId 0 pos
                     in
                     ( Thumbs
-                        { title = album.title
-                        , imageFirst = newFirst
-                        , imageRest = newRest
-                        , thumbnail = album.thumbnail
+                        { album =
+                            { title = fi.album.title
+                            , imageFirst = newFirst
+                            , imageRest = newRest
+                            , thumbnail = fi.album.thumbnail
+                            }
+                        , vpInfo = fi.vpInfo
+                        , justLoadedImages = empty
+                        , readyToDisplayImages = empty
                         }
-                        viewport
-                        empty
-                        empty
                     , scrollCmd
                     )
 
@@ -107,41 +111,41 @@ update msg model scroll =
 
         TouchDragStart pos ->
             case model of
-                FullImage prevImgs album progModel viewport savedScroll dragInfo ->
-                    ( FullImage prevImgs album progModel viewport savedScroll (Just ( pos, pos )), Cmd.none )
+                FullImage fi ->
+                    ( FullImage { fi | dragInfo = Just ( pos, pos ) }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
         TouchDragContinue pos ->
             case model of
-                FullImage prevImgs album progModel viewport savedScroll dragInfo ->
-                    case dragInfo of
+                FullImage fi ->
+                    case fi.dragInfo of
                         Nothing ->
-                            ( FullImage prevImgs album progModel viewport savedScroll (Just ( pos, pos )), Cmd.none )
+                            ( FullImage { fi | dragInfo = Just ( pos, pos ) }, Cmd.none )
 
                         Just ( start, cur ) ->
-                            ( FullImage prevImgs album progModel viewport savedScroll (Just ( start, pos )), Cmd.none )
+                            ( FullImage { fi | dragInfo = Just ( start, pos ) }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
         TouchDragAbandon ->
             case model of
-                FullImage prevImgs album progModel viewport savedScroll _ ->
-                    ( FullImage prevImgs album progModel viewport savedScroll Nothing, Cmd.none )
+                FullImage fi ->
+                    ( FullImage { fi | dragInfo = Nothing }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
         FullMsg progImgMsg ->
             case model of
-                FullImage prevImgs album progModel viewport savedScroll dragInfo ->
+                FullImage fi ->
                     let
                         ( newProgModel, newProgCmd ) =
-                            ProgressiveImage.update progImgMsg progModel
+                            ProgressiveImage.update progImgMsg fi.progModel
                     in
-                    ( FullImage prevImgs album newProgModel viewport savedScroll dragInfo, Cmd.map FullMsg newProgCmd )
+                    ( FullImage { fi | progModel = newProgModel }, Cmd.map FullMsg newProgCmd )
 
                 _ ->
                     ( model, Cmd.none )
@@ -171,33 +175,34 @@ progInit viewport i w h =
 updatePrevNext : AlbumPage -> (List Image -> Image -> List Image -> ( List Image, Image, List Image )) -> ( AlbumPage, Cmd AlbumPageMsg )
 updatePrevNext model shifter =
     case model of
-        FullImage prevImgs album oldProgModel vpInfo savedScroll _ ->
+        FullImage fi ->
             let
                 ( newPrev, newCur, newRest ) =
-                    shifter prevImgs album.imageFirst album.imageRest
+                    shifter fi.prevImgs fi.album.imageFirst fi.album.imageRest
 
                 ( newProgModel, newCmd ) =
-                    if album.imageFirst == newCur then
-                        ( oldProgModel, Nothing )
+                    if fi.album.imageFirst == newCur then
+                        ( fi.progModel, Nothing )
 
                     else
                         let
                             ( w, h ) =
-                                fitImage newCur.srcSetFirst (floor vpInfo.bodyViewport.viewport.width) (floor vpInfo.bodyViewport.viewport.height)
+                                fitImage newCur.srcSetFirst (floor fi.vpInfo.bodyViewport.viewport.width) (floor fi.vpInfo.bodyViewport.viewport.height)
                         in
-                        progInit vpInfo.bodyViewport newCur w h
+                        progInit fi.vpInfo.bodyViewport newCur w h
             in
             ( FullImage
-                newPrev
-                { title = album.title
-                , imageFirst = newCur
-                , imageRest = newRest
-                , thumbnail = album.thumbnail
+                { fi
+                    | prevImgs = newPrev
+                    , album =
+                        { title = fi.album.title
+                        , imageFirst = newCur
+                        , imageRest = newRest
+                        , thumbnail = fi.album.thumbnail
+                        }
+                    , progModel = newProgModel
+                    , dragInfo = Nothing
                 }
-                newProgModel
-                vpInfo
-                savedScroll
-                Nothing
             , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd newCmd
             )
 
@@ -221,14 +226,14 @@ resetUrls msg =
 urlsToGet : AlbumPage -> Set String
 urlsToGet albumPage =
     case albumPage of
-        Thumbs album vpInfo justLoadedImages readyToDisplayImages ->
+        Thumbs th ->
             ThumbPage.urlsToGet
-                { album = album
+                { album = th.album
                 , parents = []
-                , bodyViewport = vpInfo.bodyViewport
-                , rootDivViewport = vpInfo.rootDivViewport
-                , justLoadedImages = justLoadedImages
-                , readyToDisplayImages = readyToDisplayImages
+                , bodyViewport = th.vpInfo.bodyViewport
+                , rootDivViewport = th.vpInfo.rootDivViewport
+                , justLoadedImages = th.justLoadedImages
+                , readyToDisplayImages = th.readyToDisplayImages
                 }
 
         _ ->
@@ -238,31 +243,31 @@ urlsToGet albumPage =
 titleOf : AlbumPage -> String
 titleOf albumPage =
     case albumPage of
-        Thumbs album _ _ _ ->
-            album.title
+        Thumbs th ->
+            th.album.title
 
-        FullImage _ album _ _ _ _ ->
-            album.imageFirst.altText
+        FullImage fi ->
+            fi.album.imageFirst.altText
 
 
 view : AlbumPage -> (Viewport -> msg) -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> AlbumBootstrapFlags -> Html msg
 view albumPage scrollMsgMaker showList wrapMsg parents flags =
     case albumPage of
-        Thumbs album vpInfo justLoadedImages readyToDisplayImages ->
+        Thumbs th ->
             ThumbPage.view
                 scrollMsgMaker
                 (\x -> \y -> \z -> wrapMsg (View x y z))
                 showList
-                { album = album
+                { album = th.album
                 , parents = parents
-                , bodyViewport = vpInfo.bodyViewport
-                , rootDivViewport = vpInfo.rootDivViewport
-                , justLoadedImages = justLoadedImages
-                , readyToDisplayImages = readyToDisplayImages
+                , bodyViewport = th.vpInfo.bodyViewport
+                , rootDivViewport = th.vpInfo.rootDivViewport
+                , justLoadedImages = th.justLoadedImages
+                , readyToDisplayImages = th.readyToDisplayImages
                 }
                 flags
 
-        FullImage prevImgs album progModel vpInfo _ dragInfo ->
+        FullImage fi ->
             FullImagePage.view
                 { prevMsg = wrapMsg Prev
                 , nextMsg = wrapMsg Next
@@ -271,15 +276,15 @@ view albumPage scrollMsgMaker showList wrapMsg parents flags =
                 }
                 { touchStartMsg = wrapMsg << TouchDragStart
                 , touchContinueMsg = wrapMsg << TouchDragContinue
-                , touchPrevNextMsg = wrapMsg << touchPrevNext dragInfo
+                , touchPrevNextMsg = wrapMsg << touchPrevNext fi.dragInfo
                 }
                 (wrapMsg NoUpdate)
                 (wrapMsg << FullMsg)
-                { prevImgs = prevImgs
-                , album = album
-                , viewport = vpInfo.bodyViewport
-                , progImgModel = progModel
-                , offset = offsetFor dragInfo
+                { prevImgs = fi.prevImgs
+                , album = fi.album
+                , viewport = fi.vpInfo.bodyViewport
+                , progImgModel = fi.progModel
+                , offset = offsetFor fi.dragInfo
                 }
                 parents
                 flags
@@ -326,12 +331,12 @@ offsetFor dragInfo =
 subscriptions : AlbumPage -> (AlbumPageMsg -> msg) -> msg -> Sub msg
 subscriptions albumPage wrapper showParent =
     case albumPage of
-        Thumbs _ _ _ _ ->
+        Thumbs _ ->
             onEscape showParent <| wrapper NoUpdate
 
-        FullImage _ _ progImgModel _ _ _ ->
+        FullImage fi ->
             Sub.batch
-                [ Sub.map wrapper <| Sub.map FullMsg <| ProgressiveImage.subscriptions progImgModel
+                [ Sub.map wrapper <| Sub.map FullMsg <| ProgressiveImage.subscriptions fi.progModel
                 , Sub.map wrapper <|
                     onKeyDown <|
                         Json.Decode.map
@@ -357,18 +362,18 @@ subscriptions albumPage wrapper showParent =
 eqIgnoringVpInfo : AlbumPage -> AlbumPage -> Bool
 eqIgnoringVpInfo aPage1 aPage2 =
     case aPage1 of
-        Thumbs album1 _ justLoadedImages1 readyToDisplayImages1 ->
+        Thumbs th1 ->
             case aPage2 of
-                Thumbs album2 _ justLoadedImages2 readyToDisplayImages2 ->
-                    album1 == album2 && justLoadedImages1 == justLoadedImages2 && readyToDisplayImages1 == readyToDisplayImages2
+                Thumbs th2 ->
+                    th1.album == th2.album && th1.justLoadedImages == th2.justLoadedImages && th1.readyToDisplayImages == th2.readyToDisplayImages
 
-                FullImage _ _ _ _ _ _ ->
+                FullImage fi ->
                     False
 
-        FullImage prevImages1 album1 progModel1 _ savedScroll1 dragInfo1 ->
+        FullImage fi1 ->
             case aPage2 of
-                Thumbs _ _ _ _ ->
+                Thumbs _ ->
                     False
 
-                FullImage prevImages2 album2 progModel2 _ savedScroll2 dragInfo2 ->
-                    prevImages1 == prevImages2 && album1 == album2 && progModel1 == progModel2 && savedScroll1 == savedScroll2 && dragInfo1 == dragInfo2
+                FullImage fi2 ->
+                    fi1.prevImgs == fi2.prevImgs && fi1.album == fi2.album && fi1.progModel == fi2.progModel && fi1.scroll == fi2.scroll && fi1.dragInfo == fi2.dragInfo
