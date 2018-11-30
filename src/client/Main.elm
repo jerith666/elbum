@@ -407,9 +407,9 @@ update msg model =
                                 LoadedAlbum { la | debouncer = newDebouncer }
 
                             _ ->
-                                aModel
+                                log "setDebouncer on model type that does not contain one" aModel
                 }
-                subMsg
+                (log "debouncer message wrapping" subMsg)
                 model
 
         ScheduleScroll scroll ->
@@ -529,7 +529,7 @@ debouncerOf model =
             la.debouncer
 
         _ ->
-            debouncer
+            log ("returning default debouncer for model that does not contain one " ++ debugString model) debouncer
 
 
 sequence : Maybe AlbumBootstrapMsg -> List AlbumBootstrapMsg -> AlbumBootstrapMsg
