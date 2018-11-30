@@ -345,7 +345,7 @@ update msg model =
                         , pendingUrls = Dict.empty
                         , rootDivViewport = Nothing
                         , navState = NavInactive
-                        , debouncer = debouncer
+                        , debouncer = debouncerOf model
                         }
 
                 scrollCmd =
@@ -380,7 +380,7 @@ update msg model =
                         , pendingUrls = dictWithValues urls UrlRequested
                         , rootDivViewport = Nothing
                         , navState = NavInactive
-                        , debouncer = debouncer
+                        , debouncer = debouncerOf model
                         }
             in
             ( newModel
@@ -396,17 +396,7 @@ update msg model =
         DebouncerMsg subMsg ->
             Debouncer.Messages.update update
                 { mapMsg = DebouncerMsg
-                , getDebouncer =
-                    \aModel ->
-                        case aModel of
-                            LoadedList ll ->
-                                ll.debouncer
-
-                            LoadedAlbum la ->
-                                la.debouncer
-
-                            _ ->
-                                debouncer
+                , getDebouncer = debouncerOf
                 , setDebouncer =
                     \newDebouncer aModel ->
                         case aModel of
@@ -528,6 +518,18 @@ debouncer =
 throttledScrolledTo : Viewport -> AlbumBootstrapMsg
 throttledScrolledTo =
     ScrolledTo >> provideInput >> DebouncerMsg
+
+
+debouncerOf model =
+    case model of
+        LoadedList ll ->
+            ll.debouncer
+
+        LoadedAlbum la ->
+            la.debouncer
+
+        _ ->
+            debouncer
 
 
 sequence : Maybe AlbumBootstrapMsg -> List AlbumBootstrapMsg -> AlbumBootstrapMsg
