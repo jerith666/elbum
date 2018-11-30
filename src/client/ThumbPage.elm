@@ -107,29 +107,28 @@ urlsToGet thumbPageModel =
             List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
 
         vPort =
-            log "viewport: " thumbPageModel.rootDivViewport
+            thumbPageModel.rootDivViewport
 
         scrollPct =
-            log "scrollPct: " <|
-                Maybe.withDefault 0 <|
-                    Maybe.map
-                        (\vp ->
-                            case vp.viewport.y == 0 of
-                                True ->
-                                    0
+            Maybe.withDefault 0 <|
+                Maybe.map
+                    (\vp ->
+                        case vp.viewport.y == 0 of
+                            True ->
+                                0
 
-                                False ->
-                                    (vp.viewport.y + vp.viewport.height / 2)
-                                        / vp.scene.height
-                        )
-                        vPort
+                            False ->
+                                (vp.viewport.y + vp.viewport.height / 2)
+                                    / vp.scene.height
+                    )
+                    vPort
 
         score i =
             let
                 iPct =
                     toFloat i / (toFloat <| List.length srcs)
             in
-            log ("score " ++ String.fromInt i ++ ": ") <| abs (scrollPct - iPct)
+            abs (scrollPct - iPct)
 
         scoredSrcs =
             List.indexedMap (\i -> \img -> ( score i, img )) srcs
