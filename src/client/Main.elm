@@ -145,360 +145,362 @@ init flags key =
 
 update : AlbumBootstrapMsg -> AlbumBootstrap -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 update msg model =
-    case log "update msg" msg of
-        Resize viewport ->
-            case model of
-                Sizing sz ->
-                    ( LoadingHomeLink { key = sz.key, bodyViewport = log "window size set" viewport, flags = sz.flags, paths = sz.paths, scroll = sz.scroll }
-                    , Http.get { url = "home", expect = expectString <| either NoHome YesHome }
-                    )
+    log "update produces new (model,msg)" <|
+        case log "update msg" msg of
+            Resize viewport ->
+                case model of
+                    Sizing sz ->
+                        ( LoadingHomeLink { key = sz.key, bodyViewport = log "window size set" viewport, flags = sz.flags, paths = sz.paths, scroll = sz.scroll }
+                        , Http.get { url = "home", expect = expectString <| either NoHome YesHome }
+                        )
 
-                LoadingHomeLink lh ->
-                    ( LoadingHomeLink { lh | bodyViewport = viewport }
-                    , Cmd.none
-                    )
+                    LoadingHomeLink lh ->
+                        ( LoadingHomeLink { lh | bodyViewport = viewport }
+                        , Cmd.none
+                        )
 
-                Loading ld ->
-                    ( Loading { ld | bodyViewport = log "window size updated during load" viewport }
-                    , Cmd.none
-                    )
+                    Loading ld ->
+                        ( Loading { ld | bodyViewport = log "window size updated during load" viewport }
+                        , Cmd.none
+                        )
 
-                LoadError _ ->
-                    ( model, Cmd.none )
+                    LoadError _ ->
+                        ( model, Cmd.none )
 
-                LoadedAlbum la ->
-                    case la.albumPage of
-                        Thumbs th ->
-                            let
-                                oldVpInfo =
-                                    th.vpInfo
+                    LoadedAlbum la ->
+                        case la.albumPage of
+                            Thumbs th ->
+                                let
+                                    oldVpInfo =
+                                        th.vpInfo
 
-                                newModel =
-                                    Thumbs { th | vpInfo = { oldVpInfo | bodyViewport = log "window size updated for thumbs" viewport } }
+                                    newModel =
+                                        Thumbs { th | vpInfo = { oldVpInfo | bodyViewport = log "window size updated for thumbs" viewport } }
 
-                                urls =
-                                    AlbumPage.urlsToGet newModel
-                            in
-                            ( LoadedAlbum
-                                { la
-                                    | albumPage = newModel
-                                    , pendingUrls =
-                                        Dict.union la.pendingUrls <|
-                                            dictWithValues urls UrlRequested
-                                }
-                            , getUrls la.pendingUrls urls
-                            )
+                                    urls =
+                                        AlbumPage.urlsToGet newModel
+                                in
+                                ( LoadedAlbum
+                                    { la
+                                        | albumPage = newModel
+                                        , pendingUrls =
+                                            Dict.union la.pendingUrls <|
+                                                dictWithValues urls UrlRequested
+                                    }
+                                , getUrls la.pendingUrls urls
+                                )
 
-                        FullImage fi ->
-                            let
-                                oldVpInfo =
-                                    fi.vpInfo
-                            in
-                            ( LoadedAlbum { la | albumPage = FullImage { fi | vpInfo = { oldVpInfo | bodyViewport = log "window size updated for full" viewport } } }
-                            , Cmd.none
-                            )
+                            FullImage fi ->
+                                let
+                                    oldVpInfo =
+                                        fi.vpInfo
+                                in
+                                ( LoadedAlbum { la | albumPage = FullImage { fi | vpInfo = { oldVpInfo | bodyViewport = log "window size updated for full" viewport } } }
+                                , Cmd.none
+                                )
 
-                LoadedList ll ->
-                    case ll.listPage of
-                        AlbumListPage alp ->
-                            ( LoadedList { ll | listPage = AlbumListPage { alp | bodyViewport = viewport } }
-                            , Cmd.none
-                            )
+                    LoadedList ll ->
+                        case ll.listPage of
+                            AlbumListPage alp ->
+                                ( LoadedList { ll | listPage = AlbumListPage { alp | bodyViewport = viewport } }
+                                , Cmd.none
+                                )
 
-        YesHome home ->
-            case model of
-                LoadingHomeLink lh ->
-                    gotHome lh <| Just <| String.trim home
+            YesHome home ->
+                case model of
+                    LoadingHomeLink lh ->
+                        gotHome lh <| Just <| String.trim home
 
-                _ ->
-                    ( model, Cmd.none )
+                    _ ->
+                        ( model, Cmd.none )
 
-        NoHome err ->
-            case model of
-                LoadingHomeLink lh ->
-                    gotHome lh Nothing
+            NoHome err ->
+                case model of
+                    LoadingHomeLink lh ->
+                        gotHome lh Nothing
 
-                _ ->
-                    ( model, Cmd.none )
+                    _ ->
+                        ( model, Cmd.none )
 
-        LoadAlbumProgress progress ->
-            case model of
-                Loading ld ->
-                    ( Loading { ld | progress = Just progress }, Cmd.none )
+            LoadAlbumProgress progress ->
+                case model of
+                    Loading ld ->
+                        ( Loading { ld | progress = Just progress }, Cmd.none )
 
-                _ ->
-                    ( model, Cmd.none )
+                    _ ->
+                        ( model, Cmd.none )
 
-        YesAlbum albumOrList ->
-            case model of
-                Loading ld ->
-                    case albumOrList of
-                        List albumList ->
-                            let
-                                newModel =
-                                    LoadedList
-                                        { key = ld.key
-                                        , listPage = AlbumListPage { albumList = albumList, bodyViewport = ld.bodyViewport, parents = [] }
-                                        , flags = ld.flags
-                                        , home = ld.home
-                                        , pendingUrls = Dict.empty
-                                        , rootDivViewport = Nothing
-                                        , navState = NavInactive
-                                        , debouncer = debouncer
-                                        }
+            YesAlbum albumOrList ->
+                case model of
+                    Loading ld ->
+                        case albumOrList of
+                            List albumList ->
+                                let
+                                    newModel =
+                                        LoadedList
+                                            { key = ld.key
+                                            , listPage = AlbumListPage { albumList = albumList, bodyViewport = ld.bodyViewport, parents = [] }
+                                            , flags = ld.flags
+                                            , home = ld.home
+                                            , pendingUrls = Dict.empty
+                                            , rootDivViewport = Nothing
+                                            , navState = NavInactive
+                                            , debouncer = debouncer
+                                            }
 
-                                pathsThenScroll =
-                                    toCmd <| sequence (pathsToCmd newModel ld.paths) <| fromMaybe <| scrollToCmd newModel ld.scroll
-                            in
-                            ( newModel
-                            , pathsThenScroll
-                            )
-
-                        Leaf album ->
-                            let
-                                albumPage =
-                                    Thumbs
-                                        { album = album
-                                        , vpInfo = { bodyViewport = ld.bodyViewport, rootDivViewport = Nothing }
-                                        , justLoadedImages = Set.empty
-                                        , readyToDisplayImages = Set.empty
-                                        }
-
-                                urls =
-                                    AlbumPage.urlsToGet albumPage
-
-                                newModel =
-                                    LoadedAlbum
-                                        { key = ld.key
-                                        , albumPage = albumPage
-                                        , parents = []
-                                        , flags = ld.flags
-                                        , home = ld.home
-                                        , pendingUrls = dictWithValues urls UrlRequested
-                                        , rootDivViewport = Nothing
-                                        , navState = NavInactive
-                                        , debouncer = debouncer
-                                        }
-
-                                pathsThenScroll =
-                                    toCmd <| sequence (pathsToCmd newModel ld.paths) <| fromMaybe <| scrollToCmd newModel ld.scroll
-                            in
-                            ( newModel
-                            , Cmd.batch
-                                [ getUrls Dict.empty urls
+                                    pathsThenScroll =
+                                        toCmd <| sequence (pathsToCmd newModel ld.paths) <| fromMaybe <| scrollToCmd newModel ld.scroll
+                                in
+                                ( newModel
                                 , pathsThenScroll
-                                ]
-                            )
+                                )
 
-                _ ->
-                    ( model, Cmd.none )
+                            Leaf album ->
+                                let
+                                    albumPage =
+                                        Thumbs
+                                            { album = album
+                                            , vpInfo = { bodyViewport = ld.bodyViewport, rootDivViewport = Nothing }
+                                            , justLoadedImages = Set.empty
+                                            , readyToDisplayImages = Set.empty
+                                            }
 
-        NoAlbum err ->
-            ( LoadError { key = keyOf model, flags = flagsOf model, error = err }
-            , Cmd.none
-            )
+                                    urls =
+                                        AlbumPage.urlsToGet albumPage
 
-        PageMsg pageMsg ->
-            case model of
-                LoadedAlbum la ->
-                    let
-                        ( newPage, newPageCmd ) =
-                            AlbumPage.update pageMsg la.albumPage <| Maybe.map scrollPosOf la.rootDivViewport
+                                    newModel =
+                                        LoadedAlbum
+                                            { key = ld.key
+                                            , albumPage = albumPage
+                                            , parents = []
+                                            , flags = ld.flags
+                                            , home = ld.home
+                                            , pendingUrls = dictWithValues urls UrlRequested
+                                            , rootDivViewport = Nothing
+                                            , navState = NavInactive
+                                            , debouncer = debouncer
+                                            }
 
-                        newPendingUrls =
-                            if AlbumPage.resetUrls pageMsg then
-                                Dict.empty
+                                    pathsThenScroll =
+                                        toCmd <| sequence (pathsToCmd newModel ld.paths) <| fromMaybe <| scrollToCmd newModel ld.scroll
+                                in
+                                ( newModel
+                                , Cmd.batch
+                                    [ getUrls Dict.empty urls
+                                    , pathsThenScroll
+                                    ]
+                                )
 
-                            else
-                                la.pendingUrls
+                    _ ->
+                        ( model, Cmd.none )
 
-                        urls =
-                            AlbumPage.urlsToGet newPage
-                    in
-                    ( LoadedAlbum { la | albumPage = newPage, pendingUrls = Dict.union newPendingUrls <| dictWithValues urls UrlRequested }
-                    , Cmd.batch
-                        [ getUrls newPendingUrls urls
-                        , Cmd.map PageMsg newPageCmd
-                        ]
-                    )
+            NoAlbum err ->
+                ( LoadError { key = keyOf model, flags = flagsOf model, error = err }
+                , Cmd.none
+                )
 
-                _ ->
-                    ( model, Cmd.none )
+            PageMsg pageMsg ->
+                case model of
+                    LoadedAlbum la ->
+                        let
+                            ( newPage, newPageCmd ) =
+                                AlbumPage.update pageMsg la.albumPage <| Maybe.map scrollPosOf la.rootDivViewport
 
-        ImageLoaded url ->
-            updateImageResult model url JustCompleted
+                            newPendingUrls =
+                                if AlbumPage.resetUrls pageMsg then
+                                    Dict.empty
 
-        ImageReadyToDisplay url ->
-            updateImageResult model url ReadyToDisplay
+                                else
+                                    la.pendingUrls
 
-        ImageFailed url err ->
-            updateImageResult model url <| Failed err
+                            urls =
+                                AlbumPage.urlsToGet newPage
+                        in
+                        ( LoadedAlbum { la | albumPage = newPage, pendingUrls = Dict.union newPendingUrls <| dictWithValues urls UrlRequested }
+                        , Cmd.batch
+                            [ getUrls newPendingUrls urls
+                            , Cmd.map PageMsg newPageCmd
+                            ]
+                        )
 
-        ViewList albumListPage maybeScroll ->
-            let
-                newModel =
-                    LoadedList
-                        { key = keyOf model
-                        , listPage = albumListPage
-                        , flags = flagsOf model
-                        , home = homeOf model
-                        , pendingUrls = Dict.empty
-                        , rootDivViewport = Nothing
-                        , navState = NavInactive
-                        , debouncer = debouncerOf model
+                    _ ->
+                        ( model, Cmd.none )
+
+            ImageLoaded url ->
+                updateImageResult model url JustCompleted
+
+            ImageReadyToDisplay url ->
+                updateImageResult model url ReadyToDisplay
+
+            ImageFailed url err ->
+                updateImageResult model url <| Failed err
+
+            ViewList albumListPage maybeScroll ->
+                let
+                    newModel =
+                        LoadedList
+                            { key = keyOf model
+                            , listPage = albumListPage
+                            , flags = flagsOf model
+                            , home = homeOf model
+                            , pendingUrls = Dict.empty
+                            , rootDivViewport = Nothing
+                            , navState = NavInactive
+                            , debouncer = debouncerOf model
+                            }
+
+                    scrollCmd =
+                        case maybeScroll of
+                            Just pos ->
+                                Task.attempt (\_ -> NoBootstrap) <| setViewportOf rootDivId 0 pos
+
+                            Nothing ->
+                                scrollToTop
+
+                    title =
+                        case albumListPage of
+                            AlbumListPage alp ->
+                                alp.albumList.listTitle
+                in
+                ( newModel
+                , scrollCmd
+                )
+
+            ViewAlbum albumPage parents ->
+                let
+                    urls =
+                        AlbumPage.urlsToGet albumPage
+
+                    newModel =
+                        LoadedAlbum
+                            { key = keyOf model
+                            , albumPage = albumPage
+                            , parents = parents
+                            , flags = flagsOf model
+                            , home = homeOf model
+                            , pendingUrls = dictWithValues urls UrlRequested
+                            , rootDivViewport = Nothing
+                            , navState = NavInactive
+                            , debouncer = debouncerOf model
+                            }
+                in
+                ( newModel
+                , Cmd.batch
+                    [ scrollToTop
+                    , getUrls Dict.empty urls
+                    ]
+                )
+
+            ScrolledTo viewport ->
+                ( withScrollPos (log "ScrolledTo: " viewport) model, Cmd.none )
+
+            DebouncerMsg subMsg ->
+                log "debouncer update produces new (model,msg)" <|
+                    Debouncer.Messages.update update
+                        { mapMsg = DebouncerMsg
+                        , getDebouncer = debouncerOf
+                        , setDebouncer =
+                            \newDebouncer aModel ->
+                                case aModel of
+                                    LoadedList ll ->
+                                        LoadedList { ll | debouncer = newDebouncer }
+
+                                    LoadedAlbum la ->
+                                        LoadedAlbum { la | debouncer = newDebouncer }
+
+                                    _ ->
+                                        log "setDebouncer on model type that does not contain one" aModel
                         }
+                        (log "debouncer message wrapping" subMsg)
+                        model
 
-                scrollCmd =
-                    case maybeScroll of
-                        Just pos ->
-                            Task.attempt (\_ -> NoBootstrap) <| setViewportOf rootDivId 0 pos
+            ScheduleScroll scroll ->
+                ( model
+                , Maybe.withDefault Cmd.none <|
+                    Maybe.map
+                        (\s ->
+                            Task.attempt
+                                (\_ -> NoBootstrap)
+                            <|
+                                setViewportOf rootDivId 0 <|
+                                    log "startup scroll to" s
+                        )
+                        scroll
+                )
 
-                        Nothing ->
-                            scrollToTop
+            ScrollSucceeded ->
+                ( model, Cmd.none )
 
-                title =
-                    case albumListPage of
-                        AlbumListPage alp ->
-                            alp.albumList.listTitle
-            in
-            ( newModel
-            , scrollCmd
-            )
+            ScrollFailed _ ->
+                ( model, Cmd.none )
 
-        ViewAlbum albumPage parents ->
-            let
-                urls =
-                    AlbumPage.urlsToGet albumPage
+            Scroll s ->
+                ( withScroll model s, toCmd <| Maybe.withDefault NoBootstrap <| scrollToCmd model <| Just s )
 
-                newModel =
-                    LoadedAlbum
-                        { key = keyOf model
-                        , albumPage = albumPage
-                        , parents = parents
-                        , flags = flagsOf model
-                        , home = homeOf model
-                        , pendingUrls = dictWithValues urls UrlRequested
-                        , rootDivViewport = Nothing
-                        , navState = NavInactive
-                        , debouncer = debouncerOf model
-                        }
-            in
-            ( newModel
-            , Cmd.batch
-                [ scrollToTop
-                , getUrls Dict.empty urls
-                ]
-            )
+            Nav paths ->
+                ( withPaths model paths, toCmd <| Maybe.withDefault NoBootstrap <| pathsToCmd model <| Just paths )
 
-        ScrolledTo viewport ->
-            ( withScrollPos (log "ScrolledTo: " viewport) model, Cmd.none )
+            Sequence next rest ->
+                let
+                    ( nextModel, nextCmd ) =
+                        update next model
+                in
+                case rest of
+                    [] ->
+                        ( nextModel, log ("sequence msg " ++ debugString next ++ " (last) produces cmd") nextCmd )
 
-        DebouncerMsg subMsg ->
-            Debouncer.Messages.update update
-                { mapMsg = DebouncerMsg
-                , getDebouncer = debouncerOf
-                , setDebouncer =
-                    \newDebouncer aModel ->
-                        case aModel of
-                            LoadedList ll ->
-                                LoadedList { ll | debouncer = newDebouncer }
+                    r1 :: rs ->
+                        let
+                            ( r1Model, r1Cmds ) =
+                                update r1 nextModel
 
-                            LoadedAlbum la ->
-                                LoadedAlbum { la | debouncer = newDebouncer }
+                            ( rModel, rCmds ) =
+                                case rs of
+                                    [] ->
+                                        ( r1Model, r1Cmds )
 
-                            _ ->
-                                log "setDebouncer on model type that does not contain one" aModel
-                }
-                (log "debouncer message wrapping" subMsg)
-                model
+                                    rs1 :: rss ->
+                                        let
+                                            ( rsModel, rsCmds ) =
+                                                update (Sequence rs1 rss) r1Model
+                                        in
+                                        ( rsModel, toCmd <| SequenceCmd r1Cmds [ rsCmds ] )
+                        in
+                        ( rModel, toCmd <| SequenceCmd (log ("sequence msg " ++ debugString next ++ " (cont'd) produces cmd") nextCmd) [ rCmds ] )
 
-        ScheduleScroll scroll ->
-            ( model
-            , Maybe.withDefault Cmd.none <|
-                Maybe.map
-                    (\s ->
-                        Task.attempt
-                            (\_ -> NoBootstrap)
-                        <|
-                            setViewportOf rootDivId 0 <|
-                                log "startup scroll to" s
-                    )
-                    scroll
-            )
+            SequenceCmd next rest ->
+                let
+                    cmds =
+                        case rest of
+                            [] ->
+                                log "sequenced cmd: last" next
 
-        ScrollSucceeded ->
-            ( model, Cmd.none )
+                            r1 :: rs ->
+                                Cmd.batch [ log "sequenced cmd: next" next, toCmd <| SequenceCmd r1 rs ]
+                in
+                ( model, cmds )
 
-        ScrollFailed _ ->
-            ( model, Cmd.none )
+            LinkClicked urlRequest ->
+                case urlRequest of
+                    Internal url ->
+                        --home link might count as internal if it's on the same domain
+                        let
+                            hUrl =
+                                Maybe.andThen Url.fromString <| homeOf model
+                        in
+                        case Maybe.withDefault False <| Maybe.map (\h -> h == url) <| hUrl of
+                            True ->
+                                ( model, load <| toString url )
 
-        Scroll s ->
-            ( withScroll model s, toCmd <| Maybe.withDefault NoBootstrap <| scrollToCmd model <| Just s )
+                            False ->
+                                ( log ("ignoring unexpected internal url request not for home url (" ++ (Maybe.withDefault "home not set" <| homeOf model) ++ ") " ++ toString url) model, Cmd.none )
 
-        Nav paths ->
-            ( withPaths model paths, toCmd <| Maybe.withDefault NoBootstrap <| pathsToCmd model <| Just paths )
+                    External url ->
+                        --home link should be only external link in our app
+                        ( model, load url )
 
-        Sequence next rest ->
-            let
-                ( nextModel, nextCmd ) =
-                    update next model
-            in
-            case rest of
-                [] ->
-                    ( nextModel, log ("sequence msg " ++ debugString next ++ " (last) produces cmd") nextCmd )
-
-                r1 :: rs ->
-                    let
-                        ( r1Model, r1Cmds ) =
-                            update r1 nextModel
-
-                        ( rModel, rCmds ) =
-                            case rs of
-                                [] ->
-                                    ( r1Model, r1Cmds )
-
-                                rs1 :: rss ->
-                                    let
-                                        ( rsModel, rsCmds ) =
-                                            update (Sequence rs1 rss) r1Model
-                                    in
-                                    ( rsModel, toCmd <| SequenceCmd r1Cmds [ rsCmds ] )
-                    in
-                    ( rModel, toCmd <| SequenceCmd (log ("sequence msg " ++ debugString next ++ " (cont'd) produces cmd") nextCmd) [ rCmds ] )
-
-        SequenceCmd next rest ->
-            let
-                cmds =
-                    case rest of
-                        [] ->
-                            log "sequenced cmd: last" next
-
-                        r1 :: rs ->
-                            Cmd.batch [ log "sequenced cmd: next" next, toCmd <| SequenceCmd r1 rs ]
-            in
-            ( model, cmds )
-
-        LinkClicked urlRequest ->
-            case urlRequest of
-                Internal url ->
-                    --home link might count as internal if it's on the same domain
-                    let
-                        hUrl =
-                            Maybe.andThen Url.fromString <| homeOf model
-                    in
-                    case Maybe.withDefault False <| Maybe.map (\h -> h == url) <| hUrl of
-                        True ->
-                            ( model, load <| toString url )
-
-                        False ->
-                            ( log ("ignoring unexpected internal url request not for home url (" ++ (Maybe.withDefault "home not set" <| homeOf model) ++ ") " ++ toString url) model, Cmd.none )
-
-                External url ->
-                    --home link should be only external link in our app
-                    ( model, load url )
-
-        NoBootstrap ->
-            ( model, Cmd.none )
+            NoBootstrap ->
+                ( model, Cmd.none )
 
 
 {-| allow at most 100 scroll updates in 30 seconds
