@@ -9,6 +9,7 @@ import Browser.Dom exposing (..)
 import Browser.Events exposing (..)
 import Browser.Navigation exposing (..)
 import Css exposing (..)
+import Debounce exposing (..)
 import DebugSupport exposing (debugString, log)
 import Delay exposing (..)
 import Dict exposing (..)
@@ -63,6 +64,7 @@ type AlbumBootstrap
         , pendingUrls : Dict String UrlLoadState
         , rootDivViewport : Maybe Viewport
         , navState : PostLoadNavState
+        , debounce : Debounce Viewport
         }
     | LoadedAlbum
         { key : Key
@@ -73,6 +75,7 @@ type AlbumBootstrap
         , pendingUrls : Dict String UrlLoadState
         , rootDivViewport : Maybe Viewport
         , navState : PostLoadNavState
+        , debounce : Debounce Viewport
         }
 
 
@@ -104,6 +107,8 @@ type AlbumBootstrapMsg
     | ImageFailed String Http.Error
     | ScheduleScroll (Maybe Float)
     | ScrolledTo Viewport
+    | RawScrolledTo Viewport
+    | DebounceMsg Debounce.Msg
     | ScrollSucceeded
     | ScrollFailed String
     | Nav (List String)
@@ -240,6 +245,7 @@ update msg model =
                                         , pendingUrls = Dict.empty
                                         , rootDivViewport = Nothing
                                         , navState = NavInactive
+                                        , debounce = Debounce.init
                                         }
 
                                 pathsThenScroll =
@@ -272,6 +278,7 @@ update msg model =
                                         , pendingUrls = dictWithValues urls UrlRequested
                                         , rootDivViewport = Nothing
                                         , navState = NavInactive
+                                        , debounce = Debounce.init
                                         }
 
                                 pathsThenScroll =
@@ -339,6 +346,7 @@ update msg model =
                         , pendingUrls = Dict.empty
                         , rootDivViewport = Nothing
                         , navState = NavInactive
+                        , debounce = debounceOf model
                         }
 
                 scrollCmd =
@@ -373,6 +381,7 @@ update msg model =
                         , pendingUrls = dictWithValues urls UrlRequested
                         , rootDivViewport = Nothing
                         , navState = NavInactive
+                        , debounce = debounceOf model
                         }
             in
             ( newModel
@@ -381,6 +390,20 @@ update msg model =
                 , getUrls Dict.empty urls
                 ]
             )
+
+        RawScrolledTo viewport ->
+            let
+                ( debounce, cmd ) =
+                    Debounce.push debounceConfig viewport <| debounceOf model
+            in
+            ( withDebounce debounce model, cmd )
+
+        DebounceMsg dMsg ->
+            let
+                ( debounce, cmd ) =
+                    Debounce.update debounceConfig (Debounce.takeLast <| toCmd << ScrolledTo) dMsg <| debounceOf model
+            in
+            ( withDebounce debounce model, cmd )
 
         ScrolledTo viewport ->
             ( withScrollPos (log "ScrolledTo: " viewport) model, Cmd.none )
@@ -472,6 +495,45 @@ update msg model =
 
         NoBootstrap ->
             ( model, Cmd.none )
+
+
+debounceOf model =
+    case model of
+        LoadedList ll ->
+            ll.debounce
+
+        LoadedAlbum la ->
+            la.debounce
+
+        _ ->
+            Debounce.init
+
+
+withDebounce debounce model =
+    case model of
+        LoadedList ll ->
+            LoadedList { ll | debounce = debounce }
+
+        LoadedAlbum la ->
+            LoadedAlbum { la | debounce = debounce }
+
+        _ ->
+            model
+
+
+{-| Safari throws an exception if a webapp calls replaceState more than 100
+times in 30 seconds. This exception basically kills the Elm event loop and
+renders the entire app unresponsive. So, we have to use a debouncer library to
+throttle rate at which ScrolledTo messages are processed, because they can cause
+very frequent updates to the ?s=NNN query param in our url.
+
+100/30 sec works out to one event every 0.3s. Throttling to exactly that isn't
+enough, we have to give a bit of headroom.
+<https://bugs.webkit.org/show_bug.cgi?id=156115>
+
+-}
+debounceConfig =
+    { strategy = soon 400, transform = DebounceMsg }
 
 
 sequence : Maybe AlbumBootstrapMsg -> List AlbumBootstrapMsg -> AlbumBootstrapMsg
@@ -1257,7 +1319,7 @@ viewImpl albumBootstrap =
             withHomeLink la.home la.flags <|
                 AlbumPage.view
                     la.albumPage
-                    ScrolledTo
+                    RawScrolledTo
                     (viewList
                         albumBootstrap
                         (pageSize la.albumPage).bodyViewport
@@ -1287,7 +1349,7 @@ viewImpl albumBootstrap =
                                     ( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport )
                                         :: alp.parents
                             )
-                            ScrolledTo
+                            RawScrolledTo
                             ll.flags
 
 
