@@ -17,3 +17,4 @@ test-albums/
 *.dyn_*
 *.aux
 *.hp
+result
