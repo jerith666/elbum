@@ -19,8 +19,20 @@ import TouchEvents exposing (..)
 
 
 type AlbumPage
-    = Thumbs { album : Album, vpInfo : ViewportInfo, justLoadedImages : Set String, readyToDisplayImages : Set String }
-    | FullImage { prevImgs : List Image, album : Album, progModel : ProgressiveImageModel, vpInfo : ViewportInfo, scroll : Maybe Float, dragInfo : Maybe ( Touch, Touch ) }
+    = Thumbs
+        { album : Album
+        , vpInfo : ViewportInfo
+        , justLoadedImages : Set String
+        , readyToDisplayImages : Set String
+        }
+    | FullImage
+        { prevImgs : List Image
+        , album : Album
+        , progModel : ProgressiveImageModel
+        , vpInfo : ViewportInfo
+        , scroll : Maybe Float
+        , dragInfo : Maybe ( Touch, Touch )
+        }
 
 
 type alias ViewportInfo =
