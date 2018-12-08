@@ -71,8 +71,8 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
             ]
         , viewImg navMsgs.nextMsg touchMsgs wrapProgMsg fullImagePageModel
         ]
-            ++ navEltIf fullImagePageModel.prevImgs navMsgs.prevMsg "<" left
-            ++ navEltIf fullImagePageModel.album.imageRest navMsgs.nextMsg ">" right
+            ++ navEltIf fullImagePageModel.prevImgs navMsgs.prevMsg (\l -> "< " ++ l) left
+            ++ navEltIf fullImagePageModel.album.imageRest navMsgs.nextMsg (\l -> l ++ " >") right
             ++ [ div
                     [ styles <|
                         navBoxStyles
@@ -96,13 +96,13 @@ getAlbumTitle a =
     a.title
 
 
-navEltIf : List a -> msg -> String -> (Px -> Style) -> List (Html msg)
+navEltIf : List a -> msg -> (String -> String) -> (Px -> Style) -> List (Html msg)
 navEltIf lst navMsg navTxt navAlign =
     if List.isEmpty lst then
         []
 
     else
-        [ navElement navMsg navTxt navAlign ]
+        [ navElement navMsg (navTxt <| String.fromInt <| List.length lst) navAlign ]
 
 
 viewImg : msg -> TouchMsgs msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> Html msg
