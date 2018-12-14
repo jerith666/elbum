@@ -125,7 +125,14 @@ update msg model scroll =
         TouchDragStart pos ->
             case model of
                 FullImage fi ->
-                    ( FullImage { fi | dragInfo = Just ( pos, pos ) }, Cmd.none )
+                    case List.length pos.touches of
+                        1 ->
+                            ( FullImage { fi | dragInfo = Just ( pos, pos ) }, Cmd.none )
+
+                        _ ->
+                            --abandon dragging if more than one touch event overlaps
+                            --that's probably a pinch-zoom gesture
+                            ( FullImage { fi | dragInfo = Nothing }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
