@@ -51,6 +51,10 @@
     version = "4.0.0";
     sha256 = "1sph37fji07dl40rvpgbnij01zg4h7ywapxar433cdh0lay26xhb";
   };
+  "mpizenberg/elm-pointer-events" = {
+    version = "3.1.0";
+    sha256 = "0w4y6p39bsm38iimhdsws8c3rf7g7awl69dpcd3jmrg55ki0icq1";
+  };
   "rtfeldman/elm-css" = {
     version = "16.0.0";
     sha256 = "102msjzciiq1i1xksv420ls6nsmrn44c796bdb4761p7sdsp5kb0";

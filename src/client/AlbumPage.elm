@@ -5,6 +5,7 @@ import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Browser.Events exposing (..)
 import FullImagePage exposing (..)
+import Html.Events.Extra.Touch exposing (..)
 import Html.Styled exposing (..)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)
@@ -12,7 +13,6 @@ import ProgressiveImage exposing (..)
 import Set exposing (..)
 import Task exposing (..)
 import ThumbPage exposing (..)
-import TouchEvents exposing (..)
 import Utils.AlbumUtils exposing (..)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
@@ -32,7 +32,7 @@ type AlbumPage
         , progModel : ProgressiveImageModel
         , vpInfo : ViewportInfo
         , scroll : Maybe Float
-        , dragInfo : Maybe ( Touch, Touch )
+        , dragInfo : Maybe ( Event, Event )
         }
 
 
@@ -42,8 +42,8 @@ type alias ViewportInfo =
 
 type AlbumPageMsg
     = View (List Image) Image (List Image)
-    | TouchDragStart Touch
-    | TouchDragContinue Touch
+    | TouchDragStart Event
+    | TouchDragContinue Event
     | TouchDragAbandon
     | Prev
     | Next
@@ -309,36 +309,69 @@ minDragLen =
     75
 
 
-touchPrevNext : Maybe ( Touch, Touch ) -> Touch -> AlbumPageMsg
+touchPrevNext : Maybe ( Event, Event ) -> Event -> AlbumPageMsg
 touchPrevNext dragInfo touch =
     case dragInfo of
         Nothing ->
             NoUpdate
 
-        Just ( start, cur ) ->
-            if abs (start.clientX - touch.clientX) > minDragLen then
-                case getDirectionX start.clientX touch.clientX of
+        Just ( start, _ ) ->
+            let
+                ( startX, _ ) =
+                    touchCoordinates start
+
+                ( touchX, _ ) =
+                    touchCoordinates touch
+            in
+            if abs (startX - touchX) > minDragLen then
+                case getDirectionX startX touchX of
                     Left ->
                         Next
 
                     Right ->
                         Prev
 
-                    _ ->
-                        TouchDragAbandon
-
             else
                 TouchDragAbandon
 
 
-offsetFor : Maybe ( Touch, Touch ) -> ( Float, Float )
+type Direction
+    = Left
+    | Right
+
+
+getDirectionX : Float -> Float -> Direction
+getDirectionX start end =
+    case start > end of
+        True ->
+            Left
+
+        False ->
+            Right
+
+
+touchCoordinates : Event -> ( Float, Float )
+touchCoordinates touchEvent =
+    List.head touchEvent.changedTouches
+        |> Maybe.map .clientPos
+        |> Maybe.withDefault ( 0, 0 )
+
+
+offsetFor : Maybe ( Event, Event ) -> ( Float, Float )
 offsetFor dragInfo =
     case dragInfo of
         Nothing ->
             ( 0, 0 )
 
         Just ( start, current ) ->
-            ( current.clientX - start.clientX, current.clientY - start.clientY )
+            let
+                ( startX, startY ) =
+                    touchCoordinates start
+
+                ( curX, curY ) =
+                    touchCoordinates current
+            in
+            ( curX - startX, curY - startY )
 
 
 subscriptions : AlbumPage -> (AlbumPageMsg -> msg) -> msg -> Sub msg

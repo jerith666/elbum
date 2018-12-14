@@ -4,13 +4,13 @@ import Album exposing (..)
 import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
+import Html.Events.Extra.Touch exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import ProgressiveImage exposing (..)
 import ThumbPage exposing (..)
-import TouchEvents exposing (..)
 import Utils.ListUtils exposing (..)
 
 
@@ -32,9 +32,9 @@ type alias NavMsgs msg =
 
 
 type alias TouchMsgs msg =
-    { touchStartMsg : Touch -> msg
-    , touchContinueMsg : Touch -> msg
-    , touchPrevNextMsg : Touch -> msg
+    { touchStartMsg : Event -> msg
+    , touchContinueMsg : Event -> msg
+    , touchPrevNextMsg : Event -> msg
     }
 
 
@@ -137,9 +137,9 @@ viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
             -- , top <| px <| Tuple.second fullImagePageModel.offset
             , left <| px <| Tuple.first fullImagePageModel.offset
             ]
-        , Html.Styled.Attributes.fromUnstyled <| onTouchStart touchMsgs.touchStartMsg
-        , Html.Styled.Attributes.fromUnstyled <| onTouchMove touchMsgs.touchContinueMsg
-        , Html.Styled.Attributes.fromUnstyled <| onTouchEnd touchMsgs.touchPrevNextMsg
+        , Html.Styled.Attributes.fromUnstyled <| onStart touchMsgs.touchStartMsg
+        , Html.Styled.Attributes.fromUnstyled <| onMove touchMsgs.touchContinueMsg
+        , Html.Styled.Attributes.fromUnstyled <| onEnd touchMsgs.touchPrevNextMsg
         , onClick clickMsg
         ]
         [ Html.Styled.map wrapProgMsg <| ProgressiveImage.view <| withWidthHeight w h fullImagePageModel.progImgModel ]
