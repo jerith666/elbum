@@ -4,6 +4,7 @@ import Album exposing (..)
 import AlbumListPage exposing (..)
 import AlbumPage exposing (..)
 import AlbumStyles exposing (..)
+import AlbumUtils exposing (..)
 import Browser exposing (..)
 import Browser.Dom exposing (..)
 import Browser.Events exposing (..)
@@ -17,6 +18,7 @@ import FullImagePage exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Http exposing (..)
+import HttpUtils exposing (..)
 import KeyboardUtils exposing (onEscape)
 import ListUtils exposing (..)
 import LocationUtils exposing (..)
@@ -26,6 +28,7 @@ import Set exposing (..)
 import Task exposing (..)
 import Time exposing (..)
 import Url exposing (..)
+import ViewportUtils exposing (..)
 
 
 type AlbumBootstrap
@@ -117,11 +120,6 @@ type AlbumBootstrapMsg
     | SequenceCmd (Cmd AlbumBootstrapMsg) (List (Cmd AlbumBootstrapMsg))
     | LinkClicked UrlRequest
     | NoBootstrap
-
-
-albumJson : String
-albumJson =
-    "album.json"
 
 
 main : RouteUrlProgram AlbumBootstrapFlags AlbumBootstrap AlbumBootstrapMsg
@@ -355,7 +353,7 @@ update msg model =
                             Task.attempt (\_ -> NoBootstrap) <| setViewportOf rootDivId 0 pos
 
                         Nothing ->
-                            scrollToTop
+                            scrollToTop ScrollSucceeded ScrollFailed
 
                 title =
                     case albumListPage of
@@ -386,7 +384,7 @@ update msg model =
             in
             ( newModel
             , Cmd.batch
-                [ scrollToTop
+                [ scrollToTop ScrollSucceeded ScrollFailed
                 , getUrls Dict.empty urls
                 ]
             )
@@ -895,40 +893,6 @@ navForAlbum vpInfo album ps newParents =
                                 Maybe.map (PageMsg << FullMsg) progCmd
 
 
-findImg : List Image -> Album -> String -> Maybe ( List Image, Album )
-findImg prevs album img =
-    if album.imageFirst.altText == img then
-        Just ( prevs, album )
-
-    else
-        case album.imageRest of
-            [] ->
-                Nothing
-
-            imageNext :: imageRest ->
-                findImg
-                    (prevs ++ [ album.imageFirst ])
-                    { album
-                        | imageFirst = imageNext
-                        , imageRest = imageRest
-                    }
-                    img
-
-
-findChild : AlbumList -> String -> Maybe AlbumOrList
-findChild containingList name =
-    let
-        f albumOrList =
-            case albumOrList of
-                List albumList ->
-                    albumList.listTitle == name
-
-                Leaf album ->
-                    album.title == name
-    in
-    List.head <| List.filter f <| containingList.childFirst :: containingList.childRest
-
-
 locFor : AlbumBootstrap -> AlbumBootstrap -> Maybe UrlChange
 locFor oldModel newModel =
     let
@@ -1071,21 +1035,6 @@ hashFromAlbumPath model titles parents =
         )
 
 
-scrollToTop : Cmd AlbumBootstrapMsg
-scrollToTop =
-    Task.attempt
-        (\result ->
-            case result of
-                Ok () ->
-                    ScrollSucceeded
-
-                Err e ->
-                    ScrollFailed rootDivId
-        )
-    <|
-        setViewportOf rootDivId 0 0
-
-
 updateImageResult : AlbumBootstrap -> String -> UrlLoadState -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 updateImageResult model url result =
     case model of
@@ -1144,15 +1093,12 @@ urlNextState url result =
 
 getUrls : Dict String UrlLoadState -> Set String -> Cmd AlbumBootstrapMsg
 getUrls existingUrls newUrls =
-    Cmd.batch <| List.map getUrl <| Set.toList <| Set.diff newUrls <| Set.fromList <| keys existingUrls
-
-
-getUrl : String -> Cmd AlbumBootstrapMsg
-getUrl url =
-    Http.get
-        { url = encodePath url
-        , expect = expectWhatever <| decodeUrlResult url
-        }
+    Cmd.batch <|
+        List.map (\url -> getUrl (decodeUrlResult url) url) <|
+            Set.toList <|
+                Set.diff newUrls <|
+                    Set.fromList <|
+                        keys existingUrls
 
 
 decodeUrlResult : String -> Result Http.Error () -> AlbumBootstrapMsg
@@ -1218,38 +1164,6 @@ subscriptions model =
 newSize : Viewport -> Int -> Int -> AlbumBootstrapMsg
 newSize v x y =
     Resize <| viewportWithNewSize v x y
-
-
-
---TODO won't other things about the viewport change if the resize causes the page to reflow???
---TODO why int vs. float confusion?
-
-
-viewportWithNewSize : Viewport -> Int -> Int -> Viewport
-viewportWithNewSize oldViewport newWidth newHeight =
-    let
-        ov =
-            oldViewport.viewport
-
-        newViewport =
-            { ov | width = toFloat newWidth, height = toFloat newHeight }
-    in
-    { oldViewport | viewport = newViewport }
-
-
-pageSize : AlbumPage -> ViewportInfo
-pageSize albumPage =
-    case albumPage of
-        Thumbs th ->
-            th.vpInfo
-
-        FullImage fi ->
-            fi.vpInfo
-
-
-scrollPosOf : Viewport -> Float
-scrollPosOf viewport =
-    viewport.viewport.y
 
 
 view : AlbumBootstrap -> Document AlbumBootstrapMsg
@@ -1351,30 +1265,6 @@ viewImpl albumBootstrap =
                             )
                             RawScrolledTo
                             ll.flags
-
-
-viewProgress : String -> Maybe Progress -> String
-viewProgress prefix mProgress =
-    let
-        pct num denom =
-            (String.fromInt <| Basics.round <| 100 * toFloat num / toFloat denom) ++ "%"
-    in
-    case mProgress of
-        Nothing ->
-            prefix
-
-        Just progress ->
-            case progress of
-                Sending s ->
-                    prefix ++ ": sent " ++ pct s.sent s.size
-
-                Receiving r ->
-                    case r.size of
-                        Nothing ->
-                            prefix ++ ": " ++ String.fromInt r.received ++ " bytes received"
-
-                        Just size ->
-                            prefix ++ ": received " ++ pct r.received size
 
 
 viewList : AlbumBootstrap -> Viewport -> List ( AlbumList, Maybe Float ) -> AlbumList -> AlbumBootstrapMsg

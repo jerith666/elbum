@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, eqIgnoringVpInfo, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, eqIgnoringVpInfo, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -369,6 +369,16 @@ subscriptions albumPage wrapper showParent =
                         <|
                             field "key" string
                 ]
+
+
+pageSize : AlbumPage -> ViewportInfo
+pageSize albumPage =
+    case albumPage of
+        Thumbs th ->
+            th.vpInfo
+
+        FullImage fi ->
+            fi.vpInfo
 
 
 eqIgnoringVpInfo : AlbumPage -> AlbumPage -> Bool
