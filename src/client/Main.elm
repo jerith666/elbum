@@ -1063,12 +1063,7 @@ getUrls existingUrls newUrls =
 
 decodeUrlResult : String -> Result Http.Error () -> AlbumBootstrapMsg
 decodeUrlResult origUrl result =
-    case result of
-        Ok _ ->
-            ImageLoaded origUrl
-
-        Err e ->
-            ImageFailed origUrl e
+    either (ImageFailed origUrl) (\_ -> ImageLoaded origUrl) result
 
 
 subscriptions : AlbumBootstrap -> Sub AlbumBootstrapMsg

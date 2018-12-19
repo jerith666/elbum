@@ -2,6 +2,7 @@ module ViewportUtils exposing (scrollPosOf, scrollToTop, viewportWithNewSize)
 
 import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
+import ResultUtils exposing (..)
 import Task exposing (..)
 
 
@@ -29,14 +30,5 @@ scrollPosOf viewport =
 
 scrollToTop : msg -> (String -> msg) -> Cmd msg
 scrollToTop okMsg errMsg =
-    Task.attempt
-        (\result ->
-            case result of
-                Ok () ->
-                    okMsg
-
-                Err e ->
-                    errMsg rootDivId
-        )
-    <|
+    Task.attempt (either (\_ -> okMsg) (\_ -> errMsg rootDivId)) <|
         setViewportOf rootDivId 0 0
