@@ -1,6 +1,7 @@
-module AlbumUtils exposing (albumJson, findChild, findImg)
+module AlbumUtils exposing (albumJson, findChild, findImg, hashFromAlbumPath)
 
 import Album exposing (..)
+import Url exposing (..)
 
 
 albumJson : String
@@ -40,3 +41,20 @@ findChild containingList name =
                     album.title == name
     in
     List.head <| List.filter f <| containingList.childFirst :: containingList.childRest
+
+
+hashFromAlbumPath : List String -> List AlbumList -> String
+hashFromAlbumPath titles parents =
+    String.concat
+        (List.intersperse "/"
+            (List.map
+                percentEncode
+                (List.append
+                    (List.map
+                        (\p -> p.listTitle)
+                        (List.drop 1 (List.reverse parents))
+                    )
+                    titles
+                )
+            )
+        )

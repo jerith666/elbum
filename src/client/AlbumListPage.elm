@@ -1,7 +1,8 @@
-module AlbumListPage exposing (AlbumListPage(..), view)
+module AlbumListPage exposing (AlbumListPage(..), hashForList, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
+import AlbumUtils exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
@@ -89,3 +90,12 @@ renderListImage selectedMsg img =
         []
     <|
         Just selectedMsg
+
+
+hashForList : AlbumListPage -> String
+hashForList (AlbumListPage alp) =
+    if List.isEmpty alp.parents then
+        hashFromAlbumPath [ "" ] []
+
+    else
+        hashFromAlbumPath [ alp.albumList.listTitle ] <| List.map Tuple.first alp.parents

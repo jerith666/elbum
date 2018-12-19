@@ -1,7 +1,8 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, eqIgnoringVpInfo, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, eqIgnoringVpInfo, hashForAlbum, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
+import AlbumUtils exposing (..)
 import Browser.Dom exposing (..)
 import Browser.Events exposing (..)
 import FullImagePage exposing (..)
@@ -379,6 +380,20 @@ pageSize albumPage =
 
         FullImage fi ->
             fi.vpInfo
+
+
+hashForAlbum : AlbumPage -> List AlbumList -> String
+hashForAlbum albumPage parents =
+    let
+        titles =
+            case albumPage of
+                Thumbs th ->
+                    [ th.album.title ]
+
+                FullImage fi ->
+                    [ fi.album.title, fi.album.imageFirst.altText ]
+    in
+    hashFromAlbumPath titles parents
 
 
 eqIgnoringVpInfo : AlbumPage -> AlbumPage -> Bool

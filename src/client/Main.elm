@@ -954,7 +954,7 @@ locFor oldModel newModel =
                         newQorF { entry = entry, key = la.key }
                             model
                         <|
-                            hashForAlbum model la.albumPage <|
+                            hashForAlbum la.albumPage <|
                                 List.map Tuple.first la.parents
 
             LoadedList ll ->
@@ -963,7 +963,7 @@ locFor oldModel newModel =
                         newQorF { entry = entry, key = ll.key }
                             model
                         <|
-                            hashForList model ll.listPage
+                            hashForList ll.listPage
 
             _ ->
                 Nothing
@@ -993,46 +993,6 @@ queryFor model =
 
         LoadedList ll ->
             queryForPos <| Maybe.map scrollPosOf ll.rootDivViewport
-
-
-hashForList : AlbumBootstrap -> AlbumListPage -> String
-hashForList model (AlbumListPage alp) =
-    if List.isEmpty alp.parents then
-        hashFromAlbumPath model [ "" ] []
-
-    else
-        hashFromAlbumPath model [ alp.albumList.listTitle ] <| List.map Tuple.first alp.parents
-
-
-hashForAlbum : AlbumBootstrap -> AlbumPage -> List AlbumList -> String
-hashForAlbum model albumPage parents =
-    let
-        titles =
-            case albumPage of
-                Thumbs th ->
-                    [ th.album.title ]
-
-                FullImage fi ->
-                    [ fi.album.title, fi.album.imageFirst.altText ]
-    in
-    hashFromAlbumPath model titles parents
-
-
-hashFromAlbumPath : AlbumBootstrap -> List String -> List AlbumList -> String
-hashFromAlbumPath model titles parents =
-    String.concat
-        (List.intersperse "/"
-            (List.map
-                percentEncode
-                (List.append
-                    (List.map
-                        (\p -> p.listTitle)
-                        (List.drop 1 (List.reverse parents))
-                    )
-                    titles
-                )
-            )
-        )
 
 
 updateImageResult : AlbumBootstrap -> String -> UrlLoadState -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
