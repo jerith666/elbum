@@ -4,6 +4,7 @@ import Album exposing (..)
 import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
+import Html exposing (Attribute)
 import Html.Events.Extra.Touch exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
@@ -137,12 +138,17 @@ viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
             -- , top <| px <| Tuple.second fullImagePageModel.offset
             , left <| px <| Tuple.first fullImagePageModel.offset
             ]
-        , Html.Styled.Attributes.fromUnstyled <| onStart touchMsgs.touchStartMsg
-        , Html.Styled.Attributes.fromUnstyled <| onMove touchMsgs.touchContinueMsg
-        , Html.Styled.Attributes.fromUnstyled <| onEnd touchMsgs.touchPrevNextMsg
+        , Html.Styled.Attributes.fromUnstyled <| onTouch "start" touchMsgs.touchStartMsg
+        , Html.Styled.Attributes.fromUnstyled <| onTouch "move" touchMsgs.touchContinueMsg
+        , Html.Styled.Attributes.fromUnstyled <| onTouch "end" touchMsgs.touchPrevNextMsg
         , onClick clickMsg
         ]
         [ Html.Styled.map wrapProgMsg <| ProgressiveImage.view <| withWidthHeight w h fullImagePageModel.progImgModel ]
+
+
+onTouch : String -> (Event -> msg) -> Html.Attribute msg
+onTouch touchType =
+    onWithOptions ("touch" ++ touchType) { stopPropagation = False, preventDefault = False }
 
 
 fitImage : ImgSrc -> Int -> Int -> ( Int, Int )
