@@ -1,4 +1,4 @@
-module KeyboardUtils exposing (onEscape)
+module Utils.KeyboardUtils exposing (onEscape)
 
 import Browser.Events exposing (onKeyDown)
 import Json.Decode exposing (..)

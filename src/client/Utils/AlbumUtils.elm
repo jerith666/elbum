@@ -1,4 +1,4 @@
-module AlbumUtils exposing (albumJson, findChild, findImg, hashFromAlbumPath)
+module Utils.AlbumUtils exposing (albumJson, findChild, findImg, hashFromAlbumPath)
 
 import Album exposing (..)
 import Url exposing (..)

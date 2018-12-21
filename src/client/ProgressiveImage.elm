@@ -11,8 +11,8 @@ import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)
-import ResultUtils exposing (..)
 import Time exposing (..)
+import Utils.ResultUtils exposing (..)
 
 
 type alias ProgressiveImageData =

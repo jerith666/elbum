@@ -1,7 +1,7 @@
-module HttpUtils exposing (getUrl, viewProgress)
+module Utils.HttpUtils exposing (getUrl, viewProgress)
 
 import Http exposing (..)
-import ListUtils exposing (..)
+import Utils.ListUtils exposing (..)
 
 
 viewProgress : String -> Maybe Progress -> String

@@ -7,7 +7,7 @@ let
   albumTypes = import ./album-types-gen.nix { inherit nixpkgs; };
 
   mkDerivation =
-    { srcs ? ./elm-srcs.nix
+    { srcs ? ./nix/elm-srcs.nix
     , src
     , name
     , srcdir ? "./src"
@@ -19,8 +19,8 @@ let
       buildInputs = [ elmPackages.elm ];
 
       configurePhase = (elmPackages.fetchElmDeps {
-        elmPackages = import ./elm-srcs.nix;
-        versionsDat = ./versions.dat;
+        elmPackages = import ./nix/elm-srcs.nix;
+        versionsDat = ./nix/versions.dat;
       });
 
       buildPhase = let
@@ -55,7 +55,8 @@ in mkDerivation {
         pkgs.lib.hasSuffix "vendor" path ||
         pkgs.lib.hasSuffix "elm-route-url" path ||
         pkgs.lib.hasSuffix "touch-events" path ||
-        pkgs.lib.hasSuffix "src" path
+        pkgs.lib.hasSuffix "src" path ||
+        pkgs.lib.hasSuffix "Utils" path
       ));
   };
   srcdir = ".";

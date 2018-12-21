@@ -2,13 +2,13 @@ module AlbumListPage exposing (AlbumListPage(..), hashForList, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
-import AlbumUtils exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import ThumbPage exposing (albumTitle, viewThumb)
+import Utils.AlbumUtils exposing (..)
 
 
 type AlbumListPage

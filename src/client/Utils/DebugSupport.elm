@@ -1,4 +1,4 @@
-module DebugSupport exposing (debugString, log)
+module Utils.DebugSupport exposing (debugString, log)
 
 
 log : String -> a -> a

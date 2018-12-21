@@ -6,7 +6,7 @@ import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
-import ListUtils exposing (..)
+import Utils.ListUtils exposing (..)
 
 
 renderPresized : Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Style -> List (Html.Styled.Attribute msg) -> Maybe msg -> Html msg

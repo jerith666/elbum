@@ -4,12 +4,12 @@ import Album exposing (..)
 import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
-import DebugSupport exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
-import ListUtils exposing (..)
 import Set exposing (..)
+import Utils.DebugSupport exposing (..)
+import Utils.ListUtils exposing (..)
 
 
 type alias ThumbPageModel =

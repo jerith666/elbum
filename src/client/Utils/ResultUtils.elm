@@ -1,4 +1,4 @@
-module ResultUtils exposing (either, toCmd)
+module Utils.ResultUtils exposing (either, toCmd)
 
 import Result exposing (..)
 import Task exposing (..)

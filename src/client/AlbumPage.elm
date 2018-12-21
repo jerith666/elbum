@@ -2,21 +2,21 @@ module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, eqIgno
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
-import AlbumUtils exposing (..)
 import Browser.Dom exposing (..)
 import Browser.Events exposing (..)
 import FullImagePage exposing (..)
 import Html.Styled exposing (..)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)
-import KeyboardUtils exposing (onEscape)
-import ListUtils exposing (..)
 import ProgressiveImage exposing (..)
-import ResultUtils exposing (..)
 import Set exposing (..)
 import Task exposing (..)
 import ThumbPage exposing (..)
 import TouchEvents exposing (..)
+import Utils.AlbumUtils exposing (..)
+import Utils.KeyboardUtils exposing (onEscape)
+import Utils.ListUtils exposing (..)
+import Utils.ResultUtils exposing (..)
 
 
 type AlbumPage

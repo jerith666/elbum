@@ -8,10 +8,10 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
-import ListUtils exposing (..)
 import ProgressiveImage exposing (..)
 import ThumbPage exposing (..)
 import TouchEvents exposing (..)
+import Utils.ListUtils exposing (..)
 
 
 type alias FullImagePageModel =

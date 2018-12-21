@@ -1,4 +1,4 @@
-module LocationUtils exposing (locToString, parseHash, parseQuery)
+module Utils.LocationUtils exposing (locToString, parseHash, parseQuery)
 
 import Browser.Navigation exposing (..)
 import Http exposing (..)
