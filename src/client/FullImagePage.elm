@@ -45,6 +45,14 @@ imgTitleHeight =
 
 view : NavMsgs msg -> TouchMsgs msg -> msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> List AlbumList -> AlbumBootstrapFlags -> Html msg
 view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
+    let
+        xOfY =
+            " ("
+                ++ (String.fromInt <| 1 + List.length fullImagePageModel.prevImgs)
+                ++ " of "
+                ++ (String.fromInt <| List.length fullImagePageModel.prevImgs + 1 + List.length fullImagePageModel.album.imageRest)
+                ++ ")"
+    in
     rootDivFlex
         flags
         column
@@ -63,7 +71,7 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
                 ]
             ]
             [ albumTitle
-                fullImagePageModel.album.imageFirst.altText
+                (fullImagePageModel.album.imageFirst.altText ++ xOfY)
                 parents
                 navMsgs.showList
                 [ albumParent getAlbumTitle (\_ -> navMsgs.backToThumbsMsg) fullImagePageModel.album ]
@@ -71,8 +79,8 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
             ]
         , viewImg navMsgs.nextMsg touchMsgs wrapProgMsg fullImagePageModel
         ]
-            ++ navEltIf fullImagePageModel.prevImgs navMsgs.prevMsg (\l -> "< " ++ l) left
-            ++ navEltIf fullImagePageModel.album.imageRest navMsgs.nextMsg (\l -> l ++ " >") right
+            ++ navEltIf fullImagePageModel.prevImgs navMsgs.prevMsg "<" left
+            ++ navEltIf fullImagePageModel.album.imageRest navMsgs.nextMsg ">" right
             ++ [ div
                     [ styles <|
                         navBoxStyles
@@ -96,13 +104,13 @@ getAlbumTitle a =
     a.title
 
 
-navEltIf : List a -> msg -> (String -> String) -> (Px -> Style) -> List (Html msg)
+navEltIf : List a -> msg -> String -> (Px -> Style) -> List (Html msg)
 navEltIf lst navMsg navTxt navAlign =
     if List.isEmpty lst then
         []
 
     else
-        [ navElement navMsg (navTxt <| String.fromInt <| List.length lst) navAlign ]
+        [ navElement navMsg navTxt navAlign ]
 
 
 viewImg : msg -> TouchMsgs msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> Html msg
