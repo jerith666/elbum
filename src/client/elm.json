@@ -16,6 +16,7 @@
             "elm/http": "2.0.0",
             "elm/json": "1.1.2",
             "elm/parser": "1.1.0",
+            "elm/svg": "1.0.1",
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
             "jinjor/elm-debounce": "3.0.0",
@@ -27,7 +28,6 @@
             "Skinney/murmur3": "2.0.8",
             "elm/bytes": "1.0.7",
             "elm/file": "1.0.1",
-            "elm/svg": "1.0.1",
             "elm/virtual-dom": "1.0.2",
             "rtfeldman/elm-hex": "1.0.0"
         }

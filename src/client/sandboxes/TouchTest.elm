@@ -6,6 +6,8 @@ import Browser exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events.Extra.Touch exposing (..)
+import Svg exposing (..)
+import Svg.Attributes exposing (..)
 import Tuple exposing (..)
 
 
@@ -39,22 +41,56 @@ update msg model =
 
 view model =
     div
-        [ style "width" "100vw"
-        , style "height" "100vh"
-        , style "position" "absolute"
+        [ Html.Attributes.style "width" "100vw"
+        , Html.Attributes.style "height" "100vh"
+        , Html.Attributes.style "position" "absolute"
         , onStart TouchMsg
         , onMove TouchMsg
         , onEnd TouchMsg
         , onCancel TouchMsg
         ]
     <|
-        div [] [ text <| (String.fromInt <| List.length model.touches) ++ " touches active" ]
+        drawTouches model.touches
+            :: div [] [ Html.text <| (String.fromInt <| List.length model.touches) ++ " touches active" ]
             :: List.map viewTouch model.touches
+
+
+drawTouches : List Touch -> Html TouchTestMsg
+drawTouches touches =
+    svg
+        [ Svg.Attributes.width "100vw"
+        , Svg.Attributes.height "100vh"
+        , Svg.Attributes.style "position: absolute"
+        ]
+    <|
+        List.concatMap drawTouch touches
+
+
+drawTouch touch =
+    let
+        x =
+            String.fromFloat <| first touch.clientPos
+
+        y =
+            String.fromFloat <| second touch.clientPos
+    in
+    [ line [ x1 x, x2 x, y1 "0", y2 "10000", stroke "black" ] []
+    , line [ x1 "0", x2 "10000", y1 y, y2 y, stroke "black" ] []
+    ]
 
 
 viewTouch : Touch -> Html TouchTestMsg
 viewTouch touch =
-    div [] [ text <| "touch " ++ String.fromInt touch.identifier ++ " at (" ++ (String.fromFloat <| first touch.clientPos) ++ ", " ++ (String.fromFloat <| second touch.clientPos) ++ ")" ]
+    div []
+        [ Html.text <|
+            "touch "
+                ++ String.fromInt touch.identifier
+                ++ " at ("
+                ++ (String.fromFloat <| first touch.clientPos)
+                ++ ", "
+                ++ (String.fromFloat <| second touch.clientPos)
+                ++ ")"
+        ]
 
 
 subscriptions model =
