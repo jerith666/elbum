@@ -150,6 +150,8 @@ update msg model scroll =
                                     ( FullImage { fi | dragInfo = Just ( start, pos ) }, Cmd.none )
 
                         _ ->
+                            --abandon dragging if more than one touch event overlaps
+                            --that's probably a pinch-zoom gesture
                             ( FullImage { fi | dragInfo = Nothing }, Cmd.none )
 
                 _ ->
