@@ -17,6 +17,7 @@ import Utils.AlbumUtils exposing (..)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
 import Utils.ResultUtils exposing (..)
+import Utils.TouchUtils exposing (..)
 
 
 type AlbumPage
@@ -371,11 +372,11 @@ touchCoordinates touchEvent =
         |> Maybe.withDefault ( 0, 0 )
 
 
-offsetFor : Maybe ( Event, Event ) -> ( Float, Float )
+offsetFor : Maybe ( Event, Event ) -> Offset
 offsetFor dragInfo =
     case dragInfo of
         Nothing ->
-            ( 0, 0 )
+            NoOffset
 
         Just ( start, current ) ->
             let
@@ -385,7 +386,7 @@ offsetFor dragInfo =
                 ( curX, curY ) =
                     touchCoordinates current
             in
-            ( curX - startX, curY - startY )
+            Swipe <| curX - startX
 
 
 subscriptions : AlbumPage -> (AlbumPageMsg -> msg) -> msg -> Sub msg

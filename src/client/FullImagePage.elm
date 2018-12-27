@@ -13,6 +13,7 @@ import ImageViews exposing (..)
 import ProgressiveImage exposing (..)
 import ThumbPage exposing (..)
 import Utils.ListUtils exposing (..)
+import Utils.TouchUtils exposing (..)
 
 
 type alias FullImagePageModel =
@@ -20,7 +21,7 @@ type alias FullImagePageModel =
     , album : Album
     , viewport : Viewport
     , progImgModel : ProgressiveImageModel
-    , offset : ( Float, Float )
+    , offset : Offset
     }
 
 
@@ -131,19 +132,37 @@ viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
             smallestImageBiggerThan w h img.srcSetFirst img.srcSetRest
     in
     div
-        [ styles
-            [ position relative
-
-            -- note: no up/down movement is desired, just left/right
-            -- , top <| px <| Tuple.second fullImagePageModel.offset
-            , left <| px <| Tuple.first fullImagePageModel.offset
-            ]
-        , Html.Styled.Attributes.fromUnstyled <| onTouch "start" touchMsgs.touchStartMsg
-        , Html.Styled.Attributes.fromUnstyled <| onTouch "move" touchMsgs.touchContinueMsg
-        , Html.Styled.Attributes.fromUnstyled <| onTouch "end" touchMsgs.touchPrevNextMsg
-        , onClick clickMsg
-        ]
+        (offsetStyles fullImagePageModel.offset
+            ++ [ Html.Styled.Attributes.fromUnstyled <| onTouch "start" touchMsgs.touchStartMsg
+               , Html.Styled.Attributes.fromUnstyled <| onTouch "move" touchMsgs.touchContinueMsg
+               , Html.Styled.Attributes.fromUnstyled <| onTouch "end" touchMsgs.touchPrevNextMsg
+               , onClick clickMsg
+               ]
+        )
         [ Html.Styled.map wrapProgMsg <| ProgressiveImage.view <| withWidthHeight w h fullImagePageModel.progImgModel ]
+
+
+offsetStyles : Offset -> List (Html.Styled.Attribute msg)
+offsetStyles offset =
+    let
+        posStyle =
+            case offset of
+                NoOffset ->
+                    []
+
+                Swipe x ->
+                    -- note: no up/down movement is desired, just left/right
+                    -- , top <| px <| Tuple.second fullImagePageModel.offset
+                    [ left <| px x ]
+
+                Zoom z ->
+                    [ top <| px <| Tuple.second z.pos
+                    , left <| px <| Tuple.first z.pos
+
+                    --TODO scale
+                    ]
+    in
+    [ styles <| position relative :: posStyle ]
 
 
 onTouch : String -> (Event -> msg) -> Html.Attribute msg
