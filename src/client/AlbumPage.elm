@@ -140,12 +140,17 @@ update msg model scroll =
         TouchDragContinue pos ->
             case model of
                 FullImage fi ->
-                    case fi.dragInfo of
-                        Nothing ->
-                            ( FullImage { fi | dragInfo = Just ( pos, pos ) }, Cmd.none )
+                    case List.length pos.touches of
+                        1 ->
+                            case fi.dragInfo of
+                                Nothing ->
+                                    ( FullImage { fi | dragInfo = Just ( pos, pos ) }, Cmd.none )
 
-                        Just ( start, cur ) ->
-                            ( FullImage { fi | dragInfo = Just ( start, pos ) }, Cmd.none )
+                                Just ( start, cur ) ->
+                                    ( FullImage { fi | dragInfo = Just ( start, pos ) }, Cmd.none )
+
+                        _ ->
+                            ( FullImage { fi | dragInfo = Nothing }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )

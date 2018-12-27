@@ -148,7 +148,8 @@ viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
 
 onTouch : String -> (Event -> msg) -> Html.Attribute msg
 onTouch touchType =
-    onWithOptions ("touch" ++ touchType) { stopPropagation = False, preventDefault = False }
+    -- default is { stopPropagation = False, preventDefault = True }
+    onWithOptions ("touch" ++ touchType) { stopPropagation = False, preventDefault = True }
 
 
 fitImage : ImgSrc -> Int -> Int -> ( Int, Int )
