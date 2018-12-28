@@ -28,6 +28,7 @@ import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
 import Utils.LocationUtils exposing (..)
 import Utils.ResultUtils exposing (..)
+import Utils.TouchUtils as TU exposing (..)
 import Utils.ViewportUtils exposing (..)
 
 
@@ -887,7 +888,18 @@ navForAlbum vpInfo album ps newParents =
                     in
                     Just <|
                         Sequence
-                            (ViewAlbum (FullImage { prevImgs = prevs, album = nAlbum, progModel = progModel, vpInfo = vpInfo, scroll = Nothing, dragInfo = Nothing }) parentsNoScroll)
+                            (ViewAlbum
+                                (FullImage
+                                    { prevImgs = prevs
+                                    , album = nAlbum
+                                    , progModel = progModel
+                                    , vpInfo = vpInfo
+                                    , scroll = Nothing
+                                    , touchState = TU.init
+                                    }
+                                )
+                                parentsNoScroll
+                            )
                         <|
                             fromMaybe <|
                                 Maybe.map (PageMsg << FullMsg) progCmd

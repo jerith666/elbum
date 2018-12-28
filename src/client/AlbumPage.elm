@@ -17,7 +17,7 @@ import Utils.AlbumUtils exposing (..)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
 import Utils.ResultUtils exposing (..)
-import Utils.TouchUtils exposing (..)
+import Utils.TouchUtils as TU exposing (..)
 
 
 type AlbumPage
@@ -33,7 +33,7 @@ type AlbumPage
         , progModel : ProgressiveImageModel
         , vpInfo : ViewportInfo
         , scroll : Maybe Float
-        , dragInfo : Maybe ( Event, Event )
+        , touchState : TouchState
         }
 
 
@@ -77,7 +77,7 @@ update msg model scroll =
                         , progModel = progModel
                         , vpInfo = th.vpInfo
                         , scroll = scroll
-                        , dragInfo = Nothing
+                        , touchState = TU.init
                         }
                     , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd progCmd
                     )
@@ -123,37 +123,18 @@ update msg model scroll =
                 _ ->
                     ( model, Cmd.none )
 
-        TouchDragStart pos ->
+        TouchDragStart evt ->
             case model of
                 FullImage fi ->
-                    case List.length pos.touches of
-                        1 ->
-                            ( FullImage { fi | dragInfo = Just ( pos, pos ) }, Cmd.none )
-
-                        _ ->
-                            --abandon dragging if more than one touch event overlaps
-                            --that's probably a pinch-zoom gesture
-                            ( FullImage { fi | dragInfo = Nothing }, Cmd.none )
+                    ( FullImage { fi | touchState = TU.update fi.touchState evt }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
-        TouchDragContinue pos ->
+        TouchDragContinue evt ->
             case model of
                 FullImage fi ->
-                    case List.length pos.touches of
-                        1 ->
-                            case fi.dragInfo of
-                                Nothing ->
-                                    ( FullImage { fi | dragInfo = Just ( pos, pos ) }, Cmd.none )
-
-                                Just ( start, cur ) ->
-                                    ( FullImage { fi | dragInfo = Just ( start, pos ) }, Cmd.none )
-
-                        _ ->
-                            --abandon dragging if more than one touch event overlaps
-                            --that's probably a pinch-zoom gesture
-                            ( FullImage { fi | dragInfo = Nothing }, Cmd.none )
+                    ( FullImage { fi | touchState = TU.update fi.touchState evt }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
@@ -161,7 +142,7 @@ update msg model scroll =
         TouchDragAbandon ->
             case model of
                 FullImage fi ->
-                    ( FullImage { fi | dragInfo = Nothing }, Cmd.none )
+                    ( FullImage { fi | touchState = TU.init }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
@@ -229,7 +210,7 @@ updatePrevNext model shifter =
                         , thumbnail = fi.album.thumbnail
                         }
                     , progModel = newProgModel
-                    , dragInfo = Nothing
+                    , touchState = TU.init
                 }
             , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd newCmd
             )
@@ -304,7 +285,7 @@ view albumPage scrollMsgMaker showList wrapMsg parents flags =
                 }
                 { touchStartMsg = wrapMsg << TouchDragStart
                 , touchContinueMsg = wrapMsg << TouchDragContinue
-                , touchPrevNextMsg = wrapMsg << touchPrevNext fi.dragInfo
+                , touchPrevNextMsg = wrapMsg << touchPrevNext fi.touchState
                 }
                 (wrapMsg NoUpdate)
                 (wrapMsg << FullMsg)
@@ -312,7 +293,7 @@ view albumPage scrollMsgMaker showList wrapMsg parents flags =
                 , album = fi.album
                 , viewport = fi.vpInfo.bodyViewport
                 , progImgModel = fi.progModel
-                , offset = offsetFor fi.dragInfo
+                , offset = getOffset fi.touchState
                 }
                 parents
                 flags
@@ -324,22 +305,15 @@ minDragLen =
     75
 
 
-touchPrevNext : Maybe ( Event, Event ) -> Event -> AlbumPageMsg
-touchPrevNext dragInfo touch =
-    case dragInfo of
-        Nothing ->
+touchPrevNext : TouchState -> Event -> AlbumPageMsg
+touchPrevNext touchState touch =
+    case TU.getOffset <| TU.update touchState touch of
+        NoOffset ->
             NoUpdate
 
-        Just ( start, _ ) ->
-            let
-                ( startX, _ ) =
-                    touchCoordinates start
-
-                ( touchX, _ ) =
-                    touchCoordinates touch
-            in
-            if abs (startX - touchX) > minDragLen then
-                case getDirectionX startX touchX of
+        Swipe distance ->
+            if abs distance > minDragLen then
+                case getDirectionX distance of
                     Left ->
                         Next
 
@@ -349,15 +323,19 @@ touchPrevNext dragInfo touch =
             else
                 TouchDragAbandon
 
+        Zoom zoom ->
+            --TODO affix zoom into model on end?
+            NoUpdate
+
 
 type Direction
     = Left
     | Right
 
 
-getDirectionX : Float -> Float -> Direction
-getDirectionX start end =
-    case start > end of
+getDirectionX : Float -> Direction
+getDirectionX distance =
+    case distance > 0 of
         True ->
             Left
 
@@ -370,23 +348,6 @@ touchCoordinates touchEvent =
     List.head touchEvent.changedTouches
         |> Maybe.map .clientPos
         |> Maybe.withDefault ( 0, 0 )
-
-
-offsetFor : Maybe ( Event, Event ) -> Offset
-offsetFor dragInfo =
-    case dragInfo of
-        Nothing ->
-            NoOffset
-
-        Just ( start, current ) ->
-            let
-                ( startX, startY ) =
-                    touchCoordinates start
-
-                ( curX, curY ) =
-                    touchCoordinates current
-            in
-            Swipe <| curX - startX
 
 
 subscriptions : AlbumPage -> (AlbumPageMsg -> msg) -> msg -> Sub msg
@@ -461,4 +422,4 @@ eqIgnoringVpInfo aPage1 aPage2 =
                     False
 
                 FullImage fi2 ->
-                    fi1.prevImgs == fi2.prevImgs && fi1.album == fi2.album && fi1.progModel == fi2.progModel && fi1.scroll == fi2.scroll && fi1.dragInfo == fi2.dragInfo
+                    fi1.prevImgs == fi2.prevImgs && fi1.album == fi2.album && fi1.progModel == fi2.progModel && fi1.scroll == fi2.scroll && fi1.touchState == fi2.touchState

@@ -1,4 +1,4 @@
-module Utils.TouchUtils exposing (Offset(..), TouchState)
+module Utils.TouchUtils exposing (Offset(..), TouchState, getOffset, init, update)
 
 import Basics.Extra exposing (..)
 import Html.Events.Extra.Touch exposing (..)
