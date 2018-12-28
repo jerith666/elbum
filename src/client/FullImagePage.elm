@@ -156,10 +156,9 @@ offsetStyles offset =
                     [ left <| px x ]
 
                 Zoom z ->
-                    [ top <| px <| Tuple.second z.offset
-                    , left <| px <| Tuple.first z.offset
-
-                    --TODO scale
+                    [ top <| px <| z.scale * Tuple.second z.offset
+                    , left <| px <| z.scale * Tuple.first z.offset
+                    , transform <| scale z.scale
                     ]
     in
     [ styles <| position relative :: posStyle ]

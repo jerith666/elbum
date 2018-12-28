@@ -306,8 +306,8 @@ minDragLen =
 
 
 touchPrevNext : TouchState -> Event -> AlbumPageMsg
-touchPrevNext touchState touch =
-    case TU.getOffset <| TU.update touchState touch of
+touchPrevNext touchState _ =
+    case TU.getOffset touchState of
         NoOffset ->
             NoUpdate
 
@@ -335,7 +335,7 @@ type Direction
 
 getDirectionX : Float -> Direction
 getDirectionX distance =
-    case distance > 0 of
+    case distance < 0 of
         True ->
             Left
 
