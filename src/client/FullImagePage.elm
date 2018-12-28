@@ -156,8 +156,8 @@ offsetStyles offset =
                     [ left <| px x ]
 
                 Zoom z ->
-                    [ top <| px <| Tuple.second z.pos
-                    , left <| px <| Tuple.first z.pos
+                    [ top <| px <| Tuple.second z.offset
+                    , left <| px <| Tuple.first z.offset
 
                     --TODO scale
                     ]
