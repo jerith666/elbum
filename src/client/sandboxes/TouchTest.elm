@@ -134,18 +134,20 @@ circ ( x, y ) d color =
         []
 
 
+dist : Touch -> Touch -> Float
 dist t1 t2 =
     let
         ( ( x1, y1 ), ( x2, y2 ) ) =
-            coords t1 t2
+            ( coords t1, coords t2 )
     in
     sqrt <| (y2 - y1) ^ 2 + (x2 - x1) ^ 2
 
 
+center : Touch -> Touch -> ( Float, Float )
 center t1 t2 =
     let
         ( ( x1, y1 ), ( x2, y2 ) ) =
-            coords t1 t2
+            ( coords t1, coords t2 )
 
         avg a b =
             (a + b) / 2
@@ -153,21 +155,16 @@ center t1 t2 =
     ( avg x1 x2, avg y1 y2 )
 
 
-coords t1 t2 =
+coords : Touch -> ( Float, Float )
+coords t =
     let
-        x1 =
-            first t1.clientPos
+        x =
+            first t.clientPos
 
-        y1 =
-            second t1.clientPos
-
-        x2 =
-            first t2.clientPos
-
-        y2 =
-            second t2.clientPos
+        y =
+            second t.clientPos
     in
-    ( ( x1, y1 ), ( x2, y2 ) )
+    ( x, y )
 
 
 drawTouch touch =
