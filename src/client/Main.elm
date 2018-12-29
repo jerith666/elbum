@@ -382,11 +382,20 @@ update msg model =
                         , navState = NavInactive
                         , debounce = debounceOf model
                         }
+
+                getImgPos =
+                    case albumPage of
+                        Thumbs _ ->
+                            Cmd.none
+
+                        FullImage _ ->
+                            Cmd.map PageMsg getImgPosition
             in
             ( newModel
             , Cmd.batch
                 [ scrollToTop ScrollSucceeded ScrollFailed
                 , getUrls Dict.empty urls
+                , getImgPos
                 ]
             )
 

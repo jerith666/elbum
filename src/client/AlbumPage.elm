@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, eqIgnoringVpInfo, hashForAlbum, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, eqIgnoringVpInfo, getImgPosition, hashForAlbum, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -155,7 +155,12 @@ update msg model scroll =
                     ( model, Cmd.none )
 
         ImgPositionFailed err ->
-            ( model, getImgPosition )
+            case model of
+                Thumbs _ ->
+                    ( model, Cmd.none )
+
+                FullImage _ ->
+                    ( model, getImgPosition )
 
         GotImgPosition element ->
             case model of
@@ -234,7 +239,10 @@ updatePrevNext model shifter =
                     , progModel = newProgModel
                     , touchState = TU.init
                 }
-            , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd newCmd
+            , Cmd.batch
+                [ Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd newCmd
+                , getImgPosition
+                ]
             )
 
         _ ->
