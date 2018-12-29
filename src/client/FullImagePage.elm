@@ -158,26 +158,25 @@ offsetStyles imgPosition offset =
                     [ left <| px x ]
 
                 Zoom z ->
-                    let
-                        imgVpPos =
-                            case imgPosition of
-                                Nothing ->
-                                    --UGH TODO
-                                    ( 0, 0 )
+                    case imgPosition of
+                        Nothing ->
+                            --UGH TODO
+                            []
 
-                                Just imgPos ->
+                        Just imgPos ->
+                            let
+                                imgVpPos =
                                     ( imgPos.element.x - imgPos.viewport.x
                                     , imgPos.element.y - imgPos.viewport.y
                                     )
-                    in
-                    let
-                        offsetPos =
-                            applyOffset offset imgVpPos
-                    in
-                    [ top <| px <| Tuple.second offsetPos
-                    , left <| px <| Tuple.first offsetPos
-                    , transform <| scale z.scale
-                    ]
+
+                                offsetPos =
+                                    applyOffset offset imgVpPos
+                            in
+                            [ top <| px <| Tuple.second offsetPos
+                            , left <| px <| Tuple.first offsetPos
+                            , transform <| scale z.scale
+                            ]
     in
     [ styles <| position relative :: posStyle ]
 
