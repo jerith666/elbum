@@ -121,8 +121,8 @@ applyOffset offset loc =
                         |> translate3 -startX -startY 0
                         |> translate3 -offX -offY 0
                         |> scale3 z.scale z.scale 1
-                        |> translate3 (offX / z.scale) (offY / z.scale) 0
-                        |> translate3 (startX / z.scale) (startY / z.scale) 0
+                        |> translate3 offX offY 0
+                        |> translate3 startX startY 0
 
                 --then apply that AT to loc
                 newLoc =
