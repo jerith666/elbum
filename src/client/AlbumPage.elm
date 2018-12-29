@@ -316,6 +316,7 @@ view albumPage scrollMsgMaker showList wrapMsg parents flags =
                 , viewport = fi.vpInfo.bodyViewport
                 , progImgModel = fi.progModel
                 , offset = getOffset fi.touchState
+                , imgPosition = fi.imgPosition
                 }
                 parents
                 flags

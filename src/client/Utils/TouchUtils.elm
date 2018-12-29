@@ -2,6 +2,8 @@ module Utils.TouchUtils exposing (Offset(..), TouchState, applyOffset, getOffset
 
 import Basics.Extra exposing (..)
 import Html.Events.Extra.Touch exposing (..)
+import Math.Matrix4 exposing (..)
+import Math.Vector3 exposing (..)
 import Tuple exposing (..)
 
 
@@ -98,12 +100,35 @@ applyOffset : Offset -> ( Float, Float ) -> ( Float, Float )
 applyOffset offset loc =
     case offset of
         Zoom z ->
-            --create AT that does:
-            --1) translate offset to origin
-            --2) apply scale (dilate)
-            --3) translate origin back to offset
-            --then apply that AT to loc
-            loc
+            let
+                ( locX, locY ) =
+                    loc
+
+                ( startX, startY ) =
+                    z.startPos
+
+                ( offX, offY ) =
+                    z.offset
+
+                --create AT that does:
+                --1) translate startPos to origin
+                --2) translate offset to origin
+                --2) apply scale (dilate)
+                --3) un-translate offset
+                --4) un-translate startPos
+                --then apply that AT to loc
+                at =
+                    Math.Matrix4.identity
+                        |> translate3 -startX -startY 0
+                        |> translate3 -offX -offY 0
+                        |> scale3 z.scale z.scale z.scale
+                        |> translate3 offX offY 0
+                        |> translate3 startX startY 0
+
+                newLoc =
+                    transform at <| vec3 locX locY 0
+            in
+            ( getX newLoc, getY newLoc )
 
         _ ->
             loc
