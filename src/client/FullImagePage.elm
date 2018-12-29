@@ -164,8 +164,17 @@ offsetStyles imgPosition offset =
                             []
 
                         Just imgPos ->
-                            [ top <| px <| z.scale * Tuple.second z.offset
-                            , left <| px <| z.scale * Tuple.first z.offset
+                            let
+                                imgVpPos =
+                                    ( imgPos.element.x - imgPos.viewport.x
+                                    , imgPos.element.y - imgPos.viewport.y
+                                    )
+
+                                offsetPos =
+                                    applyOffset offset imgVpPos
+                            in
+                            [ top <| px <| Tuple.second offsetPos
+                            , left <| px <| Tuple.first offsetPos
                             , transform <| scale z.scale
                             ]
     in

@@ -1,4 +1,4 @@
-module Utils.TouchUtils exposing (Offset(..), TouchState, getOffset, init, update)
+module Utils.TouchUtils exposing (Offset(..), TouchState, applyOffset, getOffset, init, update)
 
 import Basics.Extra exposing (..)
 import Html.Events.Extra.Touch exposing (..)
@@ -8,7 +8,11 @@ import Tuple exposing (..)
 type Offset
     = NoOffset
     | Swipe Float
-    | Zoom { scale : Float, offset : ( Float, Float ) }
+    | Zoom
+        { scale : Float
+        , startPos : ( Float, Float )
+        , offset : ( Float, Float )
+        }
 
 
 type TouchState
@@ -83,7 +87,26 @@ getOffset state =
                 ( endX, endY ) =
                     uncurry center zoom.current
             in
-            Zoom { scale = scale, offset = ( endX - startX, endY - startY ) }
+            Zoom
+                { scale = scale
+                , startPos = ( startX, startY )
+                , offset = ( endX - startX, endY - startY )
+                }
+
+
+applyOffset : Offset -> ( Float, Float ) -> ( Float, Float )
+applyOffset offset loc =
+    case offset of
+        Zoom z ->
+            --create AT that does:
+            --1) translate offset to origin
+            --2) apply scale (dilate)
+            --3) translate origin back to offset
+            --then apply that AT to loc
+            loc
+
+        _ ->
+            loc
 
 
 dist : Touch -> Touch -> Float
