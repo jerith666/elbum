@@ -120,7 +120,7 @@ applyOffset offset loc =
                     Math.Matrix4.identity
                         |> translate3 -startX -startY 0
                         |> translate3 -offX -offY 0
-                        |> scale3 z.scale z.scale z.scale
+                        |> scale3 z.scale z.scale 1
                         |> translate3 offX offY 0
                         |> translate3 startX startY 0
 
