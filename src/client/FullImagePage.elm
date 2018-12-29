@@ -244,9 +244,10 @@ offsetStyles imgPosition offset =
                                 o =
                                     applyO imgPos offset
                             in
-                            [ top <| px o.deltaPosY
-                            , left <| px o.deltaPosX
-                            , transform <| scale z.scale
+                            [ --top <| px o.deltaPosY
+                              --, left <| px o.deltaPosX
+                              transforms [ scale z.scale, translate2 (px o.deltaPosX) (px o.deltaPosY) ]
+                            , Css.property "transform-origin" "top left"
                             ]
     in
     [ styles <| position relative :: posStyle ]
