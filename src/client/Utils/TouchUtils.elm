@@ -118,11 +118,11 @@ applyOffset offset loc =
                 --5) un-translate startPos
                 at =
                     Math.Matrix4.identity
-                        |> translate3 -startX -startY 0
-                        |> translate3 -offX -offY 0
-                        |> scale3 z.scale z.scale 1
-                        |> translate3 offX offY 0
-                        |> translate3 startX startY 0
+                        |> mul (makeTranslate3 -startX -startY 0)
+                        --|> mul (makeTranslate3 offX offY 0)
+                        |> mul (makeScale3 z.scale z.scale 1)
+                        |> mul (makeTranslate3 offX offY 0)
+                        |> mul (makeTranslate3 startX startY 0)
 
                 --then apply that AT to loc
                 newLoc =
