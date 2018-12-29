@@ -113,10 +113,9 @@ applyOffset offset loc =
                 --create AT that does:
                 --1) translate startPos to origin
                 --2) translate offset to origin
-                --2) apply scale (dilate)
-                --3) un-translate offset
-                --4) un-translate startPos
-                --then apply that AT to loc
+                --3) apply scale (dilate)
+                --4) un-translate offset
+                --5) un-translate startPos
                 at =
                     Math.Matrix4.identity
                         |> translate3 -startX -startY 0
@@ -125,6 +124,7 @@ applyOffset offset loc =
                         |> translate3 offX offY 0
                         |> translate3 startX startY 0
 
+                --then apply that AT to loc
                 newLoc =
                     transform at <| vec3 locX locY 0
             in
