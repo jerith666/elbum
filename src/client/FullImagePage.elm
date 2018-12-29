@@ -246,7 +246,7 @@ offsetStyles imgPosition offset =
                             in
                             [ --top <| px o.deltaPosY
                               --, left <| px o.deltaPosX
-                              transforms [ scale z.scale, translate2 (px o.deltaPosX) (px o.deltaPosY) ]
+                              transforms [ translate2 (px o.deltaPosX) (px o.deltaPosY), scale z.scale ]
                             , Css.property "transform-origin" "top left"
                             ]
     in
