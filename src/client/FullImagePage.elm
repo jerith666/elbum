@@ -22,6 +22,7 @@ type alias FullImagePageModel =
     , viewport : Viewport
     , progImgModel : ProgressiveImageModel
     , offset : Offset
+    , imgPosition : Maybe Element
     }
 
 
@@ -132,18 +133,19 @@ viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
             smallestImageBiggerThan w h img.srcSetFirst img.srcSetRest
     in
     div
-        (offsetStyles fullImagePageModel.offset
+        (offsetStyles fullImagePageModel.imgPosition fullImagePageModel.offset
             ++ [ Html.Styled.Attributes.fromUnstyled <| onTouch "start" touchMsgs.touchStartMsg
                , Html.Styled.Attributes.fromUnstyled <| onTouch "move" touchMsgs.touchContinueMsg
                , Html.Styled.Attributes.fromUnstyled <| onTouch "end" touchMsgs.touchPrevNextMsg
                , onClick clickMsg
+               , id theImageId
                ]
         )
         [ Html.Styled.map wrapProgMsg <| ProgressiveImage.view <| withWidthHeight w h fullImagePageModel.progImgModel ]
 
 
-offsetStyles : Offset -> List (Html.Styled.Attribute msg)
-offsetStyles offset =
+offsetStyles : Maybe Element -> Offset -> List (Html.Styled.Attribute msg)
+offsetStyles imgPosition offset =
     let
         posStyle =
             case offset of
@@ -156,10 +158,16 @@ offsetStyles offset =
                     [ left <| px x ]
 
                 Zoom z ->
-                    [ top <| px <| z.scale * Tuple.second z.offset
-                    , left <| px <| z.scale * Tuple.first z.offset
-                    , transform <| scale z.scale
-                    ]
+                    case imgPosition of
+                        Nothing ->
+                            --UGH TODO
+                            []
+
+                        Just imgPos ->
+                            [ top <| px <| z.scale * Tuple.second z.offset
+                            , left <| px <| z.scale * Tuple.first z.offset
+                            , transform <| scale z.scale
+                            ]
     in
     [ styles <| position relative :: posStyle ]
 

@@ -34,6 +34,7 @@ type AlbumPage
         , vpInfo : ViewportInfo
         , scroll : Maybe Float
         , touchState : TouchState
+        , imgPosition : Maybe Element
         }
 
 
@@ -50,6 +51,8 @@ type AlbumPageMsg
     | Next
     | BackToThumbs
     | FullMsg ProgressiveImageMsg
+    | ImgPositionFailed Browser.Dom.Error
+    | GotImgPosition Element
     | NoUpdate
 
 
@@ -78,8 +81,12 @@ update msg model scroll =
                         , vpInfo = th.vpInfo
                         , scroll = scroll
                         , touchState = TU.init
+                        , imgPosition = Nothing
                         }
-                    , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd progCmd
+                    , Cmd.batch
+                        [ Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd progCmd
+                        , getImgPosition
+                        ]
                     )
 
                 _ ->
@@ -147,6 +154,17 @@ update msg model scroll =
                 _ ->
                     ( model, Cmd.none )
 
+        ImgPositionFailed err ->
+            ( model, getImgPosition )
+
+        GotImgPosition element ->
+            case model of
+                FullImage fi ->
+                    ( FullImage { fi | imgPosition = Just element }, Cmd.none )
+
+                Thumbs _ ->
+                    ( model, Cmd.none )
+
         FullMsg progImgMsg ->
             case model of
                 FullImage fi ->
@@ -161,6 +179,10 @@ update msg model scroll =
 
         NoUpdate ->
             ( model, Cmd.none )
+
+
+getImgPosition =
+    Task.attempt (either ImgPositionFailed GotImgPosition) <| getElement theImageId
 
 
 progInit : Viewport -> Image -> Int -> Int -> ( ProgressiveImageModel, Maybe ProgressiveImageMsg )

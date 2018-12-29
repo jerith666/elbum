@@ -896,6 +896,7 @@ navForAlbum vpInfo album ps newParents =
                                     , vpInfo = vpInfo
                                     , scroll = Nothing
                                     , touchState = TU.init
+                                    , imgPosition = Nothing
                                     }
                                 )
                                 parentsNoScroll

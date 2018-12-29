@@ -1,4 +1,4 @@
-module AlbumStyles exposing (AlbumBootstrapFlags, ImgLoadState(..), black, navBoxStyles, navElement, navEltSize, opacityAnimatedTo, opacityStyles, rootDiv, rootDivFlex, rootDivId, rootPos, styles, white)
+module AlbumStyles exposing (AlbumBootstrapFlags, ImgLoadState(..), black, navBoxStyles, navElement, navEltSize, opacityAnimatedTo, opacityStyles, rootDiv, rootDivFlex, rootDivId, rootPos, styles, theImageId, white)
 
 import Browser.Dom exposing (..)
 import Css exposing (..)
@@ -28,6 +28,11 @@ styles =
 rootDivId : String
 rootDivId =
     "rootDiv"
+
+
+theImageId : String
+theImageId =
+    "the-image"
 
 
 type alias AlbumBootstrapFlags =
