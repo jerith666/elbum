@@ -50,12 +50,12 @@ imgTitleHeight =
 pzdbg : FullImagePageModel -> String
 pzdbg m =
     case m.offset of
-        Zoom z ->
+        Zoom (ZoomOffset z) ->
             case m.imgPosition of
                 Just imgPos ->
                     let
                         o =
-                            applyO imgPos m.offset
+                            applyO imgPos <| ZoomOffset z
 
                         s x =
                             String.fromInt <| Basics.round x
@@ -233,7 +233,7 @@ offsetStyles imgPosition offset =
                     -- , top <| px <| Tuple.second fullImagePageModel.offset
                     [ left <| px x ]
 
-                Zoom z ->
+                Zoom (ZoomOffset z) ->
                     case imgPosition of
                         Nothing ->
                             --UGH TODO
@@ -242,7 +242,7 @@ offsetStyles imgPosition offset =
                         Just imgPos ->
                             let
                                 o =
-                                    applyO imgPos offset
+                                    applyO imgPos <| ZoomOffset z
                             in
                             [ --top <| px o.deltaPosY
                               --, left <| px o.deltaPosX

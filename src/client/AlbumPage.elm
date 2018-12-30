@@ -47,6 +47,7 @@ type AlbumPageMsg
     | TouchDragStart Event
     | TouchDragContinue Event
     | TouchDragAbandon
+    | TouchEndZoom TouchState
     | Prev
     | Next
     | BackToThumbs
@@ -152,6 +153,14 @@ update msg model scroll =
                     ( FullImage { fi | touchState = TU.init }, Cmd.none )
 
                 _ ->
+                    ( model, Cmd.none )
+
+        TouchEndZoom oldState ->
+            case model of
+                FullImage fi ->
+                    ( FullImage { fi | touchState = TU.endZoom oldState }, Cmd.none )
+
+                Thumbs _ ->
                     ( model, Cmd.none )
 
         ImgPositionFailed err ->
@@ -355,8 +364,7 @@ touchPrevNext touchState _ =
                 TouchDragAbandon
 
         Zoom zoom ->
-            --TODO affix zoom into model on end?
-            NoUpdate
+            TouchEndZoom touchState
 
 
 type Direction
