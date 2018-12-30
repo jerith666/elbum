@@ -112,14 +112,16 @@ applyOffset offset loc =
 
                 --create AT that does:
                 --1) translate startPos to origin
-                --2) translate offset to origin
-                --3) apply scale (dilate)
-                --4) un-translate offset
+                --2) apply scale (dilate)
+                --4) translate offset
                 --5) un-translate startPos
+                --
+                --note: we use (mul (makeXxx3 args)) rather than (xxx3 args) because
+                --this transformation needs to go in the "less common" direction;
+                --see https://docs.oracle.com/javase/10/docs/api/java/awt/geom/AffineTransform.html#preConcatenate(java.awt.geom.AffineTransform)
                 at =
                     Math.Matrix4.identity
                         |> mul (makeTranslate3 -startX -startY 0)
-                        --|> mul (makeTranslate3 offX offY 0)
                         |> mul (makeScale3 z.scale z.scale 1)
                         |> mul (makeTranslate3 offX offY 0)
                         |> mul (makeTranslate3 startX startY 0)
