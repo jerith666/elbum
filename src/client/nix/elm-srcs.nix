@@ -43,6 +43,14 @@
     version = "1.0.0";
     sha256 = "0av8x5syid40sgpl5vd7pry2rq0q4pga28b4yykn9gd9v12rs3l4";
   };
+  "elm-community/basics-extra" = {
+    version = "4.0.0";
+    sha256 = "02f5c0lhw6lrxdpmn09jpfhd45sbn7mr95hwrfyilx5yfrqa4z15";
+  };
+  "elm-explorations/linear-algebra" = {
+    version = "1.0.3";
+    sha256 = "19zf3dgrx5bvhybjwq3bp171wzsb4bfk5rrfjv234b2f8q3yi59g";
+  };
   "jinjor/elm-debounce" = {
     version = "3.0.0";
     sha256 = "0171z89c5kj5jw1x69zl296x0yzrz6lcbnyhs5srj3qmclqjvnzk";
