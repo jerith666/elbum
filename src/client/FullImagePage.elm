@@ -243,10 +243,13 @@ offsetStyles imgPosition offset =
                             let
                                 o =
                                     applyO imgPos <| ZoomOffset z
+
+                                sc =
+                                    cumScale z
                             in
                             [ --top <| px o.deltaPosY
                               --, left <| px o.deltaPosX
-                              transforms [ translate2 (px o.deltaPosX) (px o.deltaPosY), scale z.scale ]
+                              transforms [ translate2 (px o.deltaPosX) (px o.deltaPosY), scale sc ]
                             , Css.property "transform-origin" "top left"
                             ]
     in

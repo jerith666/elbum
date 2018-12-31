@@ -1,4 +1,4 @@
-module Utils.TouchUtils exposing (Offset(..), TouchState, ZoomOffset(..), applyOffset, endZoom, getOffset, init, update)
+module Utils.TouchUtils exposing (Offset(..), TouchState, ZoomOffset(..), applyOffset, cumScale, endZoom, getOffset, init, update)
 
 import Basics.Extra exposing (..)
 import Html.Events.Extra.Touch exposing (..)
@@ -114,7 +114,23 @@ endZoom oldState =
                     ZoomState <| ZoomBridge bridgeData
 
                 ZoomCurrent zData ->
-                    ZoomState <| ZoomBridge <| ZoomCurrent zData
+                    case getZoomOffset zData of
+                        ZoomOffset zo ->
+                            case cumScale zo > 1 of
+                                True ->
+                                    ZoomState <| ZoomBridge <| ZoomCurrent zData
+
+                                False ->
+                                    NoState
+
+
+cumScale z =
+    case z.prev of
+        Nothing ->
+            z.scale
+
+        Just (ZoomOffset pz) ->
+            z.scale * cumScale pz
 
 
 getOffset : TouchState -> Offset
