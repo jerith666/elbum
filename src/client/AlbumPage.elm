@@ -439,4 +439,15 @@ eqIgnoringVpInfo aPage1 aPage2 =
                     False
 
                 FullImage fi2 ->
-                    fi1.prevImgs == fi2.prevImgs && fi1.album == fi2.album && fi1.progModel == fi2.progModel && fi1.scroll == fi2.scroll && fi1.touchState == fi2.touchState
+                    fi1.prevImgs
+                        == fi2.prevImgs
+                        && fi1.album
+                        == fi2.album
+                        && fi1.progModel
+                        == fi2.progModel
+                        && fi1.scroll
+                        == fi2.scroll
+                        && fi1.touchState
+                        == fi2.touchState
+                        && fi1.imgPosition
+                        == fi2.imgPosition
