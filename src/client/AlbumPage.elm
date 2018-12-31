@@ -351,9 +351,9 @@ touchPrevNext touchState _ =
         NoOffset ->
             NoUpdate
 
-        Swipe distance ->
+        Swipe distance direction ->
             if abs distance > minDragLen then
-                case getDirectionX distance of
+                case direction of
                     Left ->
                         Next
 

@@ -1,4 +1,4 @@
-module Utils.TouchUtils exposing (Direction(..), Offset(..), TouchState, ZoomOffset(..), applyOffset, cumScale, endZoom, getDirectionX, getOffset, init, update)
+module Utils.TouchUtils exposing (Direction(..), Offset(..), TouchState, ZoomOffset(..), applyOffset, cumScale, endZoom, getOffset, init, update)
 
 import Basics.Extra exposing (..)
 import Html.Events.Extra.Touch exposing (..)
@@ -9,8 +9,13 @@ import Tuple exposing (..)
 
 type Offset
     = NoOffset
-    | Swipe Float
+    | Swipe Float Direction
     | Zoom ZoomOffset
+
+
+type Direction
+    = Left
+    | Right
 
 
 type ZoomOffset
@@ -146,8 +151,11 @@ getOffset state =
 
                 ( x2, _ ) =
                     coords swipe.current
+
+                distance =
+                    x2 - x1
             in
-            Swipe <| x2 - x1
+            Swipe distance <| getDirectionX distance
 
         ZoomState zData ->
             case zData of
@@ -271,11 +279,6 @@ coords t =
             second t.clientPos
     in
     ( x, y )
-
-
-type Direction
-    = Left
-    | Right
 
 
 getDirectionX : Float -> Direction

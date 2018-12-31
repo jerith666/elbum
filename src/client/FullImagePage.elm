@@ -228,10 +228,10 @@ offsetStyles imgPosition offset =
                 NoOffset ->
                     []
 
-                Swipe x ->
+                Swipe distance _ ->
                     -- note: no up/down movement is desired, just left/right
                     -- , top <| px <| Tuple.second fullImagePageModel.offset
-                    [ left <| px x ]
+                    [ left <| px distance ]
 
                 Zoom (ZoomOffset z) ->
                     case imgPosition of
