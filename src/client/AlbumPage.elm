@@ -367,28 +367,6 @@ touchPrevNext touchState _ =
             TouchEndZoom touchState
 
 
-type Direction
-    = Left
-    | Right
-
-
-getDirectionX : Float -> Direction
-getDirectionX distance =
-    case distance < 0 of
-        True ->
-            Left
-
-        False ->
-            Right
-
-
-touchCoordinates : Event -> ( Float, Float )
-touchCoordinates touchEvent =
-    List.head touchEvent.changedTouches
-        |> Maybe.map .clientPos
-        |> Maybe.withDefault ( 0, 0 )
-
-
 subscriptions : AlbumPage -> (AlbumPageMsg -> msg) -> msg -> Sub msg
 subscriptions albumPage wrapper showParent =
     case albumPage of

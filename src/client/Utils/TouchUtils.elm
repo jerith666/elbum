@@ -1,4 +1,4 @@
-module Utils.TouchUtils exposing (Offset(..), TouchState, ZoomOffset(..), applyOffset, cumScale, endZoom, getOffset, init, update)
+module Utils.TouchUtils exposing (Direction(..), Offset(..), TouchState, ZoomOffset(..), applyOffset, cumScale, endZoom, getDirectionX, getOffset, init, update)
 
 import Basics.Extra exposing (..)
 import Html.Events.Extra.Touch exposing (..)
@@ -271,3 +271,18 @@ coords t =
             second t.clientPos
     in
     ( x, y )
+
+
+type Direction
+    = Left
+    | Right
+
+
+getDirectionX : Float -> Direction
+getDirectionX distance =
+    case distance < 0 of
+        True ->
+            Left
+
+        False ->
+            Right
