@@ -47,75 +47,6 @@ imgTitleHeight =
     5
 
 
-pzdbg : FullImagePageModel -> String
-pzdbg m =
-    case m.offset of
-        Zoom (ZoomOffset z) ->
-            case m.imgPosition of
-                Just imgPos ->
-                    let
-                        o =
-                            applyO imgPos <| ZoomOffset z
-
-                        s x =
-                            String.fromInt <| Basics.round x
-
-                        ss x =
-                            let
-                                ts =
-                                    Tuple.mapBoth s s x
-                            in
-                            "(" ++ Tuple.first ts ++ "," ++ Tuple.second ts ++ ")"
-
-                        e =
-                            "e (" ++ s imgPos.element.x ++ "," ++ s imgPos.element.y ++ ")"
-
-                        v =
-                            " v (" ++ s imgPos.viewport.x ++ "," ++ s imgPos.viewport.y ++ ")"
-
-                        st =
-                            " s " ++ ss z.startPos
-
-                        off =
-                            " o " ++ ss z.offset
-
-                        sc =
-                            " sc " ++ String.fromFloat ((toFloat <| Basics.round (z.scale * 100)) / 100)
-
-                        oo =
-                            " " ++ debugString o
-                    in
-                    e ++ v ++ st ++ off ++ sc ++ oo
-
-                Nothing ->
-                    "zoom no pos"
-
-        _ ->
-            "not zoom"
-
-
-applyO imgPos offset =
-    let
-        ( imgVpPosX, imgVpPosY ) =
-            ( imgPos.element.x - imgPos.viewport.x
-            , imgPos.element.y - imgPos.viewport.y
-            )
-
-        ( offsetPosX, offsetPosY ) =
-            applyOffset offset ( imgVpPosX, imgVpPosY )
-
-        ( deltaPosX, deltaPosY ) =
-            ( offsetPosX - imgVpPosX, offsetPosY - imgVpPosY )
-    in
-    { imgVpPosX = imgVpPosX
-    , imgVpPosY = imgVpPosY
-    , offsetPosX = offsetPosX
-    , offsetPosY = offsetPosY
-    , deltaPosX = deltaPosX
-    , deltaPosY = deltaPosY
-    }
-
-
 view : NavMsgs msg -> TouchMsgs msg -> msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> List AlbumList -> AlbumBootstrapFlags -> Html msg
 view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
     let
@@ -125,9 +56,6 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
                 ++ " of "
                 ++ (String.fromInt <| List.length fullImagePageModel.prevImgs + 1 + List.length fullImagePageModel.album.imageRest)
                 ++ ")"
-
-        pzdbgs =
-            pzdbg fullImagePageModel
     in
     rootDivFlex
         flags
@@ -146,15 +74,12 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
                 , lineHeight (px (imgTitleHeight / 100 * fullImagePageModel.viewport.viewport.height))
                 ]
             ]
-            [ text pzdbgs
-
-            {- albumTitle
-               (fullImagePageModel.album.imageFirst.altText ++ xOfY)
-               parents
-               navMsgs.showList
-               [ albumParent getAlbumTitle (\_ -> navMsgs.backToThumbsMsg) fullImagePageModel.album ]
-               []
-            -}
+            [ albumTitle
+                (fullImagePageModel.album.imageFirst.altText ++ xOfY)
+                parents
+                navMsgs.showList
+                [ albumParent getAlbumTitle (\_ -> navMsgs.backToThumbsMsg) fullImagePageModel.album ]
+                []
             ]
         , viewImg navMsgs.nextMsg touchMsgs wrapProgMsg fullImagePageModel
         ]
@@ -241,15 +166,23 @@ offsetStyles imgPosition offset =
 
                         Just imgPos ->
                             let
-                                o =
-                                    applyO imgPos <| ZoomOffset z
+                                ( imgVpPosX, imgVpPosY ) =
+                                    ( imgPos.element.x - imgPos.viewport.x
+                                    , imgPos.element.y - imgPos.viewport.y
+                                    )
+
+                                ( offsetPosX, offsetPosY ) =
+                                    applyOffset (ZoomOffset z) ( imgVpPosX, imgVpPosY )
+
+                                ( deltaPosX, deltaPosY ) =
+                                    ( offsetPosX - imgVpPosX, offsetPosY - imgVpPosY )
 
                                 sc =
                                     cumScale z
                             in
                             [ --top <| px o.deltaPosY
                               --, left <| px o.deltaPosX
-                              transforms [ translate2 (px o.deltaPosX) (px o.deltaPosY), scale sc ]
+                              transforms [ translate2 (px deltaPosX) (px deltaPosY), scale sc ]
                             , Css.property "transform-origin" "top left"
                             ]
     in
