@@ -1,10 +1,11 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, eqIgnoringVpInfo, hashForAlbum, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, eqIgnoringVpInfo, getImgPosition, hashForAlbum, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Browser.Events exposing (..)
 import FullImagePage exposing (..)
+import Html.Events.Extra.Touch exposing (..)
 import Html.Styled exposing (..)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)
@@ -12,11 +13,11 @@ import ProgressiveImage exposing (..)
 import Set exposing (..)
 import Task exposing (..)
 import ThumbPage exposing (..)
-import TouchEvents exposing (..)
 import Utils.AlbumUtils exposing (..)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
 import Utils.ResultUtils exposing (..)
+import Utils.TouchUtils as TU exposing (..)
 
 
 type AlbumPage
@@ -32,7 +33,8 @@ type AlbumPage
         , progModel : ProgressiveImageModel
         , vpInfo : ViewportInfo
         , scroll : Maybe Float
-        , dragInfo : Maybe ( Touch, Touch )
+        , touchState : TouchState
+        , imgPosition : Maybe Element
         }
 
 
@@ -42,13 +44,16 @@ type alias ViewportInfo =
 
 type AlbumPageMsg
     = View (List Image) Image (List Image)
-    | TouchDragStart Touch
-    | TouchDragContinue Touch
+    | TouchDragStart Event
+    | TouchDragContinue Event
     | TouchDragAbandon
+    | TouchEndZoom TouchState
     | Prev
     | Next
     | BackToThumbs
     | FullMsg ProgressiveImageMsg
+    | ImgPositionFailed Browser.Dom.Error
+    | GotImgPosition Element
     | NoUpdate
 
 
@@ -76,9 +81,13 @@ update msg model scroll =
                         , progModel = progModel
                         , vpInfo = th.vpInfo
                         , scroll = scroll
-                        , dragInfo = Nothing
+                        , touchState = TU.init
+                        , imgPosition = Nothing
                         }
-                    , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd progCmd
+                    , Cmd.batch
+                        [ Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd progCmd
+                        , getImgPosition
+                        ]
                     )
 
                 _ ->
@@ -122,23 +131,18 @@ update msg model scroll =
                 _ ->
                     ( model, Cmd.none )
 
-        TouchDragStart pos ->
+        TouchDragStart evt ->
             case model of
                 FullImage fi ->
-                    ( FullImage { fi | dragInfo = Just ( pos, pos ) }, Cmd.none )
+                    ( FullImage { fi | touchState = TU.update fi.touchState evt }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
-        TouchDragContinue pos ->
+        TouchDragContinue evt ->
             case model of
                 FullImage fi ->
-                    case fi.dragInfo of
-                        Nothing ->
-                            ( FullImage { fi | dragInfo = Just ( pos, pos ) }, Cmd.none )
-
-                        Just ( start, cur ) ->
-                            ( FullImage { fi | dragInfo = Just ( start, pos ) }, Cmd.none )
+                    ( FullImage { fi | touchState = TU.update fi.touchState evt }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
@@ -146,9 +150,33 @@ update msg model scroll =
         TouchDragAbandon ->
             case model of
                 FullImage fi ->
-                    ( FullImage { fi | dragInfo = Nothing }, Cmd.none )
+                    ( FullImage { fi | touchState = TU.init }, Cmd.none )
 
                 _ ->
+                    ( model, Cmd.none )
+
+        TouchEndZoom oldState ->
+            case model of
+                FullImage fi ->
+                    ( FullImage { fi | touchState = TU.endZoom oldState }, Cmd.none )
+
+                Thumbs _ ->
+                    ( model, Cmd.none )
+
+        ImgPositionFailed err ->
+            case model of
+                Thumbs _ ->
+                    ( model, Cmd.none )
+
+                FullImage _ ->
+                    ( model, getImgPosition )
+
+        GotImgPosition element ->
+            case model of
+                FullImage fi ->
+                    ( FullImage { fi | imgPosition = Just element }, Cmd.none )
+
+                Thumbs _ ->
                     ( model, Cmd.none )
 
         FullMsg progImgMsg ->
@@ -165,6 +193,10 @@ update msg model scroll =
 
         NoUpdate ->
             ( model, Cmd.none )
+
+
+getImgPosition =
+    Task.attempt (either ImgPositionFailed GotImgPosition) <| getElement theImageId
 
 
 progInit : Viewport -> Image -> Int -> Int -> ( ProgressiveImageModel, Maybe ProgressiveImageMsg )
@@ -214,9 +246,12 @@ updatePrevNext model shifter =
                         , thumbnail = fi.album.thumbnail
                         }
                     , progModel = newProgModel
-                    , dragInfo = Nothing
+                    , touchState = TU.init
                 }
-            , Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd newCmd
+            , Cmd.batch
+                [ Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd newCmd
+                , getImgPosition
+                ]
             )
 
         _ ->
@@ -289,7 +324,7 @@ view albumPage scrollMsgMaker showList wrapMsg parents flags =
                 }
                 { touchStartMsg = wrapMsg << TouchDragStart
                 , touchContinueMsg = wrapMsg << TouchDragContinue
-                , touchPrevNextMsg = wrapMsg << touchPrevNext fi.dragInfo
+                , touchPrevNextMsg = wrapMsg << touchPrevNext fi.touchState
                 }
                 (wrapMsg NoUpdate)
                 (wrapMsg << FullMsg)
@@ -297,7 +332,8 @@ view albumPage scrollMsgMaker showList wrapMsg parents flags =
                 , album = fi.album
                 , viewport = fi.vpInfo.bodyViewport
                 , progImgModel = fi.progModel
-                , offset = offsetFor fi.dragInfo
+                , offset = getOffset fi.touchState
+                , imgPosition = fi.imgPosition
                 }
                 parents
                 flags
@@ -309,36 +345,26 @@ minDragLen =
     75
 
 
-touchPrevNext : Maybe ( Touch, Touch ) -> Touch -> AlbumPageMsg
-touchPrevNext dragInfo touch =
-    case dragInfo of
-        Nothing ->
+touchPrevNext : TouchState -> Event -> AlbumPageMsg
+touchPrevNext touchState _ =
+    case TU.getOffset touchState of
+        NoOffset ->
             NoUpdate
 
-        Just ( start, cur ) ->
-            if abs (start.clientX - touch.clientX) > minDragLen then
-                case getDirectionX start.clientX touch.clientX of
+        Swipe distance direction ->
+            if abs distance > minDragLen then
+                case direction of
                     Left ->
                         Next
 
                     Right ->
                         Prev
 
-                    _ ->
-                        TouchDragAbandon
-
             else
                 TouchDragAbandon
 
-
-offsetFor : Maybe ( Touch, Touch ) -> ( Float, Float )
-offsetFor dragInfo =
-    case dragInfo of
-        Nothing ->
-            ( 0, 0 )
-
-        Just ( start, current ) ->
-            ( current.clientX - start.clientX, current.clientY - start.clientY )
+        Zoom zoom ->
+            TouchEndZoom touchState
 
 
 subscriptions : AlbumPage -> (AlbumPageMsg -> msg) -> msg -> Sub msg
@@ -413,4 +439,15 @@ eqIgnoringVpInfo aPage1 aPage2 =
                     False
 
                 FullImage fi2 ->
-                    fi1.prevImgs == fi2.prevImgs && fi1.album == fi2.album && fi1.progModel == fi2.progModel && fi1.scroll == fi2.scroll && fi1.dragInfo == fi2.dragInfo
+                    fi1.prevImgs
+                        == fi2.prevImgs
+                        && fi1.album
+                        == fi2.album
+                        && fi1.progModel
+                        == fi2.progModel
+                        && fi1.scroll
+                        == fi2.scroll
+                        && fi1.touchState
+                        == fi2.touchState
+                        && fi1.imgPosition
+                        == fi2.imgPosition

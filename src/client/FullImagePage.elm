@@ -4,14 +4,17 @@ import Album exposing (..)
 import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
+import Html exposing (Attribute)
+import Html.Events.Extra.Touch exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import ProgressiveImage exposing (..)
 import ThumbPage exposing (..)
-import TouchEvents exposing (..)
+import Utils.DebugSupport exposing (..)
 import Utils.ListUtils exposing (..)
+import Utils.TouchUtils exposing (..)
 
 
 type alias FullImagePageModel =
@@ -19,7 +22,8 @@ type alias FullImagePageModel =
     , album : Album
     , viewport : Viewport
     , progImgModel : ProgressiveImageModel
-    , offset : ( Float, Float )
+    , offset : Offset
+    , imgPosition : Maybe Element
     }
 
 
@@ -32,9 +36,9 @@ type alias NavMsgs msg =
 
 
 type alias TouchMsgs msg =
-    { touchStartMsg : Touch -> msg
-    , touchContinueMsg : Touch -> msg
-    , touchPrevNextMsg : Touch -> msg
+    { touchStartMsg : Event -> msg
+    , touchContinueMsg : Event -> msg
+    , touchPrevNextMsg : Event -> msg
     }
 
 
@@ -130,19 +134,65 @@ viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
             smallestImageBiggerThan w h img.srcSetFirst img.srcSetRest
     in
     div
-        [ styles
-            [ position relative
-
-            -- note: no up/down movement is desired, just left/right
-            -- , top <| px <| Tuple.second fullImagePageModel.offset
-            , left <| px <| Tuple.first fullImagePageModel.offset
-            ]
-        , Html.Styled.Attributes.fromUnstyled <| onTouchStart touchMsgs.touchStartMsg
-        , Html.Styled.Attributes.fromUnstyled <| onTouchMove touchMsgs.touchContinueMsg
-        , Html.Styled.Attributes.fromUnstyled <| onTouchEnd touchMsgs.touchPrevNextMsg
-        , onClick clickMsg
-        ]
+        (offsetStyles fullImagePageModel.imgPosition fullImagePageModel.offset
+            ++ [ Html.Styled.Attributes.fromUnstyled <| onTouch "start" touchMsgs.touchStartMsg
+               , Html.Styled.Attributes.fromUnstyled <| onTouch "move" touchMsgs.touchContinueMsg
+               , Html.Styled.Attributes.fromUnstyled <| onTouch "end" touchMsgs.touchPrevNextMsg
+               , onClick clickMsg
+               , id theImageId
+               ]
+        )
         [ Html.Styled.map wrapProgMsg <| ProgressiveImage.view <| withWidthHeight w h fullImagePageModel.progImgModel ]
+
+
+offsetStyles : Maybe Element -> Offset -> List (Html.Styled.Attribute msg)
+offsetStyles imgPosition offset =
+    let
+        posStyle =
+            case offset of
+                NoOffset ->
+                    []
+
+                Swipe distance _ ->
+                    -- note: no up/down movement is desired, just left/right
+                    -- , top <| px <| Tuple.second fullImagePageModel.offset
+                    [ left <| px distance ]
+
+                Zoom (ZoomOffset z) ->
+                    case imgPosition of
+                        Nothing ->
+                            --UGH TODO
+                            []
+
+                        Just imgPos ->
+                            let
+                                ( imgVpPosX, imgVpPosY ) =
+                                    ( imgPos.element.x - imgPos.viewport.x
+                                    , imgPos.element.y - imgPos.viewport.y
+                                    )
+
+                                ( offsetPosX, offsetPosY ) =
+                                    applyOffset (ZoomOffset z) ( imgVpPosX, imgVpPosY )
+
+                                ( deltaPosX, deltaPosY ) =
+                                    ( offsetPosX - imgVpPosX, offsetPosY - imgVpPosY )
+
+                                sc =
+                                    cumScale z
+                            in
+                            [ --top <| px o.deltaPosY
+                              --, left <| px o.deltaPosX
+                              transforms [ translate2 (px deltaPosX) (px deltaPosY), scale sc ]
+                            , Css.property "transform-origin" "top left"
+                            ]
+    in
+    [ styles <| position relative :: posStyle ]
+
+
+onTouch : String -> (Event -> msg) -> Html.Attribute msg
+onTouch touchType =
+    -- default is { stopPropagation = False, preventDefault = True }
+    onWithOptions ("touch" ++ touchType) { stopPropagation = False, preventDefault = True }
 
 
 fitImage : ImgSrc -> Int -> Int -> ( Int, Int )
