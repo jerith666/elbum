@@ -1,4 +1,4 @@
-module ThumbPage exposing (ThumbPageModel, albumParent, albumTitle, colsWidth, sizeForHeight, sizeForWidth, thumbStyles, urlsToGet, view, viewThumb)
+module ThumbPage exposing (ThumbPageModel, albumParent, albumTitle, allUrls, colsWidth, sizeForHeight, sizeForWidth, thumbStyles, urlsToGet, view, viewThumb)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -97,14 +97,27 @@ albumParent getTitle showList albumList =
         ]
 
 
-urlsToGet : ThumbPageModel -> Set String
-urlsToGet thumbPageModel =
+allUrls : ThumbPageModel -> Set String
+allUrls =
+    allImgSrcs
+        >> List.map .url
+        >> Set.fromList
+
+
+allImgSrcs : ThumbPageModel -> List ImgSrc
+allImgSrcs thumbPageModel =
     let
         ( _, thumbWidth ) =
             colsWidth thumbPageModel.bodyViewport
+    in
+    List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
 
+
+urlsToGet : ThumbPageModel -> Set String
+urlsToGet thumbPageModel =
+    let
         srcs =
-            List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
+            allImgSrcs thumbPageModel
 
         vPort =
             thumbPageModel.rootDivViewport

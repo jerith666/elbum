@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, eqIgnoringVpInfo, getImgPosition, hashForAlbum, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, eqIgnoringVpInfo, getImgPosition, hashForAlbum, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -35,7 +35,13 @@ type AlbumPage
         , scroll : Maybe Float
         , touchState : TouchState
         , imgPosition : Maybe Element
+        , thumbLoadState : ThumbLoadState
         }
+
+
+type ThumbLoadState
+    = SomeMissing
+    | AllLoaded
 
 
 type alias ViewportInfo =
@@ -69,6 +75,17 @@ update msg model scroll =
 
                         ( progModel, progCmd ) =
                             progInit th.vpInfo.bodyViewport curImg w h
+
+                        imgCount =
+                            List.length prevImgs + 1 + List.length nextImgs
+
+                        thumbLoadState =
+                            case imgCount == Set.size th.readyToDisplayImages of
+                                True ->
+                                    AllLoaded
+
+                                False ->
+                                    SomeMissing
                     in
                     ( FullImage
                         { prevImgs = prevImgs
@@ -83,6 +100,7 @@ update msg model scroll =
                         , scroll = scroll
                         , touchState = TU.init
                         , imgPosition = Nothing
+                        , thumbLoadState = thumbLoadState
                         }
                     , Cmd.batch
                         [ Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd progCmd
@@ -113,18 +131,28 @@ update msg model scroll =
 
                                 Just pos ->
                                     Task.attempt (\_ -> NoUpdate) <| setViewportOf rootDivId 0 pos
-                    in
-                    ( Thumbs
-                        { album =
-                            { title = fi.album.title
-                            , imageFirst = newFirst
-                            , imageRest = newRest
-                            , thumbnail = fi.album.thumbnail
+
+                        th =
+                            { album =
+                                { title = fi.album.title
+                                , imageFirst = newFirst
+                                , imageRest = newRest
+                                , thumbnail = fi.album.thumbnail
+                                }
+                            , vpInfo = fi.vpInfo
+                            , justLoadedImages = empty
+                            , readyToDisplayImages = empty
                             }
-                        , vpInfo = fi.vpInfo
-                        , justLoadedImages = empty
-                        , readyToDisplayImages = empty
-                        }
+
+                        readyToDisplayImages =
+                            case fi.thumbLoadState of
+                                SomeMissing ->
+                                    empty
+
+                                AllLoaded ->
+                                    allUrls <| thumbModel th
+                    in
+                    ( Thumbs { th | readyToDisplayImages = readyToDisplayImages }
                     , scrollCmd
                     )
 
@@ -275,17 +303,20 @@ urlsToGet : AlbumPage -> Set String
 urlsToGet albumPage =
     case albumPage of
         Thumbs th ->
-            ThumbPage.urlsToGet
-                { album = th.album
-                , parents = []
-                , bodyViewport = th.vpInfo.bodyViewport
-                , rootDivViewport = th.vpInfo.rootDivViewport
-                , justLoadedImages = th.justLoadedImages
-                , readyToDisplayImages = th.readyToDisplayImages
-                }
+            ThumbPage.urlsToGet <| thumbModel th
 
         _ ->
             empty
+
+
+thumbModel th =
+    { album = th.album
+    , parents = []
+    , bodyViewport = th.vpInfo.bodyViewport
+    , rootDivViewport = th.vpInfo.rootDivViewport
+    , justLoadedImages = th.justLoadedImages
+    , readyToDisplayImages = th.readyToDisplayImages
+    }
 
 
 titleOf : AlbumPage -> String
