@@ -476,8 +476,8 @@ eqIgnoringVpInfo aPage1 aPage2 =
                     False
 
                 FullImage fi2 ->
-                    fi1.prevImgs
-                        == fi2.prevImgs
+                    safeEq fi1.prevImgs
+                        fi2.prevImgs
                         && fi1.album
                         == fi2.album
                         && fi1.progModel

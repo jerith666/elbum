@@ -1,4 +1,4 @@
-module Utils.ListUtils exposing (dictWithValues, dropThrough, dropThroughPred, encodePath, fromMaybe, mapI, shiftLeft, shiftRight, shiftToBeginning)
+module Utils.ListUtils exposing (dictWithValues, dropThrough, dropThroughPred, encodePath, fromMaybe, mapI, safeEq, shiftLeft, shiftRight, shiftToBeginning)
 
 import Dict exposing (..)
 import Set exposing (..)
