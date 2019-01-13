@@ -3,7 +3,7 @@ let
   inherit (nixpkgs) pkgs;
   #ghc = pkgs.haskell.packages.${compiler}.ghcWithPackages (ps: with ps; [
   ghc = pkgs.haskellPackages.ghcWithPackages (ps: with ps; [
-          friday-juicypixels elm-bridge friday directory_1_3_3_1 regex-compat
+          friday-juicypixels elm-bridge friday regex-compat
         ]);
 in
 pkgs.stdenv.mkDerivation {
