@@ -130,7 +130,7 @@ update msg model scroll =
                                     Cmd.none
 
                                 Just pos ->
-                                    Task.attempt (\_ -> NoUpdate) <| setViewportOf rootDivId 0 pos
+                                    Task.attempt (always NoUpdate) <| setViewportOf rootDivId 0 pos
 
                         th =
                             { album =

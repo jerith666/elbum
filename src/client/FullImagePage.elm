@@ -78,7 +78,7 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
                 (fullImagePageModel.album.imageFirst.altText ++ xOfY)
                 parents
                 navMsgs.showList
-                [ albumParent getAlbumTitle (\_ -> navMsgs.backToThumbsMsg) fullImagePageModel.album ]
+                [ albumParent getAlbumTitle (always navMsgs.backToThumbsMsg) fullImagePageModel.album ]
                 []
             ]
         , viewImg navMsgs.nextMsg touchMsgs wrapProgMsg fullImagePageModel

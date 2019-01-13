@@ -154,9 +154,7 @@ urlsToGet thumbPageModel =
             List.filter
                 (\url -> not <| member url <| Set.union thumbPageModel.justLoadedImages thumbPageModel.readyToDisplayImages)
             <|
-                List.map
-                    (\i -> i.url)
-                    prioritySrcs
+                List.map .url prioritySrcs
 
 
 viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)

@@ -351,7 +351,7 @@ update msg model =
                 scrollCmd =
                     case maybeScroll of
                         Just pos ->
-                            Task.attempt (\_ -> NoBootstrap) <| setViewportOf rootDivId 0 pos
+                            Task.attempt (always NoBootstrap) <| setViewportOf rootDivId 0 pos
 
                         Nothing ->
                             scrollToTop ScrollSucceeded ScrollFailed
@@ -422,7 +422,7 @@ update msg model =
                 Maybe.map
                     (\s ->
                         Task.attempt
-                            (\_ -> NoBootstrap)
+                            (always NoBootstrap)
                         <|
                             setViewportOf rootDivId 0 <|
                                 log "startup scroll to" s
@@ -1086,7 +1086,7 @@ getUrls existingUrls newUrls =
 
 decodeUrlResult : String -> Result Http.Error () -> AlbumBootstrapMsg
 decodeUrlResult origUrl result =
-    either (ImageFailed origUrl) (\_ -> ImageLoaded origUrl) result
+    either (ImageFailed origUrl) (always <| ImageLoaded origUrl) result
 
 
 subscriptions : AlbumBootstrap -> Sub AlbumBootstrapMsg
