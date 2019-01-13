@@ -3,16 +3,12 @@ module EqTest exposing (main)
 import Html exposing (..)
 
 
-oneSrc =
-    { url = "a url", x = 1, y = 2 }
+oneThing =
+    True
 
 
-oneImg =
-    { altText = "an image", srcSetFirst = oneSrc, srcSetRest = [ oneSrc ] }
-
-
-someImgs n =
-    List.repeat n oneImg
+someThings n =
+    List.repeat n oneThing
 
 
 main =
@@ -28,7 +24,7 @@ main =
                 l =
                     String.fromInt i ++ " ?= " ++ String.fromInt j
             in
-            case Debug.log ("testing " ++ l) <| someImgs i == someImgs j of
+            case Debug.log ("testing " ++ l) <| someThings i == someThings j of
                 True ->
                     l ++ ": True"
 
@@ -39,17 +35,3 @@ main =
             List.map test cp
     in
     div [] <| List.intersperse (br [] []) <| List.map text rs
-
-
-type alias Image =
-    { altText : String
-    , srcSetFirst : ImgSrc
-    , srcSetRest : List ImgSrc
-    }
-
-
-type alias ImgSrc =
-    { url : String
-    , x : Int
-    , y : Int
-    }
