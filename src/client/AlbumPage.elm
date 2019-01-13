@@ -465,7 +465,7 @@ eqIgnoringVpInfo aPage1 aPage2 =
         Thumbs th1 ->
             case aPage2 of
                 Thumbs th2 ->
-                    th1.album == th2.album && th1.justLoadedImages == th2.justLoadedImages && th1.readyToDisplayImages == th2.readyToDisplayImages
+                    { th2 | vpInfo = th1.vpInfo } == th1
 
                 FullImage fi ->
                     False
@@ -478,13 +478,9 @@ eqIgnoringVpInfo aPage1 aPage2 =
                 FullImage fi2 ->
                     safeEq fi1.prevImgs
                         fi2.prevImgs
-                        && fi1.album
-                        == fi2.album
-                        && fi1.progModel
-                        == fi2.progModel
-                        && fi1.scroll
-                        == fi2.scroll
-                        && fi1.touchState
-                        == fi2.touchState
-                        && fi1.imgPosition
-                        == fi2.imgPosition
+                        && ({ fi2
+                                | vpInfo = fi1.vpInfo
+                                , prevImgs = []
+                            }
+                                == { fi1 | prevImgs = [] }
+                           )
