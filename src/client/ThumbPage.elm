@@ -152,7 +152,13 @@ urlsToGet thumbPageModel =
     Set.fromList <|
         List.take 5 <|
             List.filter
-                (\url -> not <| member url <| Set.union thumbPageModel.justLoadedImages thumbPageModel.readyToDisplayImages)
+                (\url ->
+                    not <|
+                        member url <|
+                            Set.union
+                                thumbPageModel.justLoadedImages
+                                thumbPageModel.readyToDisplayImages
+                )
             <|
                 List.map .url prioritySrcs
 
@@ -246,8 +252,14 @@ spreadThumbs : Int -> List Image -> List (List ( Image, Int )) -> List (List ( I
 spreadThumbs maxCols images alreadySpreadImages =
     case List.head images of
         Just nextImg ->
-            insertImage maxCols (List.sum <| List.map List.length alreadySpreadImages) nextImg alreadySpreadImages
-                |> spreadThumbs maxCols (List.drop 1 images)
+            insertImage
+                maxCols
+                (List.sum <| List.map List.length alreadySpreadImages)
+                nextImg
+                alreadySpreadImages
+                |> spreadThumbs
+                    maxCols
+                    (List.drop 1 images)
 
         Nothing ->
             alreadySpreadImages
@@ -280,7 +292,10 @@ findShortest imageLists =
     List.foldr
         shorter
         shorterBaseCase
-        (List.indexedMap (\a b -> ( a, b )) (List.map (List.sum << List.map (imgHeight << Tuple.first)) imageLists))
+        (List.indexedMap
+            (\a b -> ( a, b ))
+            (List.map (List.sum << List.map (imgHeight << Tuple.first)) imageLists)
+        )
 
 
 

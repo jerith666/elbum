@@ -71,7 +71,10 @@ update msg model scroll =
                 Thumbs th ->
                     let
                         ( w, h ) =
-                            fitImage curImg.srcSetFirst (floor th.vpInfo.bodyViewport.viewport.width) (floor th.vpInfo.bodyViewport.viewport.height)
+                            fitImage
+                                curImg.srcSetFirst
+                                (floor th.vpInfo.bodyViewport.viewport.width)
+                                (floor th.vpInfo.bodyViewport.viewport.height)
 
                         ( progModel, progCmd ) =
                             progInit th.vpInfo.bodyViewport curImg w h
@@ -260,7 +263,10 @@ updatePrevNext model shifter =
                     else
                         let
                             ( w, h ) =
-                                fitImage newCur.srcSetFirst (floor fi.vpInfo.bodyViewport.viewport.width) (floor fi.vpInfo.bodyViewport.viewport.height)
+                                fitImage
+                                    newCur.srcSetFirst
+                                    (floor fi.vpInfo.bodyViewport.viewport.width)
+                                    (floor fi.vpInfo.bodyViewport.viewport.height)
                         in
                         progInit fi.vpInfo.bodyViewport newCur w h
             in
@@ -405,10 +411,10 @@ subscriptions albumPage wrapper showParent =
             onEscape showParent <| wrapper NoUpdate
 
         FullImage fi ->
-            Sub.batch
-                [ Sub.map wrapper <| Sub.map FullMsg <| ProgressiveImage.subscriptions fi.progModel
-                , Sub.map wrapper <|
-                    onKeyDown <|
+            Sub.map wrapper <|
+                Sub.batch <|
+                    [ Sub.map FullMsg <| ProgressiveImage.subscriptions fi.progModel
+                    , onKeyDown <|
                         Json.Decode.map
                             (\k ->
                                 case k of
@@ -426,7 +432,7 @@ subscriptions albumPage wrapper showParent =
                             )
                         <|
                             field "key" string
-                ]
+                    ]
 
 
 pageSize : AlbumPage -> ViewportInfo

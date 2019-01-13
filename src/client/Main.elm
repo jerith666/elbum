@@ -149,7 +149,13 @@ update msg model =
         Resize viewport ->
             case model of
                 Sizing sz ->
-                    ( LoadingHomeLink { key = sz.key, bodyViewport = log "window size set" viewport, flags = sz.flags, paths = sz.paths, scroll = sz.scroll }
+                    ( LoadingHomeLink
+                        { key = sz.key
+                        , bodyViewport = log "window size set" viewport
+                        , flags = sz.flags
+                        , paths = sz.paths
+                        , scroll = sz.scroll
+                        }
                     , Http.get { url = "home", expect = expectString <| either NoHome YesHome }
                     )
 
@@ -238,7 +244,12 @@ update msg model =
                                 newModel =
                                     LoadedList
                                         { key = ld.key
-                                        , listPage = AlbumListPage { albumList = albumList, bodyViewport = ld.bodyViewport, parents = [] }
+                                        , listPage =
+                                            AlbumListPage
+                                                { albumList = albumList
+                                                , bodyViewport = ld.bodyViewport
+                                                , parents = []
+                                                }
                                         , flags = ld.flags
                                         , home = ld.home
                                         , pendingUrls = Dict.empty
@@ -248,7 +259,10 @@ update msg model =
                                         }
 
                                 pathsThenScroll =
-                                    toCmd <| sequence (pathsToCmd newModel ld.paths) <| fromMaybe <| scrollToCmd newModel ld.scroll
+                                    toCmd <|
+                                        sequence (pathsToCmd newModel ld.paths) <|
+                                            fromMaybe <|
+                                                scrollToCmd newModel ld.scroll
                             in
                             ( newModel
                             , pathsThenScroll
@@ -259,7 +273,10 @@ update msg model =
                                 albumPage =
                                     Thumbs
                                         { album = album
-                                        , vpInfo = { bodyViewport = ld.bodyViewport, rootDivViewport = Nothing }
+                                        , vpInfo =
+                                            { bodyViewport = ld.bodyViewport
+                                            , rootDivViewport = Nothing
+                                            }
                                         , justLoadedImages = Set.empty
                                         , readyToDisplayImages = Set.empty
                                         }
@@ -281,7 +298,10 @@ update msg model =
                                         }
 
                                 pathsThenScroll =
-                                    toCmd <| sequence (pathsToCmd newModel ld.paths) <| fromMaybe <| scrollToCmd newModel ld.scroll
+                                    toCmd <|
+                                        sequence (pathsToCmd newModel ld.paths) <|
+                                            fromMaybe <|
+                                                scrollToCmd newModel ld.scroll
                             in
                             ( newModel
                             , Cmd.batch
@@ -315,7 +335,11 @@ update msg model =
                         urls =
                             AlbumPage.urlsToGet newPage
                     in
-                    ( LoadedAlbum { la | albumPage = newPage, pendingUrls = Dict.union newPendingUrls <| dictWithValues urls UrlRequested }
+                    ( LoadedAlbum
+                        { la
+                            | albumPage = newPage
+                            , pendingUrls = Dict.union newPendingUrls <| dictWithValues urls UrlRequested
+                        }
                     , Cmd.batch
                         [ getUrls newPendingUrls urls
                         , Cmd.map PageMsg newPageCmd
@@ -565,7 +589,15 @@ sequence mm1 ms =
 
 
 gotHome lh home =
-    ( Loading { key = lh.key, bodyViewport = lh.bodyViewport, progress = Nothing, flags = lh.flags, home = home, paths = lh.paths, scroll = lh.scroll }
+    ( Loading
+        { key = lh.key
+        , bodyViewport = lh.bodyViewport
+        , progress = Nothing
+        , flags = lh.flags
+        , home = home
+        , paths = lh.paths
+        , scroll = lh.scroll
+        }
     , Http.request
         { method = "GET"
         , headers = []
@@ -796,7 +828,10 @@ pathsToCmd model mPaths =
                         AlbumListPage alp ->
                             --TODO maybe don't always prepend aTN here, only if at root?
                             --TODO I think it's okay to drop the scroll positions here, should only happen at initial load (?)
-                            pathsToCmdImpl { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport } (alp.albumList :: List.map Tuple.first alp.parents) paths
+                            pathsToCmdImpl
+                                { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }
+                                (alp.albumList :: List.map Tuple.first alp.parents)
+                                paths
 
                 LoadedAlbum la ->
                     pathsToCmdImpl (pageSize la.albumPage) (List.map Tuple.first la.parents) paths
@@ -813,7 +848,11 @@ pathsToCmdImpl viewport parents paths =
             log "pathsToCmdImpl has no root" Nothing
 
         Just root ->
-            navFrom viewport root [] paths <| Just <| ViewList (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] }) Nothing
+            navFrom viewport root [] paths <|
+                Just <|
+                    ViewList
+                        (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
+                        Nothing
 
 
 scrollToCmd : AlbumBootstrap -> Maybe Float -> Maybe AlbumBootstrapMsg
@@ -866,7 +905,16 @@ navFrom viewport root parents paths defcmd =
                 Just pChild ->
                     case pChild of
                         List albumList ->
-                            navFrom viewport albumList newParents ps <| Just <| ViewList (AlbumListPage { albumList = albumList, bodyViewport = viewport.bodyViewport, parents = List.map (\p -> ( p, Nothing )) newParents }) Nothing
+                            navFrom viewport albumList newParents ps <|
+                                Just <|
+                                    ViewList
+                                        (AlbumListPage
+                                            { albumList = albumList
+                                            , bodyViewport = viewport.bodyViewport
+                                            , parents = List.map (\p -> ( p, Nothing )) newParents
+                                            }
+                                        )
+                                        Nothing
 
                         Leaf album ->
                             navForAlbum viewport album ps newParents
@@ -880,7 +928,16 @@ navForAlbum vpInfo album ps newParents =
     in
     case ps of
         [] ->
-            Just <| ViewAlbum (Thumbs { album = album, vpInfo = vpInfo, justLoadedImages = Set.empty, readyToDisplayImages = Set.empty }) parentsNoScroll
+            Just <|
+                ViewAlbum
+                    (Thumbs
+                        { album = album
+                        , vpInfo = vpInfo
+                        , justLoadedImages = Set.empty
+                        , readyToDisplayImages = Set.empty
+                        }
+                    )
+                    parentsNoScroll
 
         i :: _ ->
             case findImg [] album i of
@@ -890,7 +947,10 @@ navForAlbum vpInfo album ps newParents =
                 Just ( prevs, nAlbum ) ->
                     let
                         ( w, h ) =
-                            fitImage nAlbum.imageFirst.srcSetFirst (floor vpInfo.bodyViewport.viewport.width) (floor vpInfo.bodyViewport.viewport.height)
+                            fitImage
+                                nAlbum.imageFirst.srcSetFirst
+                                (floor vpInfo.bodyViewport.viewport.width)
+                                (floor vpInfo.bodyViewport.viewport.height)
 
                         ( progModel, progCmd ) =
                             progInit vpInfo.bodyViewport nAlbum.imageFirst w h
@@ -1055,10 +1115,15 @@ updateImageResult model url result =
 justLoadedReadyToDisplayNextState th url result =
     case result of
         JustCompleted ->
-            Thumbs { th | justLoadedImages = Set.insert url th.justLoadedImages }
+            Thumbs
+                { th | justLoadedImages = Set.insert url th.justLoadedImages }
 
         ReadyToDisplay ->
-            Thumbs { th | justLoadedImages = Set.remove url th.justLoadedImages, readyToDisplayImages = Set.insert url th.readyToDisplayImages }
+            Thumbs
+                { th
+                    | justLoadedImages = Set.remove url th.justLoadedImages
+                    , readyToDisplayImages = Set.insert url th.readyToDisplayImages
+                }
 
         _ ->
             Thumbs th
@@ -1100,7 +1165,14 @@ subscriptions model =
                             NoBootstrap
 
                         ( parent, scroll ) :: grandParents ->
-                            ViewList (AlbumListPage { albumList = parent, bodyViewport = (pageSize la.albumPage).bodyViewport, parents = grandParents }) scroll
+                            ViewList
+                                (AlbumListPage
+                                    { albumList = parent
+                                    , bodyViewport = (pageSize la.albumPage).bodyViewport
+                                    , parents = grandParents
+                                    }
+                                )
+                                scroll
             in
             Sub.batch
                 [ AlbumPage.subscriptions la.albumPage PageMsg showParent
@@ -1118,7 +1190,10 @@ subscriptions model =
                             let
                                 upParent =
                                     onEscape
-                                        (ViewList (AlbumListPage { alp | albumList = parent, parents = grandParents }) scroll)
+                                        (ViewList
+                                            (AlbumListPage { alp | albumList = parent, parents = grandParents })
+                                            scroll
+                                        )
                                         NoBootstrap
                             in
                             Sub.batch [ upParent, onResize <| newSize alp.bodyViewport ]
@@ -1236,7 +1311,13 @@ viewImpl albumBootstrap =
                             )
                             (\album ->
                                 ViewAlbum
-                                    (Thumbs { album = album, vpInfo = { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }, justLoadedImages = Set.empty, readyToDisplayImages = Set.empty })
+                                    (Thumbs
+                                        { album = album
+                                        , vpInfo = { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }
+                                        , justLoadedImages = Set.empty
+                                        , readyToDisplayImages = Set.empty
+                                        }
+                                    )
                                 <|
                                     ( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport )
                                         :: alp.parents

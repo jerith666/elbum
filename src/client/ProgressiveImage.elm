@@ -280,8 +280,16 @@ viewLoadingMain : ProgressiveImageData -> ImgSrc -> Animation.State -> Animation
 viewLoadingMain data imgSrc imgSrcAnimState mainAnimState =
     div
         [ styles [ position relative ] ]
-        [ viewImg data.mainImg data (styledMsgAnimation mainAnimState) [ position absolute, Css.top zero, Css.left zero, zIndex (Css.int 1) ]
-        , viewImg imgSrc data (styledAnimation imgSrcAnimState) []
+        [ viewImg
+            data.mainImg
+            data
+            (styledMsgAnimation mainAnimState)
+            [ position absolute, Css.top zero, Css.left zero, zIndex (Css.int 1) ]
+        , viewImg
+            imgSrc
+            data
+            (styledAnimation imgSrcAnimState)
+            []
         ]
 
 
