@@ -5,6 +5,24 @@ import Set exposing (..)
 import Url exposing (percentEncode)
 
 
+safeEq : List a -> List a -> Bool
+safeEq l1 l2 =
+    let
+        ll1 =
+            List.length l1
+
+        ll2 =
+            List.length l2
+    in
+    case max ll1 ll2 >= 100 of
+        False ->
+            l1 == l2
+
+        True ->
+            (ll1 == ll2)
+                && (List.all identity <| List.map2 (==) l1 l2)
+
+
 {-| splits the path on "/"s, calls encodeUri on each path segment, then reassembles it.
 -}
 encodePath : String -> String

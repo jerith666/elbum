@@ -14,9 +14,10 @@ someThings n =
 main =
     let
         r =
-            List.range 100 101
+            List.range 90 110
 
         cp =
+            --List.filter (\( i, j ) -> i /= j) <|
             List.concatMap (\i -> List.map (\j -> ( i, j )) r) r
 
         test ( i, j ) =
@@ -24,7 +25,7 @@ main =
                 l =
                     String.fromInt i ++ " ?= " ++ String.fromInt j
             in
-            case Debug.log ("testing " ++ l) <| someThings i == someThings j of
+            case Debug.log ("testing " ++ l) <| safeEq (someThings i) (someThings j) of
                 True ->
                     l ++ ": True"
 
@@ -35,3 +36,21 @@ main =
             List.map test cp
     in
     div [] <| List.intersperse (br [] []) <| List.map text rs
+
+
+safeEq : List a -> List a -> Bool
+safeEq l1 l2 =
+    let
+        ll1 =
+            List.length l1
+
+        ll2 =
+            List.length l2
+    in
+    case max ll1 ll2 >= 100 of
+        False ->
+            l1 == l2
+
+        True ->
+            (ll1 == ll2)
+                && (List.all identity <| List.map2 (==) l1 l2)
