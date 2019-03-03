@@ -476,11 +476,5 @@ eqIgnoringVpInfo aPage1 aPage2 =
                     False
 
                 FullImage fi2 ->
-                    safeEq fi1.prevImgs
-                        fi2.prevImgs
-                        && ({ fi2
-                                | vpInfo = fi1.vpInfo
-                                , prevImgs = []
-                            }
-                                == { fi1 | prevImgs = [] }
-                           )
+                    { fi2 | vpInfo = fi1.vpInfo }
+                        == fi1
