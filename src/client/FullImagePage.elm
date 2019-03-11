@@ -132,9 +132,27 @@ viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
 
         imgSrc =
             smallestImageBiggerThan w h img.srcSetFirst img.srcSetRest
+
+        edgeBehaviour =
+            case fullImagePageModel.prevImgs of
+                [] ->
+                    case fullImagePageModel.album.imageRest of
+                        [] ->
+                            BothLimit
+
+                        _ ->
+                            LeftLimit
+
+                _ ->
+                    case fullImagePageModel.album.imageRest of
+                        [] ->
+                            RightLimit
+
+                        _ ->
+                            NeitherLimit
     in
     div
-        (offsetStyles fullImagePageModel.imgPosition fullImagePageModel.offset
+        (offsetStyles edgeBehaviour fullImagePageModel.imgPosition fullImagePageModel.offset
             ++ [ Html.Styled.Attributes.fromUnstyled <| onTouch "start" touchMsgs.touchStartMsg
                , Html.Styled.Attributes.fromUnstyled <| onTouch "move" touchMsgs.touchContinueMsg
                , Html.Styled.Attributes.fromUnstyled <| onTouch "end" touchMsgs.touchPrevNextMsg
@@ -145,8 +163,8 @@ viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
         [ Html.Styled.map wrapProgMsg <| ProgressiveImage.view <| withWidthHeight w h fullImagePageModel.progImgModel ]
 
 
-offsetStyles : Maybe Element -> Offset -> List (Html.Styled.Attribute msg)
-offsetStyles imgPosition offset =
+offsetStyles : SwipeEdgeBehaviour -> Maybe Element -> Offset -> List (Html.Styled.Attribute msg)
+offsetStyles edgeBehaviour imgPosition offset =
     let
         posStyle =
             case offset of
@@ -156,7 +174,7 @@ offsetStyles imgPosition offset =
                 Swipe distance _ ->
                     -- note: no up/down movement is desired, just left/right
                     -- , top <| px <| Tuple.second fullImagePageModel.offset
-                    [ left <| px distance ]
+                    [ left <| px <| elasticDistance edgeBehaviour distance ]
 
                 Zoom (ZoomOffset z) ->
                     case imgPosition of

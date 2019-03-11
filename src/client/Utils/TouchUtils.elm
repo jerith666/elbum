@@ -1,4 +1,4 @@
-module Utils.TouchUtils exposing (Direction(..), Offset(..), TouchState, ZoomOffset(..), applyOffset, cumScale, endZoom, getOffset, init, update)
+module Utils.TouchUtils exposing (Direction(..), Offset(..), SwipeEdgeBehaviour(..), TouchState, ZoomOffset(..), applyOffset, cumScale, elasticDistance, endZoom, getOffset, init, update)
 
 import Basics.Extra exposing (..)
 import Html.Events.Extra.Touch exposing (..)
@@ -16,6 +16,13 @@ type Offset
 type Direction
     = Left
     | Right
+
+
+type SwipeEdgeBehaviour
+    = RightLimit
+    | LeftLimit
+    | BothLimit
+    | NeitherLimit
 
 
 type ZoomOffset
@@ -246,6 +253,44 @@ applyOffset (ZoomOffset z) origLoc =
             transform at <| vec3 locX locY 0
     in
     ( getX newLoc, getY newLoc )
+
+
+elasticDistance edgeBehaviour distance =
+    case edgeBehaviour of
+        RightLimit ->
+            case distance < 0 of
+                True ->
+                    elasticSwipe distance
+
+                False ->
+                    distance
+
+        LeftLimit ->
+            case distance < 0 of
+                True ->
+                    distance
+
+                False ->
+                    elasticSwipe distance
+
+        BothLimit ->
+            elasticSwipe distance
+
+        NeitherLimit ->
+            distance
+
+
+elasticSwipe distance =
+    let
+        expon =
+            0.7
+    in
+    case distance >= 0 of
+        True ->
+            distance ^ expon
+
+        False ->
+            -1 * (abs distance ^ expon)
 
 
 dist : Touch -> Touch -> Float
