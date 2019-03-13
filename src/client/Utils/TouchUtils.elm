@@ -255,6 +255,7 @@ applyOffset (ZoomOffset z) origLoc =
     ( getX newLoc, getY newLoc )
 
 
+elasticDistance : SwipeEdgeBehaviour -> Float -> Float
 elasticDistance edgeBehaviour distance =
     case edgeBehaviour of
         RightLimit ->
@@ -280,6 +281,7 @@ elasticDistance edgeBehaviour distance =
             distance
 
 
+elasticSwipe : Float -> Float
 elasticSwipe distance =
     let
         expon =
