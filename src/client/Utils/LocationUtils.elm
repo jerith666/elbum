@@ -1,8 +1,9 @@
-module Utils.LocationUtils exposing (locToString, parseHash, parseQuery)
+module Utils.LocationUtils exposing (changeToString, locToString, parseHash, parseQuery)
 
 import Browser.Navigation exposing (..)
 import Http exposing (..)
 import Parser exposing (..)
+import RouteUrl exposing (UrlChange(..))
 import Url exposing (..)
 
 
@@ -52,3 +53,30 @@ parseQuery query =
 locToString : Url -> String
 locToString =
     toString
+
+
+changeToString : UrlChange -> String
+changeToString change =
+    case change of
+        NewPath _ data ->
+            data.path
+                |> addPrefixed "?" data.query
+                |> addPrefixed "#" data.fragment
+
+        NewQuery _ data ->
+            "?"
+                ++ data.query
+                |> addPrefixed "#" data.fragment
+
+        NewFragment _ fragment ->
+            "#" ++ fragment
+
+
+addPrefixed : String -> Maybe String -> String -> String
+addPrefixed prefix maybeSegment starter =
+    case maybeSegment of
+        Nothing ->
+            starter
+
+        Just segment ->
+            starter ++ prefix ++ segment
