@@ -37,14 +37,14 @@ type AlbumBootstrap
         { key : Key
         , flags : AlbumBootstrapFlags
         , paths : Maybe (List String)
-        , scroll : Maybe Float
+        , scrollToAfterLoad : Maybe Float
         }
     | LoadingHomeLink
         { key : Key
         , bodyViewport : Viewport
         , flags : AlbumBootstrapFlags
         , paths : Maybe (List String)
-        , scroll : Maybe Float
+        , scrollToAfterLoad : Maybe Float
         }
     | Loading
         { key : Key
@@ -53,7 +53,7 @@ type AlbumBootstrap
         , flags : AlbumBootstrapFlags
         , home : Maybe String
         , paths : Maybe (List String)
-        , scroll : Maybe Float
+        , scrollToAfterLoad : Maybe Float
         }
     | LoadError
         { key : Key
@@ -109,12 +109,12 @@ type AlbumBootstrapMsg
     | ImageLoaded String
     | ImageReadyToDisplay String
     | ImageFailed String Http.Error
-    | ScheduleScroll (Maybe Float)
+    | EnactScrollFromUrl (Maybe Float)
     | ScrolledTo Viewport
     | RawScrolledTo Viewport
     | DebounceMsg Debounce.Msg
     | Nav (List String)
-    | Scroll Float
+    | SetScrollFromUrl Float
     | Sequence AlbumBootstrapMsg (List AlbumBootstrapMsg)
     | SequenceCmd (Cmd AlbumBootstrapMsg) (List (Cmd AlbumBootstrapMsg))
     | LinkClicked UrlRequest
@@ -136,7 +136,7 @@ main =
 
 init : AlbumBootstrapFlags -> Key -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 init flags key =
-    ( Sizing { key = key, flags = flags, paths = Nothing, scroll = Nothing }
+    ( Sizing { key = key, flags = flags, paths = Nothing, scrollToAfterLoad = Nothing }
     , Task.perform Resize getViewport
     )
 
@@ -152,7 +152,7 @@ update msg model =
                         , bodyViewport = log "window size set" viewport
                         , flags = sz.flags
                         , paths = sz.paths
-                        , scroll = sz.scroll
+                        , scrollToAfterLoad = sz.scrollToAfterLoad
                         }
                     , Http.get { url = "home", expect = expectString <| either NoHome YesHome }
                     )
@@ -260,7 +260,7 @@ update msg model =
                                     toCmd <|
                                         sequence (pathsToCmd newModel ld.paths) <|
                                             fromMaybe <|
-                                                scrollToCmd newModel ld.scroll
+                                                scrollToCmd newModel ld.scrollToAfterLoad
                             in
                             ( newModel
                             , pathsThenScroll
@@ -299,7 +299,7 @@ update msg model =
                                     toCmd <|
                                         sequence (pathsToCmd newModel ld.paths) <|
                                             fromMaybe <|
-                                                scrollToCmd newModel ld.scroll
+                                                scrollToCmd newModel ld.scrollToAfterLoad
                             in
                             ( newModel
                             , Cmd.batch
@@ -438,7 +438,7 @@ update msg model =
         ScrolledTo viewport ->
             ( withScrollPos (log "ScrolledTo: " viewport) model, Cmd.none )
 
-        ScheduleScroll scroll ->
+        EnactScrollFromUrl scroll ->
             ( model
             , Maybe.withDefault Cmd.none <|
                 Maybe.map
@@ -452,8 +452,15 @@ update msg model =
                     scroll
             )
 
-        Scroll s ->
-            ( withScroll model s, toCmd <| Maybe.withDefault NoBootstrap <| scrollToCmd model <| Just s )
+        SetScrollFromUrl s ->
+            ( -- case 1: we're early in the loading process, the page isn't in a state where we can scroll right now
+              -- so, store the target we want to scroll to in the model for later enactment (in YesAlbum case, above)
+              withScrollToAfterLoad model s
+              -- case 2: we've loaded the album or album list and the page is in a state where we can scroll right now
+              -- so, create a command to enact that scroll (but not a direct setViewportOf cmd, indirect through
+              -- EnactScrollFromUrl ... probably for timing reasons, exact details would have to be dug up from git logs)
+            , toCmd <| Maybe.withDefault NoBootstrap <| scrollToCmd model <| Just s
+            )
 
         Nav paths ->
             ( withPaths model paths, toCmd <| Maybe.withDefault NoBootstrap <| pathsToCmd model <| Just paths )
@@ -588,7 +595,7 @@ gotHome lh home =
         , flags = lh.flags
         , home = home
         , paths = lh.paths
-        , scroll = lh.scroll
+        , scrollToAfterLoad = lh.scrollToAfterLoad
         }
     , Http.request
         { method = "GET"
@@ -628,7 +635,7 @@ navToMsg loc =
                     NoBootstrap
                         -- hack delay
                         :: (fromMaybe <|
-                                Maybe.map Scroll (scroll |> Maybe.andThen String.toFloat)
+                                Maybe.map SetScrollFromUrl (scroll |> Maybe.andThen String.toFloat)
                            )
     in
     case hashMsgs ++ queryMsgs of
@@ -773,17 +780,17 @@ withPaths model paths =
             LoadedAlbum { la | navState = NavInProgress }
 
 
-withScroll : AlbumBootstrap -> Float -> AlbumBootstrap
-withScroll model scroll =
+withScrollToAfterLoad : AlbumBootstrap -> Float -> AlbumBootstrap
+withScrollToAfterLoad model scrollToAfterLoad =
     case model of
         Sizing sz ->
-            Sizing { sz | scroll = Just scroll }
+            Sizing { sz | scrollToAfterLoad = Just scrollToAfterLoad }
 
         LoadingHomeLink lh ->
-            LoadingHomeLink { lh | scroll = Just scroll }
+            LoadingHomeLink { lh | scrollToAfterLoad = Just scrollToAfterLoad }
 
         Loading ld ->
-            Loading { ld | scroll = Just scroll }
+            Loading { ld | scrollToAfterLoad = Just scrollToAfterLoad }
 
         LoadError _ ->
             model
@@ -848,10 +855,10 @@ pathsToCmdImpl viewport parents paths =
 
 
 scrollToCmd : AlbumBootstrap -> Maybe Float -> Maybe AlbumBootstrapMsg
-scrollToCmd model scroll =
+scrollToCmd model scrollToAfterLoad =
     let
         scrollCmd =
-            Just <| ScheduleScroll scroll
+            Just <| EnactScrollFromUrl scrollToAfterLoad
     in
     case model of
         Sizing _ ->
