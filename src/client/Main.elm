@@ -113,8 +113,6 @@ type AlbumBootstrapMsg
     | ScrolledTo Viewport
     | RawScrolledTo Viewport
     | DebounceMsg Debounce.Msg
-    | ScrollSucceeded
-    | ScrollFailed String
     | Nav (List String)
     | Scroll Float
     | Sequence AlbumBootstrapMsg (List AlbumBootstrapMsg)
@@ -378,7 +376,7 @@ update msg model =
                             Task.attempt (always NoBootstrap) <| setViewportOf rootDivId 0 pos
 
                         Nothing ->
-                            scrollToTop ScrollSucceeded ScrollFailed
+                            scrollToTop NoBootstrap <| always NoBootstrap
 
                 title =
                     case albumListPage of
@@ -417,7 +415,7 @@ update msg model =
             in
             ( newModel
             , Cmd.batch
-                [ scrollToTop ScrollSucceeded ScrollFailed
+                [ scrollToTop NoBootstrap <| always NoBootstrap
                 , getUrls Dict.empty urls
                 , getImgPos
                 ]
@@ -453,12 +451,6 @@ update msg model =
                     )
                     scroll
             )
-
-        ScrollSucceeded ->
-            ( model, Cmd.none )
-
-        ScrollFailed _ ->
-            ( model, Cmd.none )
 
         Scroll s ->
             ( withScroll model s, toCmd <| Maybe.withDefault NoBootstrap <| scrollToCmd model <| Just s )
