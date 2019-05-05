@@ -36,14 +36,14 @@ type AlbumBootstrap
     = Sizing
         { key : Key
         , flags : AlbumBootstrapFlags
-        , paths : Maybe (List String)
+        , albumPathsAfterLoad : Maybe (List String)
         , scrollToAfterLoad : Maybe Float
         }
     | LoadingHomeLink
         { key : Key
         , bodyViewport : Viewport
         , flags : AlbumBootstrapFlags
-        , paths : Maybe (List String)
+        , albumPathsAfterLoad : Maybe (List String)
         , scrollToAfterLoad : Maybe Float
         }
     | Loading
@@ -52,7 +52,7 @@ type AlbumBootstrap
         , progress : Maybe Progress
         , flags : AlbumBootstrapFlags
         , home : Maybe String
-        , paths : Maybe (List String)
+        , albumPathsAfterLoad : Maybe (List String)
         , scrollToAfterLoad : Maybe Float
         }
     | LoadError
@@ -113,7 +113,7 @@ type AlbumBootstrapMsg
     | ScrolledTo Viewport
     | RawScrolledTo Viewport
     | DebounceMsg Debounce.Msg
-    | Nav (List String)
+    | SetAlbumPathFromUrl (List String)
     | SetScrollFromUrl Float
     | Sequence AlbumBootstrapMsg (List AlbumBootstrapMsg)
     | SequenceCmd (Cmd AlbumBootstrapMsg) (List (Cmd AlbumBootstrapMsg))
@@ -136,7 +136,7 @@ main =
 
 init : AlbumBootstrapFlags -> Key -> ( AlbumBootstrap, Cmd AlbumBootstrapMsg )
 init flags key =
-    ( Sizing { key = key, flags = flags, paths = Nothing, scrollToAfterLoad = Nothing }
+    ( Sizing { key = key, flags = flags, albumPathsAfterLoad = Nothing, scrollToAfterLoad = Nothing }
     , Task.perform Resize getViewport
     )
 
@@ -151,7 +151,7 @@ update msg model =
                         { key = sz.key
                         , bodyViewport = log "window size set" viewport
                         , flags = sz.flags
-                        , paths = sz.paths
+                        , albumPathsAfterLoad = sz.albumPathsAfterLoad
                         , scrollToAfterLoad = sz.scrollToAfterLoad
                         }
                     , Http.get { url = "home", expect = expectString <| either NoHome YesHome }
@@ -258,7 +258,7 @@ update msg model =
 
                                 pathsThenScroll =
                                     toCmd <|
-                                        sequence (pathsToCmd newModel ld.paths) <|
+                                        sequence (pathsToCmd newModel ld.albumPathsAfterLoad) <|
                                             fromMaybe <|
                                                 scrollToCmd newModel ld.scrollToAfterLoad
                             in
@@ -297,7 +297,7 @@ update msg model =
 
                                 pathsThenScroll =
                                     toCmd <|
-                                        sequence (pathsToCmd newModel ld.paths) <|
+                                        sequence (pathsToCmd newModel ld.albumPathsAfterLoad) <|
                                             fromMaybe <|
                                                 scrollToCmd newModel ld.scrollToAfterLoad
                             in
@@ -462,8 +462,12 @@ update msg model =
             , toCmd <| Maybe.withDefault NoBootstrap <| scrollToCmd model <| Just s
             )
 
-        Nav paths ->
-            ( withPaths model paths, toCmd <| Maybe.withDefault NoBootstrap <| pathsToCmd model <| Just paths )
+        SetAlbumPathFromUrl paths ->
+            -- as with SetScrollFromUrl, 2 cases: early loading, save for later; and already loaded, apply now
+            -- but no hacky delay here
+            ( withAlbumPathsAfterLoad model paths
+            , toCmd <| Maybe.withDefault NoBootstrap <| pathsToCmd model <| Just paths
+            )
 
         Sequence next rest ->
             let
@@ -594,7 +598,7 @@ gotHome lh home =
         , progress = Nothing
         , flags = lh.flags
         , home = home
-        , paths = lh.paths
+        , albumPathsAfterLoad = lh.albumPathsAfterLoad
         , scrollToAfterLoad = lh.scrollToAfterLoad
         }
     , Http.request
@@ -624,7 +628,7 @@ navToMsg loc =
                     []
 
                 Ok paths ->
-                    [ Nav paths ]
+                    [ SetAlbumPathFromUrl paths ]
 
         queryMsgs =
             case parsedQuery of
@@ -758,17 +762,17 @@ withScrollPos rootDivViewport model =
             LoadedList { ll | rootDivViewport = Just rootDivViewport }
 
 
-withPaths : AlbumBootstrap -> List String -> AlbumBootstrap
-withPaths model paths =
+withAlbumPathsAfterLoad : AlbumBootstrap -> List String -> AlbumBootstrap
+withAlbumPathsAfterLoad model albumPathsAfterLoad =
     case model of
         Sizing sz ->
-            Sizing { sz | paths = Just paths }
+            Sizing { sz | albumPathsAfterLoad = Just albumPathsAfterLoad }
 
         LoadingHomeLink lh ->
-            LoadingHomeLink { lh | paths = Just paths }
+            LoadingHomeLink { lh | albumPathsAfterLoad = Just albumPathsAfterLoad }
 
         Loading ld ->
-            Loading { ld | paths = Just paths }
+            Loading { ld | albumPathsAfterLoad = Just albumPathsAfterLoad }
 
         LoadError _ ->
             model
