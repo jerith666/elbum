@@ -199,7 +199,7 @@ update msg model =
                                     fi.vpInfo
                             in
                             ( LoadedAlbum { la | albumPage = FullImage { fi | vpInfo = { oldVpInfo | bodyViewport = log "window size updated for full" viewport } } }
-                            , Cmd.none
+                            , Cmd.map PageMsg getImgPosition
                             )
 
                 LoadedList ll ->
