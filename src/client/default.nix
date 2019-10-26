@@ -19,8 +19,9 @@ let
       buildInputs = [ elmPackages.elm ];
 
       postUnpack = (elmPackages.fetchElmDeps {
+        elmVersion = "0.19.1";
         elmPackages = import ./nix/elm-srcs.nix;
-        versionsDat = ./nix/versions.dat;
+        registryDat = ./nix/registry.dat;
       });
 
       gitignore = fetchurl {
@@ -29,7 +30,7 @@ let
         sha512 = "2yiv1fgjlwmi6x0865xm9cqjnd2xzqlywvkn8f1igqd56z5afh24bb0xs0k4xcfwvyvgsvnaqql6s252vg780sr5mxy7z3rnm5hbhkg";
       };
 
-      prePatch = "pushd $ELM_HOME/*/package/elm/core/*; cp -v ${gitignore} .gitignore";
+      prePatch = "pushd $ELM_HOME/*/packages/elm/core/*; cp -v ${gitignore} .gitignore";
       patches = lib.reverseList (
         map (p: fetchurl {
               url = "https://github.com/elm/core/pull/1018/commits/${p.c}.patch";
