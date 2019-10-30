@@ -43,6 +43,7 @@ view scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
         flags
         column
         (Just scrollMsgMaker)
+        thumbPageModel.bodyViewport
         [ overflowX Css.hidden ]
     <|
         [ albumTitle thumbPageModel.album.title thumbPageModel.parents showList [] [ position fixed ]

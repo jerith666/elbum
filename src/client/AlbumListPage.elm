@@ -21,6 +21,7 @@ view (AlbumListPage alp) viewList viewAlbum scrollMsgMaker flags =
         flags
         column
         (Just scrollMsgMaker)
+        alp.bodyViewport
         []
     <|
         [ albumTitle alp.albumList.listTitle (List.map Tuple.first alp.parents) viewList [] [] ]

@@ -61,6 +61,7 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
         flags
         column
         Nothing
+        fullImagePageModel.viewport
         [ overflow Css.hidden
         , alignItems center
         , Css.property "justify-content" "center"
@@ -95,7 +96,7 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
                     ]
                     [ Html.Styled.text "x" ]
                , a
-                    [ styles <| navBoxStyles ++ [ bottom (px 5), right (px 5), textDecoration none ]
+                    [ styles <| navBoxStyles ++ [ top (px <| fullImagePageModel.viewport.viewport.height - navEltSize - 5), right (px 5), textDecoration none ]
                     , href <| encodePath fullImagePageModel.album.imageFirst.srcSetFirst.url
                     , Html.Styled.Attributes.target "_blank"
                     ]

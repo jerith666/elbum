@@ -65,12 +65,12 @@ rootPos flags =
         position absolute
 
 
-rootDiv : AlbumBootstrapFlags -> Maybe (Viewport -> msg) -> List Style -> List (Html msg) -> Html msg
-rootDiv flags scrollMsgMaker extraStyles =
+rootDiv : AlbumBootstrapFlags -> Maybe (Viewport -> msg) -> Viewport -> List Style -> List (Html msg) -> Html msg
+rootDiv flags scrollMsgMaker viewport extraStyles =
     div <|
         [ styles <|
             [ rootPos flags
-            , Css.height (vh 100)
+            , Css.height (px viewport.viewport.height)
             , Css.width (vw 100)
             , overflowX Css.hidden
             , overflowY auto
@@ -118,9 +118,9 @@ viewportDecoder =
         (field "clientHeight" Json.Decode.float)
 
 
-rootDivFlex : AlbumBootstrapFlags -> FlexDirection compatible -> Maybe (Viewport -> msg) -> List Style -> List (Html msg) -> Html msg
-rootDivFlex flags dir scrollMsgMaker extraStyles =
-    rootDiv flags scrollMsgMaker <|
+rootDivFlex : AlbumBootstrapFlags -> FlexDirection compatible -> Maybe (Viewport -> msg) -> Viewport -> List Style -> List (Html msg) -> Html msg
+rootDivFlex flags dir scrollMsgMaker viewport extraStyles =
+    rootDiv flags scrollMsgMaker viewport <|
         [ displayFlex
         , flexDirection dir
         ]
