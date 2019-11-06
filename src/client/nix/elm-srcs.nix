@@ -12,8 +12,8 @@
     sha256 = "03dv58ppc4hvx0yriwl9mcaxynvcrbz45906jga39921a9gcbf6s";
   };
   "elm/browser" = {
-    version = "1.0.1";
-    sha256 = "1zlmx672glg7fdgkvh5jm47y85pv7pdfr5mkhg6x7ar6k000vyka";
+    version = "1.0.2";
+    sha256 = "0nagb9ajacxbbg985r4k9h0jadqpp0gp84nm94kcgbr5sf8i9x13";
   };
   "elm/core" = {
     version = "1.0.2";
@@ -28,8 +28,8 @@
     sha256 = "008bs76mnp48b4dw8qwjj4fyvzbxvlrl4xpa2qh1gg2kfwyw56v1";
   };
   "elm/json" = {
-    version = "1.1.2";
-    sha256 = "1a107nmm905dih4w4mjjkkpdcjbgaf5qjvr7fl30kkpkckfjjnrw";
+    version = "1.1.3";
+    sha256 = "0kjwrz195z84kwywaxhhlnpl3p251qlbm5iz6byd6jky2crmyqyh";
   };
   "elm/parser" = {
     version = "1.1.0";
@@ -60,24 +60,24 @@
     sha256 = "1sph37fji07dl40rvpgbnij01zg4h7ywapxar433cdh0lay26xhb";
   };
   "mpizenberg/elm-pointer-events" = {
-    version = "3.1.0";
-    sha256 = "0w4y6p39bsm38iimhdsws8c3rf7g7awl69dpcd3jmrg55ki0icq1";
+    version = "4.0.1";
+    sha256 = "0dfcqwbx4lpspfpq78215nsn3mxm6y3z3lfylj7kls8qvx6sbpvj";
   };
   "rtfeldman/elm-css" = {
-    version = "16.0.0";
-    sha256 = "102msjzciiq1i1xksv420ls6nsmrn44c796bdb4761p7sdsp5kb0";
+    version = "16.0.1";
+    sha256 = "05sgz21jnnmz6m5s74515337n1aanab2zzn8jpw3bhdjc9cwwfcj";
   };
   "Skinney/murmur3" = {
     version = "2.0.8";
     sha256 = "1iiia68w8wlp2qjilyqgnzgjcxby47gla3rw5minj8i5c64zk18j";
   };
   "elm/bytes" = {
-    version = "1.0.7";
-    sha256 = "040d7irrawcbnq9jxhzx8p9qacdlw5bncy6lgndd6inm53rvvwbp";
+    version = "1.0.8";
+    sha256 = "02ywbf52akvxclpxwj9n04jydajcbsbcbsnjs53yjc5lwck3abwj";
   };
   "elm/file" = {
-    version = "1.0.1";
-    sha256 = "15vw1ilbg0msimq2k9magwigp8lwqrgvz3vk6qia6b3ldahvw8jr";
+    version = "1.0.5";
+    sha256 = "1rljcb41dl97myidyjih2yliyzddkr2m7n74x7gg46rcw4jl0ny8";
   };
   "elm/svg" = {
     version = "1.0.1";
