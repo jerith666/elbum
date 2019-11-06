@@ -1,4 +1,4 @@
-module AnchorTest exposing (main)
+module Sandbox.AnchorTest exposing (main)
 
 import Browser exposing (Document, UrlRequest(..))
 import Browser.Navigation exposing (Key, load, pushUrl)

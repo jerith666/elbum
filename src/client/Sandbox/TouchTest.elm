@@ -1,4 +1,4 @@
-module TouchTest exposing (main)
+module Sandbox.TouchTest exposing (main)
 
 import AlbumListPage exposing (view)
 import AlbumPage exposing (update)

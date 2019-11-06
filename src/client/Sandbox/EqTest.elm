@@ -1,4 +1,4 @@
-module EqTest exposing (main)
+module Sandbox.EqTest exposing (main)
 
 import Html exposing (..)
 

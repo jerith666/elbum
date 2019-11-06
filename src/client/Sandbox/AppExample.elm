@@ -1,4 +1,4 @@
-module Main exposing (Model, Msg(..), init, main, subscriptions, update, view, viewLink)
+module Sandbox.AppExample exposing (Model, Msg(..), init, main, subscriptions, update, view, viewLink)
 
 import Browser
 import Browser.Navigation as Nav

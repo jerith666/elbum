@@ -1,4 +1,4 @@
-module ImgProgressTest exposing (Model(..), Msg(..), cached, fallback, init, main, mainImg, subscriptions, update, view)
+module Sandbox.ImgProgressTest exposing (Model(..), Msg(..), cached, fallback, init, main, mainImg, subscriptions, update, view)
 
 --import Css exposing (..)
 --import Html.Attributes exposing (..)
