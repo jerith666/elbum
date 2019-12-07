@@ -64,7 +64,7 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
         fullImagePageModel.viewport
         [ overflow Css.hidden
         , alignItems center
-        , Css.property "justify-content" "center"
+        , Css.justifyContent center
         ]
     <|
         [ div
