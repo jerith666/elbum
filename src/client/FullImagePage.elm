@@ -131,9 +131,6 @@ viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
             <|
                 Basics.round (fullImagePageModel.viewport.viewport.height * (1 - imgTitleHeight / 100))
 
-        imgSrc =
-            smallestImageBiggerThan w h img.srcSetFirst img.srcSetRest
-
         edgeBehaviour =
             case fullImagePageModel.prevImgs of
                 [] ->
