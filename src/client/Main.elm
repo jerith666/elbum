@@ -15,6 +15,7 @@ import Dict exposing (..)
 import FullImagePage exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
+import Html.Styled.Events
 import Http exposing (..)
 import RouteUrl exposing (..)
 import Set exposing (..)
@@ -126,6 +127,7 @@ type AlbumMsg
     | ImageLoaded String
     | ImageReadyToDisplay String
     | ImageFailed String Http.Error
+    | NavCompletedLocally
 
 
 type ScrollMsg
@@ -143,7 +145,7 @@ type GeneralMsg
 
 main : RouteUrlProgram MainAlbumFlags MainAlbumModel MainAlbumMsg
 main =
-    RouteUrl.programWithFlags
+    RouteUrl.anchorManagedProgramWithFlags
         { init = init
         , view = view
         , update = update
@@ -151,7 +153,18 @@ main =
         , onUrlRequest = General << LinkClicked
         , delta2url = locFor
         , location2messages = navToMsg
+        , makeAnchor = makeAnchor
         }
+
+
+makeAnchor : String -> Maybe MainAlbumMsg -> List (Attribute MainAlbumMsg) -> List (Html MainAlbumMsg) -> Html MainAlbumMsg
+makeAnchor url onClickMsg attrs =
+    case onClickMsg of
+        Nothing ->
+            a (href url :: attrs)
+
+        Just m ->
+            a (href url :: Html.Styled.Events.onClick m :: attrs)
 
 
 init : MainAlbumFlags -> Key -> ( MainAlbumModel, Cmd MainAlbumMsg )
@@ -261,7 +274,8 @@ updateGeneral generalMsg model =
                             ( model, load <| toString url )
 
                         False ->
-                            ( log ("ignoring unexpected internal url request not for home url (" ++ (Maybe.withDefault "home not set" <| homeOf model) ++ ") " ++ toString url) model, Cmd.none )
+                            --( log ("ignoring unexpected internal url request not for home url (" ++ (Maybe.withDefault "home not set" <| homeOf model) ++ ") " ++ toString url) model, Cmd.none )
+                            ( model, pushUrl (keyOf model) <| toString url )
 
                 External url ->
                     --home link should be only external link in our app
@@ -493,6 +507,9 @@ updateAlbum albumMsg model =
             ( withAlbumPathsAfterLoad model paths
             , toCmd <| Maybe.withDefault (Meta NoBootstrap) <| pathsToCmd model <| Just paths
             )
+
+        NavCompletedLocally ->
+            ( withNavComplete model, Cmd.none )
 
 
 updateScroll : ScrollMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
@@ -862,6 +879,28 @@ withScrollToAfterLoad model scrollToAfterLoad =
             model
 
 
+withNavComplete : MainAlbumModel -> MainAlbumModel
+withNavComplete model =
+    case model of
+        Sizing _ ->
+            model
+
+        LoadingHomeLink _ ->
+            model
+
+        Loading _ ->
+            model
+
+        LoadError _ ->
+            model
+
+        LoadedList ll ->
+            LoadedList { ll | navState = NavInactive }
+
+        LoadedAlbum la ->
+            LoadedAlbum { la | navState = NavInactive }
+
+
 pathsToCmd : MainAlbumModel -> Maybe (List String) -> Maybe MainAlbumMsg
 pathsToCmd model mPaths =
     case mPaths of
@@ -887,17 +926,17 @@ pathsToCmd model mPaths =
                         AlbumListPage alp ->
                             --TODO maybe don't always prepend aTN here, only if at root?
                             --TODO I think it's okay to drop the scroll positions here, should only happen at initial load (?)
-                            pathsToCmdImpl
+                            pathsToCmdImpl model
                                 { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }
                                 (alp.albumList :: List.map Tuple.first alp.parents)
                                 paths
 
                 LoadedAlbum la ->
-                    pathsToCmdImpl (pageSize la.albumPage) (List.map Tuple.first la.parents) paths
+                    pathsToCmdImpl model (pageSize la.albumPage) (List.map Tuple.first la.parents) paths
 
 
-pathsToCmdImpl : ViewportInfo -> List AlbumList -> List String -> Maybe MainAlbumMsg
-pathsToCmdImpl viewport parents paths =
+pathsToCmdImpl : MainAlbumModel -> ViewportInfo -> List AlbumList -> List String -> Maybe MainAlbumMsg
+pathsToCmdImpl model viewport parents paths =
     let
         mRoot =
             List.head <| List.reverse parents
@@ -907,7 +946,7 @@ pathsToCmdImpl viewport parents paths =
             log "pathsToCmdImpl has no root" Nothing
 
         Just root ->
-            navFrom viewport root [] paths <|
+            navFrom model viewport root [] paths <|
                 Album <|
                     ViewList
                         (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
@@ -940,8 +979,8 @@ scrollToCmd model scrollToAfterLoad =
             scrollCmd
 
 
-navFrom : ViewportInfo -> AlbumList -> List AlbumList -> List String -> MainAlbumMsg -> Maybe MainAlbumMsg
-navFrom viewport root parents paths defcmd =
+navFrom : MainAlbumModel -> ViewportInfo -> AlbumList -> List AlbumList -> List String -> MainAlbumMsg -> Maybe MainAlbumMsg
+navFrom model viewport root parents paths defcmd =
     case paths of
         [] ->
             log "navFrom has no paths" <| Just defcmd
@@ -964,7 +1003,7 @@ navFrom viewport root parents paths defcmd =
                 Just pChild ->
                     case pChild of
                         List albumList ->
-                            navFrom viewport albumList newParents ps <|
+                            navFrom model viewport albumList newParents ps <|
                                 Album <|
                                     ViewList
                                         (AlbumListPage
@@ -976,11 +1015,11 @@ navFrom viewport root parents paths defcmd =
                                         Nothing
 
                         Leaf album ->
-                            navForAlbum viewport album ps newParents
+                            navForAlbum model viewport album ps newParents
 
 
-navForAlbum : ViewportInfo -> Album -> List String -> List AlbumList -> Maybe MainAlbumMsg
-navForAlbum vpInfo album ps newParents =
+navForAlbum : MainAlbumModel -> ViewportInfo -> Album -> List String -> List AlbumList -> Maybe MainAlbumMsg
+navForAlbum model vpInfo album ps newParents =
     let
         parentsNoScroll =
             List.map (\p -> ( p, Nothing )) newParents
@@ -1014,28 +1053,50 @@ navForAlbum vpInfo album ps newParents =
 
                         ( progModel, progCmd ) =
                             progInit vpInfo.bodyViewport nAlbum.imageFirst w h
-                    in
-                    Just <|
-                        Meta <|
-                            Sequence
-                                (Album <|
-                                    ViewAlbum
-                                        (FullImage
-                                            { prevImgs = prevs
-                                            , album = nAlbum
-                                            , progModel = progModel
-                                            , vpInfo = vpInfo
-                                            , scroll = Nothing
-                                            , touchState = TU.init
-                                            , imgPosition = Nothing
-                                            , thumbLoadState = SomeMissing
-                                            }
+
+                        nonLocalCmd =
+                            Just <|
+                                Meta <|
+                                    Sequence
+                                        (Album <|
+                                            ViewAlbum
+                                                (FullImage
+                                                    { prevImgs = prevs
+                                                    , album = nAlbum
+                                                    , progModel = progModel
+                                                    , vpInfo = vpInfo
+                                                    , scroll = Nothing
+                                                    , touchState = TU.init
+                                                    , imgPosition = Nothing
+                                                    , thumbLoadState = SomeMissing
+                                                    }
+                                                )
+                                                parentsNoScroll
                                         )
-                                        parentsNoScroll
-                                )
-                            <|
-                                fromMaybe <|
-                                    Maybe.map (Album << PageMsg << FullMsg) progCmd
+                                    <|
+                                        fromMaybe <|
+                                            Maybe.map (Album << PageMsg << FullMsg) progCmd
+                    in
+                    case model of
+                        LoadedAlbum la ->
+                            case la.albumPage of
+                                Thumbs t ->
+                                    case t.album == album of
+                                        True ->
+                                            Just <|
+                                                Meta <|
+                                                    Sequence
+                                                        (Album <| PageMsg <| View prevs nAlbum.imageFirst nAlbum.imageRest)
+                                                        [ Album NavCompletedLocally ]
+
+                                        False ->
+                                            nonLocalCmd
+
+                                _ ->
+                                    nonLocalCmd
+
+                        _ ->
+                            nonLocalCmd
 
 
 locFor : MainAlbumModel -> MainAlbumModel -> Maybe UrlChange
@@ -1281,8 +1342,8 @@ newSize v x y =
     General <| Resize <| viewportWithNewSize v x y
 
 
-view : MainAlbumModel -> Document MainAlbumMsg
-view albumBootstrap =
+view : MainAlbumModel -> (MainAlbumMsg -> List (Attribute MainAlbumMsg) -> List (Html MainAlbumMsg) -> Html MainAlbumMsg) -> Document MainAlbumMsg
+view albumBootstrap a =
     let
         title =
             case albumBootstrap of
@@ -1307,12 +1368,12 @@ view albumBootstrap =
                     titleOf la.albumPage
     in
     { title = title
-    , body = [ viewImpl albumBootstrap |> toUnstyled ]
+    , body = [ viewImpl albumBootstrap a |> toUnstyled ]
     }
 
 
-viewImpl : MainAlbumModel -> Html MainAlbumMsg
-viewImpl albumBootstrap =
+viewImpl : MainAlbumModel -> (MainAlbumMsg -> List (Attribute MainAlbumMsg) -> List (Html MainAlbumMsg) -> Html MainAlbumMsg) -> Html MainAlbumMsg
+viewImpl albumBootstrap a =
     case albumBootstrap of
         Sizing _ ->
             text "Album Starting"
@@ -1348,6 +1409,7 @@ viewImpl albumBootstrap =
             withHomeLink la.home la.flags <|
                 AlbumPage.view
                     la.albumPage
+                    a
                     (Scroll << RawScrolledTo)
                     (viewList
                         albumBootstrap
