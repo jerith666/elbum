@@ -908,11 +908,10 @@ pathsToCmdImpl viewport parents paths =
 
         Just root ->
             navFrom viewport root [] paths <|
-                Just <|
-                    Album <|
-                        ViewList
-                            (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
-                            Nothing
+                Album <|
+                    ViewList
+                        (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
+                        Nothing
 
 
 scrollToCmd : AlbumBootstrap -> Maybe Float -> Maybe MainAlbumMsg
@@ -941,14 +940,14 @@ scrollToCmd model scrollToAfterLoad =
             scrollCmd
 
 
-navFrom : ViewportInfo -> AlbumList -> List AlbumList -> List String -> Maybe MainAlbumMsg -> Maybe MainAlbumMsg
+navFrom : ViewportInfo -> AlbumList -> List AlbumList -> List String -> MainAlbumMsg -> Maybe MainAlbumMsg
 navFrom viewport root parents paths defcmd =
     case paths of
         [] ->
-            log "navFrom has no paths" defcmd
+            log "navFrom has no paths" <| Just defcmd
 
         [ "#" ] ->
-            log "navFrom has only # path" defcmd
+            log "navFrom has only # path" <| Just defcmd
 
         p1 :: ps ->
             let
@@ -960,22 +959,21 @@ navFrom viewport root parents paths defcmd =
             in
             case mChild of
                 Nothing ->
-                    log ("navFrom can't find child " ++ p1) defcmd
+                    log ("navFrom can't find child " ++ p1) <| Just defcmd
 
                 Just pChild ->
                     case pChild of
                         List albumList ->
                             navFrom viewport albumList newParents ps <|
-                                Just <|
-                                    Album <|
-                                        ViewList
-                                            (AlbumListPage
-                                                { albumList = albumList
-                                                , bodyViewport = viewport.bodyViewport
-                                                , parents = List.map (\p -> ( p, Nothing )) newParents
-                                                }
-                                            )
-                                            Nothing
+                                Album <|
+                                    ViewList
+                                        (AlbumListPage
+                                            { albumList = albumList
+                                            , bodyViewport = viewport.bodyViewport
+                                            , parents = List.map (\p -> ( p, Nothing )) newParents
+                                            }
+                                        )
+                                        Nothing
 
                         Leaf album ->
                             navForAlbum viewport album ps newParents
