@@ -37,7 +37,7 @@ grey =
     rgb 128 128 128
 
 
-view : (Viewport -> msg) -> (List Image -> Image -> List Image -> msg) -> (AlbumList -> msg) -> ThumbPageModel -> AlbumBootstrapFlags -> Html msg
+view : (Viewport -> msg) -> (List Image -> Image -> List Image -> msg) -> (AlbumList -> msg) -> ThumbPageModel -> MainAlbumFlags -> Html msg
 view scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
     rootDivFlex
         flags

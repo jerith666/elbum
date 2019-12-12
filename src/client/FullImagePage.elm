@@ -47,7 +47,7 @@ imgTitleHeight =
     5
 
 
-view : NavMsgs msg -> TouchMsgs msg -> msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> List AlbumList -> AlbumBootstrapFlags -> Html msg
+view : NavMsgs msg -> TouchMsgs msg -> msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> List AlbumList -> MainAlbumFlags -> Html msg
 view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
     let
         xOfY =

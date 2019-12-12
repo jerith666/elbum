@@ -335,7 +335,7 @@ titleOf albumPage =
             fi.album.imageFirst.altText
 
 
-view : AlbumPage -> (Viewport -> msg) -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> AlbumBootstrapFlags -> Html msg
+view : AlbumPage -> (Viewport -> msg) -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> MainAlbumFlags -> Html msg
 view albumPage scrollMsgMaker showList wrapMsg parents flags =
     case albumPage of
         Thumbs th ->

@@ -32,17 +32,17 @@ import Utils.TouchUtils as TU exposing (..)
 import Utils.ViewportUtils exposing (..)
 
 
-type AlbumBootstrap
+type MainAlbumModel
     = Sizing
         { key : Key
-        , flags : AlbumBootstrapFlags
+        , flags : MainAlbumFlags
         , albumPathsAfterLoad : Maybe (List String)
         , scrollToAfterLoad : Maybe Float
         }
     | LoadingHomeLink
         { key : Key
         , bodyViewport : Viewport
-        , flags : AlbumBootstrapFlags
+        , flags : MainAlbumFlags
         , albumPathsAfterLoad : Maybe (List String)
         , scrollToAfterLoad : Maybe Float
         }
@@ -50,20 +50,20 @@ type AlbumBootstrap
         { key : Key
         , bodyViewport : Viewport
         , progress : Maybe Progress
-        , flags : AlbumBootstrapFlags
+        , flags : MainAlbumFlags
         , home : Maybe String
         , albumPathsAfterLoad : Maybe (List String)
         , scrollToAfterLoad : Maybe Float
         }
     | LoadError
         { key : Key
-        , flags : AlbumBootstrapFlags
+        , flags : MainAlbumFlags
         , error : Http.Error
         }
     | LoadedList
         { key : Key
         , listPage : AlbumListPage
-        , flags : AlbumBootstrapFlags
+        , flags : MainAlbumFlags
         , home : Maybe String
         , pendingUrls : Dict String UrlLoadState
         , rootDivViewport : Maybe Viewport
@@ -74,7 +74,7 @@ type AlbumBootstrap
         { key : Key
         , albumPage : AlbumPage
         , parents : List ( AlbumList, Maybe Float )
-        , flags : AlbumBootstrapFlags
+        , flags : MainAlbumFlags
         , home : Maybe String
         , pendingUrls : Dict String UrlLoadState
         , rootDivViewport : Maybe Viewport
@@ -141,7 +141,7 @@ type GeneralMsg
     | LinkClicked UrlRequest
 
 
-main : RouteUrlProgram AlbumBootstrapFlags AlbumBootstrap MainAlbumMsg
+main : RouteUrlProgram MainAlbumFlags MainAlbumModel MainAlbumMsg
 main =
     RouteUrl.programWithFlags
         { init = init
@@ -154,14 +154,14 @@ main =
         }
 
 
-init : AlbumBootstrapFlags -> Key -> ( AlbumBootstrap, Cmd MainAlbumMsg )
+init : MainAlbumFlags -> Key -> ( MainAlbumModel, Cmd MainAlbumMsg )
 init flags key =
     ( Sizing { key = key, flags = flags, albumPathsAfterLoad = Nothing, scrollToAfterLoad = Nothing }
     , Task.perform (General << Resize) getViewport
     )
 
 
-update : MainAlbumMsg -> AlbumBootstrap -> ( AlbumBootstrap, Cmd MainAlbumMsg )
+update : MainAlbumMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
 update msg model =
     case log "update msg" msg of
         Bootstrap albumBootstrapMsg ->
@@ -180,7 +180,7 @@ update msg model =
             updateGeneral generalMsg model
 
 
-updateGeneral : GeneralMsg -> AlbumBootstrap -> ( AlbumBootstrap, Cmd MainAlbumMsg )
+updateGeneral : GeneralMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
 updateGeneral generalMsg model =
     case generalMsg of
         Resize viewport ->
@@ -268,7 +268,7 @@ updateGeneral generalMsg model =
                     ( model, load url )
 
 
-updateBootstrap : BootstrapMsg -> AlbumBootstrap -> ( AlbumBootstrap, Cmd MainAlbumMsg )
+updateBootstrap : BootstrapMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
 updateBootstrap bootstrapMsg model =
     case bootstrapMsg of
         YesHome home ->
@@ -379,7 +379,7 @@ updateBootstrap bootstrapMsg model =
             )
 
 
-updateAlbum : AlbumMsg -> AlbumBootstrap -> ( AlbumBootstrap, Cmd MainAlbumMsg )
+updateAlbum : AlbumMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
 updateAlbum albumMsg model =
     case albumMsg of
         PageMsg pageMsg ->
@@ -495,7 +495,7 @@ updateAlbum albumMsg model =
             )
 
 
-updateScroll : ScrollMsg -> AlbumBootstrap -> ( AlbumBootstrap, Cmd MainAlbumMsg )
+updateScroll : ScrollMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
 updateScroll scrollMsg model =
     case scrollMsg of
         RawScrolledTo viewport ->
@@ -540,7 +540,7 @@ updateScroll scrollMsg model =
             )
 
 
-updateMeta : MetaMsg -> AlbumBootstrap -> ( AlbumBootstrap, Cmd MainAlbumMsg )
+updateMeta : MetaMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
 updateMeta albumMetaMsg model =
     case albumMetaMsg of
         Sequence next rest ->
@@ -709,7 +709,7 @@ navToMsg loc =
             [ Meta <| Sequence c1 cs ]
 
 
-flagsOf : AlbumBootstrap -> AlbumBootstrapFlags
+flagsOf : MainAlbumModel -> MainAlbumFlags
 flagsOf model =
     case model of
         Sizing sz ->
@@ -731,7 +731,7 @@ flagsOf model =
             la.flags
 
 
-homeOf : AlbumBootstrap -> Maybe String
+homeOf : MainAlbumModel -> Maybe String
 homeOf model =
     case model of
         Sizing _ ->
@@ -753,7 +753,7 @@ homeOf model =
             la.home
 
 
-keyOf : AlbumBootstrap -> Key
+keyOf : MainAlbumModel -> Key
 keyOf model =
     case model of
         Sizing sz ->
@@ -775,7 +775,7 @@ keyOf model =
             la.key
 
 
-withScrollPos : Viewport -> AlbumBootstrap -> AlbumBootstrap
+withScrollPos : Viewport -> MainAlbumModel -> MainAlbumModel
 withScrollPos rootDivViewport model =
     case model of
         Sizing _ ->
@@ -818,7 +818,7 @@ withScrollPos rootDivViewport model =
             LoadedList { ll | rootDivViewport = Just rootDivViewport }
 
 
-withAlbumPathsAfterLoad : AlbumBootstrap -> List String -> AlbumBootstrap
+withAlbumPathsAfterLoad : MainAlbumModel -> List String -> MainAlbumModel
 withAlbumPathsAfterLoad model albumPathsAfterLoad =
     case model of
         Sizing sz ->
@@ -840,7 +840,7 @@ withAlbumPathsAfterLoad model albumPathsAfterLoad =
             LoadedAlbum { la | navState = NavInProgress }
 
 
-withScrollToAfterLoad : AlbumBootstrap -> Float -> AlbumBootstrap
+withScrollToAfterLoad : MainAlbumModel -> Float -> MainAlbumModel
 withScrollToAfterLoad model scrollToAfterLoad =
     case model of
         Sizing sz ->
@@ -862,7 +862,7 @@ withScrollToAfterLoad model scrollToAfterLoad =
             model
 
 
-pathsToCmd : AlbumBootstrap -> Maybe (List String) -> Maybe MainAlbumMsg
+pathsToCmd : MainAlbumModel -> Maybe (List String) -> Maybe MainAlbumMsg
 pathsToCmd model mPaths =
     case mPaths of
         Nothing ->
@@ -914,7 +914,7 @@ pathsToCmdImpl viewport parents paths =
                         Nothing
 
 
-scrollToCmd : AlbumBootstrap -> Maybe Float -> Maybe MainAlbumMsg
+scrollToCmd : MainAlbumModel -> Maybe Float -> Maybe MainAlbumMsg
 scrollToCmd model scrollToAfterLoad =
     let
         scrollCmd =
@@ -1038,7 +1038,7 @@ navForAlbum vpInfo album ps newParents =
                                     Maybe.map (Album << PageMsg << FullMsg) progCmd
 
 
-locFor : AlbumBootstrap -> AlbumBootstrap -> Maybe UrlChange
+locFor : MainAlbumModel -> MainAlbumModel -> Maybe UrlChange
 locFor oldModel newModel =
     let
         model =
@@ -1114,7 +1114,7 @@ locFor oldModel newModel =
                 Nothing
 
 
-queryFor : AlbumBootstrap -> String
+queryFor : MainAlbumModel -> String
 queryFor model =
     let
         queryForPos pos =
@@ -1140,7 +1140,7 @@ queryFor model =
             queryForPos <| Maybe.map scrollPosOf ll.rootDivViewport
 
 
-updateImageResult : AlbumBootstrap -> String -> UrlLoadState -> ( AlbumBootstrap, Cmd MainAlbumMsg )
+updateImageResult : MainAlbumModel -> String -> UrlLoadState -> ( MainAlbumModel, Cmd MainAlbumMsg )
 updateImageResult model url result =
     case model of
         LoadedAlbum la ->
@@ -1217,7 +1217,7 @@ decodeUrlResult origUrl result =
     either (ImageFailed origUrl) (always <| ImageLoaded origUrl) result
 
 
-subscriptions : AlbumBootstrap -> Sub MainAlbumMsg
+subscriptions : MainAlbumModel -> Sub MainAlbumMsg
 subscriptions model =
     case model of
         LoadedAlbum la ->
@@ -1284,7 +1284,7 @@ newSize v x y =
     General <| Resize <| viewportWithNewSize v x y
 
 
-view : AlbumBootstrap -> Document MainAlbumMsg
+view : MainAlbumModel -> Document MainAlbumMsg
 view albumBootstrap =
     let
         title =
@@ -1314,7 +1314,7 @@ view albumBootstrap =
     }
 
 
-viewImpl : AlbumBootstrap -> Html MainAlbumMsg
+viewImpl : MainAlbumModel -> Html MainAlbumMsg
 viewImpl albumBootstrap =
     case albumBootstrap of
         Sizing _ ->
@@ -1392,7 +1392,7 @@ viewImpl albumBootstrap =
                             ll.flags
 
 
-viewList : AlbumBootstrap -> Viewport -> List ( AlbumList, Maybe Float ) -> AlbumList -> MainAlbumMsg
+viewList : MainAlbumModel -> Viewport -> List ( AlbumList, Maybe Float ) -> AlbumList -> MainAlbumMsg
 viewList oldModel viewport parents list =
     Album <|
         ViewList
@@ -1423,7 +1423,7 @@ viewList oldModel viewport parents list =
             )
 
 
-withHomeLink : Maybe String -> AlbumBootstrapFlags -> Html MainAlbumMsg -> Html MainAlbumMsg
+withHomeLink : Maybe String -> MainAlbumFlags -> Html MainAlbumMsg -> Html MainAlbumMsg
 withHomeLink home flags basePage =
     case home of
         Just h ->

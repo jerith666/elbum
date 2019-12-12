@@ -1,4 +1,4 @@
-module AlbumStyles exposing (AlbumBootstrapFlags, ImgLoadState(..), black, navBoxStyles, navElement, navEltSize, opacityAnimatedTo, opacityStyles, rootDiv, rootDivFlex, rootDivId, rootPos, styles, theImageId, white)
+module AlbumStyles exposing (ImgLoadState(..), MainAlbumFlags, black, navBoxStyles, navElement, navEltSize, opacityAnimatedTo, opacityStyles, rootDiv, rootDivFlex, rootDivId, rootPos, styles, theImageId, white)
 
 import Browser.Dom exposing (..)
 import Css exposing (..)
@@ -35,7 +35,7 @@ theImageId =
     "the-image"
 
 
-type alias AlbumBootstrapFlags =
+type alias MainAlbumFlags =
     { scrollSupport : Bool
     }
 
@@ -56,7 +56,7 @@ chrome prevents scrolling the address bar off the top of the screen,
 sacrificing valuable screen real estate, so we have to avoid it
 there.
 -}
-rootPos : AlbumBootstrapFlags -> Style
+rootPos : MainAlbumFlags -> Style
 rootPos flags =
     if flags.scrollSupport then
         position fixed
@@ -65,7 +65,7 @@ rootPos flags =
         position absolute
 
 
-rootDiv : AlbumBootstrapFlags -> Maybe (Viewport -> msg) -> Viewport -> List Style -> List (Html msg) -> Html msg
+rootDiv : MainAlbumFlags -> Maybe (Viewport -> msg) -> Viewport -> List Style -> List (Html msg) -> Html msg
 rootDiv flags scrollMsgMaker viewport extraStyles =
     div <|
         [ styles <|
@@ -118,7 +118,7 @@ viewportDecoder =
         (field "clientHeight" Json.Decode.float)
 
 
-rootDivFlex : AlbumBootstrapFlags -> FlexDirection compatible -> Maybe (Viewport -> msg) -> Viewport -> List Style -> List (Html msg) -> Html msg
+rootDivFlex : MainAlbumFlags -> FlexDirection compatible -> Maybe (Viewport -> msg) -> Viewport -> List Style -> List (Html msg) -> Html msg
 rootDivFlex flags dir scrollMsgMaker viewport extraStyles =
     rootDiv flags scrollMsgMaker viewport <|
         [ displayFlex
