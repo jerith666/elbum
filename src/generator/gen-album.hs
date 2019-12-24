@@ -81,32 +81,35 @@ genAlbumOrList srcRoot src dest autoThumb = do
           idirs = length subdirs
       if ((icount > 0) && (idirs > 0)) then do
         return $ Left $ "directory " ++ src ++ " contains both images and subdirs, this is not supported"
-      else
-        if length pimgs > 0 then do
-          aOrErr <- genAlbum srcRoot src dest pimgs
-          case aOrErr of
-            Left err ->
-              return $ Left $ err
-            Right a ->
-              return $ Right $ Leaf a
-        else if length subdirs > 0 then do
-          en <- genNode srcRoot src dest autoThumb subdirs
-          case en of
-            Left err ->
-              return $ Left $ err
-            Right n ->
-              return $ Right $ List n
-        else do
-          return $ Left $ "no images or subdirs in " ++ src
+      else do
+        case pimgs of
+          imgFirst : imgRest -> do
+            aOrErr <- genAlbum srcRoot src dest imgFirst imgRest
+            case aOrErr of
+              Left err ->
+                return $ Left $ err
+              Right a ->
+                return $ Right $ Leaf a
+          [] -> do
+            case subdirs of
+              dirFirst : dirRest -> do
+                en <- genNode srcRoot src dest autoThumb dirFirst dirRest
+                case en of
+                  Left err ->
+                    return $ Left $ err
+                  Right n ->
+                    return $ Right $ List n
+              [] -> do
+                return $ Left $ "no images or subdirs in " ++ src
 
-genNode :: FilePath -> FilePath -> FilePath -> Bool -> [FilePath] -> IO (Either String AlbumList)
-genNode srcRoot src dest autoThumb dirs = do
-  ecFirst <- genAlbumOrList srcRoot (head dirs) dest False
+genNode :: FilePath -> FilePath -> FilePath -> Bool -> FilePath -> [FilePath] -> IO (Either String AlbumList)
+genNode srcRoot src dest autoThumb dirFirst dirRest = do
+  ecFirst <- genAlbumOrList srcRoot dirFirst dest False
   case ecFirst of
     Left err ->
       return $ Left $ err
     Right cFirst -> do
-      ecRest <- mapM (\dir -> genAlbumOrList srcRoot dir dest False) (tail dirs)
+      ecRest <- mapM (\dir -> genAlbumOrList srcRoot dir dest False) dirRest
       case lefts ecRest of
         [] -> do
           let cRest = rights ecRest
@@ -115,11 +118,15 @@ genNode srcRoot src dest autoThumb dirs = do
           case thumbOrErr of
             Left err ->
               if autoThumb then
-                return $ Right $ AlbumList { listTitle = titleForDir src
-                                           , listThumbnail = head childImages
-                                           , childFirst = cFirst
-                                           , childRest = cRest
-                                           }
+                case childImages of
+                  [] ->
+                    return $ Left $ "cannot automatically chose a thumbnail when there are no subalbums " ++ titleForDir src
+                  firstChild : _ ->
+                    return $ Right $ AlbumList { listTitle = titleForDir src
+                                               , listThumbnail = firstChild
+                                               , childFirst = cFirst
+                                               , childRest = cRest
+                                               }
               else
                 return $ Left $ err
             Right thumb ->
@@ -143,17 +150,17 @@ getChildImages1 albumOrList =
     Leaf album ->
       (imageFirst album) : (imageRest album)
 
-genAlbum :: FilePath -> FilePath -> FilePath -> [Image] -> IO (Either String Album)
-genAlbum srcRoot src dest imgs = do
-  thumbOrErr <- findThumb srcRoot src dest imgs
+genAlbum :: FilePath -> FilePath -> FilePath -> Image -> [Image] -> IO (Either String Album)
+genAlbum srcRoot src dest imgFirst imgRest = do
+  thumbOrErr <- findThumb srcRoot src dest $ imgFirst : imgRest
   case thumbOrErr of
     Left err ->
       return $ Left $ err
     Right thumb ->
       return $ Right $ Album { title = titleForDir src
                              , thumbnail = thumb
-                             , imageFirst = head imgs
-                             , imageRest = tail imgs
+                             , imageFirst = imgFirst
+                             , imageRest = imgRest
                              }
 
 titleForDir :: String -> String
@@ -278,20 +285,20 @@ procImage s d (f,i) = do
         return $ Left $ "image " ++ f ++ " has no size metadata, album regen will silently drop it"
       Just (ww, hh) ->
         if fromIntegral ww == w && fromIntegral hh == h then do
-          srcSet <- procSrcSet s d f (fst i) w h
+          (srcSetFirst, srcSetRest) <- procSrcSet s d f (fst i) w h
           return $ Right $ Image { altText = t
-                                 , srcSetFirst = head srcSet
-                                 , srcSetRest = tail srcSet
+                                 , srcSetFirst = srcSetFirst
+                                 , srcSetRest = srcSetRest
                                  }
         else do
           return $ Left $ "image " ++ f ++ " has intrinsic w*h of " ++ (show w) ++ "*" ++ (show h) ++ " but metadata w*h of " ++ (show ww) ++ "*" ++ (show hh) ++ "; to repair, load in The Gimp, then choose file -> overwrite"
 
-procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
+procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
 procSrcSet s d f i w h = do
     rawImg <- raw s d f w h
     putStrSameLn $ "processing " ++ (show f) ++ " "
     shrunken <- sequence $ map (shrinkImgSrc s d f i w h) sizes
-    return (rawImg : shrunken)
+    return (rawImg, shrunken)
 
 shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
 shrinkImgSrc s d f i w h maxwidth = do
