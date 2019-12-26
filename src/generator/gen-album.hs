@@ -58,7 +58,7 @@ sizes = [1600, 1400, 1200, 1000, 800, 400, 200]
 
 writeAlbumOrList :: String -> String -> IO ()
 writeAlbumOrList src dest = do
-  eAlbumOrList <- genAlbumOrList src src dest True
+  eAlbumOrList <- genAlbumOrList src src dest ChooseAutomatically
   case eAlbumOrList of
     Left err -> do
       putStrLn ""
@@ -67,8 +67,12 @@ writeAlbumOrList src dest = do
     Right albumOrList ->
       C.writeFile (dest </> "album.json") $ encode albumOrList
 
-genAlbumOrList :: FilePath -> FilePath -> FilePath -> Bool -> IO (Either String AlbumOrList)
-genAlbumOrList srcRoot src dest autoThumb = do
+data ThumbnailSpec
+  = ChooseAutomatically
+  | RequireExplicit
+
+genAlbumOrList :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> IO (Either String AlbumOrList)
+genAlbumOrList srcRoot src dest thumbspec = do
   files <- filter (`notElem` [".","..",thumbFilename]) <$> getDirectoryContents src
   let afiles = map (\f -> src </> f) (sort files)
   epimgs <- procImgsOnly srcRoot dest afiles
@@ -93,7 +97,7 @@ genAlbumOrList srcRoot src dest autoThumb = do
           [] -> do
             case subdirs of
               dirFirst : dirRest -> do
-                en <- genNode srcRoot src dest autoThumb dirFirst dirRest
+                en <- genNode srcRoot src dest thumbspec dirFirst dirRest
                 case en of
                   Left err ->
                     return $ Left $ err
@@ -102,14 +106,14 @@ genAlbumOrList srcRoot src dest autoThumb = do
               [] -> do
                 return $ Left $ "no images or subdirs in " ++ src
 
-genNode :: FilePath -> FilePath -> FilePath -> Bool -> FilePath -> [FilePath] -> IO (Either String AlbumList)
-genNode srcRoot src dest autoThumb dirFirst dirRest = do
-  ecFirst <- genAlbumOrList srcRoot dirFirst dest False
+genNode :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> FilePath -> [FilePath] -> IO (Either String AlbumList)
+genNode srcRoot src dest thumbspec dirFirst dirRest = do
+  ecFirst <- genAlbumOrList srcRoot dirFirst dest RequireExplicit
   case ecFirst of
     Left err ->
       return $ Left $ err
     Right cFirst -> do
-      ecRest <- mapM (\dir -> genAlbumOrList srcRoot dir dest False) dirRest
+      ecRest <- mapM (\dir -> genAlbumOrList srcRoot dir dest RequireExplicit) dirRest
       case lefts ecRest of
         [] -> do
           let cRest = rights ecRest
@@ -117,18 +121,19 @@ genNode srcRoot src dest autoThumb dirFirst dirRest = do
           thumbOrErr <- findThumb srcRoot src dest childImages
           case thumbOrErr of
             Left err ->
-              if autoThumb then
-                case childImages of
-                  [] ->
-                    return $ Left $ "cannot automatically chose a thumbnail when there are no subalbums " ++ titleForDir src
-                  firstChild : _ ->
-                    return $ Right $ AlbumList { listTitle = titleForDir src
-                                               , listThumbnail = firstChild
-                                               , childFirst = cFirst
-                                               , childRest = cRest
-                                               }
-              else
-                return $ Left $ err
+              case thumbspec of
+                ChooseAutomatically ->
+                  case childImages of
+                    [] ->
+                      return $ Left $ "cannot automatically chose a thumbnail when there are no subalbums " ++ titleForDir src
+                    firstChild : _ ->
+                      return $ Right $ AlbumList { listTitle = titleForDir src
+                                                 , listThumbnail = firstChild
+                                                 , childFirst = cFirst
+                                                 , childRest = cRest
+                                                 }
+                RequireExplicit ->
+                  return $ Left $ err
             Right thumb ->
               return $ Right $ AlbumList { listTitle = titleForDir src
                                          , listThumbnail = thumb
