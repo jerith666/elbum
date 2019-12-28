@@ -310,25 +310,16 @@ shrinkImgSrc s d f i w h maxwidth = do
     let (xsm, ysm) = shrink maxwidth w h
         fsmpath = fst $ destForShrink maxwidth s d f
     createDirectoryIfMissing True $ takeDirectory fsmpath
-    fsmpathExists <- doesFileExist fsmpath
-    if fsmpathExists then do
-      putStr $ show maxwidth ++ "(e) "
-      hFlush stdout
-      return ImgSrc { url = makeRelative d fsmpath
-                    , x = xsm
-                    , y = ysm
-                    }
-    else do 
-      let fi = toFridayRGB $ convertRGB8 i
-          fism = resize Bilinear (ix2 ysm xsm) fi
-          ism = toJuicyRGB fism
-      putStr $ show maxwidth ++ "w "
-      hFlush stdout
-      savePngImage fsmpath $ ImageRGB8 ism
-      return ImgSrc { url = makeRelative d fsmpath
-                    , x = xsm
-                    , y = ysm
-                    }
+    let fi = toFridayRGB $ convertRGB8 i
+        fism = resize Bilinear (ix2 ysm xsm) fi
+        ism = toJuicyRGB fism
+    putStr $ show maxwidth ++ "w "
+    hFlush stdout
+    savePngImage fsmpath $ ImageRGB8 ism
+    return ImgSrc { url = makeRelative d fsmpath
+                  , x = xsm
+                  , y = ysm
+                  }
 
 raw :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
 raw s d fpath w h = do
