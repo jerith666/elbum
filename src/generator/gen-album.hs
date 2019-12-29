@@ -300,21 +300,21 @@ procImage s d (f,i) = do
 
 procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
 procSrcSet s d f i w h = do
+    let shrunkenSrcs = map (shrinkImgSrc s d f i w h) sizes
+        shrunken = map fth shrunkenSrcs
     rawImg <- copyRawImgSrc s d f w h
     putStrSameLn $ "processing " ++ (show f) ++ " "
-    shrunken <- sequence $ map (writeShrunkenImgSrc s d f i w h) sizes
+    sequence $ map (writeShrunkenImgSrc . fstSndThr) shrunkenSrcs
     return (rawImg, shrunken)
 
-writeShrunkenImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
-writeShrunkenImgSrc s d f i w h maxwidth = do
-    let (ism, fsmpath, imgSrc) = shrinkImgSrc s d f i w h maxwidth
+writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGB8, FilePath, Int) -> IO ()
+writeShrunkenImgSrc (ism, fsmpath, maxwidth) = do
     createDirectoryIfMissing True $ takeDirectory fsmpath
     putStr $ show maxwidth ++ "w "
     hFlush stdout
     savePngImage fsmpath $ ImageRGB8 ism
-    return imgSrc
 
-shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGB8, FilePath, ImgSrc)
+shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGB8, FilePath, Int, ImgSrc)
 shrinkImgSrc s d f i w h maxwidth =
     let (xsm, ysm) = shrink maxwidth w h
         fsmpath = fst $ destForShrink maxwidth s d f
@@ -324,6 +324,7 @@ shrinkImgSrc s d f i w h maxwidth =
     in
     ( ism
     , fsmpath
+    , maxwidth
     , ImgSrc { url = makeRelative d fsmpath
              , x = xsm
              , y = ysm
@@ -408,3 +409,11 @@ maybeTuple (ma, mb) =
           Nothing
     Nothing ->
       Nothing
+
+fstSndThr :: (a, b, c, d) -> (a, b, c)
+fstSndThr (a, b, c, _) =
+  (a, b, c)
+
+fth :: (a, b, c, d) -> d
+fth (_, _, _, d) =
+  d
