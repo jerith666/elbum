@@ -15,7 +15,7 @@ import Control.Monad
 import Text.Regex
 
 import Codec.Picture hiding (Image)
-import Codec.Picture.Types hiding (Image)
+import qualified Codec.Picture.Types
 import Codec.Picture.Metadata hiding (Image)
 
 import Vision.Primitive
@@ -300,29 +300,38 @@ procImage s d (f,i) = do
 
 procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
 procSrcSet s d f i w h = do
-    rawImg <- raw s d f w h
+    rawImg <- copyRawImgSrc s d f w h
     putStrSameLn $ "processing " ++ (show f) ++ " "
-    shrunken <- sequence $ map (shrinkImgSrc s d f i w h) sizes
+    shrunken <- sequence $ map (writeShrunkenImgSrc s d f i w h) sizes
     return (rawImg, shrunken)
 
-shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
-shrinkImgSrc s d f i w h maxwidth = do
-    let (xsm, ysm) = shrink maxwidth w h
-        fsmpath = fst $ destForShrink maxwidth s d f
+writeShrunkenImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
+writeShrunkenImgSrc s d f i w h maxwidth = do
+    let (ism, fsmpath, imgSrc) = shrinkImgSrc s d f i w h maxwidth
     createDirectoryIfMissing True $ takeDirectory fsmpath
-    let fi = toFridayRGB $ convertRGB8 i
-        fism = resize Bilinear (ix2 ysm xsm) fi
-        ism = toJuicyRGB fism
     putStr $ show maxwidth ++ "w "
     hFlush stdout
     savePngImage fsmpath $ ImageRGB8 ism
-    return ImgSrc { url = makeRelative d fsmpath
-                  , x = xsm
-                  , y = ysm
-                  }
+    return imgSrc
 
-raw :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
-raw s d fpath w h = do
+shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGB8, FilePath, ImgSrc)
+shrinkImgSrc s d f i w h maxwidth =
+    let (xsm, ysm) = shrink maxwidth w h
+        fsmpath = fst $ destForShrink maxwidth s d f
+        fi = toFridayRGB $ convertRGB8 i
+        fism = resize Bilinear (ix2 ysm xsm) fi
+        ism = toJuicyRGB fism
+    in
+    ( ism
+    , fsmpath
+    , ImgSrc { url = makeRelative d fsmpath
+             , x = xsm
+             , y = ysm
+             }
+    )
+
+copyRawImgSrc :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
+copyRawImgSrc s d fpath w h = do
     let (dest,f) = destForRaw s d fpath
     createDirectoryIfMissing True $ takeDirectory dest
     copyFile fpath dest
