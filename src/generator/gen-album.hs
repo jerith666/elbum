@@ -11,6 +11,7 @@ import Data.List
 import Data.Maybe
 
 import Control.Monad
+import Control.Parallel.Strategies
 
 import Text.Regex
 
@@ -300,7 +301,7 @@ procImage s d (f,i) = do
 
 procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
 procSrcSet s d f i w h = do
-    let shrunkenSrcs = map (shrinkImgSrc s d f i w h) sizes
+    let shrunkenSrcs = map (shrinkImgSrc s d f i w h) sizes `using` parList rdeepseq
         shrunken = map fth shrunkenSrcs
     rawImg <- copyRawImgSrc s d f w h
     putStrSameLn $ "processing " ++ (show f) ++ " "

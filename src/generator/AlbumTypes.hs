@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE DeriveAnyClass #-}
 
 module AlbumTypes
 ( ImgSrc(..)
@@ -8,6 +9,8 @@ module AlbumTypes
 , AlbumOrList(..)
 , AlbumList(..)
 ) where
+
+import Control.Parallel.Strategies
 
 import GHC.Generics
 
@@ -57,7 +60,7 @@ data ImgSrc
    { url :: String
    , x :: Int
    , y :: Int
-   } deriving (Generic, Show, Eq)
+   } deriving (Generic, Show, Eq, NFData)
 
 deriveBoth defaultOptions ''AlbumList
 deriveBoth defaultOptions ''AlbumOrList
