@@ -75,36 +75,36 @@ data ThumbnailSpec
 genAlbumOrList :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> IO (Either String AlbumOrList)
 genAlbumOrList srcRoot src dest thumbspec = do
   files <- filter (`notElem` [".","..",thumbFilename]) <$> getDirectoryContents src
-  let afiles = map (\f -> src </> f) (sort files)
+  let afiles = map (src </>) (sort files)
   epimgs <- procImgsOnly srcRoot dest afiles
   case epimgs of
-    Left e -> do
+    Left e ->
       return $ Left e
     Right pimgs -> do
       subdirs <- dirsOnly afiles
       let icount = length pimgs
           idirs = length subdirs
-      if ((icount > 0) && (idirs > 0)) then do
+      if (icount > 0) && (idirs > 0) then
         return $ Left $ "directory " ++ src ++ " contains both images and subdirs, this is not supported"
-      else do
+      else
         case pimgs of
           imgFirst : imgRest -> do
             aOrErr <- genAlbum srcRoot src dest imgFirst imgRest
             case aOrErr of
               Left err ->
-                return $ Left $ err
+                return $ Left err
               Right a ->
                 return $ Right $ Leaf a
-          [] -> do
+          [] ->
             case subdirs of
               dirFirst : dirRest -> do
                 en <- genNode srcRoot src dest thumbspec dirFirst dirRest
                 case en of
                   Left err ->
-                    return $ Left $ err
+                    return $ Left err
                   Right n ->
                     return $ Right $ List n
-              [] -> do
+              [] ->
                 return $ Left $ "no images or subdirs in " ++ src
 
 genNode :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> FilePath -> [FilePath] -> IO (Either String AlbumList)
@@ -112,7 +112,7 @@ genNode srcRoot src dest thumbspec dirFirst dirRest = do
   ecFirst <- genAlbumOrList srcRoot dirFirst dest RequireExplicit
   case ecFirst of
     Left err ->
-      return $ Left $ err
+      return $ Left err
     Right cFirst -> do
       ecRest <- mapM (\dir -> genAlbumOrList srcRoot dir dest RequireExplicit) dirRest
       case lefts ecRest of
@@ -134,34 +134,34 @@ genNode srcRoot src dest thumbspec dirFirst dirRest = do
                                                  , childRest = cRest
                                                  }
                 RequireExplicit ->
-                  return $ Left $ err
+                  return $ Left err
             Right thumb ->
               return $ Right $ AlbumList { listTitle = titleForDir src
                                          , listThumbnail = thumb
                                          , childFirst = cFirst
                                          , childRest = cRest
                                          }
-        errs -> do
-          return $ Left $ concat $ intersperse "\n" errs
+        errs ->
+          return $ Left $ intercalate "\n" errs
 
 getChildImages :: [AlbumOrList] -> [Image]
-getChildImages albumOrLists =
-  concat $ map getChildImages1 albumOrLists
+getChildImages =
+  concatMap getChildImages1
 
 getChildImages1 :: AlbumOrList -> [Image]
 getChildImages1 albumOrList =
   case albumOrList of
     List albumTreeNode ->
-      getChildImages $ (childFirst albumTreeNode) : (childRest albumTreeNode)
+      getChildImages $ childFirst albumTreeNode : childRest albumTreeNode
     Leaf album ->
-      (imageFirst album) : (imageRest album)
+      imageFirst album : imageRest album
 
 genAlbum :: FilePath -> FilePath -> FilePath -> Image -> [Image] -> IO (Either String Album)
 genAlbum srcRoot src dest imgFirst imgRest = do
   thumbOrErr <- findThumb srcRoot src dest $ imgFirst : imgRest
   case thumbOrErr of
     Left err ->
-      return $ Left $ err
+      return $ Left err
     Right thumb ->
       return $ Right $ Album { title = titleForDir src
                              , thumbnail = thumb
@@ -182,20 +182,20 @@ findThumb srcRoot src dest images = do
     thumbLinkExists <- pathIsSymbolicLink thumbLink
     if thumbLinkExists then do
       thumbPath <- readLink thumbLink
-      if isAbsolute $ makeRelative srcRoot thumbPath then do
+      if isAbsolute $ makeRelative srcRoot thumbPath then
         return $ Left $ src ++ " thumbnail link must point to a path inside " ++ srcRoot ++", but does not: " ++ thumbPath
       else do
         let thumbDest = fst $ destForRaw srcRoot dest thumbPath
-            isThumb i = equalFilePath thumbDest $ (dest </> (url $ srcSetFirst i))
+            isThumb i = equalFilePath thumbDest (dest </> url (srcSetFirst i))
             thumb = listToMaybe $ filter isThumb images
         case thumb of
-          Nothing -> do
-            return $ Left $ src ++ " thumbnail '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ (concat $ map (\i -> dest </> (url $ srcSetFirst i)) images)
-          Just t -> do
-            return $ Right $ t
-    else do
+          Nothing ->
+            return $ Left $ src ++ " thumbnail '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ concatMap (\i -> dest </> url (srcSetFirst i)) images
+          Just t ->
+            return $ Right t
+    else
       return $ Left $ thumbLink ++ " is not a symbolic link"
-  else do
+  else
     return $ Left $ src ++ " does not contain a 'thumbnail' file"
 
 --
@@ -207,16 +207,15 @@ procImgsOnly _ _ [] = return $ Right []
 procImgsOnly s d (f:fs) = do
   mi <- procOrReuse s d f
   case mi of
-    Nothing -> do
-      is <- procImgsOnly s d fs
-      return is
+    Nothing ->
+      procImgsOnly s d fs
     Just pdiOrI -> do
       -- this ordering is key to ensuring memory usage remains relatively constant
       -- we have to process the first image completely (load it, save it out at all
       -- sizes, and convert to an Image) before moving on to the others
       epi <- either (procImage s d) (return . Right) pdiOrI
       case epi of
-        Left e -> do
+        Left e ->
           return $ Left e
         Right pi -> do
           eis <- procImgsOnly s d fs
@@ -230,14 +229,14 @@ procOrReuse :: FilePath -> FilePath -> FilePath -> IO (Maybe (Either (FilePath, 
 procOrReuse s d f = do
   mi <- imgOnly f
   case mi of
-    Nothing -> do
+    Nothing ->
       return Nothing
     Just i -> do
       let rawDest = fst $ destForRaw s d f
           shrinkDests = map (\maxwidth -> ( maxwidth
                                           , fst $ destForShrink maxwidth s d f))
                             sizes
-      destsExist <- sequence $ map doesFileExist $ rawDest : map snd shrinkDests
+      destsExist <- mapM doesFileExist $ rawDest : map snd shrinkDests
       if and destsExist then do
         let mw = Codec.Picture.Metadata.lookup Width $ snd $ snd i
             mh = Codec.Picture.Metadata.lookup Height $ snd $ snd i
@@ -263,19 +262,19 @@ procOrReuse s d f = do
                                           , srcSetFirst = srcSetFirst
                                           , srcSetRest = srcSetRest
                                           }
-          Nothing -> do
+          Nothing ->
             return Nothing
-      else do
-        return $ Just $ Left $ i
+      else
+        return $ Just $ Left i
 
 imgOnly :: FilePath -> IO (Maybe (FilePath, (DynamicImage, Metadatas)))
 imgOnly f = do
     loadResult <- readImageWithMetadata f
     case loadResult of
-         Left err -> do return Nothing
+         Left err -> return Nothing
          Right img ->
              do
-                 putStrSameLn $ "loaded " ++ (show f)
+                 putStrSameLn $ "loaded " ++ show f
                  return $ Just (f, img)
 
 procImage :: FilePath -> FilePath -> (FilePath, (DynamicImage, Metadatas)) -> IO (Either String Image)
@@ -296,16 +295,16 @@ procImage s d (f,i) = do
                                  , srcSetFirst = srcSetFirst
                                  , srcSetRest = srcSetRest
                                  }
-        else do
-          return $ Left $ "image " ++ f ++ " has intrinsic w*h of " ++ (show w) ++ "*" ++ (show h) ++ " but metadata w*h of " ++ (show ww) ++ "*" ++ (show hh) ++ "; to repair, load in The Gimp, then choose file -> overwrite"
+        else
+          return $ Left $ "image " ++ f ++ " has intrinsic w*h of " ++ show w ++ "*" ++ show h ++ " but metadata w*h of " ++ show ww ++ "*" ++ show hh ++ "; to repair, load in The Gimp, then choose file -> overwrite"
 
 procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
 procSrcSet s d f i w h = do
     let shrunkenSrcs = map (shrinkImgSrc s d f i w h) sizes `using` parList rdeepseq
         shrunken = map fth shrunkenSrcs
     rawImg <- copyRawImgSrc s d f w h
-    putStrSameLn $ "processing " ++ (show f) ++ " "
-    sequence $ map (writeShrunkenImgSrc . fstSndThr) shrunkenSrcs
+    putStrSameLn $ "processing " ++ show f ++ " "
+    mapM_ (writeShrunkenImgSrc . fstSndThr) shrunkenSrcs
     return (rawImg, shrunken)
 
 writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGB8, FilePath, Int) -> IO ()
@@ -350,7 +349,7 @@ destForRaw =
 
 destForShrink :: Int -> FilePath -> FilePath -> FilePath -> (FilePath, FilePath)
 destForShrink maxwidth =
-  destFor (\f -> (takeFileName (dropExtension f)) ++ "." ++ (show maxwidth) ++ ".png")
+  destFor (\f -> takeFileName (dropExtension f) ++ "." ++ show maxwidth ++ ".png")
 
 destFor :: (FilePath -> FilePath) -> FilePath -> FilePath -> FilePath -> (FilePath, FilePath)
 destFor fNameMaker src dest fileInSrc =
@@ -360,7 +359,7 @@ destFor fNameMaker src dest fileInSrc =
 
 shrink :: Int -> Int -> Int -> (Int, Int)
 shrink maxwidth w h = let factor = fromIntegral maxwidth / fromIntegral w
-                          scale x = floor ((fromIntegral x) * factor)
+                          scale x = floor (fromIntegral x * factor)
                       in (scale w, scale h)
 
 
@@ -376,12 +375,12 @@ readLink f = do
   isLink <- pathIsSymbolicLink f
   if isLink then do
     target <- getSymbolicLinkTarget f
-    if isAbsolute target then do
+    if isAbsolute target then
       readLink target
     else do
       let ftgt = takeDirectory f </> target
       readLink ftgt
-  else do
+  else
     return f
 
 --
