@@ -11,7 +11,7 @@
             "bartavelle/json-helpers": "2.0.2",
             "ccapndave/elm-update-extra": "4.0.0",
             "elm/browser": "1.0.2",
-            "elm/core": "1.0.2",
+            "elm/core": "1.0.4",
             "elm/html": "1.0.0",
             "elm/http": "2.0.0",
             "elm/json": "1.1.3",

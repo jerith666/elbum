@@ -16,8 +16,8 @@
     sha256 = "0nagb9ajacxbbg985r4k9h0jadqpp0gp84nm94kcgbr5sf8i9x13";
   };
   "elm/core" = {
-    version = "1.0.2";
-    sha256 = "1l0qdbczw91kzz8sx5d5zwz9x662bspy7p21dsr3f2rigxiix2as";
+    version = "1.0.4";
+    sha256 = "0gyk7lx3b6vx2jlfbxdsb4xffn0wdvg5yxldq50jr2kk5dzc2prj";
   };
   "elm/html" = {
     version = "1.0.0";
