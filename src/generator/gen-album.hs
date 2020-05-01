@@ -11,11 +11,12 @@ import Data.List
 import Data.Maybe
 
 import Control.Monad
+import Control.Parallel.Strategies
 
 import Text.Regex
 
 import Codec.Picture hiding (Image)
-import Codec.Picture.Types hiding (Image)
+import qualified Codec.Picture.Types
 import Codec.Picture.Metadata hiding (Image)
 
 import Vision.Primitive
@@ -58,7 +59,7 @@ sizes = [1600, 1400, 1200, 1000, 800, 400, 200]
 
 writeAlbumOrList :: String -> String -> IO ()
 writeAlbumOrList src dest = do
-  eAlbumOrList <- genAlbumOrList src src dest True
+  eAlbumOrList <- genAlbumOrList src src dest ChooseAutomatically
   case eAlbumOrList of
     Left err -> do
       putStrLn ""
@@ -67,8 +68,12 @@ writeAlbumOrList src dest = do
     Right albumOrList ->
       C.writeFile (dest </> "album.json") $ encode albumOrList
 
-genAlbumOrList :: FilePath -> FilePath -> FilePath -> Bool -> IO (Either String AlbumOrList)
-genAlbumOrList srcRoot src dest autoThumb = do
+data ThumbnailSpec
+  = ChooseAutomatically
+  | RequireExplicit
+
+genAlbumOrList :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> IO (Either String AlbumOrList)
+genAlbumOrList srcRoot src dest thumbspec = do
   files <- filter (`notElem` [".","..",thumbFilename]) <$> getDirectoryContents src
   let afiles = map (\f -> src </> f) (sort files)
   epimgs <- procImgsOnly srcRoot dest afiles
@@ -81,32 +86,35 @@ genAlbumOrList srcRoot src dest autoThumb = do
           idirs = length subdirs
       if ((icount > 0) && (idirs > 0)) then do
         return $ Left $ "directory " ++ src ++ " contains both images and subdirs, this is not supported"
-      else
-        if length pimgs > 0 then do
-          aOrErr <- genAlbum srcRoot src dest pimgs
-          case aOrErr of
-            Left err ->
-              return $ Left $ err
-            Right a ->
-              return $ Right $ Leaf a
-        else if length subdirs > 0 then do
-          en <- genNode srcRoot src dest autoThumb subdirs
-          case en of
-            Left err ->
-              return $ Left $ err
-            Right n ->
-              return $ Right $ List n
-        else do
-          return $ Left $ "no images or subdirs in " ++ src
+      else do
+        case pimgs of
+          imgFirst : imgRest -> do
+            aOrErr <- genAlbum srcRoot src dest imgFirst imgRest
+            case aOrErr of
+              Left err ->
+                return $ Left $ err
+              Right a ->
+                return $ Right $ Leaf a
+          [] -> do
+            case subdirs of
+              dirFirst : dirRest -> do
+                en <- genNode srcRoot src dest thumbspec dirFirst dirRest
+                case en of
+                  Left err ->
+                    return $ Left $ err
+                  Right n ->
+                    return $ Right $ List n
+              [] -> do
+                return $ Left $ "no images or subdirs in " ++ src
 
-genNode :: FilePath -> FilePath -> FilePath -> Bool -> [FilePath] -> IO (Either String AlbumList)
-genNode srcRoot src dest autoThumb dirs = do
-  ecFirst <- genAlbumOrList srcRoot (head dirs) dest False
+genNode :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> FilePath -> [FilePath] -> IO (Either String AlbumList)
+genNode srcRoot src dest thumbspec dirFirst dirRest = do
+  ecFirst <- genAlbumOrList srcRoot dirFirst dest RequireExplicit
   case ecFirst of
     Left err ->
       return $ Left $ err
     Right cFirst -> do
-      ecRest <- mapM (\dir -> genAlbumOrList srcRoot dir dest False) (tail dirs)
+      ecRest <- mapM (\dir -> genAlbumOrList srcRoot dir dest RequireExplicit) dirRest
       case lefts ecRest of
         [] -> do
           let cRest = rights ecRest
@@ -114,14 +122,19 @@ genNode srcRoot src dest autoThumb dirs = do
           thumbOrErr <- findThumb srcRoot src dest childImages
           case thumbOrErr of
             Left err ->
-              if autoThumb then
-                return $ Right $ AlbumList { listTitle = titleForDir src
-                                           , listThumbnail = head childImages
-                                           , childFirst = cFirst
-                                           , childRest = cRest
-                                           }
-              else
-                return $ Left $ err
+              case thumbspec of
+                ChooseAutomatically ->
+                  case childImages of
+                    [] ->
+                      return $ Left $ "cannot automatically chose a thumbnail when there are no subalbums " ++ titleForDir src
+                    firstChild : _ ->
+                      return $ Right $ AlbumList { listTitle = titleForDir src
+                                                 , listThumbnail = firstChild
+                                                 , childFirst = cFirst
+                                                 , childRest = cRest
+                                                 }
+                RequireExplicit ->
+                  return $ Left $ err
             Right thumb ->
               return $ Right $ AlbumList { listTitle = titleForDir src
                                          , listThumbnail = thumb
@@ -143,17 +156,17 @@ getChildImages1 albumOrList =
     Leaf album ->
       (imageFirst album) : (imageRest album)
 
-genAlbum :: FilePath -> FilePath -> FilePath -> [Image] -> IO (Either String Album)
-genAlbum srcRoot src dest imgs = do
-  thumbOrErr <- findThumb srcRoot src dest imgs
+genAlbum :: FilePath -> FilePath -> FilePath -> Image -> [Image] -> IO (Either String Album)
+genAlbum srcRoot src dest imgFirst imgRest = do
+  thumbOrErr <- findThumb srcRoot src dest $ imgFirst : imgRest
   case thumbOrErr of
     Left err ->
       return $ Left $ err
     Right thumb ->
       return $ Right $ Album { title = titleForDir src
                              , thumbnail = thumb
-                             , imageFirst = head imgs
-                             , imageRest = tail imgs
+                             , imageFirst = imgFirst
+                             , imageRest = imgRest
                              }
 
 titleForDir :: String -> String
@@ -278,48 +291,49 @@ procImage s d (f,i) = do
         return $ Left $ "image " ++ f ++ " has no size metadata, album regen will silently drop it"
       Just (ww, hh) ->
         if fromIntegral ww == w && fromIntegral hh == h then do
-          srcSet <- procSrcSet s d f (fst i) w h
+          (srcSetFirst, srcSetRest) <- procSrcSet s d f (fst i) w h
           return $ Right $ Image { altText = t
-                                 , srcSetFirst = head srcSet
-                                 , srcSetRest = tail srcSet
+                                 , srcSetFirst = srcSetFirst
+                                 , srcSetRest = srcSetRest
                                  }
         else do
           return $ Left $ "image " ++ f ++ " has intrinsic w*h of " ++ (show w) ++ "*" ++ (show h) ++ " but metadata w*h of " ++ (show ww) ++ "*" ++ (show hh) ++ "; to repair, load in The Gimp, then choose file -> overwrite"
 
-procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO [ImgSrc]
+procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
 procSrcSet s d f i w h = do
-    rawImg <- raw s d f w h
+    let shrunkenSrcs = map (shrinkImgSrc s d f i w h) sizes `using` parList rdeepseq
+        shrunken = map fth shrunkenSrcs
+    rawImg <- copyRawImgSrc s d f w h
     putStrSameLn $ "processing " ++ (show f) ++ " "
-    shrunken <- sequence $ map (shrinkImgSrc s d f i w h) sizes
-    return (rawImg : shrunken)
+    sequence $ map (writeShrunkenImgSrc . fstSndThr) shrunkenSrcs
+    return (rawImg, shrunken)
 
-shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
-shrinkImgSrc s d f i w h maxwidth = do
+writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGB8, FilePath, Int) -> IO ()
+writeShrunkenImgSrc (ism, fsmpath, maxwidth) = do
+    createDirectoryIfMissing True $ takeDirectory fsmpath
+    putStr $ show maxwidth ++ "w "
+    hFlush stdout
+    savePngImage fsmpath $ ImageRGB8 ism
+
+shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGB8, FilePath, Int, ImgSrc)
+shrinkImgSrc s d f i w h maxwidth =
     let (xsm, ysm) = shrink maxwidth w h
         fsmpath = fst $ destForShrink maxwidth s d f
-    createDirectoryIfMissing True $ takeDirectory fsmpath
-    fsmpathExists <- doesFileExist fsmpath
-    if fsmpathExists then do
-      putStr $ show maxwidth ++ "(e) "
-      hFlush stdout
-      return ImgSrc { url = makeRelative d fsmpath
-                    , x = xsm
-                    , y = ysm
-                    }
-    else do 
-      let fi = toFridayRGB $ convertRGB8 i
-          fism = resize Bilinear (ix2 ysm xsm) fi
-          ism = toJuicyRGB fism
-      putStr $ show maxwidth ++ "w "
-      hFlush stdout
-      savePngImage fsmpath $ ImageRGB8 ism
-      return ImgSrc { url = makeRelative d fsmpath
-                    , x = xsm
-                    , y = ysm
-                    }
+        fi = toFridayRGB $ convertRGB8 i
+        fism = resize Bilinear (ix2 ysm xsm) fi
+        ism = toJuicyRGB fism
+    in
+    ( ism
+    , fsmpath
+    , maxwidth
+    , ImgSrc { url = makeRelative d fsmpath
+             , x = xsm
+             , y = ysm
+             }
+    )
 
-raw :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
-raw s d fpath w h = do
+copyRawImgSrc :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
+copyRawImgSrc s d fpath w h = do
     let (dest,f) = destForRaw s d fpath
     createDirectoryIfMissing True $ takeDirectory dest
     copyFile fpath dest
@@ -396,3 +410,11 @@ maybeTuple (ma, mb) =
           Nothing
     Nothing ->
       Nothing
+
+fstSndThr :: (a, b, c, d) -> (a, b, c)
+fstSndThr (a, b, c, _) =
+  (a, b, c)
+
+fth :: (a, b, c, d) -> d
+fth (_, _, _, d) =
+  d

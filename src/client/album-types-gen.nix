@@ -7,7 +7,7 @@ with nixpkgs;
 
 let
   ghc = pkgs.haskellPackages.ghcWithPackages (ps: with ps; [
-          elm-bridge
+          elm-bridge parallel
         ]);
 
 in
