@@ -35,7 +35,12 @@ viewAlbumOrList : (AlbumList -> msg) -> (Album -> msg) -> AlbumOrList -> Html ms
 viewAlbumOrList viewList viewAlbum albumOrList =
     let
         childStyles =
-            styles [ color white ]
+            styles
+                [ color white
+                , displayFlex
+                , flexDirection row
+                , alignItems center
+                ]
     in
     case albumOrList of
         List albumList ->
