@@ -8,6 +8,8 @@ set -o nounset
 dest=$2;
 cd $dest;
 
-ln -s @client@/index.html;
-ln -s @client@/elbum.js;
-ln -s @client@/.htaccess;
+nix-store --add-root elbum --indirect -r @client@
+
+ln -s elbum/index.html;
+ln -s elbum/elbum.js;
+ln -s elbum/.htaccess;
