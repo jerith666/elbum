@@ -1095,6 +1095,32 @@ navForAlbum model vpInfo album ps newParents =
                                 _ ->
                                     nonLocalCmd
 
+                        LoadedList ll ->
+                            case ll.listPage of
+                                AlbumListPage alp ->
+                                    case List.member (Leaf album) (alp.albumList.childFirst :: alp.albumList.childRest) of
+                                        True ->
+                                            Just <|
+                                                Meta <|
+                                                    Sequence
+                                                        (Album <|
+                                                            ViewAlbum
+                                                                (Thumbs
+                                                                    { album = album
+                                                                    , vpInfo = { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }
+                                                                    , justLoadedImages = Set.empty
+                                                                    , readyToDisplayImages = Set.empty
+                                                                    }
+                                                                )
+                                                            <|
+                                                                ( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport )
+                                                                    :: alp.parents
+                                                        )
+                                                        [ Album NavCompletedLocally ]
+
+                                        False ->
+                                            nonLocalCmd
+
                         _ ->
                             nonLocalCmd
 
@@ -1428,6 +1454,7 @@ viewImpl albumBootstrap a =
                     withHomeLink ll.home ll.flags <|
                         AlbumListPage.view
                             (AlbumListPage alp)
+                            a
                             (viewList
                                 albumBootstrap
                                 alp.bodyViewport
