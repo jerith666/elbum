@@ -49,7 +49,7 @@ viewAlbumOrList viewList viewAlbum albumOrList =
                 , onClick <| viewList albumList
                 ]
                 [ renderListImage (viewList albumList) albumList.listThumbnail
-                , span [] [ Html.Styled.text albumList.listTitle ]
+                , span [ styles [ flexShrink <| int 1 ] ] [ Html.Styled.text albumList.listTitle ]
                 ]
 
         Leaf album ->
@@ -58,7 +58,7 @@ viewAlbumOrList viewList viewAlbum albumOrList =
                 , onClick <| viewAlbum album
                 ]
                 [ renderListImage (viewAlbum album) album.thumbnail
-                , span [] [ Html.Styled.text album.title ]
+                , span [ styles [ flexShrink <| int 1 ] ] [ Html.Styled.text album.title ]
                 ]
 
 
@@ -91,6 +91,7 @@ renderListImage selectedMsg img =
             ++ [ verticalAlign middle
                , Css.marginLeft <| px sideMargin
                , Css.marginRight <| px sideMargin
+               , flexShrink <| int 0
                ]
         )
         []
