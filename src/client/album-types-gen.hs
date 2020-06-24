@@ -7,7 +7,7 @@ import AlbumTypes
 
 main :: IO ()
 main =
-    putStrLn $ makeElmModuleWithVersion Elm0p18 "Album"
+    putStrLn $ makeElmModuleWithVersion Elm0p19 "Album"
     [ DefineElm (Proxy :: Proxy AlbumList)
     , DefineElm (Proxy :: Proxy AlbumOrList)
     , DefineElm (Proxy :: Proxy Album)
