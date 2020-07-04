@@ -1041,9 +1041,6 @@ navForAlbum vpInfo album ps newParents =
 locFor : MainAlbumModel -> MainAlbumModel -> Maybe UrlChange
 locFor oldModel newModel =
     let
-        model =
-            newModel
-
         entry =
             case oldModel of
                 LoadedList ll ->
@@ -1092,12 +1089,12 @@ locFor oldModel newModel =
                     NewQuery meta { query = q, fragment = Just fragment }
     in
     log "locFor" <|
-        case model of
+        case newModel of
             LoadedAlbum la ->
                 checkNavState la.navState <|
                     Just <|
                         newQorF { entry = entry, key = la.key }
-                            model
+                            newModel
                         <|
                             hashForAlbum la.albumPage <|
                                 List.map Tuple.first la.parents
@@ -1106,7 +1103,7 @@ locFor oldModel newModel =
                 checkNavState ll.navState <|
                     Just <|
                         newQorF { entry = entry, key = ll.key }
-                            model
+                            newModel
                         <|
                             hashForList ll.listPage
 
