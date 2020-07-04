@@ -40,6 +40,7 @@ viewAlbumOrList viewList viewAlbum albumOrList =
                 , displayFlex
                 , flexDirection row
                 , alignItems center
+                , flexShrink <| int 0
                 ]
     in
     case albumOrList of
