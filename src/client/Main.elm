@@ -1082,10 +1082,10 @@ locFor oldModel newModel =
 
         newQorF meta modl fragment =
             case queryFor modl of
-                "" ->
+                Nothing ->
                     NewFragment meta fragment
 
-                q ->
+                Just q ->
                     NewQuery meta { query = q, fragment = Just fragment }
     in
     log "locFor" <|
@@ -1111,24 +1111,24 @@ locFor oldModel newModel =
                 Nothing
 
 
-queryFor : MainAlbumModel -> String
+queryFor : MainAlbumModel -> Maybe String
 queryFor model =
     let
         queryForPos pos =
-            Maybe.withDefault "" <| Maybe.map (\p -> "s=" ++ String.fromFloat p) pos
+            Maybe.map (\p -> "s=" ++ String.fromFloat p) pos
     in
     case model of
         Sizing _ ->
-            ""
+            Nothing
 
         LoadingHomeLink _ ->
-            ""
+            Nothing
 
         Loading _ ->
-            ""
+            Nothing
 
         LoadError _ ->
-            ""
+            Nothing
 
         LoadedAlbum la ->
             queryForPos <| Maybe.map scrollPosOf la.rootDivViewport
