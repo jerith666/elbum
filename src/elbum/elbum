@@ -8,7 +8,7 @@ set -o nounset
 dest=$2;
 cd $dest;
 
-nix-store --add-root elbum --indirect -r @client@
+nix-store --add-root elbum --indirect -r @client@ > /dev/null;
 
 ln -s elbum/index.html;
 ln -s elbum/elbum.js;
