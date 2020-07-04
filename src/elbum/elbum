@@ -3,7 +3,18 @@
 set -o errexit
 set -o nounset
 
+echo;
+echo "generating album";
+echo;
+
 @generator@/bin/elbum "$@";
+
+echo;
+echo;
+echo "album generation complete";
+echo;
+echo "configuring website";
+echo;
 
 dest=$2;
 cd $dest;
@@ -17,3 +28,7 @@ for f in index.html elbum.js .htaccess; do
         ln -s elbum/$f;
     fi
 done
+
+echo;
+echo "website configuration complete";
+echo;
