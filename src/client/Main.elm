@@ -1168,12 +1168,19 @@ locFor oldModel newModel =
                     nav
 
         newQorF meta modl fragment =
-            case queryFor modl of
-                Nothing ->
-                    NewFragment meta fragment
+            case entry of
+                NewEntry ->
+                    -- always drop scroll information when moving to a new page
+                    -- otherwise it's incorrectly carried forward from e.g. album list to album pages
+                    NewQuery meta { query = "", fragment = Just fragment }
 
-                Just q ->
-                    NewQuery meta { query = q, fragment = Just fragment }
+                ModifyEntry ->
+                    case queryFor modl of
+                        Nothing ->
+                            NewFragment meta fragment
+
+                        Just q ->
+                            NewQuery meta { query = q, fragment = Just fragment }
     in
     log "locFor" <|
         case newModel of
