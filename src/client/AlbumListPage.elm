@@ -24,7 +24,9 @@ view (AlbumListPage alp) viewList viewAlbum scrollMsgMaker flags =
         alp.bodyViewport
         []
     <|
-        [ albumTitle alp.albumList.listTitle (List.map Tuple.first alp.parents) viewList [] [] ]
+        [ albumTitle alp.albumList.listTitle (List.map Tuple.first alp.parents) viewList [] [ position fixed ]
+        , albumTitle alp.albumList.listTitle (List.map Tuple.first alp.parents) viewList [] [ visibility hidden ]
+        ]
             ++ (List.reverse <|
                     [ viewAlbumOrList viewList viewAlbum alp.albumList.childFirst ]
                         ++ List.map (viewAlbumOrList viewList viewAlbum) alp.albumList.childRest
