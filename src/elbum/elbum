@@ -10,6 +10,10 @@ cd $dest;
 
 nix-store --add-root elbum --indirect -r @client@ > /dev/null;
 
-ln -s elbum/index.html;
-ln -s elbum/elbum.js;
-ln -s elbum/.htaccess;
+for f in index.html elbum.js .htaccess; do
+    if [ -a $f ]; then
+        echo "leaving existing $f ->" $(readlink -e $f) "rather than replacing with a link to @client@/$f";
+    else
+        ln -s elbum/$f;
+    fi
+done
