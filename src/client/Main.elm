@@ -140,7 +140,8 @@ type ScrollMsg
 
 type GeneralMsg
     = Resize Viewport
-    | LinkClicked UrlRequest
+    | InternalUrlClicked Url
+    | ExternalLinkClicked String
 
 
 main : RouteUrlProgram MainAlbumFlags MainAlbumModel MainAlbumMsg
@@ -150,9 +151,9 @@ main =
         , view = view
         , update = update
         , subscriptions = subscriptions
-        , onUrlRequest = General << LinkClicked
+        , onExternalUrlRequest = General << ExternalLinkClicked
         , delta2url = locFor
-        , location2messages = navToMsg
+        , location2messages = \u -> [ General <| InternalUrlClicked u ]
         , makeAnchor = makeAnchor
         }
 
@@ -261,25 +262,12 @@ updateGeneral generalMsg model =
                             , Cmd.none
                             )
 
-        LinkClicked urlRequest ->
-            case log "linkClicked" urlRequest of
-                Internal url ->
-                    --home link might count as internal if it's on the same domain
-                    let
-                        hUrl =
-                            Maybe.andThen Url.fromString <| homeOf model
-                    in
-                    case Maybe.withDefault False <| Maybe.map (\h -> h == url) <| hUrl of
-                        True ->
-                            ( model, load <| toString <| log "loading internal home url" url )
+        InternalUrlClicked url ->
+            ( model, navToMsg model url )
 
-                        False ->
-                            --( log ("ignoring unexpected internal url request not for home url (" ++ (Maybe.withDefault "home not set" <| homeOf model) ++ ") " ++ toString url) model, Cmd.none )
-                            ( model, pushUrl (keyOf model) <| toString <| log "pushing internal non-home url" url )
-
-                External url ->
-                    --home link should be only external link in our app
-                    ( model, load <| log "loading external url, assumed to be home" url )
+        ExternalLinkClicked url ->
+            --home link should be only external link in our app
+            ( model, load <| log "loading external url, assumed to be home" url )
 
 
 updateBootstrap : BootstrapMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
@@ -686,8 +674,26 @@ gotHome lh home =
     )
 
 
-navToMsg : Url -> List MainAlbumMsg
-navToMsg loc =
+navToMsg : MainAlbumModel -> Url -> Cmd MainAlbumMsg
+navToMsg model loc =
+    --home link might count as internal if it's on the same domain
+    let
+        hUrl =
+            Maybe.andThen Url.fromString <| homeOf model
+
+        locIsHome =
+            Maybe.withDefault False <| Maybe.map (\h -> h == loc) <| hUrl
+    in
+    case locIsHome of
+        True ->
+            load <| toString <| log "loading internal home url" loc
+
+        False ->
+            navToMsgInternal <| log "navToMsgInternal for non-home internal url" loc
+
+
+navToMsgInternal : Url -> Cmd MainAlbumMsg
+navToMsgInternal loc =
     let
         parsedHash =
             log ("parsedHash from " ++ Maybe.withDefault "<no fragment>" loc.fragment) <| parseHash <| Maybe.withDefault "" loc.fragment
@@ -717,13 +723,13 @@ navToMsg loc =
     in
     case hashMsgs ++ queryMsgs of
         [] ->
-            []
+            Cmd.none
 
         [ c ] ->
-            [ c ]
+            Task.perform identity <| Task.succeed c
 
         c1 :: cs ->
-            [ Meta <| Sequence c1 cs ]
+            Task.perform identity <| Task.succeed <| Meta <| Sequence c1 cs
 
 
 flagsOf : MainAlbumModel -> MainAlbumFlags
