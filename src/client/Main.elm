@@ -262,7 +262,7 @@ updateGeneral generalMsg model =
                             )
 
         LinkClicked urlRequest ->
-            case urlRequest of
+            case log "linkClicked" urlRequest of
                 Internal url ->
                     --home link might count as internal if it's on the same domain
                     let
@@ -271,15 +271,15 @@ updateGeneral generalMsg model =
                     in
                     case Maybe.withDefault False <| Maybe.map (\h -> h == url) <| hUrl of
                         True ->
-                            ( model, load <| toString url )
+                            ( model, load <| toString <| log "loading internal home url" url )
 
                         False ->
                             --( log ("ignoring unexpected internal url request not for home url (" ++ (Maybe.withDefault "home not set" <| homeOf model) ++ ") " ++ toString url) model, Cmd.none )
-                            ( model, pushUrl (keyOf model) <| toString url )
+                            ( model, pushUrl (keyOf model) <| toString <| log "pushing internal non-home url" url )
 
                 External url ->
                     --home link should be only external link in our app
-                    ( model, load url )
+                    ( model, load <| log "loading external url, assumed to be home" url )
 
 
 updateBootstrap : BootstrapMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
