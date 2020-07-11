@@ -1070,7 +1070,7 @@ locFor oldModel newModel =
                             log "locFor LoadedAlbum -> something else" NewEntry
 
                 _ ->
-                    log "locFor something els -> *" NewEntry
+                    log "locFor something else -> *" NewEntry
 
         checkNavState state nav =
             case log "checkNavState" state of
