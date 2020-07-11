@@ -932,13 +932,14 @@ pathsToCmd model mPaths =
                         AlbumListPage alp ->
                             --TODO maybe don't always prepend aTN here, only if at root?
                             --TODO I think it's okay to drop the scroll positions here, should only happen at initial load (?)
-                            pathsToCmdImpl model
-                                { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }
-                                (alp.albumList :: List.map Tuple.first alp.parents)
-                                paths
+                            log "pathsToCmd for LoadedList" <|
+                                pathsToCmdImpl model
+                                    { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }
+                                    (alp.albumList :: List.map Tuple.first alp.parents)
+                                    paths
 
                 LoadedAlbum la ->
-                    pathsToCmdImpl model (pageSize la.albumPage) (List.map Tuple.first la.parents) paths
+                    log "pathsToCmd for LoadedAlbum" <| pathsToCmdImpl model (pageSize la.albumPage) (List.map Tuple.first la.parents) paths
 
 
 pathsToCmdImpl : MainAlbumModel -> ViewportInfo -> List AlbumList -> List String -> Maybe MainAlbumMsg
@@ -952,7 +953,7 @@ pathsToCmdImpl model viewport parents paths =
             log "pathsToCmdImpl has no root" Nothing
 
         Just root ->
-            navFrom model viewport root [] paths <|
+            navFrom model viewport root [] (log "pathsToCmdImpl passing paths to navFrom" paths) <|
                 Album <|
                     ViewList
                         (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
@@ -1002,26 +1003,28 @@ navFrom model viewport root parents paths defcmd =
                 newParents =
                     root :: parents
             in
-            case mChild of
-                Nothing ->
-                    log ("navFrom can't find child " ++ p1) <| Just defcmd
+            log ("navFrom first path " ++ p1) <|
+                case mChild of
+                    Nothing ->
+                        log ("navFrom can't find child " ++ p1) <| Just defcmd
 
-                Just pChild ->
-                    case pChild of
-                        List albumList ->
-                            navFrom model viewport albumList newParents ps <|
-                                Album <|
-                                    ViewList
-                                        (AlbumListPage
-                                            { albumList = albumList
-                                            , bodyViewport = viewport.bodyViewport
-                                            , parents = List.map (\p -> ( p, Nothing )) newParents
-                                            }
-                                        )
-                                        Nothing
+                    Just pChild ->
+                        case pChild of
+                            List albumList ->
+                                log "navFrom recursive call" <|
+                                    navFrom model viewport albumList newParents ps <|
+                                        Album <|
+                                            ViewList
+                                                (AlbumListPage
+                                                    { albumList = albumList
+                                                    , bodyViewport = viewport.bodyViewport
+                                                    , parents = List.map (\p -> ( p, Nothing )) newParents
+                                                    }
+                                                )
+                                                Nothing
 
-                        Leaf album ->
-                            navForAlbum model viewport album ps newParents
+                            Leaf album ->
+                                log "navFrom calls navForAlbum" <| navForAlbum model viewport album ps newParents
 
 
 navForAlbum : MainAlbumModel -> ViewportInfo -> Album -> List String -> List AlbumList -> Maybe MainAlbumMsg
