@@ -1033,7 +1033,7 @@ navForAlbum model vpInfo album ps newParents =
         parentsNoScroll =
             List.map (\p -> ( p, Nothing )) newParents
     in
-    case ps of
+    case log "navForAlbum ps" ps of
         [] ->
             Just <|
                 Album <|
@@ -1092,17 +1092,18 @@ navForAlbum model vpInfo album ps newParents =
                                 Thumbs t ->
                                     case t.album == album of
                                         True ->
-                                            Just <|
-                                                Meta <|
-                                                    Sequence
-                                                        (Album <| PageMsg <| View prevs nAlbum.imageFirst nAlbum.imageRest)
-                                                        [ Album NavCompletedLocally ]
+                                            Debug.log "navForAlbum t.album == album" <|
+                                                Just <|
+                                                    Meta <|
+                                                        Sequence
+                                                            (Album <| PageMsg <| View prevs nAlbum.imageFirst nAlbum.imageRest)
+                                                            [ Album NavCompletedLocally ]
 
                                         False ->
-                                            nonLocalCmd
+                                            Debug.log "navForAlbum t.album != album" nonLocalCmd
 
                                 _ ->
-                                    nonLocalCmd
+                                    Debug.log "navForAlbum model is LoadedAlbum but albumPage is not Thumbs" nonLocalCmd
 
                         LoadedList ll ->
                             case ll.listPage of
