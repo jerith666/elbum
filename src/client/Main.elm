@@ -953,11 +953,14 @@ pathsToCmdImpl model viewport parents paths =
             log "pathsToCmdImpl has no root" Nothing
 
         Just root ->
-            navFrom model viewport root [] (log "pathsToCmdImpl passing paths to navFrom" paths) <|
-                Album <|
-                    ViewList
-                        (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
-                        Nothing
+            let
+                fallbackMsg =
+                    Album <|
+                        ViewList
+                            (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
+                            Nothing
+            in
+            Just <| navFrom model viewport root [] (log "pathsToCmdImpl passing paths to navFrom" paths) fallbackMsg
 
 
 scrollToCmd : MainAlbumModel -> Maybe Float -> Maybe MainAlbumMsg
@@ -986,14 +989,14 @@ scrollToCmd model scrollToAfterLoad =
             scrollCmd
 
 
-navFrom : MainAlbumModel -> ViewportInfo -> AlbumList -> List AlbumList -> List String -> MainAlbumMsg -> Maybe MainAlbumMsg
-navFrom model viewport root parents paths defcmd =
+navFrom : MainAlbumModel -> ViewportInfo -> AlbumList -> List AlbumList -> List String -> MainAlbumMsg -> MainAlbumMsg
+navFrom model viewport root parents paths defMsg =
     case paths of
         [] ->
-            log "navFrom has no paths" <| Just defcmd
+            log "navFrom has no paths" defMsg
 
         [ "#" ] ->
-            log "navFrom has only # path" <| Just defcmd
+            log "navFrom has only # path" defMsg
 
         p1 :: ps ->
             let
@@ -1006,7 +1009,7 @@ navFrom model viewport root parents paths defcmd =
             log ("navFrom first path " ++ p1) <|
                 case mChild of
                     Nothing ->
-                        log ("navFrom can't find child " ++ p1) <| Just defcmd
+                        log ("navFrom can't find child " ++ p1) defMsg
 
                     Just pChild ->
                         case pChild of
@@ -1024,7 +1027,9 @@ navFrom model viewport root parents paths defcmd =
                                                 Nothing
 
                             Leaf album ->
-                                log "navFrom calls navForAlbum" <| navForAlbum model viewport album ps newParents
+                                Maybe.withDefault defMsg <|
+                                    log "navFrom calls navForAlbum" <|
+                                        navForAlbum model viewport album ps newParents
 
 
 navForAlbum : MainAlbumModel -> ViewportInfo -> Album -> List String -> List AlbumList -> Maybe MainAlbumMsg
@@ -1035,6 +1040,8 @@ navForAlbum model vpInfo album ps newParents =
     in
     case log "navForAlbum ps" ps of
         [] ->
+            -- no more paths remain, so create a message that will
+            -- take us to the thumbnails page for this album
             Just <|
                 Album <|
                     ViewAlbum
@@ -1048,22 +1055,28 @@ navForAlbum model vpInfo album ps newParents =
                         parentsNoScroll
 
         i :: _ ->
+            -- another path element remains; see if it's the name of
+            -- an image in this album
             case findImg [] album i of
                 Nothing ->
                     log ("navForAlbum can't find image " ++ i) Nothing
 
                 Just ( prevs, nAlbum ) ->
                     let
+                        --prepare data we need to initialize progressive
+                        --loading of the full-size image we've found
                         ( w, h ) =
                             fitImage
                                 nAlbum.imageFirst.srcSetFirst
                                 (floor vpInfo.bodyViewport.viewport.width)
                                 (floor vpInfo.bodyViewport.viewport.height)
 
-                        ( progModel, progCmd ) =
+                        ( progModel, progMsg ) =
                             progInit vpInfo.bodyViewport nAlbum.imageFirst w h
 
-                        nonLocalCmd =
+                        -- prepare the default message(s) to view the full-size image
+                        -- followed by the initial message for its progressively loading
+                        nonLocalMsg =
                             Just <|
                                 Meta <|
                                     Sequence
@@ -1084,8 +1097,11 @@ navForAlbum model vpInfo album ps newParents =
                                         )
                                     <|
                                         fromMaybe <|
-                                            Maybe.map (Album << PageMsg << FullMsg) progCmd
+                                            Maybe.map (Album << PageMsg << FullMsg) progMsg
                     in
+                    -- now, see if we can create a more specific message.  if we're handling an internal link
+                    -- from a thumbs page to a full size image, create a 'View' message.  this enables us to
+                    -- save the scroll position for the outer album.
                     case model of
                         LoadedAlbum la ->
                             case la.albumPage of
@@ -1100,10 +1116,10 @@ navForAlbum model vpInfo album ps newParents =
                                                             [ Album NavCompletedLocally ]
 
                                         False ->
-                                            Debug.log "navForAlbum t.album != album" nonLocalCmd
+                                            Debug.log "navForAlbum t.album != album" nonLocalMsg
 
                                 _ ->
-                                    Debug.log "navForAlbum model is LoadedAlbum but albumPage is not Thumbs" nonLocalCmd
+                                    Debug.log "navForAlbum model is LoadedAlbum but albumPage is not Thumbs" nonLocalMsg
 
                         LoadedList ll ->
                             case ll.listPage of
@@ -1129,10 +1145,10 @@ navForAlbum model vpInfo album ps newParents =
                                                         [ Album NavCompletedLocally ]
 
                                         False ->
-                                            nonLocalCmd
+                                            nonLocalMsg
 
                         _ ->
-                            nonLocalCmd
+                            nonLocalMsg
 
 
 locFor : MainAlbumModel -> MainAlbumModel -> Maybe UrlChange
