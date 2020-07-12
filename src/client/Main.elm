@@ -1014,8 +1014,10 @@ navFrom model viewport root parents paths defMsg =
                     Just pChild ->
                         case pChild of
                             List albumList ->
-                                log "navFrom recursive call" <|
-                                    navFrom model viewport albumList newParents ps <|
+                                let
+                                    -- a generic message that will navigate to the album we found
+                                    -- no matter where we currently are
+                                    thisAlbumMsg =
                                         Album <|
                                             ViewList
                                                 (AlbumListPage
@@ -1025,6 +1027,43 @@ navFrom model viewport root parents paths defMsg =
                                                     }
                                                 )
                                                 Nothing
+                                in
+                                case ps of
+                                    [] ->
+                                        -- check if we're at the parent of the list identified by
+                                        -- the navigation data.  if so, use a more targeted message
+                                        -- so that scroll position etc. can be preserved
+                                        case model of
+                                            LoadedList ll ->
+                                                case ll.listPage of
+                                                    AlbumListPage alp ->
+                                                        case List.member (List albumList) (alp.albumList.childFirst :: alp.albumList.childRest) of
+                                                            True ->
+                                                                Meta <|
+                                                                    Sequence
+                                                                        (Album <|
+                                                                            ViewList
+                                                                                (AlbumListPage
+                                                                                    { albumList = albumList
+                                                                                    , bodyViewport = alp.bodyViewport
+                                                                                    , parents =
+                                                                                        ( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport )
+                                                                                            :: alp.parents
+                                                                                    }
+                                                                                )
+                                                                                Nothing
+                                                                        )
+                                                                        [ Album NavCompletedLocally ]
+
+                                                            False ->
+                                                                thisAlbumMsg
+
+                                            _ ->
+                                                thisAlbumMsg
+
+                                    _ ->
+                                        log "navFrom recursive call" <|
+                                            navFrom model viewport albumList newParents ps thisAlbumMsg
 
                             Leaf album ->
                                 Maybe.withDefault defMsg <|
@@ -1120,32 +1159,6 @@ navForAlbum model vpInfo album ps newParents =
 
                                 _ ->
                                     Debug.log "navForAlbum model is LoadedAlbum but albumPage is not Thumbs" nonLocalMsg
-
-                        LoadedList ll ->
-                            case ll.listPage of
-                                AlbumListPage alp ->
-                                    case List.member (Leaf album) (alp.albumList.childFirst :: alp.albumList.childRest) of
-                                        True ->
-                                            Just <|
-                                                Meta <|
-                                                    Sequence
-                                                        (Album <|
-                                                            ViewAlbum
-                                                                (Thumbs
-                                                                    { album = album
-                                                                    , vpInfo = { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }
-                                                                    , justLoadedImages = Set.empty
-                                                                    , readyToDisplayImages = Set.empty
-                                                                    }
-                                                                )
-                                                            <|
-                                                                ( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport )
-                                                                    :: alp.parents
-                                                        )
-                                                        [ Album NavCompletedLocally ]
-
-                                        False ->
-                                            nonLocalMsg
 
                         _ ->
                             nonLocalMsg
