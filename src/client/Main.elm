@@ -20,7 +20,6 @@ import Http exposing (..)
 import RouteUrl exposing (..)
 import Set exposing (..)
 import Task exposing (..)
-import Time exposing (..)
 import Url exposing (..)
 import Utils.AlbumUtils exposing (..)
 import Utils.DebugSupport exposing (debugString, log)
@@ -160,12 +159,15 @@ main =
 
 makeAnchor : String -> Maybe MainAlbumMsg -> List (Attribute MainAlbumMsg) -> List (Html MainAlbumMsg) -> Html MainAlbumMsg
 makeAnchor url onClickMsg attrs =
-    case onClickMsg of
-        Nothing ->
-            a (href url :: attrs)
+    a <|
+        href url
+            :: (case onClickMsg of
+                    Nothing ->
+                        attrs
 
-        Just m ->
-            a (href url :: Html.Styled.Events.onClick m :: attrs)
+                    Just m ->
+                        Html.Styled.Events.onClick m :: attrs
+               )
 
 
 init : MainAlbumFlags -> Key -> ( MainAlbumModel, Cmd MainAlbumMsg )
@@ -281,7 +283,7 @@ updateBootstrap bootstrapMsg model =
                 _ ->
                     ( model, Cmd.none )
 
-        NoHome err ->
+        NoHome _ ->
             case model of
                 LoadingHomeLink lh ->
                     gotHome lh Nothing
@@ -445,11 +447,6 @@ updateAlbum albumMsg model =
 
                         Nothing ->
                             scrollToTop NoBootstrap <| always NoBootstrap
-
-                title =
-                    case albumListPage of
-                        AlbumListPage alp ->
-                            alp.albumList.listTitle
             in
             ( newModel
             , Cmd.map Meta scrollCmd
@@ -1484,7 +1481,6 @@ viewImpl albumBootstrap a =
                     a
                     (Scroll << RawScrolledTo)
                     (viewList
-                        albumBootstrap
                         (pageSize la.albumPage).bodyViewport
                         -- currently scrolled thing is the album;
                         -- don't want to save that anywhere in the list of parents
@@ -1502,7 +1498,6 @@ viewImpl albumBootstrap a =
                             (AlbumListPage alp)
                             a
                             (viewList
-                                albumBootstrap
                                 alp.bodyViewport
                                 (( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport ) :: alp.parents)
                             )
@@ -1524,8 +1519,8 @@ viewImpl albumBootstrap a =
                             ll.flags
 
 
-viewList : MainAlbumModel -> Viewport -> List ( AlbumList, Maybe Float ) -> AlbumList -> MainAlbumMsg
-viewList oldModel viewport parents list =
+viewList : Viewport -> List ( AlbumList, Maybe Float ) -> AlbumList -> MainAlbumMsg
+viewList viewport parents list =
     Album <|
         ViewList
             (AlbumListPage
