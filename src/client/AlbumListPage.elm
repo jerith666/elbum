@@ -5,9 +5,8 @@ import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
-import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
-import ThumbPage exposing (albumTitle, viewThumb)
+import ThumbPage exposing (albumTitle)
 import Utils.AlbumUtils exposing (..)
 
 
@@ -51,7 +50,7 @@ viewAlbumOrList a viewList viewAlbum albumOrList =
                 [ styles [ textDecoration none ] ]
                 [ div
                     [ childStyles ]
-                    [ renderListImage (viewList albumList) albumList.listThumbnail
+                    [ renderListImage albumList.listThumbnail
                     , span [ styles [ flexShrink <| int 1 ] ] [ Html.Styled.text albumList.listTitle ]
                     ]
                 ]
@@ -61,14 +60,14 @@ viewAlbumOrList a viewList viewAlbum albumOrList =
                 [ styles [ textDecoration none ] ]
                 [ div
                     [ childStyles ]
-                    [ renderListImage (viewAlbum album) album.thumbnail
+                    [ renderListImage album.thumbnail
                     , span [ styles [ flexShrink <| int 1 ] ] [ Html.Styled.text album.title ]
                     ]
                 ]
 
 
-renderListImage : msg -> Image -> Html msg
-renderListImage selectedMsg img =
+renderListImage : Image -> Html msg
+renderListImage img =
     let
         ( xScaled, yScaled ) =
             if img.srcSetFirst.x > img.srcSetFirst.y then
@@ -100,8 +99,7 @@ renderListImage selectedMsg img =
                ]
         )
         []
-    <|
-        Just selectedMsg
+        Nothing
 
 
 hashForList : AlbumListPage -> String
