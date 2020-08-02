@@ -349,7 +349,6 @@ viewThumb a width opasity extraStyles selectedMsg img =
                 ++ extraStyles
             )
             []
-            Nothing
         ]
 
 

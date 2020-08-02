@@ -303,7 +303,6 @@ viewImg imgSrc data animStyle styles =
         []
         styles
         (animStyle ++ [ on "load" <| succeed <| Loaded imgSrc ])
-        Nothing
 
 
 styledAnimation : Animation.State -> List (Attribute ProgressiveImageMsg)

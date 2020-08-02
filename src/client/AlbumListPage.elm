@@ -99,7 +99,6 @@ renderListImage img =
                ]
         )
         []
-        Nothing
 
 
 hashForList : AlbumListPage -> String
