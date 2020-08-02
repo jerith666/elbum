@@ -146,7 +146,7 @@ type GeneralMsg
 
 main : RouteUrlProgram MainAlbumFlags MainAlbumModel MainAlbumMsg
 main =
-    RouteUrl.anchorManagedProgramWithFlags
+    RouteUrl.anchorManagedProgram
         { init = init
         , view = view
         , update = update
@@ -1226,7 +1226,7 @@ locFor oldModel newModel =
             LoadedAlbum la ->
                 checkNavState la.navState <|
                     Just <|
-                        newQorF { entry = entry, key = la.key }
+                        newQorF entry
                             newModel
                         <|
                             hashForAlbum la.albumPage <|
@@ -1235,7 +1235,7 @@ locFor oldModel newModel =
             LoadedList ll ->
                 checkNavState ll.navState <|
                     Just <|
-                        newQorF { entry = entry, key = ll.key }
+                        newQorF entry
                             newModel
                         <|
                             hashForList ll.listPage
