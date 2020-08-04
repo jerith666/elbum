@@ -8,6 +8,7 @@ import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events exposing (..)
 import Json.Decode exposing (..)
 import Time exposing (..)
+import Utils.LocationUtils exposing (AnchorFunction)
 
 
 black : Color
@@ -178,17 +179,16 @@ navBoxStyles =
     , Css.color white
     , Css.backgroundColor (rgba 40 40 40 0.5)
     , Css.borderRadius (px <| navEltSize / 2)
-    , cursor pointer
+    , textDecoration none
     ]
 
 
-navElement : msg -> String -> (Px -> Style) -> Html msg
-navElement msg label side =
-    div
+navElement : AnchorFunction msg -> msg -> String -> (Px -> Style) -> Html msg
+navElement a msg label side =
+    a msg
         [ styles <|
             navBoxStyles
                 ++ [ side (px 0)
                    ]
-        , onClick msg
         ]
         [ Html.Styled.text label ]

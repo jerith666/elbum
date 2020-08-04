@@ -9,11 +9,10 @@ import Html.Events.Extra.Touch exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
-import ImageViews exposing (..)
 import ProgressiveImage exposing (..)
 import ThumbPage exposing (..)
-import Utils.DebugSupport exposing (..)
 import Utils.ListUtils exposing (..)
+import Utils.LocationUtils exposing (AnchorFunction)
 import Utils.TouchUtils exposing (..)
 
 
@@ -47,8 +46,8 @@ imgTitleHeight =
     5
 
 
-view : NavMsgs msg -> TouchMsgs msg -> msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> List AlbumList -> MainAlbumFlags -> Html msg
-view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
+view : AnchorFunction msg -> NavMsgs msg -> TouchMsgs msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> List AlbumList -> MainAlbumFlags -> Html msg
+view a navMsgs touchMsgs wrapProgMsg fullImagePageModel parents flags =
     let
         xOfY =
             " ("
@@ -82,10 +81,10 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
                 [ albumParent getAlbumTitle (always navMsgs.backToThumbsMsg) fullImagePageModel.album ]
                 []
             ]
-        , viewImg navMsgs.nextMsg touchMsgs wrapProgMsg fullImagePageModel
+        , viewImg a navMsgs.nextMsg touchMsgs wrapProgMsg fullImagePageModel
         ]
-            ++ navEltIf fullImagePageModel.prevImgs navMsgs.prevMsg "<" left
-            ++ navEltIf fullImagePageModel.album.imageRest navMsgs.nextMsg ">" right
+            ++ navEltIf a fullImagePageModel.prevImgs navMsgs.prevMsg "<" left
+            ++ navEltIf a fullImagePageModel.album.imageRest navMsgs.nextMsg ">" right
             ++ [ div
                     [ styles <|
                         navBoxStyles
@@ -95,7 +94,7 @@ view navMsgs touchMsgs noOpMsg wrapProgMsg fullImagePageModel parents flags =
                     , onClick navMsgs.backToThumbsMsg
                     ]
                     [ Html.Styled.text "x" ]
-               , a
+               , Html.Styled.a
                     [ styles <| navBoxStyles ++ [ top (px <| fullImagePageModel.viewport.viewport.height - navEltSize - 5), right (px 5), textDecoration none ]
                     , href <| encodePath fullImagePageModel.album.imageFirst.srcSetFirst.url
                     , Html.Styled.Attributes.target "_blank"
@@ -109,17 +108,17 @@ getAlbumTitle a =
     a.title
 
 
-navEltIf : List a -> msg -> String -> (Px -> Style) -> List (Html msg)
-navEltIf lst navMsg navTxt navAlign =
+navEltIf : AnchorFunction msg -> List a -> msg -> String -> (Px -> Style) -> List (Html msg)
+navEltIf a lst navMsg navTxt navAlign =
     if List.isEmpty lst then
         []
 
     else
-        [ navElement navMsg navTxt navAlign ]
+        [ navElement a navMsg navTxt navAlign ]
 
 
-viewImg : msg -> TouchMsgs msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> Html msg
-viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
+viewImg : AnchorFunction msg -> msg -> TouchMsgs msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> Html msg
+viewImg a clickMsg touchMsgs wrapProgMsg fullImagePageModel =
     let
         img =
             fullImagePageModel.album.imageFirst
@@ -149,12 +148,11 @@ viewImg clickMsg touchMsgs wrapProgMsg fullImagePageModel =
                         _ ->
                             NeitherLimit
     in
-    div
+    a clickMsg
         (offsetStyles edgeBehaviour fullImagePageModel.imgPosition fullImagePageModel.offset
             ++ [ Html.Styled.Attributes.fromUnstyled <| onTouch "start" touchMsgs.touchStartMsg
                , Html.Styled.Attributes.fromUnstyled <| onTouch "move" touchMsgs.touchContinueMsg
                , Html.Styled.Attributes.fromUnstyled <| onTouch "end" touchMsgs.touchPrevNextMsg
-               , onClick clickMsg
                , id theImageId
                ]
         )

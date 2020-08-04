@@ -355,6 +355,7 @@ view albumPage a scrollMsgMaker showList wrapMsg parents flags =
 
         FullImage fi ->
             FullImagePage.view
+                a
                 { prevMsg = wrapMsg Prev
                 , nextMsg = wrapMsg Next
                 , backToThumbsMsg = wrapMsg BackToThumbs
@@ -364,7 +365,6 @@ view albumPage a scrollMsgMaker showList wrapMsg parents flags =
                 , touchContinueMsg = wrapMsg << TouchDragContinue
                 , touchPrevNextMsg = wrapMsg << touchPrevNext fi.touchState
                 }
-                (wrapMsg NoUpdate)
                 (wrapMsg << FullMsg)
                 { prevImgs = fi.prevImgs
                 , album = fi.album
