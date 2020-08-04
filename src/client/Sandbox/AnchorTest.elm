@@ -5,7 +5,7 @@ import Browser.Navigation exposing (Key, load, pushUrl)
 import Html.Styled exposing (Attribute, Html, a, br, div, text, toUnstyled)
 import Html.Styled.Attributes exposing (href)
 import Html.Styled.Events exposing (onClick)
-import RouteUrl exposing (AppWithFlags, HistoryEntry(..), RouteUrlProgram, UrlChange(..), WrappedModel(..), unwrapModel)
+import RouteUrl exposing (App, HistoryEntry(..), RouteUrlProgram, UrlChange(..), WrappedModel(..), unwrapModel)
 import String exposing (toInt)
 import Url exposing (Url)
 import Utils.ListUtils as ListUtils
@@ -25,7 +25,7 @@ type AnchorTestMsg
     = Incr
     | Decr
     | Set Int
-    | UrlRequested UrlRequest
+    | ExternalUrlRequested String
 
 
 
@@ -43,29 +43,19 @@ type alias AnchorManagedAppWithFlags model msg flags =
     }
 
 
-handleUrlRequest : model -> Key -> UrlRequest -> ( model, Cmd msg )
-handleUrlRequest model key urlReq =
-    case urlReq of
-        Internal url ->
-            ( model, pushUrl key <| Url.toString url )
-
-        External urlString ->
-            ( model, load urlString )
-
-
 
 --
 
 
 main =
-    RouteUrl.anchorManagedProgramWithFlags
+    RouteUrl.anchorManagedApp
         { delta2url = delta2url --: model -> model -> Maybe UrlChange
         , location2messages = location2messages --: Url -> List msg
         , init = init --\_ -> \key -> ( { key = key, num = 0 }, Cmd.none ) --: flags -> Key -> ( model, Cmd msg )
         , update = update --: msg -> model -> ( model, Cmd msg )
         , subscriptions = \_ -> Sub.none --: model -> Sub msg
         , view = view --: model -> Document msg
-        , onUrlRequest = UrlRequested -- onUrlRequest --: UrlRequest -> msg
+        , onExternalUrlRequest = ExternalUrlRequested -- onUrlRequest --: UrlRequest -> msg
         , makeAnchor = makeAnchor
         }
 
@@ -88,8 +78,8 @@ init _ key =
 update : AnchorTestMsg -> AnchorTestModel -> ( AnchorTestModel, Cmd AnchorTestMsg )
 update msg model =
     case msg of
-        UrlRequested urlReq ->
-            handleUrlRequest { model | urlsRequested = model.urlsRequested + 1 } model.key urlReq
+        ExternalUrlRequested url ->
+            ( { model | urlsRequested = model.urlsRequested + 1 }, load url )
 
         Incr ->
             ( { model | num = model.num + 1, incDecMessages = model.incDecMessages + 1 }, Cmd.none )
@@ -130,7 +120,7 @@ delta2url oldModel newModel =
             Nothing
 
         False ->
-            Just <| NewFragment { entry = NewEntry, key = newModel.key } <| String.fromInt newModel.num
+            Just <| NewFragment NewEntry <| String.fromInt newModel.num
 
 
 location2messages : Url -> List AnchorTestMsg
