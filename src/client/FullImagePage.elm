@@ -74,11 +74,11 @@ view a navMsgs touchMsgs wrapProgMsg fullImagePageModel parents flags =
                 , lineHeight (px (imgTitleHeight / 100 * fullImagePageModel.viewport.viewport.height))
                 ]
             ]
-            [ albumTitle
+            [ albumTitle a
                 (fullImagePageModel.album.imageFirst.altText ++ xOfY)
                 parents
                 navMsgs.showList
-                [ albumParent getAlbumTitle (always navMsgs.backToThumbsMsg) fullImagePageModel.album ]
+                [ albumParent a getAlbumTitle (always navMsgs.backToThumbsMsg) fullImagePageModel.album ]
                 []
             ]
         , viewImg a navMsgs.nextMsg touchMsgs wrapProgMsg fullImagePageModel

@@ -5,11 +5,10 @@ import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
-import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import Set exposing (..)
-import Utils.DebugSupport exposing (..)
 import Utils.ListUtils exposing (..)
+import Utils.LocationUtils exposing (AnchorFunction)
 
 
 type alias ThumbPageModel =
@@ -46,8 +45,8 @@ view a scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
         thumbPageModel.bodyViewport
         [ overflowX Css.hidden ]
     <|
-        [ albumTitle thumbPageModel.album.title thumbPageModel.parents showList [] [ position fixed ]
-        , albumTitle thumbPageModel.album.title thumbPageModel.parents showList [] [ visibility hidden ]
+        [ albumTitle a thumbPageModel.album.title thumbPageModel.parents showList [] [ position fixed ]
+        , albumTitle a thumbPageModel.album.title thumbPageModel.parents showList [] [ visibility hidden ]
         , div
             [ styles
                 [ displayFlex
@@ -61,8 +60,8 @@ view a scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
         ]
 
 
-albumTitle : String -> List AlbumList -> (AlbumList -> msg) -> List (Html msg) -> List Style -> Html msg
-albumTitle title parents showList extraHtml extraStyles =
+albumTitle : AnchorFunction msg -> String -> List AlbumList -> (AlbumList -> msg) -> List (Html msg) -> List Style -> Html msg
+albumTitle a title parents showList extraHtml extraStyles =
     div
         [ styles <|
             [ color white
@@ -74,7 +73,7 @@ albumTitle title parents showList extraHtml extraStyles =
                 ++ extraStyles
         ]
     <|
-        List.map (albumParent getAlbumListTitle showList) (List.reverse parents)
+        List.map (albumParent a getAlbumListTitle showList) (List.reverse parents)
             ++ extraHtml
             ++ [ span [] [ Html.Styled.text title ] ]
 
@@ -84,13 +83,11 @@ getAlbumListTitle a =
     a.listTitle
 
 
-albumParent : (a -> String) -> (a -> msg) -> a -> Html msg
-albumParent getTitle showList albumList =
+albumParent : AnchorFunction msg -> (a -> String) -> (a -> msg) -> a -> Html msg
+albumParent a getTitle showList albumList =
     span []
-        [ span
-            [ onClick <| showList albumList
-            , styles [ textDecoration underline, cursor pointer ]
-            ]
+        [ a (showList albumList)
+            [ styles [ textDecoration underline, color inherit ] ]
             [ Html.Styled.text <| getTitle albumList ]
         , span
             [ styles [ padding2 (Css.em 0) (Css.em 0.5) ] ]
