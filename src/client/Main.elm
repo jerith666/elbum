@@ -1014,16 +1014,22 @@ navFrom model viewport root parents paths defMsg =
                                 let
                                     -- a generic message that will navigate to the album we found
                                     -- no matter where we currently are
-                                    thisAlbumMsg =
+                                    makeViewList bodyViewport parentss =
                                         Album <|
                                             ViewList
                                                 (AlbumListPage
                                                     { albumList = albumList
-                                                    , bodyViewport = viewport.bodyViewport
-                                                    , parents = List.map (\p -> ( p, Nothing )) newParents
+                                                    , bodyViewport = bodyViewport
+                                                    , parents = parentss
                                                     }
                                                 )
                                                 Nothing
+
+                                    thisAlbumMsg =
+                                        makeViewList
+                                            viewport.bodyViewport
+                                        <|
+                                            List.map (\p -> ( p, Nothing )) newParents
                                 in
                                 case ps of
                                     [] ->
@@ -1034,21 +1040,23 @@ navFrom model viewport root parents paths defMsg =
                                             LoadedList ll ->
                                                 case ll.listPage of
                                                     AlbumListPage alp ->
-                                                        case List.member (List albumList) (alp.albumList.childFirst :: alp.albumList.childRest) of
+                                                        let
+                                                            destIsChild =
+                                                                List.member
+                                                                    (List albumList)
+                                                                    (alp.albumList.childFirst :: alp.albumList.childRest)
+                                                        in
+                                                        case destIsChild of
                                                             True ->
                                                                 Meta <|
                                                                     Sequence
-                                                                        (Album <|
-                                                                            ViewList
-                                                                                (AlbumListPage
-                                                                                    { albumList = albumList
-                                                                                    , bodyViewport = alp.bodyViewport
-                                                                                    , parents =
-                                                                                        ( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport )
-                                                                                            :: alp.parents
-                                                                                    }
-                                                                                )
-                                                                                Nothing
+                                                                        (makeViewList
+                                                                            alp.bodyViewport
+                                                                         <|
+                                                                            ( alp.albumList
+                                                                            , Maybe.map scrollPosOf ll.rootDivViewport
+                                                                            )
+                                                                                :: alp.parents
                                                                         )
                                                                         [ Album NavCompletedLocally ]
 
