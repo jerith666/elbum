@@ -1181,7 +1181,11 @@ navForAlbum model vpInfo album ps newParents =
                         FullImage fi ->
                             case album == baseAlbumOf (FullImage fi) of
                                 True ->
-                                    Just <| Album <| PageMsg BackToThumbs
+                                    Just <|
+                                        Meta <|
+                                            Sequence
+                                                (Album <| PageMsg BackToThumbs)
+                                                [ Album NavCompletedLocally ]
 
                                 False ->
                                     nonLocalMsg
