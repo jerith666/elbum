@@ -1086,17 +1086,40 @@ navForAlbum model vpInfo album ps newParents =
         [] ->
             -- no more paths remain, so create a message that will
             -- take us to the thumbnails page for this album
-            Just <|
-                Album <|
-                    ViewAlbum
-                        (Thumbs
-                            { album = album
-                            , vpInfo = vpInfo
-                            , justLoadedImages = Set.empty
-                            , readyToDisplayImages = Set.empty
-                            }
-                        )
-                        parentsNoScroll
+            let
+                makeViewAlbumThumbsMsg parents =
+                    Just <|
+                        Album <|
+                            ViewAlbum
+                                (Thumbs
+                                    { album = album
+                                    , vpInfo = vpInfo
+                                    , justLoadedImages = Set.empty
+                                    , readyToDisplayImages = Set.empty
+                                    }
+                                )
+                                parents
+
+                nonLocalMsg =
+                    makeViewAlbumThumbsMsg parentsNoScroll
+            in
+            -- see if we are at the AlbumList currently containing the target Album
+            -- if so, create a message that stores the current scroll position of that AlbumList
+            case model of
+                LoadedList ll ->
+                    case ll.listPage of
+                        AlbumListPage alp ->
+                            case List.member (Leaf album) <| alp.albumList.childFirst :: alp.albumList.childRest of
+                                True ->
+                                    makeViewAlbumThumbsMsg <|
+                                        ( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport )
+                                            :: alp.parents
+
+                                False ->
+                                    nonLocalMsg
+
+                _ ->
+                    nonLocalMsg
 
         i :: _ ->
             -- another path element remains; see if it's the name of
