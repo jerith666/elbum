@@ -951,11 +951,27 @@ pathsToCmdImpl model viewport parents paths =
 
         Just root ->
             let
+                modelParents =
+                    case model of
+                        LoadedList ll ->
+                            case ll.listPage of
+                                AlbumListPage alp ->
+                                    alp.parents
+
+                        LoadedAlbum la ->
+                            la.parents
+
+                        _ ->
+                            []
+
+                fallbackScroll =
+                    List.reverse modelParents |> List.head |> Maybe.andThen Tuple.second
+
                 fallbackMsg =
                     Album <|
                         ViewList
                             (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
-                            Nothing
+                            fallbackScroll
             in
             Just <| navFrom model viewport root [] (log "pathsToCmdImpl passing paths to navFrom" paths) fallbackMsg
 
@@ -1014,7 +1030,7 @@ navFrom model viewport root parents paths defMsg =
                                 let
                                     -- a generic message that will navigate to the album we found
                                     -- no matter where we currently are
-                                    makeViewList bodyViewport parentss =
+                                    makeViewList bodyViewport scroll parentss =
                                         Album <|
                                             ViewList
                                                 (AlbumListPage
@@ -1023,35 +1039,44 @@ navFrom model viewport root parents paths defMsg =
                                                     , parents = parentss
                                                     }
                                                 )
-                                                Nothing
+                                                scroll
 
                                     thisAlbumMsg =
                                         makeViewList
                                             viewport.bodyViewport
+                                            Nothing
                                         <|
                                             List.map (\p -> ( p, Nothing )) newParents
                                 in
                                 case ps of
                                     [] ->
-                                        -- check if we're at the parent of the list identified by
+                                        -- check if we're at a parent or child of the list identified by
                                         -- the navigation data.  if so, use a more targeted message
-                                        -- so that scroll position etc. can be preserved
+                                        -- so that scroll position etc. can be preserved or restored (respectively)
                                         case model of
                                             LoadedList ll ->
                                                 case ll.listPage of
                                                     AlbumListPage alp ->
                                                         let
                                                             destIsChild =
-                                                                List.member
-                                                                    (List albumList)
-                                                                    (alp.albumList.childFirst :: alp.albumList.childRest)
-                                                        in
-                                                        case destIsChild of
-                                                            True ->
+                                                                log "destIsChild" <|
+                                                                    List.member
+                                                                        (List albumList)
+                                                                        (alp.albumList.childFirst :: alp.albumList.childRest)
+
+                                                            destParent =
+                                                                log "destParent" <|
+                                                                    List.head <|
+                                                                        List.filter
+                                                                            (\( list, _ ) -> list == albumList)
+                                                                            alp.parents
+
+                                                            localNavWithScroll scroll =
                                                                 Meta <|
                                                                     Sequence
                                                                         (makeViewList
                                                                             alp.bodyViewport
+                                                                            scroll
                                                                          <|
                                                                             ( alp.albumList
                                                                             , Maybe.map scrollPosOf ll.rootDivViewport
@@ -1059,9 +1084,37 @@ navFrom model viewport root parents paths defMsg =
                                                                                 :: alp.parents
                                                                         )
                                                                         [ Album NavCompletedLocally ]
+                                                        in
+                                                        case destIsChild of
+                                                            True ->
+                                                                localNavWithScroll Nothing
 
                                                             False ->
-                                                                thisAlbumMsg
+                                                                case destParent of
+                                                                    Just ( _, scroll ) ->
+                                                                        localNavWithScroll scroll
+
+                                                                    Nothing ->
+                                                                        thisAlbumMsg
+
+                                            LoadedAlbum la ->
+                                                let
+                                                    destParent =
+                                                        log "LoadedAlbum.destParent" <|
+                                                            List.head <|
+                                                                List.filter
+                                                                    (\( list, _ ) -> list == albumList)
+                                                                    la.parents
+                                                in
+                                                case destParent of
+                                                    Just ( _, scroll ) ->
+                                                        makeViewList (pageSize la.albumPage).bodyViewport scroll <|
+                                                            dropThroughPred
+                                                                (\( p, _ ) -> p == albumList)
+                                                                la.parents
+
+                                                    Nothing ->
+                                                        thisAlbumMsg
 
                                             _ ->
                                                 thisAlbumMsg
