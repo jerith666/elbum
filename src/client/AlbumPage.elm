@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, eqIgnoringVpInfo, getImgPosition, hashForAlbum, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, eqIgnoringVpInfo, getImgPosition, hashForAlbum, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -124,9 +124,6 @@ update msg model scroll =
             case model of
                 FullImage fi ->
                     let
-                        ( newFirst, newRest ) =
-                            shiftToBeginning fi.prevImgs fi.album.imageFirst fi.album.imageRest
-
                         scrollCmd =
                             case fi.scroll of
                                 Nothing ->
@@ -136,12 +133,7 @@ update msg model scroll =
                                     Task.attempt (always NoUpdate) <| setViewportOf rootDivId 0 pos
 
                         th =
-                            { album =
-                                { title = fi.album.title
-                                , imageFirst = newFirst
-                                , imageRest = newRest
-                                , thumbnail = fi.album.thumbnail
-                                }
+                            { album = baseAlbumOf <| FullImage fi
                             , vpInfo = fi.vpInfo
                             , justLoadedImages = empty
                             , readyToDisplayImages = empty
@@ -224,6 +216,24 @@ update msg model scroll =
 
         NoUpdate ->
             ( model, Cmd.none )
+
+
+baseAlbumOf : AlbumPage -> Album
+baseAlbumOf ap =
+    case ap of
+        Thumbs t ->
+            t.album
+
+        FullImage fi ->
+            let
+                ( newFirst, newRest ) =
+                    shiftToBeginning fi.prevImgs fi.album.imageFirst fi.album.imageRest
+            in
+            { title = fi.album.title
+            , imageFirst = newFirst
+            , imageRest = newRest
+            , thumbnail = fi.album.thumbnail
+            }
 
 
 getImgPosition =

@@ -1157,7 +1157,9 @@ navForAlbum model vpInfo album ps newParents =
                     makeViewAlbumThumbsMsg parentsNoScroll
             in
             -- see if we are at the AlbumList currently containing the target Album
-            -- if so, create a message that stores the current scroll position of that AlbumList
+            -- or on a FullImagePage contained in the target Album
+            -- if so, create a message that saves or restores (respectively)
+            -- the current scroll position of that AlbumList or Album(Thumbs)
             case model of
                 LoadedList ll ->
                     case ll.listPage of
@@ -1167,6 +1169,19 @@ navForAlbum model vpInfo album ps newParents =
                                     makeViewAlbumThumbsMsg <|
                                         ( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport )
                                             :: alp.parents
+
+                                False ->
+                                    nonLocalMsg
+
+                LoadedAlbum la ->
+                    case la.albumPage of
+                        Thumbs _ ->
+                            nonLocalMsg
+
+                        FullImage fi ->
+                            case album == baseAlbumOf (FullImage fi) of
+                                True ->
+                                    Just <| Album <| PageMsg BackToThumbs
 
                                 False ->
                                     nonLocalMsg
