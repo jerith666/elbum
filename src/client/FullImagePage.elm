@@ -85,13 +85,12 @@ view a navMsgs touchMsgs wrapProgMsg fullImagePageModel parents flags =
         ]
             ++ navEltIf a fullImagePageModel.prevImgs navMsgs.prevMsg "<" left
             ++ navEltIf a fullImagePageModel.album.imageRest navMsgs.nextMsg ">" right
-            ++ [ div
+            ++ [ a navMsgs.backToThumbsMsg
                     [ styles <|
                         navBoxStyles
                             ++ [ top (px 5)
                                , right (px 5)
                                ]
-                    , onClick navMsgs.backToThumbsMsg
                     ]
                     [ Html.Styled.text "x" ]
                , Html.Styled.a
