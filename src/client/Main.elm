@@ -1152,7 +1152,7 @@ navForAlbum model vpInfo album ps newParents =
                                 Thumbs t ->
                                     case t.album == album of
                                         True ->
-                                            Debug.log "navForAlbum t.album == album" <|
+                                            log "navForAlbum t.album == album" <|
                                                 Just <|
                                                     Meta <|
                                                         Sequence
@@ -1160,10 +1160,10 @@ navForAlbum model vpInfo album ps newParents =
                                                             [ Album NavCompletedLocally ]
 
                                         False ->
-                                            Debug.log "navForAlbum t.album != album" nonLocalMsg
+                                            log "navForAlbum t.album != album" nonLocalMsg
 
                                 _ ->
-                                    Debug.log "navForAlbum model is LoadedAlbum but albumPage is not Thumbs" nonLocalMsg
+                                    log "navForAlbum model is LoadedAlbum but albumPage is not Thumbs" nonLocalMsg
 
                         _ ->
                             nonLocalMsg
