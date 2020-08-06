@@ -36,7 +36,7 @@ grey =
     rgb 128 128 128
 
 
-view : (msg -> List (Attribute msg) -> List (Html msg) -> Html msg) -> (Viewport -> msg) -> (List Image -> Image -> List Image -> msg) -> (AlbumList -> msg) -> ThumbPageModel -> MainAlbumFlags -> Html msg
+view : AnchorFunction msg -> (Viewport -> msg) -> (List Image -> Image -> List Image -> msg) -> (AlbumList -> msg) -> ThumbPageModel -> MainAlbumFlags -> Html msg
 view a scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
     rootDivFlex
         flags
@@ -161,7 +161,7 @@ urlsToGet thumbPageModel =
                 List.map .url prioritySrcs
 
 
-viewThumbs : (msg -> List (Attribute msg) -> List (Html msg) -> Html msg) -> (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
+viewThumbs : AnchorFunction msg -> (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
 viewThumbs a imgChosenMsgr thumbPageModel =
     let
         ( maxCols, thumbWidth ) =
@@ -214,7 +214,7 @@ convertImgChosenMsgr image1 images prevCurRestImgChosenMsgr =
         prevCurRestImgChosenMsgr prev cur next
 
 
-viewThumbColumn : (msg -> List (Attribute msg) -> List (Html msg) -> Html msg) -> Int -> (Int -> msg) -> Set String -> Set String -> List ( Image, Int ) -> Html msg
+viewThumbColumn : AnchorFunction msg -> Int -> (Int -> msg) -> Set String -> Set String -> List ( Image, Int ) -> Html msg
 viewThumbColumn a thumbWidth imgChosenMsgr justLoadedImages readyToDisplayImages images =
     let
         viewThumbTuple ( img, i ) =
@@ -328,7 +328,7 @@ srcForWidth width img =
     smallestImageBiggerThan xScaled yScaled img.srcSetFirst img.srcSetRest
 
 
-viewThumb : (msg -> List (Attribute msg) -> List (Html msg) -> Html msg) -> Int -> ImgLoadState -> List Style -> msg -> Image -> Html msg
+viewThumb : AnchorFunction msg -> Int -> ImgLoadState -> List Style -> msg -> Image -> Html msg
 viewThumb a width opasity extraStyles selectedMsg img =
     let
         ( xScaled, yScaled ) =

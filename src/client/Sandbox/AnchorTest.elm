@@ -9,7 +9,7 @@ import RouteUrl exposing (App, HistoryEntry(..), RouteUrlProgram, UrlChange(..),
 import String exposing (toInt)
 import Url exposing (Url)
 import Utils.ListUtils as ListUtils
-import Utils.LocationUtils exposing (changeToString)
+import Utils.LocationUtils exposing (AnchorFunction, changeToString)
 
 
 type alias AnchorTestModel =
@@ -91,7 +91,7 @@ update msg model =
             ( { model | num = i, setMessages = model.setMessages + 1 }, Cmd.none )
 
 
-view : AnchorTestModel -> (AnchorTestMsg -> List (Attribute AnchorTestMsg) -> List (Html AnchorTestMsg) -> Html AnchorTestMsg) -> Document AnchorTestMsg
+view : AnchorTestModel -> AnchorFunction AnchorTestMsg -> Document AnchorTestMsg
 view model a =
     { title = "title", body = [ toUnstyled <| viewImpl model a ] }
 

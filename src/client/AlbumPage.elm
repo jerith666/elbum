@@ -16,6 +16,7 @@ import ThumbPage exposing (..)
 import Utils.AlbumUtils exposing (..)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
+import Utils.LocationUtils exposing (AnchorFunction)
 import Utils.ResultUtils exposing (..)
 import Utils.TouchUtils as TU exposing (..)
 
@@ -345,7 +346,7 @@ titleOf albumPage =
             fi.album.imageFirst.altText
 
 
-view : AlbumPage -> (msg -> List (Attribute msg) -> List (Html msg) -> Html msg) -> (Viewport -> msg) -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> MainAlbumFlags -> Html msg
+view : AlbumPage -> AnchorFunction msg -> (Viewport -> msg) -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> MainAlbumFlags -> Html msg
 view albumPage a scrollMsgMaker showList wrapMsg parents flags =
     case albumPage of
         Thumbs th ->

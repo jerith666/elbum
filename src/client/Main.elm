@@ -1514,7 +1514,7 @@ newSize v x y =
     General <| Resize <| viewportWithNewSize v x y
 
 
-view : MainAlbumModel -> (MainAlbumMsg -> List (Attribute MainAlbumMsg) -> List (Html MainAlbumMsg) -> Html MainAlbumMsg) -> Document MainAlbumMsg
+view : MainAlbumModel -> AnchorFunction MainAlbumMsg -> Document MainAlbumMsg
 view albumBootstrap a =
     let
         title =
@@ -1544,7 +1544,7 @@ view albumBootstrap a =
     }
 
 
-viewImpl : MainAlbumModel -> (MainAlbumMsg -> List (Attribute MainAlbumMsg) -> List (Html MainAlbumMsg) -> Html MainAlbumMsg) -> Html MainAlbumMsg
+viewImpl : MainAlbumModel -> AnchorFunction MainAlbumMsg -> Html MainAlbumMsg
 viewImpl albumBootstrap a =
     case albumBootstrap of
         Sizing _ ->

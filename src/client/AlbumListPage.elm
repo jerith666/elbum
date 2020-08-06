@@ -8,13 +8,14 @@ import Html.Styled exposing (..)
 import ImageViews exposing (..)
 import ThumbPage exposing (albumTitle)
 import Utils.AlbumUtils exposing (..)
+import Utils.LocationUtils exposing (AnchorFunction)
 
 
 type AlbumListPage
     = AlbumListPage { albumList : AlbumList, bodyViewport : Viewport, parents : List ( AlbumList, Maybe Float ) }
 
 
-view : AlbumListPage -> (msg -> List (Attribute msg) -> List (Html msg) -> Html msg) -> (AlbumList -> msg) -> (Album -> msg) -> (Viewport -> msg) -> MainAlbumFlags -> Html msg
+view : AlbumListPage -> AnchorFunction msg -> (AlbumList -> msg) -> (Album -> msg) -> (Viewport -> msg) -> MainAlbumFlags -> Html msg
 view (AlbumListPage alp) a viewList viewAlbum scrollMsgMaker flags =
     rootDivFlex
         flags
@@ -32,7 +33,7 @@ view (AlbumListPage alp) a viewList viewAlbum scrollMsgMaker flags =
                )
 
 
-viewAlbumOrList : (msg -> List (Attribute msg) -> List (Html msg) -> Html msg) -> (AlbumList -> msg) -> (Album -> msg) -> AlbumOrList -> Html msg
+viewAlbumOrList : AnchorFunction msg -> (AlbumList -> msg) -> (Album -> msg) -> AlbumOrList -> Html msg
 viewAlbumOrList a viewList viewAlbum albumOrList =
     let
         childStyles =
