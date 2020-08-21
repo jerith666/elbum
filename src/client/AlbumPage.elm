@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, eqIgnoringVpInfo, getImgPosition, hashForAlbum, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, eqIgnoringVpInfo, getImgPosition, hashForAlbum, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -16,6 +16,7 @@ import ThumbPage exposing (..)
 import Utils.AlbumUtils exposing (..)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
+import Utils.LocationUtils exposing (AnchorFunction)
 import Utils.ResultUtils exposing (..)
 import Utils.TouchUtils as TU exposing (..)
 
@@ -124,9 +125,6 @@ update msg model scroll =
             case model of
                 FullImage fi ->
                     let
-                        ( newFirst, newRest ) =
-                            shiftToBeginning fi.prevImgs fi.album.imageFirst fi.album.imageRest
-
                         scrollCmd =
                             case fi.scroll of
                                 Nothing ->
@@ -136,12 +134,7 @@ update msg model scroll =
                                     Task.attempt (always NoUpdate) <| setViewportOf rootDivId 0 pos
 
                         th =
-                            { album =
-                                { title = fi.album.title
-                                , imageFirst = newFirst
-                                , imageRest = newRest
-                                , thumbnail = fi.album.thumbnail
-                                }
+                            { album = baseAlbumOf <| FullImage fi
                             , vpInfo = fi.vpInfo
                             , justLoadedImages = empty
                             , readyToDisplayImages = empty
@@ -224,6 +217,24 @@ update msg model scroll =
 
         NoUpdate ->
             ( model, Cmd.none )
+
+
+baseAlbumOf : AlbumPage -> Album
+baseAlbumOf ap =
+    case ap of
+        Thumbs t ->
+            t.album
+
+        FullImage fi ->
+            let
+                ( newFirst, newRest ) =
+                    shiftToBeginning fi.prevImgs fi.album.imageFirst fi.album.imageRest
+            in
+            { title = fi.album.title
+            , imageFirst = newFirst
+            , imageRest = newRest
+            , thumbnail = fi.album.thumbnail
+            }
 
 
 getImgPosition =
@@ -335,11 +346,12 @@ titleOf albumPage =
             fi.album.imageFirst.altText
 
 
-view : AlbumPage -> (Viewport -> msg) -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> MainAlbumFlags -> Html msg
-view albumPage scrollMsgMaker showList wrapMsg parents flags =
+view : AlbumPage -> AnchorFunction msg -> (Viewport -> msg) -> (AlbumList -> msg) -> (AlbumPageMsg -> msg) -> List AlbumList -> MainAlbumFlags -> Html msg
+view albumPage a scrollMsgMaker showList wrapMsg parents flags =
     case albumPage of
         Thumbs th ->
             ThumbPage.view
+                a
                 scrollMsgMaker
                 (\x -> \y -> \z -> wrapMsg (View x y z))
                 showList
@@ -354,6 +366,7 @@ view albumPage scrollMsgMaker showList wrapMsg parents flags =
 
         FullImage fi ->
             FullImagePage.view
+                a
                 { prevMsg = wrapMsg Prev
                 , nextMsg = wrapMsg Next
                 , backToThumbsMsg = wrapMsg BackToThumbs
@@ -363,7 +376,6 @@ view albumPage scrollMsgMaker showList wrapMsg parents flags =
                 , touchContinueMsg = wrapMsg << TouchDragContinue
                 , touchPrevNextMsg = wrapMsg << touchPrevNext fi.touchState
                 }
-                (wrapMsg NoUpdate)
                 (wrapMsg << FullMsg)
                 { prevImgs = fi.prevImgs
                 , album = fi.album

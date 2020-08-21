@@ -5,12 +5,11 @@ import AlbumStyles exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
-import Html.Styled.Events exposing (..)
 import Utils.ListUtils exposing (..)
 
 
-renderPresized : Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Style -> List (Html.Styled.Attribute msg) -> Maybe msg -> Html msg
-renderPresized margin w h i iRest s otherAttrs msg =
+renderPresized : Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Style -> List (Html.Styled.Attribute msg) -> Html msg
+renderPresized margin w h i iRest s otherAttrs =
     render (smallestImageBiggerThan w h i iRest)
         --empty list disables use of srcsets; experiments indicate they don't really work
         []
@@ -21,7 +20,6 @@ renderPresized margin w h i iRest s otherAttrs msg =
             ++ s
         )
         otherAttrs
-        msg
 
 
 smallestImageBiggerThan : Int -> Int -> ImgSrc -> List ImgSrc -> ImgSrc
@@ -34,8 +32,8 @@ smallestImageBiggerThan w h i iRest =
             sizedIs
 
 
-render : ImgSrc -> List ImgSrc -> List Style -> List (Html.Styled.Attribute msg) -> Maybe msg -> Html msg
-render idefault is s otherAttrs msg =
+render : ImgSrc -> List ImgSrc -> List Style -> List (Html.Styled.Attribute msg) -> Html msg
+render idefault is s otherAttrs =
     let
         srcset =
             case is of
@@ -51,17 +49,9 @@ render idefault is s otherAttrs msg =
             , Html.Styled.Attributes.width idefault.x
             , Html.Styled.Attributes.height idefault.y
             ]
-
-        clickAttr =
-            case msg of
-                Just m ->
-                    [ onClick m ]
-
-                Nothing ->
-                    []
     in
     img
-        (baseAttrs ++ otherAttrs ++ srcset ++ clickAttr)
+        (baseAttrs ++ otherAttrs ++ srcset)
         []
 
 

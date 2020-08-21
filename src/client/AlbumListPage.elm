@@ -5,18 +5,18 @@ import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
-import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
-import ThumbPage exposing (albumTitle, viewThumb)
+import ThumbPage exposing (albumTitle)
 import Utils.AlbumUtils exposing (..)
+import Utils.LocationUtils exposing (AnchorFunction)
 
 
 type AlbumListPage
     = AlbumListPage { albumList : AlbumList, bodyViewport : Viewport, parents : List ( AlbumList, Maybe Float ) }
 
 
-view : AlbumListPage -> (AlbumList -> msg) -> (Album -> msg) -> (Viewport -> msg) -> MainAlbumFlags -> Html msg
-view (AlbumListPage alp) viewList viewAlbum scrollMsgMaker flags =
+view : AlbumListPage -> AnchorFunction msg -> (AlbumList -> msg) -> (Album -> msg) -> (Viewport -> msg) -> MainAlbumFlags -> Html msg
+view (AlbumListPage alp) a viewList viewAlbum scrollMsgMaker flags =
     rootDivFlex
         flags
         column
@@ -24,17 +24,17 @@ view (AlbumListPage alp) viewList viewAlbum scrollMsgMaker flags =
         alp.bodyViewport
         []
     <|
-        [ albumTitle alp.albumList.listTitle (List.map Tuple.first alp.parents) viewList [] [ position fixed ]
-        , albumTitle alp.albumList.listTitle (List.map Tuple.first alp.parents) viewList [] [ visibility hidden ]
+        [ albumTitle a alp.albumList.listTitle (List.map Tuple.first alp.parents) viewList [] [ position fixed ]
+        , albumTitle a alp.albumList.listTitle (List.map Tuple.first alp.parents) viewList [] [ visibility hidden ]
         ]
             ++ (List.reverse <|
-                    [ viewAlbumOrList viewList viewAlbum alp.albumList.childFirst ]
-                        ++ List.map (viewAlbumOrList viewList viewAlbum) alp.albumList.childRest
+                    [ viewAlbumOrList a viewList viewAlbum alp.albumList.childFirst ]
+                        ++ List.map (viewAlbumOrList a viewList viewAlbum) alp.albumList.childRest
                )
 
 
-viewAlbumOrList : (AlbumList -> msg) -> (Album -> msg) -> AlbumOrList -> Html msg
-viewAlbumOrList viewList viewAlbum albumOrList =
+viewAlbumOrList : AnchorFunction msg -> (AlbumList -> msg) -> (Album -> msg) -> AlbumOrList -> Html msg
+viewAlbumOrList a viewList viewAlbum albumOrList =
     let
         childStyles =
             styles
@@ -47,26 +47,28 @@ viewAlbumOrList viewList viewAlbum albumOrList =
     in
     case albumOrList of
         List albumList ->
-            div
-                [ childStyles
-                , onClick <| viewList albumList
-                ]
-                [ renderListImage (viewList albumList) albumList.listThumbnail
-                , span [ styles [ flexShrink <| int 1 ] ] [ Html.Styled.text albumList.listTitle ]
+            a (viewList albumList)
+                [ styles [ textDecoration none ] ]
+                [ div
+                    [ childStyles ]
+                    [ renderListImage albumList.listThumbnail
+                    , span [ styles [ flexShrink <| int 1 ] ] [ Html.Styled.text albumList.listTitle ]
+                    ]
                 ]
 
         Leaf album ->
-            div
-                [ childStyles
-                , onClick <| viewAlbum album
-                ]
-                [ renderListImage (viewAlbum album) album.thumbnail
-                , span [ styles [ flexShrink <| int 1 ] ] [ Html.Styled.text album.title ]
+            a (viewAlbum album)
+                [ styles [ textDecoration none ] ]
+                [ div
+                    [ childStyles ]
+                    [ renderListImage album.thumbnail
+                    , span [ styles [ flexShrink <| int 1 ] ] [ Html.Styled.text album.title ]
+                    ]
                 ]
 
 
-renderListImage : msg -> Image -> Html msg
-renderListImage selectedMsg img =
+renderListImage : Image -> Html msg
+renderListImage img =
     let
         ( xScaled, yScaled ) =
             if img.srcSetFirst.x > img.srcSetFirst.y then
@@ -98,8 +100,6 @@ renderListImage selectedMsg img =
                ]
         )
         []
-    <|
-        Just selectedMsg
 
 
 hashForList : AlbumListPage -> String

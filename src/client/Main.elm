@@ -15,11 +15,11 @@ import Dict exposing (..)
 import FullImagePage exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
+import Html.Styled.Events
 import Http exposing (..)
 import RouteUrl exposing (..)
 import Set exposing (..)
 import Task exposing (..)
-import Time exposing (..)
 import Url exposing (..)
 import Utils.AlbumUtils exposing (..)
 import Utils.DebugSupport exposing (debugString, log)
@@ -126,6 +126,7 @@ type AlbumMsg
     | ImageLoaded String
     | ImageReadyToDisplay String
     | ImageFailed String Http.Error
+    | NavCompletedLocally
 
 
 type ScrollMsg
@@ -138,20 +139,35 @@ type ScrollMsg
 
 type GeneralMsg
     = Resize Viewport
-    | LinkClicked UrlRequest
+    | InternalUrlClicked Url
+    | ExternalLinkClicked String
 
 
 main : RouteUrlProgram MainAlbumFlags MainAlbumModel MainAlbumMsg
 main =
-    RouteUrl.programWithFlags
+    RouteUrl.anchorManagedProgram
         { init = init
         , view = view
         , update = update
         , subscriptions = subscriptions
-        , onUrlRequest = General << LinkClicked
+        , onExternalUrlRequest = General << ExternalLinkClicked
         , delta2url = locFor
-        , location2messages = navToMsg
+        , location2messages = \u -> [ General <| InternalUrlClicked u ]
+        , makeAnchor = makeAnchor
         }
+
+
+makeAnchor : String -> Maybe MainAlbumMsg -> List (Attribute MainAlbumMsg) -> List (Html MainAlbumMsg) -> Html MainAlbumMsg
+makeAnchor url onClickMsg attrs =
+    a <|
+        href url
+            :: (case onClickMsg of
+                    Nothing ->
+                        attrs
+
+                    Just m ->
+                        Html.Styled.Events.onClick m :: attrs
+               )
 
 
 init : MainAlbumFlags -> Key -> ( MainAlbumModel, Cmd MainAlbumMsg )
@@ -248,24 +264,12 @@ updateGeneral generalMsg model =
                             , Cmd.none
                             )
 
-        LinkClicked urlRequest ->
-            case urlRequest of
-                Internal url ->
-                    --home link might count as internal if it's on the same domain
-                    let
-                        hUrl =
-                            Maybe.andThen Url.fromString <| homeOf model
-                    in
-                    case Maybe.withDefault False <| Maybe.map (\h -> h == url) <| hUrl of
-                        True ->
-                            ( model, load <| toString url )
+        InternalUrlClicked url ->
+            ( model, navToMsg model url )
 
-                        False ->
-                            ( log ("ignoring unexpected internal url request not for home url (" ++ (Maybe.withDefault "home not set" <| homeOf model) ++ ") " ++ toString url) model, Cmd.none )
-
-                External url ->
-                    --home link should be only external link in our app
-                    ( model, load url )
+        ExternalLinkClicked url ->
+            --home link should be only external link in our app
+            ( model, load <| log "loading external url, assumed to be home" url )
 
 
 updateBootstrap : BootstrapMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
@@ -279,7 +283,7 @@ updateBootstrap bootstrapMsg model =
                 _ ->
                     ( model, Cmd.none )
 
-        NoHome err ->
+        NoHome _ ->
             case model of
                 LoadingHomeLink lh ->
                     gotHome lh Nothing
@@ -443,11 +447,6 @@ updateAlbum albumMsg model =
 
                         Nothing ->
                             scrollToTop NoBootstrap <| always NoBootstrap
-
-                title =
-                    case albumListPage of
-                        AlbumListPage alp ->
-                            alp.albumList.listTitle
             in
             ( newModel
             , Cmd.map Meta scrollCmd
@@ -493,6 +492,9 @@ updateAlbum albumMsg model =
             ( withAlbumPathsAfterLoad model paths
             , toCmd <| Maybe.withDefault (Meta NoBootstrap) <| pathsToCmd model <| Just paths
             )
+
+        NavCompletedLocally ->
+            ( withNavComplete model, Cmd.none )
 
 
 updateScroll : ScrollMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
@@ -669,8 +671,26 @@ gotHome lh home =
     )
 
 
-navToMsg : Url -> List MainAlbumMsg
-navToMsg loc =
+navToMsg : MainAlbumModel -> Url -> Cmd MainAlbumMsg
+navToMsg model loc =
+    --home link might count as internal if it's on the same domain
+    let
+        hUrl =
+            Maybe.andThen Url.fromString <| homeOf model
+
+        locIsHome =
+            Maybe.withDefault False <| Maybe.map (\h -> h == loc) <| hUrl
+    in
+    case locIsHome of
+        True ->
+            load <| toString <| log "loading internal home url" loc
+
+        False ->
+            navToMsgInternal <| log "navToMsgInternal for non-home internal url" loc
+
+
+navToMsgInternal : Url -> Cmd MainAlbumMsg
+navToMsgInternal loc =
     let
         parsedHash =
             log ("parsedHash from " ++ Maybe.withDefault "<no fragment>" loc.fragment) <| parseHash <| Maybe.withDefault "" loc.fragment
@@ -700,13 +720,13 @@ navToMsg loc =
     in
     case hashMsgs ++ queryMsgs of
         [] ->
-            []
+            Cmd.none
 
         [ c ] ->
-            [ c ]
+            Task.perform identity <| Task.succeed c
 
         c1 :: cs ->
-            [ Meta <| Sequence c1 cs ]
+            Task.perform identity <| Task.succeed <| Meta <| Sequence c1 cs
 
 
 flagsOf : MainAlbumModel -> MainAlbumFlags
@@ -862,6 +882,28 @@ withScrollToAfterLoad model scrollToAfterLoad =
             model
 
 
+withNavComplete : MainAlbumModel -> MainAlbumModel
+withNavComplete model =
+    case model of
+        Sizing _ ->
+            model
+
+        LoadingHomeLink _ ->
+            model
+
+        Loading _ ->
+            model
+
+        LoadError _ ->
+            model
+
+        LoadedList ll ->
+            LoadedList { ll | navState = NavInactive }
+
+        LoadedAlbum la ->
+            LoadedAlbum { la | navState = NavInactive }
+
+
 pathsToCmd : MainAlbumModel -> Maybe (List String) -> Maybe MainAlbumMsg
 pathsToCmd model mPaths =
     case mPaths of
@@ -887,17 +929,18 @@ pathsToCmd model mPaths =
                         AlbumListPage alp ->
                             --TODO maybe don't always prepend aTN here, only if at root?
                             --TODO I think it's okay to drop the scroll positions here, should only happen at initial load (?)
-                            pathsToCmdImpl
-                                { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }
-                                (alp.albumList :: List.map Tuple.first alp.parents)
-                                paths
+                            log "pathsToCmd for LoadedList" <|
+                                pathsToCmdImpl model
+                                    { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }
+                                    (alp.albumList :: List.map Tuple.first alp.parents)
+                                    paths
 
                 LoadedAlbum la ->
-                    pathsToCmdImpl (pageSize la.albumPage) (List.map Tuple.first la.parents) paths
+                    log "pathsToCmd for LoadedAlbum" <| pathsToCmdImpl model (pageSize la.albumPage) (List.map Tuple.first la.parents) paths
 
 
-pathsToCmdImpl : ViewportInfo -> List AlbumList -> List String -> Maybe MainAlbumMsg
-pathsToCmdImpl viewport parents paths =
+pathsToCmdImpl : MainAlbumModel -> ViewportInfo -> List AlbumList -> List String -> Maybe MainAlbumMsg
+pathsToCmdImpl model viewport parents paths =
     let
         mRoot =
             List.head <| List.reverse parents
@@ -907,11 +950,30 @@ pathsToCmdImpl viewport parents paths =
             log "pathsToCmdImpl has no root" Nothing
 
         Just root ->
-            navFrom viewport root [] paths <|
-                Album <|
-                    ViewList
-                        (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
-                        Nothing
+            let
+                modelParents =
+                    case model of
+                        LoadedList ll ->
+                            case ll.listPage of
+                                AlbumListPage alp ->
+                                    alp.parents
+
+                        LoadedAlbum la ->
+                            la.parents
+
+                        _ ->
+                            []
+
+                fallbackScroll =
+                    List.reverse modelParents |> List.head |> Maybe.andThen Tuple.second
+
+                fallbackMsg =
+                    Album <|
+                        ViewList
+                            (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
+                            fallbackScroll
+            in
+            Just <| navFrom model viewport root [] (log "pathsToCmdImpl passing paths to navFrom" paths) fallbackMsg
 
 
 scrollToCmd : MainAlbumModel -> Maybe Float -> Maybe MainAlbumMsg
@@ -940,14 +1002,14 @@ scrollToCmd model scrollToAfterLoad =
             scrollCmd
 
 
-navFrom : ViewportInfo -> AlbumList -> List AlbumList -> List String -> MainAlbumMsg -> Maybe MainAlbumMsg
-navFrom viewport root parents paths defcmd =
+navFrom : MainAlbumModel -> ViewportInfo -> AlbumList -> List AlbumList -> List String -> MainAlbumMsg -> MainAlbumMsg
+navFrom model viewport root parents paths defMsg =
     case paths of
         [] ->
-            log "navFrom has no paths" <| Just defcmd
+            log "navFrom has no paths" defMsg
 
         [ "#" ] ->
-            log "navFrom has only # path" <| Just defcmd
+            log "navFrom has only # path" defMsg
 
         p1 :: ps ->
             let
@@ -957,85 +1019,249 @@ navFrom viewport root parents paths defcmd =
                 newParents =
                     root :: parents
             in
-            case mChild of
-                Nothing ->
-                    log ("navFrom can't find child " ++ p1) <| Just defcmd
+            log ("navFrom first path " ++ p1) <|
+                case mChild of
+                    Nothing ->
+                        log ("navFrom can't find child " ++ p1) defMsg
 
-                Just pChild ->
-                    case pChild of
-                        List albumList ->
-                            navFrom viewport albumList newParents ps <|
-                                Album <|
-                                    ViewList
-                                        (AlbumListPage
-                                            { albumList = albumList
-                                            , bodyViewport = viewport.bodyViewport
-                                            , parents = List.map (\p -> ( p, Nothing )) newParents
-                                            }
-                                        )
-                                        Nothing
+                    Just pChild ->
+                        case pChild of
+                            List albumList ->
+                                let
+                                    -- a generic message that will navigate to the album we found
+                                    -- no matter where we currently are
+                                    makeViewList bodyViewport scroll parentss =
+                                        Album <|
+                                            ViewList
+                                                (AlbumListPage
+                                                    { albumList = albumList
+                                                    , bodyViewport = bodyViewport
+                                                    , parents = parentss
+                                                    }
+                                                )
+                                                scroll
 
-                        Leaf album ->
-                            navForAlbum viewport album ps newParents
+                                    thisAlbumMsg =
+                                        makeViewList
+                                            viewport.bodyViewport
+                                            Nothing
+                                        <|
+                                            List.map (\p -> ( p, Nothing )) newParents
+                                in
+                                case ps of
+                                    [] ->
+                                        -- check if we're at a parent or child of the list identified by
+                                        -- the navigation data.  if so, use a more targeted message
+                                        -- so that scroll position etc. can be preserved or restored (respectively)
+                                        case model of
+                                            LoadedList ll ->
+                                                case ll.listPage of
+                                                    AlbumListPage alp ->
+                                                        let
+                                                            destIsChild =
+                                                                log "destIsChild" <|
+                                                                    List.member
+                                                                        (List albumList)
+                                                                        (alp.albumList.childFirst :: alp.albumList.childRest)
+
+                                                            destParent =
+                                                                log "destParent" <|
+                                                                    List.head <|
+                                                                        List.filter
+                                                                            (\( list, _ ) -> list == albumList)
+                                                                            alp.parents
+
+                                                            localNavWithScroll scroll =
+                                                                Meta <|
+                                                                    Sequence
+                                                                        (makeViewList
+                                                                            alp.bodyViewport
+                                                                            scroll
+                                                                         <|
+                                                                            ( alp.albumList
+                                                                            , Maybe.map scrollPosOf ll.rootDivViewport
+                                                                            )
+                                                                                :: alp.parents
+                                                                        )
+                                                                        [ Album NavCompletedLocally ]
+                                                        in
+                                                        case destIsChild of
+                                                            True ->
+                                                                localNavWithScroll Nothing
+
+                                                            False ->
+                                                                case destParent of
+                                                                    Just ( _, scroll ) ->
+                                                                        localNavWithScroll scroll
+
+                                                                    Nothing ->
+                                                                        thisAlbumMsg
+
+                                            LoadedAlbum la ->
+                                                let
+                                                    destParent =
+                                                        log "LoadedAlbum.destParent" <|
+                                                            List.head <|
+                                                                List.filter
+                                                                    (\( list, _ ) -> list == albumList)
+                                                                    la.parents
+                                                in
+                                                case destParent of
+                                                    Just ( _, scroll ) ->
+                                                        makeViewList (pageSize la.albumPage).bodyViewport scroll <|
+                                                            dropThroughPred
+                                                                (\( p, _ ) -> p == albumList)
+                                                                la.parents
+
+                                                    Nothing ->
+                                                        thisAlbumMsg
+
+                                            _ ->
+                                                thisAlbumMsg
+
+                                    _ ->
+                                        log "navFrom recursive call" <|
+                                            navFrom model viewport albumList newParents ps thisAlbumMsg
+
+                            Leaf album ->
+                                Maybe.withDefault defMsg <|
+                                    log "navFrom calls navForAlbum" <|
+                                        navForAlbum model viewport album ps newParents
 
 
-navForAlbum : ViewportInfo -> Album -> List String -> List AlbumList -> Maybe MainAlbumMsg
-navForAlbum vpInfo album ps newParents =
+navForAlbum : MainAlbumModel -> ViewportInfo -> Album -> List String -> List AlbumList -> Maybe MainAlbumMsg
+navForAlbum model vpInfo album ps newParents =
     let
         parentsNoScroll =
             List.map (\p -> ( p, Nothing )) newParents
     in
-    case ps of
+    case log "navForAlbum ps" ps of
         [] ->
-            Just <|
-                Album <|
-                    ViewAlbum
-                        (Thumbs
-                            { album = album
-                            , vpInfo = vpInfo
-                            , justLoadedImages = Set.empty
-                            , readyToDisplayImages = Set.empty
-                            }
-                        )
-                        parentsNoScroll
+            -- no more paths remain, so create a message that will
+            -- take us to the thumbnails page for this album
+            let
+                makeViewAlbumThumbsMsg parents =
+                    Just <|
+                        Album <|
+                            ViewAlbum
+                                (Thumbs
+                                    { album = album
+                                    , vpInfo = vpInfo
+                                    , justLoadedImages = Set.empty
+                                    , readyToDisplayImages = Set.empty
+                                    }
+                                )
+                                parents
+
+                nonLocalMsg =
+                    makeViewAlbumThumbsMsg parentsNoScroll
+            in
+            -- see if we are at the AlbumList currently containing the target Album
+            -- or on a FullImagePage contained in the target Album
+            -- if so, create a message that saves or restores (respectively)
+            -- the current scroll position of that AlbumList or Album(Thumbs)
+            case model of
+                LoadedList ll ->
+                    case ll.listPage of
+                        AlbumListPage alp ->
+                            case List.member (Leaf album) <| alp.albumList.childFirst :: alp.albumList.childRest of
+                                True ->
+                                    makeViewAlbumThumbsMsg <|
+                                        ( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport )
+                                            :: alp.parents
+
+                                False ->
+                                    nonLocalMsg
+
+                LoadedAlbum la ->
+                    case la.albumPage of
+                        Thumbs _ ->
+                            nonLocalMsg
+
+                        FullImage fi ->
+                            case album == baseAlbumOf (FullImage fi) of
+                                True ->
+                                    Just <|
+                                        Meta <|
+                                            Sequence
+                                                (Album <| PageMsg BackToThumbs)
+                                                [ Album NavCompletedLocally ]
+
+                                False ->
+                                    nonLocalMsg
+
+                _ ->
+                    nonLocalMsg
 
         i :: _ ->
+            -- another path element remains; see if it's the name of
+            -- an image in this album
             case findImg [] album i of
                 Nothing ->
                     log ("navForAlbum can't find image " ++ i) Nothing
 
                 Just ( prevs, nAlbum ) ->
                     let
+                        --prepare data we need to initialize progressive
+                        --loading of the full-size image we've found
                         ( w, h ) =
                             fitImage
                                 nAlbum.imageFirst.srcSetFirst
                                 (floor vpInfo.bodyViewport.viewport.width)
                                 (floor vpInfo.bodyViewport.viewport.height)
 
-                        ( progModel, progCmd ) =
+                        ( progModel, progMsg ) =
                             progInit vpInfo.bodyViewport nAlbum.imageFirst w h
-                    in
-                    Just <|
-                        Meta <|
-                            Sequence
-                                (Album <|
-                                    ViewAlbum
-                                        (FullImage
-                                            { prevImgs = prevs
-                                            , album = nAlbum
-                                            , progModel = progModel
-                                            , vpInfo = vpInfo
-                                            , scroll = Nothing
-                                            , touchState = TU.init
-                                            , imgPosition = Nothing
-                                            , thumbLoadState = SomeMissing
-                                            }
+
+                        -- prepare the default message(s) to view the full-size image
+                        -- followed by the initial message for its progressively loading
+                        nonLocalMsg =
+                            Just <|
+                                Meta <|
+                                    Sequence
+                                        (Album <|
+                                            ViewAlbum
+                                                (FullImage
+                                                    { prevImgs = prevs
+                                                    , album = nAlbum
+                                                    , progModel = progModel
+                                                    , vpInfo = vpInfo
+                                                    , scroll = Nothing
+                                                    , touchState = TU.init
+                                                    , imgPosition = Nothing
+                                                    , thumbLoadState = SomeMissing
+                                                    }
+                                                )
+                                                parentsNoScroll
                                         )
-                                        parentsNoScroll
-                                )
-                            <|
-                                fromMaybe <|
-                                    Maybe.map (Album << PageMsg << FullMsg) progCmd
+                                    <|
+                                        fromMaybe <|
+                                            Maybe.map (Album << PageMsg << FullMsg) progMsg
+                    in
+                    -- now, see if we can create a more specific message.  if we're handling an internal link
+                    -- from a thumbs page to a full size image, create a 'View' message.  this enables us to
+                    -- save the scroll position for the outer album.
+                    case model of
+                        LoadedAlbum la ->
+                            case la.albumPage of
+                                Thumbs t ->
+                                    case t.album == album of
+                                        True ->
+                                            log "navForAlbum t.album == album" <|
+                                                Just <|
+                                                    Meta <|
+                                                        Sequence
+                                                            (Album <| PageMsg <| View prevs nAlbum.imageFirst nAlbum.imageRest)
+                                                            [ Album NavCompletedLocally ]
+
+                                        False ->
+                                            log "navForAlbum t.album != album" nonLocalMsg
+
+                                _ ->
+                                    log "navForAlbum model is LoadedAlbum but albumPage is not Thumbs" nonLocalMsg
+
+                        _ ->
+                            nonLocalMsg
 
 
 locFor : MainAlbumModel -> MainAlbumModel -> Maybe UrlChange
@@ -1081,19 +1307,26 @@ locFor oldModel newModel =
                     nav
 
         newQorF meta modl fragment =
-            case queryFor modl of
-                Nothing ->
-                    NewFragment meta fragment
+            case entry of
+                NewEntry ->
+                    -- always drop scroll information when moving to a new page
+                    -- otherwise it's incorrectly carried forward from e.g. album list to album pages
+                    NewQuery meta { query = "", fragment = Just fragment }
 
-                Just q ->
-                    NewQuery meta { query = q, fragment = Just fragment }
+                ModifyEntry ->
+                    case queryFor modl of
+                        Nothing ->
+                            NewFragment meta fragment
+
+                        Just q ->
+                            NewQuery meta { query = q, fragment = Just fragment }
     in
     log "locFor" <|
         case newModel of
             LoadedAlbum la ->
                 checkNavState la.navState <|
                     Just <|
-                        newQorF { entry = entry, key = la.key }
+                        newQorF entry
                             newModel
                         <|
                             hashForAlbum la.albumPage <|
@@ -1102,7 +1335,7 @@ locFor oldModel newModel =
             LoadedList ll ->
                 checkNavState ll.navState <|
                     Just <|
-                        newQorF { entry = entry, key = ll.key }
+                        newQorF entry
                             newModel
                         <|
                             hashForList ll.listPage
@@ -1281,8 +1514,8 @@ newSize v x y =
     General <| Resize <| viewportWithNewSize v x y
 
 
-view : MainAlbumModel -> Document MainAlbumMsg
-view albumBootstrap =
+view : MainAlbumModel -> AnchorFunction MainAlbumMsg -> Document MainAlbumMsg
+view albumBootstrap a =
     let
         title =
             case albumBootstrap of
@@ -1307,12 +1540,12 @@ view albumBootstrap =
                     titleOf la.albumPage
     in
     { title = title
-    , body = [ viewImpl albumBootstrap |> toUnstyled ]
+    , body = [ viewImpl albumBootstrap a |> toUnstyled ]
     }
 
 
-viewImpl : MainAlbumModel -> Html MainAlbumMsg
-viewImpl albumBootstrap =
+viewImpl : MainAlbumModel -> AnchorFunction MainAlbumMsg -> Html MainAlbumMsg
+viewImpl albumBootstrap a =
     case albumBootstrap of
         Sizing _ ->
             text "Album Starting"
@@ -1348,9 +1581,9 @@ viewImpl albumBootstrap =
             withHomeLink la.home la.flags <|
                 AlbumPage.view
                     la.albumPage
+                    a
                     (Scroll << RawScrolledTo)
                     (viewList
-                        albumBootstrap
                         (pageSize la.albumPage).bodyViewport
                         -- currently scrolled thing is the album;
                         -- don't want to save that anywhere in the list of parents
@@ -1366,8 +1599,8 @@ viewImpl albumBootstrap =
                     withHomeLink ll.home ll.flags <|
                         AlbumListPage.view
                             (AlbumListPage alp)
+                            a
                             (viewList
-                                albumBootstrap
                                 alp.bodyViewport
                                 (( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport ) :: alp.parents)
                             )
@@ -1389,8 +1622,8 @@ viewImpl albumBootstrap =
                             ll.flags
 
 
-viewList : MainAlbumModel -> Viewport -> List ( AlbumList, Maybe Float ) -> AlbumList -> MainAlbumMsg
-viewList oldModel viewport parents list =
+viewList : Viewport -> List ( AlbumList, Maybe Float ) -> AlbumList -> MainAlbumMsg
+viewList viewport parents list =
     Album <|
         ViewList
             (AlbumListPage

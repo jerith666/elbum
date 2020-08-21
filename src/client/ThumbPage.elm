@@ -5,11 +5,10 @@ import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
-import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import Set exposing (..)
-import Utils.DebugSupport exposing (..)
 import Utils.ListUtils exposing (..)
+import Utils.LocationUtils exposing (AnchorFunction)
 
 
 type alias ThumbPageModel =
@@ -37,8 +36,8 @@ grey =
     rgb 128 128 128
 
 
-view : (Viewport -> msg) -> (List Image -> Image -> List Image -> msg) -> (AlbumList -> msg) -> ThumbPageModel -> MainAlbumFlags -> Html msg
-view scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
+view : AnchorFunction msg -> (Viewport -> msg) -> (List Image -> Image -> List Image -> msg) -> (AlbumList -> msg) -> ThumbPageModel -> MainAlbumFlags -> Html msg
+view a scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
     rootDivFlex
         flags
         column
@@ -46,8 +45,8 @@ view scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
         thumbPageModel.bodyViewport
         [ overflowX Css.hidden ]
     <|
-        [ albumTitle thumbPageModel.album.title thumbPageModel.parents showList [] [ position fixed ]
-        , albumTitle thumbPageModel.album.title thumbPageModel.parents showList [] [ visibility hidden ]
+        [ albumTitle a thumbPageModel.album.title thumbPageModel.parents showList [] [ position fixed ]
+        , albumTitle a thumbPageModel.album.title thumbPageModel.parents showList [] [ visibility hidden ]
         , div
             [ styles
                 [ displayFlex
@@ -57,12 +56,12 @@ view scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
                 , flexShrink <| num 0
                 ]
             ]
-            (viewThumbs imgChosenMsgr thumbPageModel)
+            (viewThumbs a imgChosenMsgr thumbPageModel)
         ]
 
 
-albumTitle : String -> List AlbumList -> (AlbumList -> msg) -> List (Html msg) -> List Style -> Html msg
-albumTitle title parents showList extraHtml extraStyles =
+albumTitle : AnchorFunction msg -> String -> List AlbumList -> (AlbumList -> msg) -> List (Html msg) -> List Style -> Html msg
+albumTitle a title parents showList extraHtml extraStyles =
     div
         [ styles <|
             [ color white
@@ -74,7 +73,7 @@ albumTitle title parents showList extraHtml extraStyles =
                 ++ extraStyles
         ]
     <|
-        List.map (albumParent getAlbumListTitle showList) (List.reverse parents)
+        List.map (albumParent a getAlbumListTitle showList) (List.reverse parents)
             ++ extraHtml
             ++ [ span [] [ Html.Styled.text title ] ]
 
@@ -84,13 +83,11 @@ getAlbumListTitle a =
     a.listTitle
 
 
-albumParent : (a -> String) -> (a -> msg) -> a -> Html msg
-albumParent getTitle showList albumList =
+albumParent : AnchorFunction msg -> (a -> String) -> (a -> msg) -> a -> Html msg
+albumParent a getTitle showList albumList =
     span []
-        [ span
-            [ onClick <| showList albumList
-            , styles [ textDecoration underline, cursor pointer ]
-            ]
+        [ a (showList albumList)
+            [ styles [ textDecoration underline, color inherit ] ]
             [ Html.Styled.text <| getTitle albumList ]
         , span
             [ styles [ padding2 (Css.em 0) (Css.em 0.5) ] ]
@@ -164,8 +161,8 @@ urlsToGet thumbPageModel =
                 List.map .url prioritySrcs
 
 
-viewThumbs : (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
-viewThumbs imgChosenMsgr thumbPageModel =
+viewThumbs : AnchorFunction msg -> (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
+viewThumbs a imgChosenMsgr thumbPageModel =
     let
         ( maxCols, thumbWidth ) =
             colsWidth thumbPageModel.bodyViewport
@@ -174,7 +171,8 @@ viewThumbs imgChosenMsgr thumbPageModel =
             thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
     in
     List.map
-        (viewThumbColumn thumbWidth
+        (viewThumbColumn a
+            thumbWidth
             (convertImgChosenMsgr thumbPageModel.album.imageFirst imgs imgChosenMsgr)
             thumbPageModel.justLoadedImages
             thumbPageModel.readyToDisplayImages
@@ -216,8 +214,8 @@ convertImgChosenMsgr image1 images prevCurRestImgChosenMsgr =
         prevCurRestImgChosenMsgr prev cur next
 
 
-viewThumbColumn : Int -> (Int -> msg) -> Set String -> Set String -> List ( Image, Int ) -> Html msg
-viewThumbColumn thumbWidth imgChosenMsgr justLoadedImages readyToDisplayImages images =
+viewThumbColumn : AnchorFunction msg -> Int -> (Int -> msg) -> Set String -> Set String -> List ( Image, Int ) -> Html msg
+viewThumbColumn a thumbWidth imgChosenMsgr justLoadedImages readyToDisplayImages images =
     let
         viewThumbTuple ( img, i ) =
             let
@@ -233,7 +231,7 @@ viewThumbColumn thumbWidth imgChosenMsgr justLoadedImages readyToDisplayImages i
                         else
                             Completed
                 in
-                viewThumb thumbWidth opacity [] (imgChosenMsgr i) img
+                viewThumb a thumbWidth opacity [] (imgChosenMsgr i) img
                 --TODO opacity
 
             else
@@ -330,24 +328,25 @@ srcForWidth width img =
     smallestImageBiggerThan xScaled yScaled img.srcSetFirst img.srcSetRest
 
 
-viewThumb : Int -> ImgLoadState -> List Style -> msg -> Image -> Html msg
-viewThumb width opasity extraStyles selectedMsg img =
+viewThumb : AnchorFunction msg -> Int -> ImgLoadState -> List Style -> msg -> Image -> Html msg
+viewThumb a width opasity extraStyles selectedMsg img =
     let
         ( xScaled, yScaled ) =
             sizeForWidth width img
     in
-    renderPresized 10
-        xScaled
-        yScaled
-        img.srcSetFirst
-        img.srcSetRest
-        (thumbStyles
-            ++ opacityStyles opasity
-            ++ extraStyles
-        )
+    a selectedMsg
         []
-    <|
-        Just selectedMsg
+        [ renderPresized 10
+            xScaled
+            yScaled
+            img.srcSetFirst
+            img.srcSetRest
+            (thumbStyles
+                ++ opacityStyles opasity
+                ++ extraStyles
+            )
+            []
+        ]
 
 
 thumbStyles : List Style

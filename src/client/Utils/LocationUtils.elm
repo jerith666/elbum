@@ -1,10 +1,15 @@
-module Utils.LocationUtils exposing (changeToString, locToString, parseHash, parseQuery)
+module Utils.LocationUtils exposing (AnchorFunction, changeToString, locToString, parseHash, parseQuery)
 
 import Browser.Navigation exposing (..)
+import Html.Styled exposing (Attribute, Html)
 import Http exposing (..)
 import Parser exposing (..)
 import RouteUrl exposing (UrlChange(..))
 import Url exposing (..)
+
+
+type alias AnchorFunction msg =
+    msg -> List (Attribute msg) -> List (Html msg) -> Html msg
 
 
 parseHash : String -> Result (List DeadEnd) (List String)
