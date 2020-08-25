@@ -204,21 +204,21 @@ findThumb srcRoot src dest images = do
 
 procImgsOnly :: FilePath -> FilePath -> [FilePath] -> IO (Either String [Image])
 procImgsOnly _ _ [] = return $ Right []
-procImgsOnly s d (f:fs) = do
-  mi <- procOrReuse s d f
+procImgsOnly srcRoot dest (f:fs) = do
+  mi <- procOrReuse srcRoot dest f
   case mi of
     Nothing ->
-      procImgsOnly s d fs
+      procImgsOnly srcRoot dest fs
     Just pdiOrI -> do
       -- this ordering is key to ensuring memory usage remains relatively constant
       -- we have to process the first image completely (load it, save it out at all
       -- sizes, and convert to an Image) before moving on to the others
-      epi <- either (procImage s d) (return . Right) pdiOrI
+      epi <- either (procImage srcRoot dest) (return . Right) pdiOrI
       case epi of
         Left e ->
           return $ Left e
         Right pi -> do
-          eis <- procImgsOnly s d fs
+          eis <- procImgsOnly srcRoot dest fs
           case eis of
             Left e ->
               return $ Left e
