@@ -1,3 +1,11 @@
+{-# OPTIONS_GHC -Wall                       #-}
+{-# OPTIONS_GHC -Wcompat                    #-}
+{-# OPTIONS_GHC -Wincomplete-record-updates #-}
+{-# OPTIONS_GHC -Wincomplete-uni-patterns   #-}
+{-# OPTIONS_GHC -Wredundant-constraints     #-}
+{-# OPTIONS_GHC -Wno-type-defaults          #-}
+{-# OPTIONS_GHC -Werror                     #-}
+
 import System.Environment
 import System.IO
 import System.Exit
@@ -17,12 +25,10 @@ import Text.Regex
 
 import Codec.Picture hiding (Image)
 import qualified Codec.Picture.Types
-import Codec.Picture.Metadata hiding (Image)
+import Codec.Picture.Metadata
 
 import Vision.Primitive
-import Vision.Primitive.Shape
 import Vision.Image hiding (Image, map)
-import Vision.Image.Transform
 import Vision.Image.JuicyPixels
 
 import Data.Aeson (encode)
@@ -34,12 +40,14 @@ import AlbumTypes
 -- main & usage
 --
 
+main :: IO ()
 main = do
   args <- getArgs
   case args of
        src:dest:[] -> writeAlbumOrList src dest
        _ -> usage
 
+usage :: IO ()
 usage = do
   putStrLn "usage: gen-album <src> <dest>"
   exitWith $ ExitFailure 1
@@ -48,6 +56,7 @@ usage = do
 -- configuration
 --
 
+thumbFilename :: String
 thumbFilename = "thumbnail"
 
 sizes :: [Int]
@@ -217,13 +226,13 @@ procImgsOnly srcRoot dest (f:fs) = do
       case epi of
         Left e ->
           return $ Left e
-        Right pi -> do
+        Right i -> do
           eis <- procImgsOnly srcRoot dest fs
           case eis of
             Left e ->
               return $ Left e
             Right is ->
-              return $ Right $ pi:is
+              return $ Right $ i:is
 
 procOrReuse :: FilePath -> FilePath -> FilePath -> IO (Maybe (Either (FilePath, (DynamicImage, Metadatas)) Image))
 procOrReuse s d f = do
@@ -246,10 +255,10 @@ procOrReuse s d f = do
             let t = takeBaseName f
                 w = fromIntegral ww
                 h = fromIntegral hw
-                srcSetFirst = ImgSrc { url = makeRelative d rawDest
-                                     , x = w
-                                     , y = h
-                                     }
+                srcSetFst = ImgSrc { url = makeRelative d rawDest
+                                   , x = w
+                                   , y = h
+                                   }
                 sdToImgSrc sd =
                   let (xsm, ysm) = shrink (fst sd) w h
                   in
@@ -257,10 +266,10 @@ procOrReuse s d f = do
                          , x = xsm
                          , y = ysm
                          }
-                srcSetRest = map sdToImgSrc shrinkDests
+                srcSetRst = map sdToImgSrc shrinkDests
             return $ Just $ Right $ Image { altText = t
-                                          , srcSetFirst = srcSetFirst
-                                          , srcSetRest = srcSetRest
+                                          , srcSetFirst = srcSetFst
+                                          , srcSetRest = srcSetRst
                                           }
           Nothing ->
             return Nothing
@@ -271,7 +280,7 @@ imgOnly :: FilePath -> IO (Maybe (FilePath, (DynamicImage, Metadatas)))
 imgOnly f = do
     loadResult <- readImageWithMetadata f
     case loadResult of
-         Left err -> return Nothing
+         Left _ -> return Nothing
          Right img ->
              do
                  putStrSameLn $ "loaded " ++ show f
@@ -290,10 +299,10 @@ procImage s d (f,i) = do
         return $ Left $ "image " ++ f ++ " has no size metadata, album regen will silently drop it"
       Just (ww, hh) ->
         if fromIntegral ww == w && fromIntegral hh == h then do
-          (srcSetFirst, srcSetRest) <- procSrcSet s d f (fst i) w h
+          (srcSetFst, srcSetRst) <- procSrcSet s d f (fst i) w h
           return $ Right $ Image { altText = t
-                                 , srcSetFirst = srcSetFirst
-                                 , srcSetRest = srcSetRest
+                                 , srcSetFirst = srcSetFst
+                                 , srcSetRest = srcSetRst
                                  }
         else
           return $ Left $ "image " ++ f ++ " has intrinsic w*h of " ++ show w ++ "*" ++ show h ++ " but metadata w*h of " ++ show ww ++ "*" ++ show hh ++ "; to repair, load in The Gimp, then choose file -> overwrite"
@@ -359,7 +368,7 @@ destFor fNameMaker src dest fileInSrc =
 
 shrink :: Int -> Int -> Int -> (Int, Int)
 shrink maxwidth w h = let factor = fromIntegral maxwidth / fromIntegral w
-                          scale x = floor (fromIntegral x * factor)
+                          scale width = floor (fromIntegral width * factor)
                       in (scale w, scale h)
 
 
