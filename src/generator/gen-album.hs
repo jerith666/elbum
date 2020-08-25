@@ -211,42 +211,66 @@ findThumb srcRoot src dest images = do
 -- Single-image functions
 --
 
+data FileClassification = NotAnImage
+                        | AlreadyProcessed Image
+                        | ToProcess (DynamicImage, Metadatas)
+
 procImgsOnly :: FilePath -> FilePath -> [FilePath] -> IO (Either String [Image])
 procImgsOnly _ _ [] = return $ Right []
-procImgsOnly srcRoot dest (f:fs) = do
-  mi <- procOrReuse srcRoot dest f
-  case mi of
-    Nothing ->
-      procImgsOnly srcRoot dest fs
-    Just pdiOrI -> do
-      -- this ordering is key to ensuring memory usage remains relatively constant
-      -- we have to process the first image completely (load it, save it out at all
-      -- sizes, and convert to an Image) before moving on to the others
-      epi <- either (procImage srcRoot dest) (return . Right) pdiOrI
-      case epi of
-        Left e ->
-          return $ Left e
-        Right i -> do
-          eis <- procImgsOnly srcRoot dest fs
-          case eis of
-            Left e ->
-              return $ Left e
-            Right is ->
-              return $ Right $ i:is
+procImgsOnly srcRoot dest files = do
+    let classify f = do
+            classification <- classifyFile srcRoot dest f
+            return (f, classification)
+    classifications <- mapM classify files
+    productionResults <- mapM (produceImage srcRoot dest) classifications
+    case lefts productionResults of
+        [] ->
+            return $ Right $ catMaybes $ rights productionResults
+        errs ->
+            return $ Left $ concat errs
 
-procOrReuse :: FilePath -> FilePath -> FilePath -> IO (Maybe (Either (FilePath, (DynamicImage, Metadatas)) Image))
-procOrReuse s d f = do
-  mi <- imgOnly f
-  case mi of
-    Nothing ->
-      return Nothing
-    Just i -> do
-      let rawDest = fst $ destForRaw s d f
-          shrinkDests = map (\maxwidth -> ( maxwidth
-                                          , fst $ destForShrink maxwidth s d f))
-                            sizes
-      destsExist <- mapM doesFileExist $ rawDest : map snd shrinkDests
-      if and destsExist then do
+produceImage :: FilePath -> FilePath -> (FilePath, FileClassification) -> IO (Either String (Maybe Image))
+produceImage srcRoot dest (f, classification) = do
+    case classification of
+        NotAnImage ->
+            return $ Right Nothing
+        AlreadyProcessed img ->
+            return $ Right $ Just img
+        ToProcess metadata -> do
+            eImg <- procImage srcRoot dest (f, metadata)
+            case eImg of
+                Left err ->
+                    return $ Left err
+                Right img ->
+                    return $ Right $ Just img
+
+classifyFile :: FilePath -> FilePath -> FilePath -> IO FileClassification
+classifyFile srcRoot destDir file = do
+    mImg <- alreadyProcessed srcRoot destDir file
+    case mImg of
+        Just img ->
+            return $ AlreadyProcessed img
+        Nothing -> do
+            mMetadata <- imgOnly file
+            case mMetadata of
+                Just metadata ->
+                    return $ ToProcess $ snd metadata
+                Nothing ->
+                    return NotAnImage
+
+alreadyProcessed :: FilePath -> FilePath -> FilePath -> IO (Maybe Image)
+alreadyProcessed s d f = do
+  let rawDest = fst $ destForRaw s d f
+      shrinkDests = map (\maxwidth -> ( maxwidth
+                                      , fst $ destForShrink maxwidth s d f))
+                        sizes
+  destsExist <- mapM doesFileExist $ rawDest : map snd shrinkDests
+  if and destsExist then do
+    mi <- imgOnly f
+    case mi of
+      Nothing ->
+        return Nothing
+      Just i -> do
         let mw = Codec.Picture.Metadata.lookup Width $ snd $ snd i
             mh = Codec.Picture.Metadata.lookup Height $ snd $ snd i
             wh = maybeTuple (mw, mh)
@@ -267,14 +291,14 @@ procOrReuse s d f = do
                          , y = ysm
                          }
                 srcSetRst = map sdToImgSrc shrinkDests
-            return $ Just $ Right $ Image { altText = t
-                                          , srcSetFirst = srcSetFst
-                                          , srcSetRest = srcSetRst
-                                          }
+            return $ Just $ Image { altText = t
+                                  , srcSetFirst = srcSetFst
+                                  , srcSetRest = srcSetRst
+                                  }
           Nothing ->
             return Nothing
-      else
-        return $ Just $ Left i
+  else
+    return Nothing
 
 imgOnly :: FilePath -> IO (Maybe (FilePath, (DynamicImage, Metadatas)))
 imgOnly f = do
