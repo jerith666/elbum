@@ -8,6 +8,10 @@ let
 in
 pkgs.stdenv.mkDerivation {
   name = "elbum-haskell-env-0";
-  buildInputs = [ ghc pkgs.elmPackages.elm ];
+  buildInputs = with pkgs.haskellPackages;
+                [ ghc
+                  pkgs.elmPackages.elm
+                  
+                  pkgs.vscode ];
   shellHook = "eval $(egrep ^export ${ghc}/bin/ghc)";
 }
