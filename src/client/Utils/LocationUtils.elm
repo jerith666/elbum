@@ -1,8 +1,6 @@
-module Utils.LocationUtils exposing (AnchorFunction, changeToString, locToString, parseHash, parseQuery)
+module Utils.LocationUtils exposing (AnchorFunction, changeToString, locToString, parseHash)
 
-import Browser.Navigation exposing (..)
 import Html.Styled exposing (Attribute, Html)
-import Http exposing (..)
 import Parser exposing (..)
 import RouteUrl exposing (UrlChange(..))
 import Url exposing (..)
@@ -35,24 +33,6 @@ parseHash href =
                 ]
     in
     run hashParser href
-
-
-parseQuery : String -> Result (List DeadEnd) (Maybe String)
-parseQuery query =
-    let
-        qParser =
-            oneOf
-                [ succeed Nothing |. end
-                , succeed Just
-                    |. symbol "s="
-                    |= (getChompedString <|
-                            succeed ()
-                                |. chompWhile (\_ -> True)
-                       )
-                    |. end
-                ]
-    in
-    run qParser query
 
 
 locToString : Url -> String

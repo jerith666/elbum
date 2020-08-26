@@ -51,10 +51,6 @@
     version = "1.0.3";
     sha256 = "19zf3dgrx5bvhybjwq3bp171wzsb4bfk5rrfjv234b2f8q3yi59g";
   };
-  "jinjor/elm-debounce" = {
-    version = "3.0.0";
-    sha256 = "0171z89c5kj5jw1x69zl296x0yzrz6lcbnyhs5srj3qmclqjvnzk";
-  };
   "mdgriffith/elm-style-animation" = {
     version = "4.0.0";
     sha256 = "1sph37fji07dl40rvpgbnij01zg4h7ywapxar433cdh0lay26xhb";

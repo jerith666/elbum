@@ -9,7 +9,6 @@ import Browser.Dom exposing (..)
 import Browser.Events exposing (..)
 import Browser.Navigation exposing (..)
 import Css exposing (..)
-import Debounce exposing (..)
 import Delay exposing (..)
 import Dict exposing (..)
 import FullImagePage exposing (..)
@@ -37,14 +36,12 @@ type MainAlbumModel
         { key : Key
         , flags : MainAlbumFlags
         , albumPathsAfterLoad : Maybe (List String)
-        , scrollToAfterLoad : Maybe Float
         }
     | LoadingHomeLink
         { key : Key
         , bodyViewport : Viewport
         , flags : MainAlbumFlags
         , albumPathsAfterLoad : Maybe (List String)
-        , scrollToAfterLoad : Maybe Float
         }
     | Loading
         { key : Key
@@ -53,7 +50,6 @@ type MainAlbumModel
         , flags : MainAlbumFlags
         , home : Maybe String
         , albumPathsAfterLoad : Maybe (List String)
-        , scrollToAfterLoad : Maybe Float
         }
     | LoadError
         { key : Key
@@ -68,7 +64,6 @@ type MainAlbumModel
         , pendingUrls : Dict String UrlLoadState
         , rootDivViewport : Maybe Viewport
         , navState : PostLoadNavState
-        , debounce : Debounce Viewport
         }
     | LoadedAlbum
         { key : Key
@@ -79,7 +74,6 @@ type MainAlbumModel
         , pendingUrls : Dict String UrlLoadState
         , rootDivViewport : Maybe Viewport
         , navState : PostLoadNavState
-        , debounce : Debounce Viewport
         }
 
 
@@ -100,7 +94,6 @@ type MainAlbumMsg
     = Bootstrap BootstrapMsg
     | Meta MetaMsg
     | Album AlbumMsg
-    | Scroll ScrollMsg
     | General GeneralMsg
 
 
@@ -129,16 +122,9 @@ type AlbumMsg
     | NavCompletedLocally
 
 
-type ScrollMsg
-    = ScrolledTo Viewport
-    | RawScrolledTo Viewport
-    | DebounceMsg Debounce.Msg
-    | EnactScrollFromUrl (Maybe Float)
-    | SetScrollFromUrl Float
-
-
 type GeneralMsg
     = Resize Viewport
+    | ScrolledTo Viewport
     | InternalUrlClicked Url
     | ExternalLinkClicked String
 
@@ -172,7 +158,7 @@ makeAnchor url onClickMsg attrs =
 
 init : MainAlbumFlags -> Key -> ( MainAlbumModel, Cmd MainAlbumMsg )
 init flags key =
-    ( Sizing { key = key, flags = flags, albumPathsAfterLoad = Nothing, scrollToAfterLoad = Nothing }
+    ( Sizing { key = key, flags = flags, albumPathsAfterLoad = Nothing }
     , Task.perform (General << Resize) getViewport
     )
 
@@ -189,9 +175,6 @@ update msg model =
         Album albumMsg ->
             updateAlbum albumMsg model
 
-        Scroll scrollMsg ->
-            updateScroll scrollMsg model
-
         General generalMsg ->
             updateGeneral generalMsg model
 
@@ -207,7 +190,6 @@ updateGeneral generalMsg model =
                         , bodyViewport = log "window size set" viewport
                         , flags = sz.flags
                         , albumPathsAfterLoad = sz.albumPathsAfterLoad
-                        , scrollToAfterLoad = sz.scrollToAfterLoad
                         }
                     , Cmd.map Bootstrap <| Http.get { url = "home", expect = expectString <| either NoHome YesHome }
                     )
@@ -264,6 +246,9 @@ updateGeneral generalMsg model =
                             , Cmd.none
                             )
 
+        ScrolledTo viewport ->
+            ( withScrollPos (log "ScrolledTo: " viewport) model, Cmd.none )
+
         InternalUrlClicked url ->
             ( model, navToMsg model url )
 
@@ -319,17 +304,12 @@ updateBootstrap bootstrapMsg model =
                                         , pendingUrls = Dict.empty
                                         , rootDivViewport = Nothing
                                         , navState = NavInactive
-                                        , debounce = Debounce.init
                                         }
-
-                                pathsThenScroll =
-                                    toCmd <|
-                                        sequence (pathsToCmd newModel ld.albumPathsAfterLoad) <|
-                                            fromMaybe <|
-                                                scrollToCmd newModel ld.scrollToAfterLoad
                             in
                             ( newModel
-                            , pathsThenScroll
+                            , Maybe.withDefault Cmd.none <|
+                                Maybe.map toCmd <|
+                                    pathsToCmd newModel ld.albumPathsAfterLoad
                             )
 
                         Leaf album ->
@@ -358,19 +338,14 @@ updateBootstrap bootstrapMsg model =
                                         , pendingUrls = dictWithValues urls UrlRequested
                                         , rootDivViewport = Nothing
                                         , navState = NavInactive
-                                        , debounce = Debounce.init
                                         }
-
-                                pathsThenScroll =
-                                    toCmd <|
-                                        sequence (pathsToCmd newModel ld.albumPathsAfterLoad) <|
-                                            fromMaybe <|
-                                                scrollToCmd newModel ld.scrollToAfterLoad
                             in
                             ( newModel
                             , Cmd.batch
                                 [ getUrls Dict.empty urls
-                                , pathsThenScroll
+                                , Maybe.withDefault Cmd.none <|
+                                    Maybe.map toCmd <|
+                                        pathsToCmd newModel ld.albumPathsAfterLoad
                                 ]
                             )
 
@@ -437,7 +412,6 @@ updateAlbum albumMsg model =
                         , pendingUrls = Dict.empty
                         , rootDivViewport = Nothing
                         , navState = NavInactive
-                        , debounce = debounceOf model
                         }
 
                 scrollCmd =
@@ -467,7 +441,6 @@ updateAlbum albumMsg model =
                         , pendingUrls = dictWithValues urls UrlRequested
                         , rootDivViewport = Nothing
                         , navState = NavInactive
-                        , debounce = debounceOf model
                         }
 
                 getImgPos =
@@ -495,51 +468,6 @@ updateAlbum albumMsg model =
 
         NavCompletedLocally ->
             ( withNavComplete model, Cmd.none )
-
-
-updateScroll : ScrollMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
-updateScroll scrollMsg model =
-    case scrollMsg of
-        RawScrolledTo viewport ->
-            let
-                ( debounce, cmd ) =
-                    Debounce.push debounceConfig viewport <| debounceOf model
-            in
-            ( withDebounce debounce model, Cmd.map Scroll cmd )
-
-        DebounceMsg dMsg ->
-            let
-                ( debounce, cmd ) =
-                    Debounce.update debounceConfig (Debounce.takeLast <| toCmd << ScrolledTo) dMsg <| debounceOf model
-            in
-            ( withDebounce debounce model, Cmd.map Scroll cmd )
-
-        ScrolledTo viewport ->
-            ( withScrollPos (log "ScrolledTo: " viewport) model, Cmd.none )
-
-        EnactScrollFromUrl scroll ->
-            ( model
-            , Maybe.withDefault Cmd.none <|
-                Maybe.map
-                    (\s ->
-                        Task.attempt
-                            (always (Meta NoBootstrap))
-                        <|
-                            setViewportOf rootDivId 0 <|
-                                log "startup scroll to" s
-                    )
-                    scroll
-            )
-
-        SetScrollFromUrl s ->
-            ( -- case 1: we're early in the loading process, the page isn't in a state where we can scroll right now
-              -- so, store the target we want to scroll to in the model for later enactment (in YesAlbum case, above)
-              withScrollToAfterLoad model s
-              -- case 2: we've loaded the album or album list and the page is in a state where we can scroll right now
-              -- so, create a command to enact that scroll (but not a direct setViewportOf cmd, indirect through
-              -- EnactScrollFromUrl ... probably for timing reasons, exact details would have to be dug up from git logs)
-            , toCmd <| Maybe.withDefault (Meta NoBootstrap) <| scrollToCmd model <| Just s
-            )
 
 
 updateMeta : MetaMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
@@ -589,45 +517,6 @@ updateMeta albumMetaMsg model =
             ( model, Cmd.none )
 
 
-debounceOf model =
-    case model of
-        LoadedList ll ->
-            ll.debounce
-
-        LoadedAlbum la ->
-            la.debounce
-
-        _ ->
-            Debounce.init
-
-
-withDebounce debounce model =
-    case model of
-        LoadedList ll ->
-            LoadedList { ll | debounce = debounce }
-
-        LoadedAlbum la ->
-            LoadedAlbum { la | debounce = debounce }
-
-        _ ->
-            model
-
-
-{-| Safari throws an exception if a webapp calls replaceState more than 100
-times in 30 seconds. This exception basically kills the Elm event loop and
-renders the entire app unresponsive. So, we have to use a debouncer library to
-throttle rate at which ScrolledTo messages are processed, because they can cause
-very frequent updates to the ?s=NNN query param in our url.
-
-100/30 sec works out to one event every 0.3s. Throttling to exactly that isn't
-enough, we have to give a bit of headroom.
-<https://bugs.webkit.org/show_bug.cgi?id=156115>
-
--}
-debounceConfig =
-    { strategy = soon 400, transform = DebounceMsg }
-
-
 sequence : Maybe MainAlbumMsg -> List MainAlbumMsg -> MainAlbumMsg
 sequence mm1 ms =
     case mm1 of
@@ -656,7 +545,6 @@ gotHome lh home =
         , flags = lh.flags
         , home = home
         , albumPathsAfterLoad = lh.albumPathsAfterLoad
-        , scrollToAfterLoad = lh.scrollToAfterLoad
         }
     , Cmd.map Bootstrap <|
         Http.request
@@ -695,9 +583,6 @@ navToMsgInternal loc =
         parsedHash =
             log ("parsedHash from " ++ Maybe.withDefault "<no fragment>" loc.fragment) <| parseHash <| Maybe.withDefault "" loc.fragment
 
-        parsedQuery =
-            log ("parsedQuery from " ++ Maybe.withDefault "<no query>" loc.query) <| parseQuery <| Maybe.withDefault "" loc.query
-
         hashMsgs =
             case parsedHash of
                 Err _ ->
@@ -705,20 +590,8 @@ navToMsgInternal loc =
 
                 Ok paths ->
                     [ Album <| SetAlbumPathFromUrl paths ]
-
-        queryMsgs =
-            case parsedQuery of
-                Err _ ->
-                    []
-
-                Ok scroll ->
-                    Meta NoBootstrap
-                        -- hack delay
-                        :: (fromMaybe <|
-                                Maybe.map (Scroll << SetScrollFromUrl) (scroll |> Maybe.andThen String.toFloat)
-                           )
     in
-    case hashMsgs ++ queryMsgs of
+    case hashMsgs of
         [] ->
             Cmd.none
 
@@ -860,28 +733,6 @@ withAlbumPathsAfterLoad model albumPathsAfterLoad =
             LoadedAlbum { la | navState = NavInProgress }
 
 
-withScrollToAfterLoad : MainAlbumModel -> Float -> MainAlbumModel
-withScrollToAfterLoad model scrollToAfterLoad =
-    case model of
-        Sizing sz ->
-            Sizing { sz | scrollToAfterLoad = Just scrollToAfterLoad }
-
-        LoadingHomeLink lh ->
-            LoadingHomeLink { lh | scrollToAfterLoad = Just scrollToAfterLoad }
-
-        Loading ld ->
-            Loading { ld | scrollToAfterLoad = Just scrollToAfterLoad }
-
-        LoadError _ ->
-            model
-
-        LoadedList _ ->
-            model
-
-        LoadedAlbum _ ->
-            model
-
-
 withNavComplete : MainAlbumModel -> MainAlbumModel
 withNavComplete model =
     case model of
@@ -974,32 +825,6 @@ pathsToCmdImpl model viewport parents paths =
                             fallbackScroll
             in
             Just <| navFrom model viewport root [] (log "pathsToCmdImpl passing paths to navFrom" paths) fallbackMsg
-
-
-scrollToCmd : MainAlbumModel -> Maybe Float -> Maybe MainAlbumMsg
-scrollToCmd model scrollToAfterLoad =
-    let
-        scrollCmd =
-            Just <| Scroll <| EnactScrollFromUrl scrollToAfterLoad
-    in
-    case model of
-        Sizing _ ->
-            Nothing
-
-        LoadingHomeLink _ ->
-            Nothing
-
-        Loading _ ->
-            Nothing
-
-        LoadError _ ->
-            log "scrollToCmd LoadError, ignore" Nothing
-
-        LoadedList _ ->
-            scrollCmd
-
-        LoadedAlbum _ ->
-            scrollCmd
 
 
 navFrom : MainAlbumModel -> ViewportInfo -> AlbumList -> List AlbumList -> List String -> MainAlbumMsg -> MainAlbumMsg
@@ -1353,69 +1178,24 @@ locFor oldModel newModel =
 
                 NavInactive ->
                     nav
-
-        newQorF meta modl fragment =
-            case entry of
-                NewEntry ->
-                    -- always drop scroll information when moving to a new page
-                    -- otherwise it's incorrectly carried forward from e.g. album list to album pages
-                    NewQuery meta { query = "", fragment = Just fragment }
-
-                ModifyEntry ->
-                    case queryFor modl of
-                        Nothing ->
-                            NewFragment meta fragment
-
-                        Just q ->
-                            NewQuery meta { query = q, fragment = Just fragment }
     in
     log "locFor" <|
         case newModel of
             LoadedAlbum la ->
                 checkNavState la.navState <|
                     Just <|
-                        newQorF entry
-                            newModel
-                        <|
+                        NewFragment entry <|
                             hashForAlbum la.albumPage <|
                                 List.map Tuple.first la.parents
 
             LoadedList ll ->
                 checkNavState ll.navState <|
                     Just <|
-                        newQorF entry
-                            newModel
-                        <|
+                        NewFragment entry <|
                             hashForList ll.listPage
 
             _ ->
                 Nothing
-
-
-queryFor : MainAlbumModel -> Maybe String
-queryFor model =
-    let
-        queryForPos pos =
-            Maybe.map (\p -> "s=" ++ String.fromFloat p) pos
-    in
-    case model of
-        Sizing _ ->
-            Nothing
-
-        LoadingHomeLink _ ->
-            Nothing
-
-        Loading _ ->
-            Nothing
-
-        LoadError _ ->
-            Nothing
-
-        LoadedAlbum la ->
-            queryForPos <| Maybe.map scrollPosOf la.rootDivViewport
-
-        LoadedList ll ->
-            queryForPos <| Maybe.map scrollPosOf ll.rootDivViewport
 
 
 updateImageResult : MainAlbumModel -> String -> UrlLoadState -> ( MainAlbumModel, Cmd MainAlbumMsg )
@@ -1630,7 +1410,7 @@ viewImpl albumBootstrap a =
                 AlbumPage.view
                     la.albumPage
                     a
-                    (Scroll << RawScrolledTo)
+                    (General << ScrolledTo)
                     (viewList
                         (pageSize la.albumPage).bodyViewport
                         -- currently scrolled thing is the album;
@@ -1666,7 +1446,7 @@ viewImpl albumBootstrap a =
                                         ( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport )
                                             :: alp.parents
                             )
-                            (Scroll << RawScrolledTo)
+                            (General << ScrolledTo)
                             ll.flags
 
 
