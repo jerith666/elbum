@@ -1238,15 +1238,17 @@ navForAlbum model vpInfo album ps newParents =
                                         fromMaybe <|
                                             Maybe.map (Album << PageMsg << FullMsg) progMsg
                     in
-                    -- now, see if we can create a more specific message.  if we're handling an internal link
-                    -- from a thumbs page to a full size image, create a 'View' message.  this enables us to
-                    -- save the scroll position for the outer album.
+                    -- now, see if we can create a more specific message, depending on whether we're
+                    -- currently viewing the thumbnails or a full size image
                     case model of
                         LoadedAlbum la ->
                             case la.albumPage of
                                 Thumbs t ->
                                     case t.album == album of
                                         True ->
+                                            -- we're handling an internal link from a thumbs page to a full size image,
+                                            -- so create a 'View' message.  this enables us to save the scroll position
+                                            -- for the outer album.
                                             log "navForAlbum t.album == album" <|
                                                 Just <|
                                                     Meta <|
@@ -1257,8 +1259,54 @@ navForAlbum model vpInfo album ps newParents =
                                         False ->
                                             log "navForAlbum t.album != album" nonLocalMsg
 
-                                _ ->
-                                    log "navForAlbum model is LoadedAlbum but albumPage is not Thumbs" nonLocalMsg
+                                FullImage fi ->
+                                    let
+                                        baseAlbum =
+                                            baseAlbumOf <| FullImage fi
+                                    in
+                                    case baseAlbum == album of
+                                        True ->
+                                            -- we're handling a link from one full image to another within the same album
+                                            -- that almost certainly means it's a link to the previous or next image
+                                            -- confirm that and if so, use a targeted message so that scroll positions
+                                            -- of all parents are preserved
+                                            let
+                                                matchImgMsg possibleMatchingImage msgOnMatch =
+                                                    case possibleMatchingImage of
+                                                        Nothing ->
+                                                            Nothing
+
+                                                        Just matchingImage ->
+                                                            case nAlbum.imageFirst == matchingImage of
+                                                                True ->
+                                                                    Just <|
+                                                                        Meta <|
+                                                                            Sequence (Album <| PageMsg <| msgOnMatch)
+                                                                                [ Album NavCompletedLocally ]
+
+                                                                False ->
+                                                                    Nothing
+
+                                                nextMsg =
+                                                    matchImgMsg (List.head fi.album.imageRest) Next
+
+                                                prevMsg =
+                                                    matchImgMsg (List.head (List.reverse fi.prevImgs)) Prev
+                                            in
+                                            case nextMsg of
+                                                Just next ->
+                                                    Just <| log "navForAlbum FullImage next" next
+
+                                                Nothing ->
+                                                    case prevMsg of
+                                                        Just prev ->
+                                                            Just <| log "navForAlbum FullImage prev" prev
+
+                                                        Nothing ->
+                                                            log "navForAlbum FullImage not prev or next" nonLocalMsg
+
+                                        False ->
+                                            log "navForAlbum fi.album != album" nonLocalMsg
 
                         _ ->
                             nonLocalMsg
