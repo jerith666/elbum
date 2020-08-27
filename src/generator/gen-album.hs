@@ -1,40 +1,32 @@
-{-# OPTIONS_GHC -Wall                       #-}
-{-# OPTIONS_GHC -Wcompat                    #-}
+{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Wcompat #-}
+{-# OPTIONS_GHC -Werror #-}
 {-# OPTIONS_GHC -Wincomplete-record-updates #-}
-{-# OPTIONS_GHC -Wincomplete-uni-patterns   #-}
-{-# OPTIONS_GHC -Wredundant-constraints     #-}
-{-# OPTIONS_GHC -Wno-type-defaults          #-}
-{-# OPTIONS_GHC -Werror                     #-}
+{-# OPTIONS_GHC -Wincomplete-uni-patterns #-}
+{-# OPTIONS_GHC -Wno-type-defaults #-}
+{-# OPTIONS_GHC -Wredundant-constraints #-}
 
-import System.Environment
-import System.IO
-import System.Exit
-
-import System.Directory
-import System.FilePath
-import System.Posix.Files
-
+import AlbumTypes
+import Codec.Picture hiding (Image)
+import Codec.Picture.Metadata
+import qualified Codec.Picture.Types
+import Control.Monad
+import Control.Parallel.Strategies
+import Data.Aeson (encode)
+import qualified Data.ByteString.Lazy.Char8 as C
 import Data.Either
 import Data.List
 import Data.Maybe
-
-import Control.Monad
-import Control.Parallel.Strategies
-
+import System.Directory
+import System.Environment
+import System.Exit
+import System.FilePath
+import System.IO
+import System.Posix.Files
 import Text.Regex
-
-import Codec.Picture hiding (Image)
-import qualified Codec.Picture.Types
-import Codec.Picture.Metadata
-
-import Vision.Primitive
 import Vision.Image hiding (Image, map)
 import Vision.Image.JuicyPixels
-
-import Data.Aeson (encode)
-import qualified Data.ByteString.Lazy.Char8 as C
-
-import AlbumTypes
+import Vision.Primitive
 
 --
 -- main & usage
@@ -44,8 +36,8 @@ main :: IO ()
 main = do
   args <- getArgs
   case args of
-       src:dest:[] -> writeAlbumOrList src dest
-       _ -> usage
+    src : dest : [] -> writeAlbumOrList src dest
+    _ -> usage
 
 usage :: IO ()
 usage = do
@@ -83,7 +75,7 @@ data ThumbnailSpec
 
 genAlbumOrList :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> IO (Either String AlbumOrList)
 genAlbumOrList srcRoot src dest thumbspec = do
-  files <- filter (`notElem` [".","..",thumbFilename]) <$> getDirectoryContents src
+  files <- filter (`notElem` [".", "..", thumbFilename]) <$> getDirectoryContents src
   let afiles = map (src </>) (sort files)
   epimgs <- procImgsOnly srcRoot dest afiles
   case epimgs of
@@ -93,10 +85,9 @@ genAlbumOrList srcRoot src dest thumbspec = do
       subdirs <- dirsOnly afiles
       let icount = length pimgs
           idirs = length subdirs
-      if (icount > 0) && (idirs > 0) then
-        return $ Left $ "directory " ++ src ++ " contains both images and subdirs, this is not supported"
-      else
-        case pimgs of
+      if (icount > 0) && (idirs > 0)
+        then return $ Left $ "directory " ++ src ++ " contains both images and subdirs, this is not supported"
+        else case pimgs of
           imgFirst : imgRest -> do
             aOrErr <- genAlbum srcRoot src dest imgFirst imgRest
             case aOrErr of
@@ -137,19 +128,25 @@ genNode srcRoot src dest thumbspec dirFirst dirRest = do
                     [] ->
                       return $ Left $ "cannot automatically chose a thumbnail when there are no subalbums " ++ titleForDir src
                     firstChild : _ ->
-                      return $ Right $ AlbumList { listTitle = titleForDir src
-                                                 , listThumbnail = firstChild
-                                                 , childFirst = cFirst
-                                                 , childRest = cRest
-                                                 }
+                      return $
+                        Right $
+                          AlbumList
+                            { listTitle = titleForDir src,
+                              listThumbnail = firstChild,
+                              childFirst = cFirst,
+                              childRest = cRest
+                            }
                 RequireExplicit ->
                   return $ Left err
             Right thumb ->
-              return $ Right $ AlbumList { listTitle = titleForDir src
-                                         , listThumbnail = thumb
-                                         , childFirst = cFirst
-                                         , childRest = cRest
-                                         }
+              return $
+                Right $
+                  AlbumList
+                    { listTitle = titleForDir src,
+                      listThumbnail = thumb,
+                      childFirst = cFirst,
+                      childRest = cRest
+                    }
         errs ->
           return $ Left $ intercalate "\n" errs
 
@@ -172,209 +169,228 @@ genAlbum srcRoot src dest imgFirst imgRest = do
     Left err ->
       return $ Left err
     Right thumb ->
-      return $ Right $ Album { title = titleForDir src
-                             , thumbnail = thumb
-                             , imageFirst = imgFirst
-                             , imageRest = imgRest
-                             }
+      return $
+        Right $
+          Album
+            { title = titleForDir src,
+              thumbnail = thumb,
+              imageFirst = imgFirst,
+              imageRest = imgRest
+            }
 
 titleForDir :: String -> String
 titleForDir dir =
   let dirName = last $ splitDirectories dir
-  in subRegex (mkRegex "^[0-9]+_") dirName ""
+   in subRegex (mkRegex "^[0-9]+_") dirName ""
 
 findThumb :: FilePath -> FilePath -> FilePath -> [Image] -> IO (Either String Image)
 findThumb srcRoot src dest images = do
   let thumbLink = src </> thumbFilename
   thumbLinkFileExists <- doesFileExist thumbLink
-  if thumbLinkFileExists then do
-    thumbLinkExists <- pathIsSymbolicLink thumbLink
-    if thumbLinkExists then do
-      thumbPath <- readLink thumbLink
-      if isAbsolute $ makeRelative srcRoot thumbPath then
-        return $ Left $ src ++ " thumbnail link must point to a path inside " ++ srcRoot ++", but does not: " ++ thumbPath
-      else do
-        let thumbDest = fst $ destForRaw srcRoot dest thumbPath
-            isThumb i = equalFilePath thumbDest (dest </> url (srcSetFirst i))
-            thumb = listToMaybe $ filter isThumb images
-        case thumb of
-          Nothing ->
-            return $ Left $ src ++ " thumbnail '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ concatMap (\i -> dest </> url (srcSetFirst i)) images
-          Just t ->
-            return $ Right t
-    else
-      return $ Left $ thumbLink ++ " is not a symbolic link"
-  else
-    return $ Left $ src ++ " does not contain a 'thumbnail' file"
+  if thumbLinkFileExists
+    then do
+      thumbLinkExists <- pathIsSymbolicLink thumbLink
+      if thumbLinkExists
+        then do
+          thumbPath <- readLink thumbLink
+          if isAbsolute $ makeRelative srcRoot thumbPath
+            then return $ Left $ src ++ " thumbnail link must point to a path inside " ++ srcRoot ++ ", but does not: " ++ thumbPath
+            else do
+              let thumbDest = fst $ destForRaw srcRoot dest thumbPath
+                  isThumb i = equalFilePath thumbDest (dest </> url (srcSetFirst i))
+                  thumb = listToMaybe $ filter isThumb images
+              case thumb of
+                Nothing ->
+                  return $ Left $ src ++ " thumbnail '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ concatMap (\i -> dest </> url (srcSetFirst i)) images
+                Just t ->
+                  return $ Right t
+        else return $ Left $ thumbLink ++ " is not a symbolic link"
+    else return $ Left $ src ++ " does not contain a 'thumbnail' file"
 
 --
 -- Single-image functions
 --
 
-data FileClassification = NotAnImage
-                        | AlreadyProcessed Image
-                        | ToProcess (DynamicImage, Metadatas)
+data FileClassification
+  = NotAnImage
+  | AlreadyProcessed Image
+  | ToProcess (DynamicImage, Metadatas)
 
 procImgsOnly :: FilePath -> FilePath -> [FilePath] -> IO (Either String [Image])
 procImgsOnly _ _ [] = return $ Right []
 procImgsOnly srcRoot dest files = do
-    let classify f = do
-            classification <- classifyFile srcRoot dest f
-            return (f, classification)
-    classifications <- mapM classify files
-    productionResults <- mapM (produceImage srcRoot dest) classifications
-    case lefts productionResults of
-        [] ->
-            return $ Right $ catMaybes $ rights productionResults
-        errs ->
-            return $ Left $ concat errs
+  let classify f = do
+        classification <- classifyFile srcRoot dest f
+        return (f, classification)
+  classifications <- mapM classify files
+  productionResults <- mapM (produceImage srcRoot dest) classifications
+  case lefts productionResults of
+    [] ->
+      return $ Right $ catMaybes $ rights productionResults
+    errs ->
+      return $ Left $ concat errs
 
 produceImage :: FilePath -> FilePath -> (FilePath, FileClassification) -> IO (Either String (Maybe Image))
 produceImage srcRoot dest (f, classification) = do
-    case classification of
-        NotAnImage ->
-            return $ Right Nothing
-        AlreadyProcessed img ->
-            return $ Right $ Just img
-        ToProcess metadata -> do
-            eImg <- procImage srcRoot dest (f, metadata)
-            case eImg of
-                Left err ->
-                    return $ Left err
-                Right img ->
-                    return $ Right $ Just img
+  case classification of
+    NotAnImage ->
+      return $ Right Nothing
+    AlreadyProcessed img ->
+      return $ Right $ Just img
+    ToProcess metadata -> do
+      eImg <- procImage srcRoot dest (f, metadata)
+      case eImg of
+        Left err ->
+          return $ Left err
+        Right img ->
+          return $ Right $ Just img
 
 classifyFile :: FilePath -> FilePath -> FilePath -> IO FileClassification
 classifyFile srcRoot destDir file = do
-    mImg <- alreadyProcessed srcRoot destDir file
-    case mImg of
-        Just img ->
-            return $ AlreadyProcessed img
-        Nothing -> do
-            mMetadata <- imgOnly file
-            case mMetadata of
-                Just metadata ->
-                    return $ ToProcess $ snd metadata
-                Nothing ->
-                    return NotAnImage
+  mImg <- alreadyProcessed srcRoot destDir file
+  case mImg of
+    Just img ->
+      return $ AlreadyProcessed img
+    Nothing -> do
+      mMetadata <- imgOnly file
+      case mMetadata of
+        Just metadata ->
+          return $ ToProcess $ snd metadata
+        Nothing ->
+          return NotAnImage
 
 alreadyProcessed :: FilePath -> FilePath -> FilePath -> IO (Maybe Image)
 alreadyProcessed s d f = do
   let rawDest = fst $ destForRaw s d f
-      shrinkDests = map (\maxwidth -> ( maxwidth
-                                      , fst $ destForShrink maxwidth s d f))
-                        sizes
+      shrinkDests =
+        map
+          ( \maxwidth ->
+              ( maxwidth,
+                fst $ destForShrink maxwidth s d f
+              )
+          )
+          sizes
   destsExist <- mapM doesFileExist $ rawDest : map snd shrinkDests
-  if and destsExist then do
-    mi <- imgOnly f
-    case mi of
-      Nothing ->
-        return Nothing
-      Just i -> do
-        let mw = Codec.Picture.Metadata.lookup Width $ snd $ snd i
-            mh = Codec.Picture.Metadata.lookup Height $ snd $ snd i
-            wh = maybeTuple (mw, mh)
-        case wh of
-          Just (ww, hw) -> do
-            let t = takeBaseName f
-                w = fromIntegral ww
-                h = fromIntegral hw
-                srcSetFst = ImgSrc { url = makeRelative d rawDest
-                                   , x = w
-                                   , y = h
-                                   }
-                sdToImgSrc sd =
-                  let (xsm, ysm) = shrink (fst sd) w h
-                  in
-                  ImgSrc { url = makeRelative d $ snd sd
-                         , x = xsm
-                         , y = ysm
-                         }
-                srcSetRst = map sdToImgSrc shrinkDests
-            return $ Just $ Image { altText = t
-                                  , srcSetFirst = srcSetFst
-                                  , srcSetRest = srcSetRst
-                                  }
-          Nothing ->
-            return Nothing
-  else
-    return Nothing
+  if and destsExist
+    then do
+      mi <- imgOnly f
+      case mi of
+        Nothing ->
+          return Nothing
+        Just i -> do
+          let mw = Codec.Picture.Metadata.lookup Width $ snd $ snd i
+              mh = Codec.Picture.Metadata.lookup Height $ snd $ snd i
+              wh = maybeTuple (mw, mh)
+          case wh of
+            Just (ww, hw) -> do
+              let t = takeBaseName f
+                  w = fromIntegral ww
+                  h = fromIntegral hw
+                  srcSetFst =
+                    ImgSrc
+                      { url = makeRelative d rawDest,
+                        x = w,
+                        y = h
+                      }
+                  sdToImgSrc sd =
+                    let (xsm, ysm) = shrink (fst sd) w h
+                     in ImgSrc
+                          { url = makeRelative d $ snd sd,
+                            x = xsm,
+                            y = ysm
+                          }
+                  srcSetRst = map sdToImgSrc shrinkDests
+              return $
+                Just $
+                  Image
+                    { altText = t,
+                      srcSetFirst = srcSetFst,
+                      srcSetRest = srcSetRst
+                    }
+            Nothing ->
+              return Nothing
+    else return Nothing
 
 imgOnly :: FilePath -> IO (Maybe (FilePath, (DynamicImage, Metadatas)))
 imgOnly f = do
-    loadResult <- readImageWithMetadata f
-    case loadResult of
-         Left _ -> return Nothing
-         Right img ->
-             do
-                 putStrSameLn $ "loaded " ++ show f
-                 return $ Just (f, img)
+  loadResult <- readImageWithMetadata f
+  case loadResult of
+    Left _ -> return Nothing
+    Right img ->
+      do
+        putStrSameLn $ "loaded " ++ show f
+        return $ Just (f, img)
 
 procImage :: FilePath -> FilePath -> (FilePath, (DynamicImage, Metadatas)) -> IO (Either String Image)
-procImage s d (f,i) = do
-    let w = dynamicMap imageWidth $ fst i
-        h = dynamicMap imageHeight $ fst i
-        mw = Codec.Picture.Metadata.lookup Width $ snd i
-        mh = Codec.Picture.Metadata.lookup Height $ snd i
-        mwh = maybeTuple (mw, mh)
-        t = takeBaseName f
-    case mwh of
-      Nothing ->
-        return $ Left $ "image " ++ f ++ " has no size metadata, album regen will silently drop it"
-      Just (ww, hh) ->
-        if fromIntegral ww == w && fromIntegral hh == h then do
+procImage s d (f, i) = do
+  let w = dynamicMap imageWidth $ fst i
+      h = dynamicMap imageHeight $ fst i
+      mw = Codec.Picture.Metadata.lookup Width $ snd i
+      mh = Codec.Picture.Metadata.lookup Height $ snd i
+      mwh = maybeTuple (mw, mh)
+      t = takeBaseName f
+  case mwh of
+    Nothing ->
+      return $ Left $ "image " ++ f ++ " has no size metadata, album regen will silently drop it"
+    Just (ww, hh) ->
+      if fromIntegral ww == w && fromIntegral hh == h
+        then do
           (srcSetFst, srcSetRst) <- procSrcSet s d f (fst i) w h
-          return $ Right $ Image { altText = t
-                                 , srcSetFirst = srcSetFst
-                                 , srcSetRest = srcSetRst
-                                 }
-        else
-          return $ Left $ "image " ++ f ++ " has intrinsic w*h of " ++ show w ++ "*" ++ show h ++ " but metadata w*h of " ++ show ww ++ "*" ++ show hh ++ "; to repair, load in The Gimp, then choose file -> overwrite"
+          return $
+            Right $
+              Image
+                { altText = t,
+                  srcSetFirst = srcSetFst,
+                  srcSetRest = srcSetRst
+                }
+        else return $ Left $ "image " ++ f ++ " has intrinsic w*h of " ++ show w ++ "*" ++ show h ++ " but metadata w*h of " ++ show ww ++ "*" ++ show hh ++ "; to repair, load in The Gimp, then choose file -> overwrite"
 
 procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
 procSrcSet s d f i w h = do
-    let shrunkenSrcs = map (shrinkImgSrc s d f i w h) sizes `using` parList rdeepseq
-        shrunken = map fth shrunkenSrcs
-    rawImg <- copyRawImgSrc s d f w h
-    putStrSameLn $ "processing " ++ show f ++ " "
-    mapM_ (writeShrunkenImgSrc . fstSndThr) shrunkenSrcs
-    return (rawImg, shrunken)
+  let shrunkenSrcs = map (shrinkImgSrc s d f i w h) sizes `using` parList rdeepseq
+      shrunken = map fth shrunkenSrcs
+  rawImg <- copyRawImgSrc s d f w h
+  putStrSameLn $ "processing " ++ show f ++ " "
+  mapM_ (writeShrunkenImgSrc . fstSndThr) shrunkenSrcs
+  return (rawImg, shrunken)
 
 writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGB8, FilePath, Int) -> IO ()
 writeShrunkenImgSrc (ism, fsmpath, maxwidth) = do
-    createDirectoryIfMissing True $ takeDirectory fsmpath
-    putStr $ show maxwidth ++ "w "
-    hFlush stdout
-    savePngImage fsmpath $ ImageRGB8 ism
+  createDirectoryIfMissing True $ takeDirectory fsmpath
+  putStr $ show maxwidth ++ "w "
+  hFlush stdout
+  savePngImage fsmpath $ ImageRGB8 ism
 
 shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGB8, FilePath, Int, ImgSrc)
 shrinkImgSrc s d f i w h maxwidth =
-    let (xsm, ysm) = shrink maxwidth w h
-        fsmpath = fst $ destForShrink maxwidth s d f
-        fi = toFridayRGB $ convertRGB8 i
-        fism = resize Bilinear (ix2 ysm xsm) fi
-        ism = toJuicyRGB fism
-    in
-    ( ism
-    , fsmpath
-    , maxwidth
-    , ImgSrc { url = makeRelative d fsmpath
-             , x = xsm
-             , y = ysm
-             }
-    )
+  let (xsm, ysm) = shrink maxwidth w h
+      fsmpath = fst $ destForShrink maxwidth s d f
+      fi = toFridayRGB $ convertRGB8 i
+      fism = resize Bilinear (ix2 ysm xsm) fi
+      ism = toJuicyRGB fism
+   in ( ism,
+        fsmpath,
+        maxwidth,
+        ImgSrc
+          { url = makeRelative d fsmpath,
+            x = xsm,
+            y = ysm
+          }
+      )
 
 copyRawImgSrc :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
 copyRawImgSrc s d fpath w h = do
-    let (dest,f) = destForRaw s d fpath
-    createDirectoryIfMissing True $ takeDirectory dest
-    copyFile fpath dest
-    setFileMode dest $ foldl unionFileModes ownerReadMode [groupReadMode, otherReadMode]
-    putStrSameLn $ "copied " ++ f
-    return ImgSrc { url = makeRelative d dest
-                  , x = w
-                  , y = h
-                  }
+  let (dest, f) = destForRaw s d fpath
+  createDirectoryIfMissing True $ takeDirectory dest
+  copyFile fpath dest
+  setFileMode dest $ foldl unionFileModes ownerReadMode [groupReadMode, otherReadMode]
+  putStrSameLn $ "copied " ++ f
+  return
+    ImgSrc
+      { url = makeRelative d dest,
+        x = w,
+        y = h
+      }
 
 destForRaw :: FilePath -> FilePath -> FilePath -> (FilePath, FilePath)
 destForRaw =
@@ -388,13 +404,13 @@ destFor :: (FilePath -> FilePath) -> FilePath -> FilePath -> FilePath -> (FilePa
 destFor fNameMaker src dest fileInSrc =
   let srel = takeDirectory $ makeRelative src fileInSrc
       fName = fNameMaker fileInSrc
-  in (dest </> srel </> fName, fName)
+   in (dest </> srel </> fName, fName)
 
 shrink :: Int -> Int -> Int -> (Int, Int)
-shrink maxwidth w h = let factor = fromIntegral maxwidth / fromIntegral w
-                          scale width = floor (fromIntegral width * factor)
-                      in (scale w, scale h)
-
+shrink maxwidth w h =
+  let factor = fromIntegral maxwidth / fromIntegral w
+      scale width = floor (fromIntegral width * factor)
+   in (scale w, scale h)
 
 --
 -- file/directory utilities
@@ -406,15 +422,15 @@ dirsOnly = filterM doesDirectoryExist
 readLink :: FilePath -> IO FilePath
 readLink f = do
   isLink <- pathIsSymbolicLink f
-  if isLink then do
-    target <- getSymbolicLinkTarget f
-    if isAbsolute target then
-      readLink target
-    else do
-      let ftgt = takeDirectory f </> target
-      readLink ftgt
-  else
-    return f
+  if isLink
+    then do
+      target <- getSymbolicLinkTarget f
+      if isAbsolute target
+        then readLink target
+        else do
+          let ftgt = takeDirectory f </> target
+          readLink ftgt
+    else return f
 
 --
 -- I/O utilities
@@ -422,10 +438,10 @@ readLink f = do
 
 putStrSameLn :: String -> IO ()
 putStrSameLn s = do
-    putStr "\r                                                                                                                                                          "
-    putStr "\r"
-    putStr s
-    hFlush stdout
+  putStr "\r                                                                                                                                                          "
+  putStr "\r"
+  putStr s
+  hFlush stdout
 
 --
 -- basic utilities

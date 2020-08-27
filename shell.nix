@@ -11,6 +11,8 @@ pkgs.stdenv.mkDerivation {
   buildInputs = with pkgs.haskellPackages;
                 [ ghc
                   pkgs.elmPackages.elm
+
+                  ormolu
                   
                   pkgs.vscode ];
   shellHook = "eval $(egrep ^export ${ghc}/bin/ghc)";
