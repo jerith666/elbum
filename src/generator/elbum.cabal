@@ -62,6 +62,7 @@ executable elbum
   -- Other library packages from which modules are imported.
   build-depends:       elm-bridge
                      , aeson
+                     , async
                      , friday
                      , JuicyPixels
                      , friday-juicypixels

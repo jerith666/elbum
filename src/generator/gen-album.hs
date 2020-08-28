@@ -10,6 +10,7 @@ import AlbumTypes
 import Codec.Picture hiding (Image)
 import Codec.Picture.Metadata
 import qualified Codec.Picture.Types
+import Control.Concurrent.Async
 import Control.Monad
 import Control.Parallel.Strategies
 import Data.Aeson (encode)
@@ -77,7 +78,7 @@ genAlbumOrList :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> IO (Eithe
 genAlbumOrList srcRoot src dest thumbspec = do
   files <- filter (`notElem` [".", "..", thumbFilename]) <$> getDirectoryContents src
   let afiles = map (src </>) (sort files)
-  epimgs <- procImgsOnly srcRoot dest afiles
+  epimgs <- procImgsOnly srcRoot src dest afiles
   case epimgs of
     Left e ->
       return $ Left e
@@ -216,14 +217,21 @@ data FileClassification
   | AlreadyProcessed Image
   | ToProcess (DynamicImage, Metadatas)
 
-procImgsOnly :: FilePath -> FilePath -> [FilePath] -> IO (Either String [Image])
-procImgsOnly _ _ [] = return $ Right []
-procImgsOnly srcRoot dest files = do
+toProc :: FileClassification -> Bool
+toProc (ToProcess _) = True
+toProc _ = False
+
+procImgsOnly :: FilePath -> FilePath -> FilePath -> [FilePath] -> IO (Either String [Image])
+procImgsOnly _ _ _ [] = return $ Right []
+procImgsOnly srcRoot src dest files = do
   let classify f = do
         classification <- classifyFile srcRoot dest f
         return (f, classification)
-  classifications <- mapM classify files
-  productionResults <- mapM (produceImage srcRoot dest) classifications
+  putStrSameLn $ src ++ ": classifying " ++ (show $ length files) ++ " files ... "
+  classifications <- mapConcurrently classify files
+  let tpCt = show $ length $ filter toProc $ map snd $ classifications
+  putStr $ tpCt ++ " to process"
+  productionResults <- mapConcurrently (produceImage srcRoot dest) classifications
   case lefts productionResults of
     [] ->
       return $ Right $ catMaybes $ rights productionResults
@@ -318,7 +326,7 @@ imgOnly f = do
     Left _ -> return Nothing
     Right img ->
       do
-        putStrSameLn $ "loaded " ++ show f
+        --putStrSameLn $ "loaded " ++ show f
         return $ Just (f, img)
 
 procImage :: FilePath -> FilePath -> (FilePath, (DynamicImage, Metadatas)) -> IO (Either String Image)
@@ -350,14 +358,14 @@ procSrcSet s d f i w h = do
   let shrunkenSrcs = map (shrinkImgSrc s d f i w h) sizes `using` parList rdeepseq
       shrunken = map fth shrunkenSrcs
   rawImg <- copyRawImgSrc s d f w h
-  putStrSameLn $ "processing " ++ show f ++ " "
+  --putStrSameLn $ "processing " ++ show f ++ " "
   mapM_ (writeShrunkenImgSrc . fstSndThr) shrunkenSrcs
   return (rawImg, shrunken)
 
 writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGB8, FilePath, Int) -> IO ()
-writeShrunkenImgSrc (ism, fsmpath, maxwidth) = do
+writeShrunkenImgSrc (ism, fsmpath, _) = do
   createDirectoryIfMissing True $ takeDirectory fsmpath
-  putStr $ show maxwidth ++ "w "
+  --putStr $ show maxwidth ++ "w "
   hFlush stdout
   savePngImage fsmpath $ ImageRGB8 ism
 
@@ -380,11 +388,11 @@ shrinkImgSrc s d f i w h maxwidth =
 
 copyRawImgSrc :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
 copyRawImgSrc s d fpath w h = do
-  let (dest, f) = destForRaw s d fpath
+  let (dest, _) = destForRaw s d fpath
   createDirectoryIfMissing True $ takeDirectory dest
   copyFile fpath dest
   setFileMode dest $ foldl unionFileModes ownerReadMode [groupReadMode, otherReadMode]
-  putStrSameLn $ "copied " ++ f
+  --putStrSameLn $ "copied " ++ f
   return
     ImgSrc
       { url = makeRelative d dest,
