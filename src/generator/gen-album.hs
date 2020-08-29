@@ -63,9 +63,9 @@ writeAlbumOrList :: String -> String -> IO ()
 writeAlbumOrList src dest = do
   eAlbumOrList <- genAlbumOrList src src dest ChooseAutomatically
   case eAlbumOrList of
-    Left err -> do
+    Left errs -> do
       putStrLn ""
-      putStrLn err
+      putStrLn $ intercalate "\n" errs
       exitWith $ ExitFailure 1
     Right albumOrList ->
       C.writeFile (dest </> "album.json") $ encode albumOrList
@@ -74,7 +74,7 @@ data ThumbnailSpec
   = ChooseAutomatically
   | RequireExplicit
 
-genAlbumOrList :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> IO (Either String AlbumOrList)
+genAlbumOrList :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> IO (Either [String] AlbumOrList)
 genAlbumOrList srcRoot src dest thumbspec = do
   files <- filter (`notElem` [".", "..", thumbFilename]) <$> getDirectoryContents src
   let afiles = map (src </>) (sort files)
@@ -87,13 +87,13 @@ genAlbumOrList srcRoot src dest thumbspec = do
       let icount = length pimgs
           idirs = length subdirs
       if (icount > 0) && (idirs > 0)
-        then return $ Left $ "directory " ++ src ++ " contains both images and subdirs, this is not supported"
+        then return $ Left $ ["directory " ++ src ++ " contains both images and subdirs, this is not supported"]
         else case pimgs of
           imgFirst : imgRest -> do
             aOrErr <- genAlbum srcRoot src dest imgFirst imgRest
             case aOrErr of
               Left err ->
-                return $ Left err
+                return $ Left [err]
               Right a ->
                 return $ Right $ Leaf a
           [] ->
@@ -106,9 +106,9 @@ genAlbumOrList srcRoot src dest thumbspec = do
                   Right n ->
                     return $ Right $ List n
               [] ->
-                return $ Left $ "no images or subdirs in " ++ src
+                return $ Left ["no images or subdirs in " ++ src]
 
-genNode :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> FilePath -> [FilePath] -> IO (Either String AlbumList)
+genNode :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> FilePath -> [FilePath] -> IO (Either [String] AlbumList)
 genNode srcRoot src dest thumbspec dirFirst dirRest = do
   ecFirst <- genAlbumOrList srcRoot dirFirst dest RequireExplicit
   case ecFirst of
@@ -127,7 +127,7 @@ genNode srcRoot src dest thumbspec dirFirst dirRest = do
                 ChooseAutomatically ->
                   case childImages of
                     [] ->
-                      return $ Left $ "cannot automatically chose a thumbnail when there are no subalbums " ++ titleForDir src
+                      return $ Left ["cannot automatically chose a thumbnail when there are no subalbums " ++ titleForDir src]
                     firstChild : _ ->
                       return $
                         Right $
@@ -138,7 +138,7 @@ genNode srcRoot src dest thumbspec dirFirst dirRest = do
                               childRest = cRest
                             }
                 RequireExplicit ->
-                  return $ Left err
+                  return $ Left [err]
             Right thumb ->
               return $
                 Right $
@@ -149,7 +149,7 @@ genNode srcRoot src dest thumbspec dirFirst dirRest = do
                       childRest = cRest
                     }
         errs ->
-          return $ Left $ intercalate "\n" errs
+          return $ Left $ concat errs
 
 getChildImages :: [AlbumOrList] -> [Image]
 getChildImages =
@@ -221,7 +221,7 @@ toProc :: FileClassification -> Bool
 toProc (ToProcess _) = True
 toProc _ = False
 
-procImgsOnly :: FilePath -> FilePath -> FilePath -> [FilePath] -> IO (Either String [Image])
+procImgsOnly :: FilePath -> FilePath -> FilePath -> [FilePath] -> IO (Either [String] [Image])
 procImgsOnly _ _ _ [] = return $ Right []
 procImgsOnly srcRoot src dest files = do
   let classify f = do
@@ -236,7 +236,7 @@ procImgsOnly srcRoot src dest files = do
     [] ->
       return $ Right $ catMaybes $ rights productionResults
     errs ->
-      return $ Left $ concat errs
+      return $ Left $ errs
 
 produceImage :: FilePath -> FilePath -> (FilePath, FileClassification) -> IO (Either String (Maybe Image))
 produceImage srcRoot dest (f, classification) = do
