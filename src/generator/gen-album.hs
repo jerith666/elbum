@@ -10,14 +10,17 @@ import AlbumTypes
 import Codec.Picture hiding (Image)
 import Codec.Picture.Metadata
 import qualified Codec.Picture.Types
+import Control.Applicative
 import Control.Concurrent.Async
 import Control.Monad
 import Control.Parallel.Strategies
-import Data.Aeson (encode)
+import Data.Aeson (decode, encode)
 import qualified Data.ByteString.Lazy.Char8 as C
 import Data.Either
 import Data.List
 import Data.Maybe
+import Data.Time.Clock
+import Data.Tuple
 import System.Directory
 import System.Environment
 import System.Exit
@@ -61,7 +64,14 @@ sizes = [1600, 1400, 1200, 1000, 800, 400, 200]
 
 writeAlbumOrList :: String -> String -> IO ()
 writeAlbumOrList src dest = do
-  eAlbumOrList <- genAlbumOrList src src dest ChooseAutomatically
+  existingAlbumData <- findExistingAlbumData dest "album.json"
+  case existingAlbumData of
+    Nothing ->
+      putStrLn "album metadata not found; all image metadata will be read from source"
+    Just (_, modDate) ->
+      putStrLn $ "album metadata dated " ++ (show modDate) ++ " found; will use it for source images modified earlier than this"
+  putStrLn ""
+  eAlbumOrList <- genAlbumOrList src src dest existingAlbumData ChooseAutomatically
   case eAlbumOrList of
     Left errs -> do
       putStrLn ""
@@ -70,15 +80,25 @@ writeAlbumOrList src dest = do
     Right albumOrList ->
       C.writeFile (dest </> "album.json") $ encode albumOrList
 
+findExistingAlbumData :: FilePath -> String -> IO (Maybe (AlbumOrList, UTCTime))
+findExistingAlbumData d albumFile = do
+  exists <- doesFileExist $ d </> albumFile
+  case exists of
+    False -> return Nothing
+    True -> do
+      bytes <- C.readFile $ d </> albumFile
+      date <- getModificationTime $ d </> albumFile
+      return $ fmap (swap . (,) date) $ decode bytes
+
 data ThumbnailSpec
   = ChooseAutomatically
   | RequireExplicit
 
-genAlbumOrList :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> IO (Either [String] AlbumOrList)
-genAlbumOrList srcRoot src dest thumbspec = do
+genAlbumOrList :: FilePath -> FilePath -> FilePath -> Maybe (AlbumOrList, UTCTime) -> ThumbnailSpec -> IO (Either [String] AlbumOrList)
+genAlbumOrList srcRoot src dest existingAlbumData thumbspec = do
   files <- filter (`notElem` [".", "..", thumbFilename]) <$> getDirectoryContents src
   let afiles = map (src </>) (sort files)
-  epimgs <- procImgsOnly srcRoot src dest afiles
+  epimgs <- procImgsOnly srcRoot src dest existingAlbumData afiles
   case epimgs of
     Left e ->
       return $ Left e
@@ -99,7 +119,7 @@ genAlbumOrList srcRoot src dest thumbspec = do
           [] ->
             case subdirs of
               dirFirst : dirRest -> do
-                en <- genNode srcRoot src dest thumbspec dirFirst dirRest
+                en <- genNode srcRoot src dest existingAlbumData thumbspec dirFirst dirRest
                 case en of
                   Left err ->
                     return $ Left err
@@ -108,14 +128,14 @@ genAlbumOrList srcRoot src dest thumbspec = do
               [] ->
                 return $ Left ["no images or subdirs in " ++ src]
 
-genNode :: FilePath -> FilePath -> FilePath -> ThumbnailSpec -> FilePath -> [FilePath] -> IO (Either [String] AlbumList)
-genNode srcRoot src dest thumbspec dirFirst dirRest = do
-  ecFirst <- genAlbumOrList srcRoot dirFirst dest RequireExplicit
+genNode :: FilePath -> FilePath -> FilePath -> Maybe (AlbumOrList, UTCTime) -> ThumbnailSpec -> FilePath -> [FilePath] -> IO (Either [String] AlbumList)
+genNode srcRoot src dest existingAlbumData thumbspec dirFirst dirRest = do
+  ecFirst <- genAlbumOrList srcRoot dirFirst dest existingAlbumData RequireExplicit
   case ecFirst of
     Left err ->
       return $ Left err
     Right cFirst -> do
-      ecRest <- mapM (\dir -> genAlbumOrList srcRoot dir dest RequireExplicit) dirRest
+      ecRest <- mapM (\dir -> genAlbumOrList srcRoot dir dest existingAlbumData RequireExplicit) dirRest
       case lefts ecRest of
         [] -> do
           let cRest = rights ecRest
@@ -221,11 +241,11 @@ toProc :: FileClassification -> Bool
 toProc (ToProcess _) = True
 toProc _ = False
 
-procImgsOnly :: FilePath -> FilePath -> FilePath -> [FilePath] -> IO (Either [String] [Image])
-procImgsOnly _ _ _ [] = return $ Right []
-procImgsOnly srcRoot src dest files = do
+procImgsOnly :: FilePath -> FilePath -> FilePath -> Maybe (AlbumOrList, UTCTime) -> [FilePath] -> IO (Either [String] [Image])
+procImgsOnly _ _ _ _ [] = return $ Right []
+procImgsOnly srcRoot src dest existingAlbumData files = do
   let classify f = do
-        classification <- classifyFile srcRoot dest f
+        classification <- classifyFile srcRoot dest existingAlbumData f
         return (f, classification)
   putStrSameLn $ src ++ ": classifying " ++ (show $ length files) ++ " files ... "
   classifications <- mapConcurrently classify files
@@ -253,9 +273,9 @@ produceImage srcRoot dest (f, classification) = do
         Right img ->
           return $ Right $ Just img
 
-classifyFile :: FilePath -> FilePath -> FilePath -> IO FileClassification
-classifyFile srcRoot destDir file = do
-  mImg <- alreadyProcessed srcRoot destDir file
+classifyFile :: FilePath -> FilePath -> Maybe (AlbumOrList, UTCTime) -> FilePath -> IO FileClassification
+classifyFile srcRoot destDir existingAlbumData file = do
+  mImg <- alreadyProcessed srcRoot destDir existingAlbumData file
   case mImg of
     Just img ->
       return $ AlreadyProcessed img
@@ -267,57 +287,109 @@ classifyFile srcRoot destDir file = do
         Nothing ->
           return NotAnImage
 
-alreadyProcessed :: FilePath -> FilePath -> FilePath -> IO (Maybe Image)
-alreadyProcessed s d f = do
+alreadyProcessed :: FilePath -> FilePath -> Maybe (AlbumOrList, UTCTime) -> FilePath -> IO (Maybe Image)
+alreadyProcessed s d existingAlbumData f = do
   let rawDest = fst $ destForRaw s d f
-      shrinkDests =
-        map
-          ( \maxwidth ->
-              ( maxwidth,
-                fst $ destForShrink maxwidth s d f
-              )
-          )
-          sizes
-  destsExist <- mapM doesFileExist $ rawDest : map snd shrinkDests
+      allDests = rawDest : (map snd $ shrinkDests s d f)
+      existingImage = (>>=) existingAlbumData (matchExisting s f . fst)
+  --putStrLn $ "alreadyProcessed " ++ s ++ ", " ++ f ++ ": " ++ (show existingImage)
+  destsExist <- mapM doesFileExist $ allDests
   if and destsExist
     then do
-      mi <- imgOnly f
-      case mi of
-        Nothing ->
-          return Nothing
-        Just i -> do
-          let mw = Codec.Picture.Metadata.lookup Width $ snd $ snd i
-              mh = Codec.Picture.Metadata.lookup Height $ snd $ snd i
-              wh = maybeTuple (mw, mh)
-          case wh of
-            Just (ww, hw) -> do
-              let t = takeBaseName f
-                  w = fromIntegral ww
-                  h = fromIntegral hw
-                  srcSetFst =
-                    ImgSrc
-                      { url = makeRelative d rawDest,
-                        x = w,
-                        y = h
-                      }
-                  sdToImgSrc sd =
-                    let (xsm, ysm) = shrink (fst sd) w h
-                     in ImgSrc
-                          { url = makeRelative d $ snd sd,
-                            x = xsm,
-                            y = ysm
-                          }
-                  srcSetRst = map sdToImgSrc shrinkDests
-              return $
-                Just $
-                  Image
-                    { altText = t,
-                      srcSetFirst = srcSetFst,
-                      srcSetRest = srcSetRst
-                    }
+      let existingImageAndModDate = liftA2 (,) existingImage $ fmap snd existingAlbumData
+      newerImage <- imageNewerThanSrc existingImageAndModDate f
+      case newerImage of
+        Just image ->
+          return $ Just image
+        Nothing -> do
+          mi <- imgOnly f
+          case mi of
             Nothing ->
               return Nothing
+            Just i ->
+              createImageWithMetadataSize s d f rawDest i
     else return Nothing
+
+shrinkDests :: FilePath -> FilePath -> FilePath -> [(Int, FilePath)]
+shrinkDests s d f =
+  map
+    ( \maxwidth ->
+        ( maxwidth,
+          fst $ destForShrink maxwidth s d f
+        )
+    )
+    sizes
+
+matchExisting :: FilePath -> FilePath -> AlbumOrList -> Maybe Image
+matchExisting s f albumOrList = do
+  let relNames = splitDirectories $ makeRelative s f
+   in findImage relNames albumOrList
+
+findImage :: [String] -> AlbumOrList -> Maybe Image
+findImage [] _ = Nothing
+findImage (name : names) albumOrList =
+  let getTitle aol =
+        case aol of
+          List list -> listTitle list
+          Leaf album -> title album
+      matchesName = (==) (titleForDir name) . getTitle
+   in case albumOrList of
+        List list ->
+          case filter matchesName $ (childFirst list) : (childRest list) of
+            [] -> Nothing
+            _ : _ : _ -> Nothing
+            child : [] -> findImage names child
+        Leaf album ->
+          case filter ((==) (takeBaseName name) . altText) $ (imageFirst album) : (imageRest album) of
+            [] -> Nothing
+            _ : _ : _ -> Nothing
+            child : [] -> Just child
+
+imageNewerThanSrc :: Maybe (Image, UTCTime) -> FilePath -> IO (Maybe Image)
+imageNewerThanSrc Nothing _ = return Nothing
+imageNewerThanSrc (Just (image, modTime)) src = do
+  srcModTime <- getModificationTime src
+  case modTime >= srcModTime of
+    True -> do
+      --putStrLn $ "found image in album metadata @ " ++ (show modTime) ++ " newer than src " ++ src ++ " @ " ++ (show srcModTime) ++ ": " ++ (show image)
+      return $ Just image
+    False -> do
+      --putStrLn $ "found image in album metadata @ " ++ (show modTime) ++ " older than src " ++ src ++ " @ " ++ (show srcModTime) ++ ": " ++ (show image)
+      return Nothing
+
+createImageWithMetadataSize :: FilePath -> FilePath -> FilePath -> FilePath -> (FilePath, (DynamicImage, Metadatas)) -> IO (Maybe Image)
+createImageWithMetadataSize s d f rawDest i = do
+  let mw = Codec.Picture.Metadata.lookup Width $ snd $ snd i
+      mh = Codec.Picture.Metadata.lookup Height $ snd $ snd i
+      wh = maybeTuple (mw, mh)
+  case wh of
+    Just (ww, hw) -> do
+      let t = takeBaseName f
+          w = fromIntegral ww
+          h = fromIntegral hw
+          srcSetFst =
+            ImgSrc
+              { url = makeRelative d rawDest,
+                x = w,
+                y = h
+              }
+          sdToImgSrc sd =
+            let (xsm, ysm) = shrink (fst sd) w h
+             in ImgSrc
+                  { url = makeRelative d $ snd sd,
+                    x = xsm,
+                    y = ysm
+                  }
+          srcSetRst = map sdToImgSrc $ shrinkDests s d f
+      return $
+        Just $
+          Image
+            { altText = t,
+              srcSetFirst = srcSetFst,
+              srcSetRest = srcSetRst
+            }
+    Nothing ->
+      return Nothing
 
 imgOnly :: FilePath -> IO (Maybe (FilePath, (DynamicImage, Metadatas)))
 imgOnly f = do
