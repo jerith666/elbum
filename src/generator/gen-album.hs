@@ -297,17 +297,25 @@ alreadyProcessed s d existingAlbumData f = do
   if and destsExist
     then do
       let existingImageAndModDate = liftA2 (,) existingImage $ fmap snd existingAlbumData
-      newerImage <- imageNewerThanSrc existingImageAndModDate f
-      case newerImage of
-        Just image ->
-          return $ Just image
-        Nothing -> do
+      srcModTimeOrNewerImage <- imageNewerThanSrc existingImageAndModDate f
+      case srcModTimeOrNewerImage of
+        Right newerImage ->
+          return $ Just newerImage
+        Left srcModTime -> do
           mi <- imgOnly f
           case mi of
             Nothing ->
               return Nothing
-            Just i ->
-              createImageWithMetadataSize s d f rawDest i
+            Just i -> do
+              -- the destination images all exist
+              -- the source image exists, but is newer than the metadata we have from album.json
+              -- the source image also loads cleanly and we have its intrinsic metadata
+              -- however, it's only safe to use that instrinsic metadata if the destination images
+              -- are all *newer* than the source image
+              destModTimes <- mapM getModificationTime allDests
+              case maximum destModTimes > srcModTime of
+                True -> createImageWithMetadataSize s d f rawDest i
+                False -> return Nothing
     else return Nothing
 
 shrinkDests :: FilePath -> FilePath -> FilePath -> [(Int, FilePath)]
@@ -345,17 +353,20 @@ findImage (name : names) albumOrList =
             _ : _ : _ -> Nothing
             child : [] -> Just child
 
-imageNewerThanSrc :: Maybe (Image, UTCTime) -> FilePath -> IO (Maybe Image)
-imageNewerThanSrc Nothing _ = return Nothing
-imageNewerThanSrc (Just (image, modTime)) src = do
+imageNewerThanSrc :: Maybe (Image, UTCTime) -> FilePath -> IO (Either UTCTime Image)
+imageNewerThanSrc mImageModTime src = do
   srcModTime <- getModificationTime src
-  case modTime >= srcModTime of
-    True -> do
-      --putStrLn $ "found image in album metadata @ " ++ (show modTime) ++ " newer than src " ++ src ++ " @ " ++ (show srcModTime) ++ ": " ++ (show image)
-      return $ Just image
-    False -> do
-      --putStrLn $ "found image in album metadata @ " ++ (show modTime) ++ " older than src " ++ src ++ " @ " ++ (show srcModTime) ++ ": " ++ (show image)
-      return Nothing
+  case mImageModTime of
+    Nothing ->
+      return $ Left srcModTime
+    Just (image, modTime) ->
+      case modTime >= srcModTime of
+        True ->
+          --putStrLn $ "found image in album metadata @ " ++ (show modTime) ++ " newer than src " ++ src ++ " @ " ++ (show srcModTime) ++ ": " ++ (show image)
+          return $ Right image
+        False ->
+          --putStrLn $ "found image in album metadata @ " ++ (show modTime) ++ " older than src " ++ src ++ " @ " ++ (show srcModTime) ++ ": " ++ (show image)
+          return $ Left srcModTime
 
 createImageWithMetadataSize :: FilePath -> FilePath -> FilePath -> FilePath -> (FilePath, (DynamicImage, Metadatas)) -> IO (Maybe Image)
 createImageWithMetadataSize s d f rawDest i = do
