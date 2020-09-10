@@ -14,6 +14,6 @@ pkgs.stdenv.mkDerivation {
 
                   ormolu
                   
-                  pkgs.vscode ];
+                  pkgs.vscodium ];
   shellHook = "eval $(egrep ^export ${ghc}/bin/ghc)";
 }
