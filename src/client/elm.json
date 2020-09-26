@@ -11,7 +11,7 @@
             "bartavelle/json-helpers": "2.0.2",
             "ccapndave/elm-update-extra": "4.0.0",
             "elm/browser": "1.0.2",
-            "elm/core": "1.0.4",
+            "elm/core": "1.0.5",
             "elm/html": "1.0.0",
             "elm/http": "2.0.0",
             "elm/json": "1.1.3",
@@ -19,14 +19,13 @@
             "elm/svg": "1.0.1",
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
-            "elm-community/basics-extra": "4.0.0",
+            "elm-community/basics-extra": "4.1.0",
             "elm-explorations/linear-algebra": "1.0.3",
             "mdgriffith/elm-style-animation": "4.0.0",
-            "mpizenberg/elm-pointer-events": "4.0.1",
-            "rtfeldman/elm-css": "16.0.1"
+            "mpizenberg/elm-pointer-events": "4.0.2",
+            "rtfeldman/elm-css": "16.1.0"
         },
         "indirect": {
-            "Skinney/murmur3": "2.0.8",
             "elm/bytes": "1.0.8",
             "elm/file": "1.0.5",
             "elm/virtual-dom": "1.0.2",
