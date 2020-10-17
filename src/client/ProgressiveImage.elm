@@ -1,4 +1,4 @@
-module ProgressiveImage exposing (ProgressiveImageData, ProgressiveImageModel, ProgressiveImageMsg, init, subscriptions, update, updateCmd, view, withWidthHeight)
+module ProgressiveImage exposing (ProgressiveImageCompleteness(..), ProgressiveImageData, ProgressiveImageModel, ProgressiveImageMsg, init, subscriptions, update, updateCmd, view, withWidthHeight)
 
 import Album exposing (ImgSrc)
 import AlbumStyles exposing (..)
@@ -48,6 +48,11 @@ type ProgressiveImageStatus
     | MainOnly
 
 
+type ProgressiveImageCompleteness
+    = Incomplete
+    | Complete
+
+
 type alias AnimState =
     { main : Animation.Messenger.State ProgressiveImageMsg
     , placeholder : Animation.State
@@ -55,7 +60,7 @@ type alias AnimState =
 
 
 type ProgressiveImageModel
-    = ProgImgModel ProgressiveImageData ProgressiveImageStatus AnimState
+    = ProgImgModel ProgressiveImageData ProgressiveImageStatus AnimState ProgressiveImageCompleteness
 
 
 type ProgressiveImageMsg
@@ -101,28 +106,37 @@ init data =
         model =
             case data.possiblyCached of
                 [] ->
-                    ProgImgModel data LoadingFallback animState
+                    ProgImgModel data LoadingFallback animState Incomplete
 
                 c1 :: cOthers ->
-                    ProgImgModel data (TryingCached [] c1 cOthers) animState
+                    ProgImgModel data (TryingCached [] c1 cOthers) animState Incomplete
     in
     ( model, updateCmd model )
 
 
 withWidthHeight : Int -> Int -> ProgressiveImageModel -> ProgressiveImageModel
-withWidthHeight w h (ProgImgModel data status animState) =
-    ProgImgModel { data | width = w, height = h } status animState
+withWidthHeight w h (ProgImgModel data status animState completeness) =
+    ProgImgModel { data | width = w, height = h } status animState completeness
 
 
-update : ProgressiveImageMsg -> ProgressiveImageModel -> ( ProgressiveImageModel, Cmd ProgressiveImageMsg )
-update msg ((ProgImgModel data status animState) as oldModel) =
+update : ProgressiveImageMsg -> ProgressiveImageModel -> ( ProgressiveImageModel, Cmd ProgressiveImageMsg, ProgressiveImageCompleteness )
+update msg oldModel =
+    let
+        ( ProgImgModel data status animState completeness, cmd ) =
+            updateImpl msg oldModel
+    in
+    ( ProgImgModel data status animState completeness, cmd, completeness )
+
+
+updateImpl : ProgressiveImageMsg -> ProgressiveImageModel -> ( ProgressiveImageModel, Cmd ProgressiveImageMsg )
+updateImpl msg ((ProgImgModel data status animState completeness) as oldModel) =
     case msg of
         AnimateMain animMsg ->
             let
                 ( newMainState, animCmd ) =
                     Animation.Messenger.update animMsg animState.main
             in
-            ( ProgImgModel data status <| { animState | main = newMainState }, animCmd )
+            ( ProgImgModel data status { animState | main = newMainState } completeness, animCmd )
 
         ScheduleTimeout n unit img ->
             ( oldModel, Delay.after n unit <| Timeout img )
@@ -136,13 +150,13 @@ update msg ((ProgImgModel data status animState) as oldModel) =
 
 
 updateModel : ProgressiveImageMsg -> ProgressiveImageModel -> ProgressiveImageModel
-updateModel msg ((ProgImgModel data status animState) as model) =
+updateModel msg ((ProgImgModel data status animState completeness) as model) =
     case msg of
         Loaded imgSrc ->
             case status of
                 TryingCached tried trying upnext ->
                     if imgSrc == trying then
-                        ProgImgModel data (LoadingMain trying) { animState | placeholder = show animState.placeholder }
+                        ProgImgModel data (LoadingMain trying) { animState | placeholder = show animState.placeholder } completeness
 
                     else
                         --maybe some earlier tried image?  ignore
@@ -150,7 +164,7 @@ updateModel msg ((ProgImgModel data status animState) as model) =
 
                 LoadingFallback ->
                     if imgSrc == data.fallback then
-                        ProgImgModel data (LoadingMain data.fallback) { animState | placeholder = show animState.placeholder }
+                        ProgImgModel data (LoadingMain data.fallback) { animState | placeholder = show animState.placeholder } completeness
 
                     else
                         --maybe some earlier tryingCached?  ignore
@@ -158,7 +172,7 @@ updateModel msg ((ProgImgModel data status animState) as model) =
 
                 LoadingMain placeholder ->
                     if imgSrc == data.mainImg then
-                        ProgImgModel data (MainLoaded placeholder) { animState | main = showMsg animState.main }
+                        ProgImgModel data (MainLoaded placeholder) { animState | main = showMsg animState.main } Complete
 
                     else
                         --something stale, ignore
@@ -177,10 +191,10 @@ updateModel msg ((ProgImgModel data status animState) as model) =
                 TryingCached tried trying upnext ->
                     case upnext of
                         [] ->
-                            ProgImgModel data LoadingFallback animState
+                            ProgImgModel data LoadingFallback animState completeness
 
                         next :: later ->
-                            ProgImgModel data (TryingCached (tried ++ [ trying ]) next later) animState
+                            ProgImgModel data (TryingCached (tried ++ [ trying ]) next later) animState completeness
 
                 LoadingFallback ->
                     --shouldn't happen
@@ -204,7 +218,7 @@ updateModel msg ((ProgImgModel data status animState) as model) =
         MainFadeinComplete ->
             case status of
                 MainLoaded _ ->
-                    ProgImgModel data MainOnly { animState | placeholder = hide animState.placeholder }
+                    ProgImgModel data MainOnly { animState | placeholder = hide animState.placeholder } Complete
 
                 TryingCached _ _ _ ->
                     --shouldn't happen
@@ -227,11 +241,11 @@ updateModel msg ((ProgImgModel data status animState) as model) =
             model
 
         AnimatePlaceholder animMsg ->
-            ProgImgModel data status <| { animState | placeholder = Animation.update animMsg animState.placeholder }
+            ProgImgModel data status { animState | placeholder = Animation.update animMsg animState.placeholder } completeness
 
 
 updateCmd : ProgressiveImageModel -> Maybe ProgressiveImageMsg
-updateCmd (ProgImgModel data status animState) =
+updateCmd (ProgImgModel _ status _ _) =
     case status of
         TryingCached _ trying _ ->
             Just <| ScheduleTimeout 200 Millisecond trying
@@ -250,7 +264,7 @@ updateCmd (ProgImgModel data status animState) =
 
 
 subscriptions : ProgressiveImageModel -> Sub ProgressiveImageMsg
-subscriptions (ProgImgModel data status animState) =
+subscriptions (ProgImgModel _ _ animState _) =
     Sub.batch
         [ Animation.subscription AnimatePlaceholder [ animState.placeholder ]
         , Animation.subscription AnimateMain [ animState.main ]
@@ -258,9 +272,9 @@ subscriptions (ProgImgModel data status animState) =
 
 
 view : ProgressiveImageModel -> Html ProgressiveImageMsg
-view (ProgImgModel data status animState) =
+view (ProgImgModel data status animState _) =
     case status of
-        TryingCached tried trying nextup ->
+        TryingCached _ trying _ ->
             viewImg trying data (styledAnimation animState.placeholder) []
 
         LoadingFallback ->

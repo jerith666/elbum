@@ -13,7 +13,7 @@ import Utils.ResultUtils exposing (toCmd)
 
 
 type Model
-    = Mo ProgressiveImageModel
+    = Mo ProgressiveImageModel ProgressiveImageCompleteness
 
 
 type Msg
@@ -81,7 +81,7 @@ init _ =
                 , height = 1069
                 }
     in
-    ( Mo model
+    ( Mo model Incomplete
     , cmd
         |> Maybe.map toCmd
         |> Maybe.map (Cmd.map Me)
@@ -90,21 +90,30 @@ init _ =
 
 
 view : Model -> Document Msg
-view (Mo model) =
-    { title = "Image Progressiveness Test"
+view (Mo model completeness) =
+    let
+        prefix =
+            case completeness of
+                Incomplete ->
+                    "[incomplete] "
+
+                Complete ->
+                    "[complete] "
+    in
+    { title = prefix ++ "Image Progressiveness Test"
     , body = [ ProgressiveImage.view model |> Html.Styled.map Me |> toUnstyled ]
     }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update (Me msg) (Mo model) =
+update (Me msg) (Mo model _) =
     let
-        ( newModel, newCmd ) =
+        ( newModel, newCmd, completeness ) =
             ProgressiveImage.update msg model
     in
-    ( Mo newModel, Cmd.map Me newCmd )
+    ( Mo newModel completeness, Cmd.map Me newCmd )
 
 
 subscriptions : Model -> Sub Msg
-subscriptions (Mo model) =
+subscriptions (Mo model _) =
     Sub.map Me <| ProgressiveImage.subscriptions model

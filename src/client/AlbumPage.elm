@@ -207,7 +207,7 @@ update msg model scroll =
             case model of
                 FullImage fi ->
                     let
-                        ( newProgModel, newProgCmd ) =
+                        ( newProgModel, newProgCmd, _ ) =
                             ProgressiveImage.update progImgMsg fi.progModel
                     in
                     ( FullImage { fi | progModel = newProgModel }, Cmd.map FullMsg newProgCmd )
