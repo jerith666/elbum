@@ -25,19 +25,48 @@ main =
     Browser.document { init = init, view = view, update = update, subscriptions = subscriptions }
 
 
+type alias ImgInfo =
+    { name : String, x : Int, y : Int }
+
+
+baseImg : ImgInfo
+baseImg =
+    { name = "02_February 25-28: Around the House/DSC_4742"
+    , x = 2992
+    , y = 2000
+    }
+
+
 mainImg : ImgSrc
 mainImg =
-    ImgSrc "10_October 06-09: Ohiopyle Weekend/DSC_1495.JPG" 1600 1069
+    ImgSrc (baseImg.name ++ ".JPG") baseImg.x baseImg.y
 
 
 fallback : ImgSrc
 fallback =
-    ImgSrc "10_October 06-09: Ohiopyle Weekend/DSC_1495.200.png" 200 133
+    img 200
 
 
 cached : ImgSrc
 cached =
-    ImgSrc "10_October 06-09: Ohiopyle Weekend/DSC_1495.800.png" 800 534
+    img 800
+
+
+img : Int -> ImgSrc
+img width =
+    case width == baseImg.x of
+        True ->
+            ImgSrc (baseImg.name ++ ".JPG") baseImg.x baseImg.y
+
+        False ->
+            let
+                ratio =
+                    toFloat width / toFloat baseImg.x
+
+                y =
+                    floor <| ratio * toFloat baseImg.y
+            in
+            ImgSrc (baseImg.name ++ "." ++ String.fromInt width ++ ".png") width y
 
 
 init : () -> ( Model, Cmd Msg )
