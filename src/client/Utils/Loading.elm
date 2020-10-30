@@ -1,9 +1,9 @@
 module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, getOneState, getState, init, initMany, update, updateMany)
 
-import Dict exposing (Dict, filter, fromList, get, insert, size, values)
+import Dict exposing (Dict, filter, fromList, get, insert, size, toList, values)
 import Http exposing (Error, Progress, emptyBody, expectWhatever, track)
 import List exposing (head, length, tail)
-import Url exposing (Url, toString)
+import Url exposing (Url, fromString, toString)
 
 
 type LoadState
@@ -126,7 +126,7 @@ update msg (OneModel (LoadingModel m) wrap) =
                 Loaded ->
                     ignoreStaleProgress
 
-                Failed error ->
+                Failed _ ->
                     ignoreStaleProgress
 
         Finished ->
@@ -143,19 +143,24 @@ update msg (OneModel (LoadingModel m) wrap) =
 updateMany : ManyMsg -> ManyModel msg -> ( ManyModel msg, Cmd msg, List (Sub msg) )
 updateMany (ManyMsg url loadingMsg) (ManyModel mm) =
     let
-        subForOneModel (LoadingModel m) =
-            case m.state of
-                NotStarted ->
-                    [ track m.tracker (GotProgress >> ManyMsg url >> mm.wrap) ]
-
-                Loading _ ->
-                    [ track m.tracker (GotProgress >> ManyMsg url >> mm.wrap) ]
-
-                Loaded ->
+        subForOneModel ( oneUrlStr, LoadingModel m ) =
+            case fromString oneUrlStr of
+                Nothing ->
                     []
 
-                Failed _ ->
-                    []
+                Just oneUrl ->
+                    case m.state of
+                        NotStarted ->
+                            [ track m.tracker (GotProgress >> ManyMsg oneUrl >> mm.wrap) ]
+
+                        Loading _ ->
+                            [ track m.tracker (GotProgress >> ManyMsg oneUrl >> mm.wrap) ]
+
+                        Loaded ->
+                            []
+
+                        Failed _ ->
+                            []
     in
     case get (toString url) mm.models of
         Just oneModel ->
@@ -171,7 +176,7 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) =
 
                 subs =
                     allNewModels
-                        |> values
+                        |> toList
                         |> List.map subForOneModel
             in
             ( ManyModel
@@ -187,7 +192,7 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) =
         Nothing ->
             ( ManyModel mm
             , Cmd.none
-            , List.concat <| List.map subForOneModel <| values mm.models
+            , List.concat <| List.map subForOneModel <| toList mm.models
             )
 
 

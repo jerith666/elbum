@@ -5,8 +5,7 @@ import Html exposing (br, text)
 import String exposing (fromInt)
 import Url exposing (Protocol(..), Url, toString)
 import Utils.HttpUtils exposing (viewProgress)
-import Utils.ListUtils exposing (fromMaybe)
-import Utils.Loading as Loading exposing (ManyModel, ManyMsg, getOneState, getState)
+import Utils.Loading as Loading exposing (ManyModel, ManyMsg, getOneState)
 
 
 pathToUrl host basePath path =
@@ -114,7 +113,7 @@ viewOne model url =
                             Loading.Loaded ->
                                 "loaded"
 
-                            Loading.Failed error ->
+                            Loading.Failed _ ->
                                 "failed"
                        )
 
