@@ -101,8 +101,8 @@ initMany firstUrls restUrls wrap =
     )
 
 
-update : OneModel msg -> LoadingMsg -> ( OneModel msg, Sub msg )
-update (OneModel (LoadingModel m) wrap) msg =
+update : LoadingMsg -> OneModel msg -> ( OneModel msg, Sub msg )
+update msg (OneModel (LoadingModel m) wrap) =
     case msg of
         GotProgress progress ->
             ( OneModel (LoadingModel { m | state = Loading progress }) wrap
@@ -120,8 +120,8 @@ update (OneModel (LoadingModel m) wrap) msg =
             )
 
 
-updateMany : ManyModel msg -> ManyMsg -> ( ManyModel msg, Cmd msg, Sub msg )
-updateMany (ManyModel mm) (ManyMsg url loadingMsg) =
+updateMany : ManyMsg -> ManyModel msg -> ( ManyModel msg, Cmd msg, Sub msg )
+updateMany (ManyMsg url loadingMsg) (ManyModel mm) =
     let
         subForOneModel (LoadingModel m) =
             case m.state of
@@ -141,7 +141,7 @@ updateMany (ManyModel mm) (ManyMsg url loadingMsg) =
         Just oneModel ->
             let
                 ( OneModel (LoadingModel oneNewModel) _, _ ) =
-                    update (OneModel oneModel (ManyMsg url >> mm.wrap)) loadingMsg
+                    update loadingMsg (OneModel oneModel (ManyMsg url >> mm.wrap))
 
                 oneNewModels =
                     insert (toString url) (LoadingModel oneNewModel) mm.models

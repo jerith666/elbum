@@ -1,10 +1,11 @@
 module Sandbox.LoadingTest exposing (..)
 
 import Browser
-import Html exposing (text)
-import Url exposing (Protocol(..))
+import Html exposing (br, text)
+import Url exposing (Protocol(..), Url, toString)
+import Utils.HttpUtils exposing (viewProgress)
 import Utils.ListUtils exposing (fromMaybe)
-import Utils.Loading as Loading exposing (ManyModel, ManyMsg)
+import Utils.Loading as Loading exposing (ManyModel, ManyMsg, getOneState, getState)
 
 
 pathToUrl host basePath path =
@@ -39,7 +40,8 @@ makeUrls host basePath =
 
 
 type alias Model =
-    { model : ManyModel Msg
+    { urls : List Url
+    , model : ManyModel Msg
     , subs : Sub Msg
     }
 
@@ -69,17 +71,52 @@ init url _ =
         ( lm, lc, ls ) =
             Loading.initMany (List.take 5 urls) (List.drop 5 urls) Msg
     in
-    ( { model = lm, subs = ls }, lc )
+    ( { urls = urls, model = lm, subs = ls }, lc )
 
 
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        NoOp ->
+            ( model, Cmd.none )
+
+        Msg m ->
+            let
+                ( newModel, newCmd, newSub ) =
+                    Loading.updateMany m model.model
+            in
+            ( { urls = model.urls, model = newModel, subs = newSub }, newCmd )
 
 
 view model =
     { title = "Loading Test"
-    , body = [ text "hello world" ]
+    , body =
+        List.intersperse (br [] []) <|
+            List.map (viewOne model.model) model.urls
     }
+
+
+viewOne model url =
+    text <|
+        case getOneState model url of
+            Just state ->
+                toString url
+                    ++ ": "
+                    ++ (case state of
+                            Loading.NotStarted ->
+                                "not started"
+
+                            Loading.Loading progress ->
+                                viewProgress "" <| Just progress
+
+                            Loading.Loaded ->
+                                "loaded"
+
+                            Loading.Failed error ->
+                                "failed"
+                       )
+
+            Nothing ->
+                "mysterious missing state for " ++ toString url
 
 
 subscriptions model =
