@@ -1,7 +1,8 @@
 module Sandbox.LoadingTest exposing (..)
 
-import Browser
+import Browser exposing (Document)
 import Html exposing (br, text)
+import String exposing (fromInt)
 import Url exposing (Protocol(..), Url, toString)
 import Utils.HttpUtils exposing (viewProgress)
 import Utils.ListUtils exposing (fromMaybe)
@@ -42,7 +43,7 @@ makeUrls host basePath =
 type alias Model =
     { urls : List Url
     , model : ManyModel Msg
-    , subs : Sub Msg
+    , subs : List (Sub Msg)
     }
 
 
@@ -87,11 +88,13 @@ update msg model =
             ( { urls = model.urls, model = newModel, subs = newSub }, newCmd )
 
 
+view : Model -> Document Msg
 view model =
     { title = "Loading Test"
     , body =
         List.intersperse (br [] []) <|
-            List.map (viewOne model.model) model.urls
+            (text <| "Subs: " ++ (fromInt <| List.length model.subs))
+                :: List.map (viewOne model.model) model.urls
     }
 
 
@@ -120,4 +123,4 @@ viewOne model url =
 
 
 subscriptions model =
-    model.subs
+    Sub.batch model.subs

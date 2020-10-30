@@ -81,7 +81,7 @@ init wrap url =
     )
 
 
-initMany : List Url -> List Url -> (ManyMsg -> msg) -> ( ManyModel msg, Cmd msg, Sub msg )
+initMany : List Url -> List Url -> (ManyMsg -> msg) -> ( ManyModel msg, Cmd msg, List (Sub msg) )
 initMany firstUrls restUrls wrap =
     let
         initEntry url =
@@ -97,7 +97,7 @@ initMany firstUrls restUrls wrap =
         , wrap = wrap
         }
     , Cmd.batch <| values <| Dict.map (always secondOfThree) models
-    , Sub.batch <| values <| Dict.map (always thirdOfThree) models
+    , values <| Dict.map (always thirdOfThree) models
     )
 
 
@@ -140,22 +140,22 @@ update msg (OneModel (LoadingModel m) wrap) =
             )
 
 
-updateMany : ManyMsg -> ManyModel msg -> ( ManyModel msg, Cmd msg, Sub msg )
+updateMany : ManyMsg -> ManyModel msg -> ( ManyModel msg, Cmd msg, List (Sub msg) )
 updateMany (ManyMsg url loadingMsg) (ManyModel mm) =
     let
         subForOneModel (LoadingModel m) =
             case m.state of
                 NotStarted ->
-                    Sub.none
+                    [ track m.tracker (GotProgress >> ManyMsg url >> mm.wrap) ]
 
                 Loading _ ->
-                    track m.tracker (GotProgress >> ManyMsg url >> mm.wrap)
+                    [ track m.tracker (GotProgress >> ManyMsg url >> mm.wrap) ]
 
                 Loaded ->
-                    Sub.none
+                    []
 
                 Failed _ ->
-                    Sub.none
+                    []
     in
     case get (toString url) mm.models of
         Just oneModel ->
@@ -181,13 +181,13 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) =
                 , wrap = mm.wrap
                 }
             , newCmd
-            , Sub.batch subs
+            , List.concat subs
             )
 
         Nothing ->
             ( ManyModel mm
             , Cmd.none
-            , Sub.batch <| List.map subForOneModel <| values mm.models
+            , List.concat <| List.map subForOneModel <| values mm.models
             )
 
 
