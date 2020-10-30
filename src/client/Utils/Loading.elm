@@ -199,6 +199,9 @@ promotePending wrap maxConcurrentCount currentModels pending =
                 Loading _ ->
                     True
 
+                NotStarted ->
+                    True
+
                 _ ->
                     False
 
