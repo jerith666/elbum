@@ -31,7 +31,10 @@ type OneModel msg
 
 
 type ManyModel msg
-    = ManyModel (Dict String (LoadingModel msg)) (ManyMsg -> msg)
+    = ManyModel
+        { models : Dict String (LoadingModel msg)
+        , wrap : ManyMsg -> msg
+        }
 
 
 type ManyMsg
@@ -84,7 +87,10 @@ initMany urls wrap =
         models =
             fromList <| List.map initEntry urls
     in
-    ( ManyModel (Dict.map (always <| firstOfThree >> getModel) models) wrap
+    ( ManyModel
+        { models = Dict.map (always <| firstOfThree >> getModel) models
+        , wrap = wrap
+        }
     , Cmd.batch <| values <| Dict.map (always secondOfThree) models
     , Sub.batch <| values <| Dict.map (always thirdOfThree) models
     )
@@ -110,7 +116,7 @@ update (OneModel (LoadingModel m) wrap) msg =
 
 
 updateMany : ManyModel msg -> ManyMsg -> ( ManyModel msg, Sub msg )
-updateMany (ManyModel dict wrap) (ManyMsg url loadingMsg) =
+updateMany (ManyModel mm) (ManyMsg url loadingMsg) =
     let
         subForOneModel (LoadingModel m) =
             case m.state of
@@ -118,7 +124,7 @@ updateMany (ManyModel dict wrap) (ManyMsg url loadingMsg) =
                     Sub.none
 
                 Loading _ ->
-                    track m.tracker (GotProgress >> ManyMsg url >> wrap)
+                    track m.tracker (GotProgress >> ManyMsg url >> mm.wrap)
 
                 Loaded ->
                     Sub.none
@@ -126,24 +132,27 @@ updateMany (ManyModel dict wrap) (ManyMsg url loadingMsg) =
                 Failed _ ->
                     Sub.none
     in
-    case get (toString url) dict of
+    case get (toString url) mm.models of
         Just oneModel ->
             let
                 ( OneModel newModel _, newSub ) =
-                    update (OneModel oneModel (ManyMsg url >> wrap)) loadingMsg
+                    update (OneModel oneModel (ManyMsg url >> mm.wrap)) loadingMsg
 
                 otherSubs =
-                    remove (toString url) dict
+                    remove (toString url) mm.models
                         |> values
                         |> List.map subForOneModel
             in
-            ( ManyModel (insert (toString url) newModel dict) wrap
+            ( ManyModel
+                { models = insert (toString url) newModel mm.models
+                , wrap = mm.wrap
+                }
             , Sub.batch <| newSub :: otherSubs
             )
 
         Nothing ->
-            ( ManyModel dict wrap
-            , Sub.batch <| List.map subForOneModel <| values dict
+            ( ManyModel mm
+            , Sub.batch <| List.map subForOneModel <| values mm.models
             )
 
 
@@ -153,8 +162,8 @@ getState (OneModel (LoadingModel m) _) =
 
 
 getOneState : ManyModel msg -> Url -> Maybe LoadState
-getOneState (ManyModel dict _) url =
-    case get (toString url) dict of
+getOneState (ManyModel mm) url =
+    case get (toString url) mm.models of
         Just (LoadingModel m) ->
             Just m.state
 
