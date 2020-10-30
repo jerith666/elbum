@@ -1,4 +1,4 @@
-module Utils.Loading exposing (LoadState(..), getOneState, getState, init, initMany, update, updateMany)
+module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, getOneState, getState, init, initMany, update, updateMany)
 
 import Dict exposing (Dict, filter, fromList, get, insert, size, values)
 import Http exposing (Error, Progress, emptyBody, expectWhatever, track)
