@@ -105,9 +105,29 @@ update : LoadingMsg -> OneModel msg -> ( OneModel msg, Sub msg )
 update msg (OneModel (LoadingModel m) wrap) =
     case msg of
         GotProgress progress ->
-            ( OneModel (LoadingModel { m | state = Loading progress }) wrap
-            , track m.tracker <| wrap << GotProgress
-            )
+            let
+                updatedWithProgress =
+                    ( OneModel (LoadingModel { m | state = Loading progress }) wrap
+                    , track m.tracker <| wrap << GotProgress
+                    )
+
+                ignoreStaleProgress =
+                    ( OneModel (LoadingModel m) wrap
+                    , Sub.none
+                    )
+            in
+            case m.state of
+                NotStarted ->
+                    updatedWithProgress
+
+                Loading _ ->
+                    updatedWithProgress
+
+                Loaded ->
+                    ignoreStaleProgress
+
+                Failed error ->
+                    ignoreStaleProgress
 
         Finished ->
             ( OneModel (LoadingModel { m | state = Loaded }) wrap
