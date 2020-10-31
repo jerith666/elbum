@@ -61,7 +61,6 @@ type MainAlbumModel
         , listPage : AlbumListPage
         , flags : MainAlbumFlags
         , home : Maybe String
-        , pendingUrls : Dict String UrlLoadState
         , rootDivViewport : Maybe Viewport
         , navState : PostLoadNavState
         }
@@ -301,7 +300,6 @@ updateBootstrap bootstrapMsg model =
                                                 }
                                         , flags = ld.flags
                                         , home = ld.home
-                                        , pendingUrls = Dict.empty
                                         , rootDivViewport = Nothing
                                         , navState = NavInactive
                                         }
@@ -409,7 +407,6 @@ updateAlbum albumMsg model =
                         , listPage = albumListPage
                         , flags = flagsOf model
                         , home = homeOf model
-                        , pendingUrls = Dict.empty
                         , rootDivViewport = Nothing
                         , navState = NavInactive
                         }
