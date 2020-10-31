@@ -10,12 +10,13 @@ import Html.Styled exposing (..)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)
 import ProgressiveImage exposing (..)
-import Set exposing (..)
 import Task exposing (..)
 import ThumbPage exposing (..)
+import Url exposing (Url)
 import Utils.AlbumUtils exposing (..)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
+import Utils.Loading exposing (ManyModel)
 import Utils.LocationUtils exposing (AnchorFunction)
 import Utils.ResultUtils exposing (..)
 import Utils.TouchUtils as TU exposing (..)
@@ -25,8 +26,8 @@ type AlbumPage
     = Thumbs
         { album : Album
         , vpInfo : ViewportInfo
-        , justLoadedImages : Set String
-        , readyToDisplayImages : Set String
+        , baseUrl : Url
+        , imageLoader : ManyModel AlbumPageMsg
         }
     | FullImage
         { prevImgs : List Image
@@ -36,7 +37,8 @@ type AlbumPage
         , scroll : Maybe Float
         , touchState : TouchState
         , imgPosition : Maybe Element
-        , thumbLoadState : ThumbLoadState
+        , baseUrl : Url
+        , imageLoader : ManyModel AlbumPageMsg
         }
 
 
@@ -79,17 +81,6 @@ update msg model scroll =
 
                         ( progModel, progCmd ) =
                             progInit th.vpInfo.bodyViewport curImg w h
-
-                        imgCount =
-                            List.length prevImgs + 1 + List.length nextImgs
-
-                        thumbLoadState =
-                            case imgCount == Set.size th.readyToDisplayImages of
-                                True ->
-                                    AllLoaded
-
-                                False ->
-                                    SomeMissing
                     in
                     ( FullImage
                         { prevImgs = prevImgs
@@ -104,7 +95,8 @@ update msg model scroll =
                         , scroll = scroll
                         , touchState = TU.init
                         , imgPosition = Nothing
-                        , thumbLoadState = thumbLoadState
+                        , baseUrl = th.baseUrl
+                        , imageLoader = th.imageLoader
                         }
                     , Cmd.batch
                         [ Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd progCmd
@@ -136,19 +128,11 @@ update msg model scroll =
                         th =
                             { album = baseAlbumOf <| FullImage fi
                             , vpInfo = fi.vpInfo
-                            , justLoadedImages = empty
-                            , readyToDisplayImages = empty
+                            , baseUrl = fi.baseUrl
+                            , imageLoader = fi.imageLoader
                             }
-
-                        readyToDisplayImages =
-                            case fi.thumbLoadState of
-                                SomeMissing ->
-                                    empty
-
-                                AllLoaded ->
-                                    allUrls <| thumbModel th
                     in
-                    ( Thumbs { th | readyToDisplayImages = readyToDisplayImages }
+                    ( Thumbs th
                     , scrollCmd
                     )
 
@@ -316,14 +300,14 @@ resetUrls msg =
             False
 
 
-urlsToGet : AlbumPage -> Set String
+urlsToGet : AlbumPage -> List Url
 urlsToGet albumPage =
     case albumPage of
         Thumbs th ->
-            ThumbPage.urlsToGet <| thumbModel th
+            ThumbPage.urlsToGet th.baseUrl <| thumbModel th
 
         _ ->
-            empty
+            []
 
 
 thumbModel th =
@@ -331,8 +315,8 @@ thumbModel th =
     , parents = []
     , bodyViewport = th.vpInfo.bodyViewport
     , rootDivViewport = th.vpInfo.rootDivViewport
-    , justLoadedImages = th.justLoadedImages
-    , readyToDisplayImages = th.readyToDisplayImages
+    , imageLoader = th.imageLoader
+    , baseUrl = th.baseUrl
     }
 
 
@@ -359,8 +343,8 @@ view albumPage a scrollMsgMaker showList wrapMsg parents flags =
                 , parents = parents
                 , bodyViewport = th.vpInfo.bodyViewport
                 , rootDivViewport = th.vpInfo.rootDivViewport
-                , justLoadedImages = th.justLoadedImages
-                , readyToDisplayImages = th.readyToDisplayImages
+                , imageLoader = th.imageLoader
+                , baseUrl = th.baseUrl
                 }
                 flags
 

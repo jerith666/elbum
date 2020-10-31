@@ -1,6 +1,7 @@
-module Utils.HttpUtils exposing (getUrl, viewProgress)
+module Utils.HttpUtils exposing (appendPath, getUrl, viewProgress)
 
 import Http exposing (..)
+import Url exposing (Url)
 import Utils.ListUtils exposing (..)
 
 
@@ -34,3 +35,12 @@ getUrl handler url =
         { url = encodePath url
         , expect = expectWhatever handler
         }
+
+
+appendPath : Url -> String -> Url
+appendPath baseUrl relativePath =
+    let
+        newPath =
+            baseUrl.path ++ "/" ++ relativePath
+    in
+    { baseUrl | path = newPath }

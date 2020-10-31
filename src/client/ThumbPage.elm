@@ -6,18 +6,20 @@ import Browser.Dom exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
 import ImageViews exposing (..)
-import Set exposing (..)
+import Url exposing (Url)
+import Utils.HttpUtils exposing (appendPath)
 import Utils.ListUtils exposing (..)
+import Utils.Loading exposing (LoadState(..), ManyModel, getOneState)
 import Utils.LocationUtils exposing (AnchorFunction)
 
 
-type alias ThumbPageModel =
+type alias ThumbPageModel msg =
     { album : Album
     , parents : List AlbumList
     , bodyViewport : Viewport
     , rootDivViewport : Maybe Viewport
-    , justLoadedImages : Set String
-    , readyToDisplayImages : Set String
+    , imageLoader : ManyModel msg
+    , baseUrl : Url
     }
 
 
@@ -36,7 +38,7 @@ grey =
     rgb 128 128 128
 
 
-view : AnchorFunction msg -> (Viewport -> msg) -> (List Image -> Image -> List Image -> msg) -> (AlbumList -> msg) -> ThumbPageModel -> MainAlbumFlags -> Html msg
+view : AnchorFunction msg -> (Viewport -> msg) -> (List Image -> Image -> List Image -> msg) -> (AlbumList -> msg) -> ThumbPageModel msgB -> MainAlbumFlags -> Html msg
 view a scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
     rootDivFlex
         flags
@@ -95,14 +97,14 @@ albumParent a getTitle showList albumList =
         ]
 
 
-allUrls : ThumbPageModel -> Set String
-allUrls =
+allUrls : Url -> ThumbPageModel msg -> List Url
+allUrls baseUrl =
     allImgSrcs
         >> List.map .url
-        >> Set.fromList
+        >> List.map (appendPath baseUrl)
 
 
-allImgSrcs : ThumbPageModel -> List ImgSrc
+allImgSrcs : ThumbPageModel msg -> List ImgSrc
 allImgSrcs thumbPageModel =
     let
         ( _, thumbWidth ) =
@@ -111,8 +113,8 @@ allImgSrcs thumbPageModel =
     List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
 
 
-urlsToGet : ThumbPageModel -> Set String
-urlsToGet thumbPageModel =
+urlsToGet : Url -> ThumbPageModel msg -> List Url
+urlsToGet baseUrl thumbPageModel =
     let
         srcs =
             allImgSrcs thumbPageModel
@@ -147,21 +149,24 @@ urlsToGet thumbPageModel =
         prioritySrcs =
             List.map Tuple.second <| List.sortBy Tuple.first scoredSrcs
     in
-    Set.fromList <|
-        List.take 5 <|
-            List.filter
-                (\url ->
-                    not <|
-                        member url <|
-                            Set.union
-                                thumbPageModel.justLoadedImages
-                                thumbPageModel.readyToDisplayImages
-                )
-            <|
-                List.map .url prioritySrcs
+    List.filter
+        (\url ->
+            not <|
+                case getOneState thumbPageModel.imageLoader url of
+                    Just Loaded ->
+                        True
+
+                    Just (Failed _) ->
+                        True
+
+                    _ ->
+                        False
+        )
+    <|
+        List.map (.url >> appendPath baseUrl) prioritySrcs
 
 
-viewThumbs : AnchorFunction msg -> (List Image -> Image -> List Image -> msg) -> ThumbPageModel -> List (Html msg)
+viewThumbs : AnchorFunction msg -> (List Image -> Image -> List Image -> msg) -> ThumbPageModel msgB -> List (Html msg)
 viewThumbs a imgChosenMsgr thumbPageModel =
     let
         ( maxCols, thumbWidth ) =
@@ -174,8 +179,8 @@ viewThumbs a imgChosenMsgr thumbPageModel =
         (viewThumbColumn a
             thumbWidth
             (convertImgChosenMsgr thumbPageModel.album.imageFirst imgs imgChosenMsgr)
-            thumbPageModel.justLoadedImages
-            thumbPageModel.readyToDisplayImages
+            thumbPageModel.imageLoader
+            thumbPageModel.baseUrl
         )
     <|
         spreadThumbs maxCols imgs []
@@ -214,18 +219,30 @@ convertImgChosenMsgr image1 images prevCurRestImgChosenMsgr =
         prevCurRestImgChosenMsgr prev cur next
 
 
-viewThumbColumn : AnchorFunction msg -> Int -> (Int -> msg) -> Set String -> Set String -> List ( Image, Int ) -> Html msg
-viewThumbColumn a thumbWidth imgChosenMsgr justLoadedImages readyToDisplayImages images =
+viewThumbColumn : AnchorFunction msg -> Int -> (Int -> msg) -> ManyModel msgB -> Url -> List ( Image, Int ) -> Html msg
+viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
     let
         viewThumbTuple ( img, i ) =
             let
                 src =
                     srcForWidth thumbWidth img
+
+                srcUrl =
+                    appendPath baseUrl src.url
+
+                srcLoaded =
+                    case getOneState imageLoader srcUrl of
+                        Just Loaded ->
+                            True
+
+                        _ ->
+                            False
             in
-            if member src.url <| Set.union justLoadedImages readyToDisplayImages then
+            if srcLoaded then
                 let
                     opacity =
-                        if member src.url justLoadedImages then
+                        if False then
+                            -- TODO if member src.url justLoadedImages then
                             Partial ( 99, Nothing )
 
                         else
