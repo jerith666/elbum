@@ -32,7 +32,12 @@ import Utils.ViewportUtils exposing (..)
 
 
 type MainAlbumModel
-    = Sizing
+    = AwaitingBaseUrl
+        { key : Key
+        , flags : MainAlbumFlags
+        , albumPathsAfterLoad : Maybe (List String)
+        }
+    | Sizing
         { key : Key
         , baseUrl : Url
         , flags : MainAlbumFlags
@@ -105,7 +110,8 @@ type MetaMsg
 
 
 type BootstrapMsg
-    = YesHome String
+    = GotBaseUrl Url
+    | YesHome String
     | NoHome Http.Error
     | LoadAlbumProgress Progress
     | YesAlbum AlbumOrList
@@ -159,8 +165,8 @@ makeAnchor url onClickMsg attrs =
 
 init : MainAlbumFlags -> Key -> ( MainAlbumModel, Cmd MainAlbumMsg )
 init flags key =
-    ( Sizing { key = key, flags = flags, albumPathsAfterLoad = Nothing }
-    , Task.perform (General << Resize) getViewport
+    ( AwaitingBaseUrl { key = key, flags = flags, albumPathsAfterLoad = Nothing }
+    , Cmd.none
     )
 
 
@@ -185,9 +191,13 @@ updateGeneral generalMsg model =
     case generalMsg of
         Resize viewport ->
             case model of
+                AwaitingBaseUrl _ ->
+                    ( model, Cmd.none )
+
                 Sizing sz ->
                     ( LoadingHomeLink
                         { key = sz.key
+                        , baseUrl = sz.baseUrl
                         , bodyViewport = log "window size set" viewport
                         , flags = sz.flags
                         , albumPathsAfterLoad = sz.albumPathsAfterLoad
@@ -253,6 +263,16 @@ updateGeneral generalMsg model =
 updateBootstrap : BootstrapMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
 updateBootstrap bootstrapMsg model =
     case bootstrapMsg of
+        GotBaseUrl url ->
+            case model of
+                AwaitingBaseUrl abu ->
+                    ( Sizing { key = abu.key, baseUrl = url, flags = abu.flags, albumPathsAfterLoad = abu.albumPathsAfterLoad }
+                    , Task.perform (General << Resize) getViewport
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
         YesHome home ->
             case model of
                 LoadingHomeLink lh ->
@@ -521,20 +541,25 @@ gotHome lh home =
 
 navToMsg : MainAlbumModel -> Url -> Cmd MainAlbumMsg
 navToMsg model loc =
-    --home link might count as internal if it's on the same domain
-    let
-        hUrl =
-            Maybe.andThen Url.fromString <| homeOf model
+    case model of
+        AwaitingBaseUrl _ ->
+            Task.perform identity <| Task.succeed <| Bootstrap <| GotBaseUrl loc
 
-        locIsHome =
-            Maybe.withDefault False <| Maybe.map (\h -> h == loc) <| hUrl
-    in
-    case locIsHome of
-        True ->
-            load <| toString <| log "loading internal home url" loc
+        _ ->
+            --home link might count as internal if it's on the same domain
+            let
+                hUrl =
+                    Maybe.andThen Url.fromString <| homeOf model
 
-        False ->
-            navToMsgInternal <| log "navToMsgInternal for non-home internal url" loc
+                locIsHome =
+                    Maybe.withDefault False <| Maybe.map (\h -> h == loc) <| hUrl
+            in
+            case locIsHome of
+                True ->
+                    load <| toString <| log "loading internal home url" loc
+
+                False ->
+                    navToMsgInternal <| log "navToMsgInternal for non-home internal url" loc
 
 
 navToMsgInternal : Url -> Cmd MainAlbumMsg
@@ -565,6 +590,9 @@ navToMsgInternal loc =
 flagsOf : MainAlbumModel -> MainAlbumFlags
 flagsOf model =
     case model of
+        AwaitingBaseUrl abu ->
+            abu.flags
+
         Sizing sz ->
             sz.flags
 
@@ -587,6 +615,9 @@ flagsOf model =
 homeOf : MainAlbumModel -> Maybe String
 homeOf model =
     case model of
+        AwaitingBaseUrl _ ->
+            Nothing
+
         Sizing _ ->
             Nothing
 
@@ -609,6 +640,9 @@ homeOf model =
 keyOf : MainAlbumModel -> Key
 keyOf model =
     case model of
+        AwaitingBaseUrl abu ->
+            abu.key
+
         Sizing sz ->
             sz.key
 
@@ -631,6 +665,9 @@ keyOf model =
 withScrollPos : Viewport -> MainAlbumModel -> MainAlbumModel
 withScrollPos rootDivViewport model =
     case model of
+        AwaitingBaseUrl _ ->
+            model
+
         Sizing _ ->
             model
 
@@ -674,6 +711,9 @@ withScrollPos rootDivViewport model =
 withAlbumPathsAfterLoad : MainAlbumModel -> List String -> MainAlbumModel
 withAlbumPathsAfterLoad model albumPathsAfterLoad =
     case model of
+        AwaitingBaseUrl abu ->
+            AwaitingBaseUrl { abu | albumPathsAfterLoad = Just albumPathsAfterLoad }
+
         Sizing sz ->
             Sizing { sz | albumPathsAfterLoad = Just albumPathsAfterLoad }
 
@@ -696,6 +736,9 @@ withAlbumPathsAfterLoad model albumPathsAfterLoad =
 withNavComplete : MainAlbumModel -> MainAlbumModel
 withNavComplete model =
     case model of
+        AwaitingBaseUrl _ ->
+            model
+
         Sizing _ ->
             model
 
@@ -723,6 +766,9 @@ pathsToCmd model mPaths =
 
         Just paths ->
             case model of
+                AwaitingBaseUrl _ ->
+                    Nothing
+
                 Sizing _ ->
                     Nothing
 
@@ -1293,6 +1339,9 @@ subscriptions model =
         LoadError _ ->
             Sub.none
 
+        AwaitingBaseUrl _ ->
+            Sub.none
+
         Sizing _ ->
             Sub.none
 
@@ -1307,6 +1356,9 @@ view albumBootstrap a =
     let
         title =
             case albumBootstrap of
+                AwaitingBaseUrl _ ->
+                    "Album Starting"
+
                 Sizing _ ->
                     "Album Starting"
 
@@ -1335,6 +1387,9 @@ view albumBootstrap a =
 viewImpl : MainAlbumModel -> AnchorFunction MainAlbumMsg -> Html MainAlbumMsg
 viewImpl albumBootstrap a =
     case albumBootstrap of
+        AwaitingBaseUrl _ ->
+            text "Album Starting"
+
         Sizing _ ->
             text "Album Starting"
 
