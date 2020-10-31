@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, eqIgnoringVpInfo, getImgPosition, hashForAlbum, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -16,7 +16,7 @@ import Url exposing (Url)
 import Utils.AlbumUtils exposing (..)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
-import Utils.Loading exposing (ManyModel)
+import Utils.Loading exposing (ManyModel, ManyMsg, initMany)
 import Utils.LocationUtils exposing (AnchorFunction)
 import Utils.ResultUtils exposing (..)
 import Utils.TouchUtils as TU exposing (..)
@@ -63,7 +63,46 @@ type AlbumPageMsg
     | FullMsg ProgressiveImageMsg
     | ImgPositionFailed Browser.Dom.Error
     | GotImgPosition Element
+    | LoadingMsg ManyMsg
     | NoUpdate
+
+
+initThumbs : Album -> Viewport -> Url -> ( AlbumPage, Cmd AlbumPageMsg )
+initThumbs album bodyViewport baseUrl =
+    let
+        ( emptyLoader, _, _ ) =
+            initMany [] [] <| always ()
+
+        baseModel =
+            { album = album
+            , vpInfo =
+                { bodyViewport = bodyViewport
+                , rootDivViewport = Nothing
+                }
+            , baseUrl = baseUrl
+            , imageLoader = emptyLoader
+            }
+
+        firstUrls =
+            ThumbPage.urlsToGet <| thumbModel baseModel
+
+        restUrls =
+            List.filter (\u -> List.member u firstUrls) <| allUrls baseUrl <| thumbModel baseModel
+
+        ( imageLoader, imgCmd, imgSub ) =
+            initMany firstUrls restUrls LoadingMsg
+    in
+    ( Thumbs
+        { album = album
+        , vpInfo =
+            { bodyViewport = bodyViewport
+            , rootDivViewport = Nothing
+            }
+        , baseUrl = baseUrl
+        , imageLoader = imageLoader
+        }
+    , imgCmd
+    )
 
 
 update : AlbumPageMsg -> AlbumPage -> Maybe Float -> ( AlbumPage, Cmd AlbumPageMsg )
@@ -287,24 +326,11 @@ updatePrevNext model shifter =
             ( model, Cmd.none )
 
 
-resetUrls : AlbumPageMsg -> Bool
-resetUrls msg =
-    case msg of
-        BackToThumbs ->
-            True
-
-        View _ _ _ ->
-            True
-
-        _ ->
-            False
-
-
 urlsToGet : AlbumPage -> List Url
 urlsToGet albumPage =
     case albumPage of
         Thumbs th ->
-            ThumbPage.urlsToGet th.baseUrl <| thumbModel th
+            ThumbPage.urlsToGet <| thumbModel th
 
         _ ->
             []

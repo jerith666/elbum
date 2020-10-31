@@ -34,17 +34,20 @@ import Utils.ViewportUtils exposing (..)
 type MainAlbumModel
     = Sizing
         { key : Key
+        , baseUrl : Url
         , flags : MainAlbumFlags
         , albumPathsAfterLoad : Maybe (List String)
         }
     | LoadingHomeLink
         { key : Key
+        , baseUrl : Url
         , bodyViewport : Viewport
         , flags : MainAlbumFlags
         , albumPathsAfterLoad : Maybe (List String)
         }
     | Loading
         { key : Key
+        , baseUrl : Url
         , bodyViewport : Viewport
         , progress : Maybe Progress
         , flags : MainAlbumFlags
@@ -70,7 +73,6 @@ type MainAlbumModel
         , parents : List ( AlbumList, Maybe Float )
         , flags : MainAlbumFlags
         , home : Maybe String
-        , pendingUrls : Dict String UrlLoadState
         , rootDivViewport : Maybe Viewport
         , navState : PostLoadNavState
         }
@@ -215,18 +217,10 @@ updateGeneral generalMsg model =
 
                                 newModel =
                                     Thumbs { th | vpInfo = { oldVpInfo | bodyViewport = log "window size updated for thumbs" viewport } }
-
-                                urls =
-                                    AlbumPage.urlsToGet newModel
                             in
                             ( LoadedAlbum
-                                { la
-                                    | albumPage = newModel
-                                    , pendingUrls =
-                                        Dict.union la.pendingUrls <|
-                                            dictWithValues urls UrlRequested
-                                }
-                            , getUrls la.pendingUrls urls
+                                { la | albumPage = newModel }
+                            , Cmd.none
                             )
 
                         FullImage fi ->
@@ -312,35 +306,23 @@ updateBootstrap bootstrapMsg model =
 
                         Leaf album ->
                             let
-                                albumPage =
-                                    Thumbs
-                                        { album = album
-                                        , vpInfo =
-                                            { bodyViewport = ld.bodyViewport
-                                            , rootDivViewport = Nothing
-                                            }
-                                        , justLoadedImages = Set.empty
-                                        , readyToDisplayImages = Set.empty
-                                        }
-
-                                urls =
-                                    AlbumPage.urlsToGet albumPage
+                                ( albumPageModel, albumPageCmd ) =
+                                    initThumbs album ld.bodyViewport ld.baseUrl
 
                                 newModel =
                                     LoadedAlbum
                                         { key = ld.key
-                                        , albumPage = albumPage
+                                        , albumPage = albumPageModel
                                         , parents = []
                                         , flags = ld.flags
                                         , home = ld.home
-                                        , pendingUrls = dictWithValues urls UrlRequested
                                         , rootDivViewport = Nothing
                                         , navState = NavInactive
                                         }
                             in
                             ( newModel
                             , Cmd.batch
-                                [ getUrls Dict.empty urls
+                                [ Cmd.map (Album << PageMsg) albumPageCmd
                                 , Maybe.withDefault Cmd.none <|
                                     Maybe.map toCmd <|
                                         pathsToCmd newModel ld.albumPathsAfterLoad
@@ -365,26 +347,10 @@ updateAlbum albumMsg model =
                     let
                         ( newPage, newPageCmd ) =
                             AlbumPage.update pageMsg la.albumPage <| Maybe.map scrollPosOf la.rootDivViewport
-
-                        newPendingUrls =
-                            if AlbumPage.resetUrls pageMsg then
-                                Dict.empty
-
-                            else
-                                la.pendingUrls
-
-                        urls =
-                            AlbumPage.urlsToGet newPage
                     in
                     ( LoadedAlbum
-                        { la
-                            | albumPage = newPage
-                            , pendingUrls = Dict.union newPendingUrls <| dictWithValues urls UrlRequested
-                        }
-                    , Cmd.batch
-                        [ getUrls newPendingUrls urls
-                        , Cmd.map (Album << PageMsg) newPageCmd
-                        ]
+                        { la | albumPage = newPage }
+                    , Cmd.map (Album << PageMsg) newPageCmd
                     )
 
                 _ ->
@@ -425,9 +391,6 @@ updateAlbum albumMsg model =
 
         ViewAlbum albumPage parents ->
             let
-                urls =
-                    AlbumPage.urlsToGet albumPage
-
                 newModel =
                     LoadedAlbum
                         { key = keyOf model
@@ -435,7 +398,6 @@ updateAlbum albumMsg model =
                         , parents = parents
                         , flags = flagsOf model
                         , home = homeOf model
-                        , pendingUrls = dictWithValues urls UrlRequested
                         , rootDivViewport = Nothing
                         , navState = NavInactive
                         }
@@ -537,6 +499,7 @@ sequence mm1 ms =
 gotHome lh home =
     ( Loading
         { key = lh.key
+        , baseUrl = lh.baseUrl
         , bodyViewport = lh.bodyViewport
         , progress = Nothing
         , flags = lh.flags

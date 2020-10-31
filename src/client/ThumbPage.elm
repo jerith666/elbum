@@ -113,8 +113,8 @@ allImgSrcs thumbPageModel =
     List.map (srcForWidth thumbWidth) <| thumbPageModel.album.imageFirst :: thumbPageModel.album.imageRest
 
 
-urlsToGet : Url -> ThumbPageModel msg -> List Url
-urlsToGet baseUrl thumbPageModel =
+urlsToGet : ThumbPageModel msg -> List Url
+urlsToGet thumbPageModel =
     let
         srcs =
             allImgSrcs thumbPageModel
@@ -163,7 +163,7 @@ urlsToGet baseUrl thumbPageModel =
                         False
         )
     <|
-        List.map (.url >> appendPath baseUrl) prioritySrcs
+        List.map (.url >> appendPath thumbPageModel.baseUrl) prioritySrcs
 
 
 viewThumbs : AnchorFunction msg -> (List Image -> Image -> List Image -> msg) -> ThumbPageModel msgB -> List (Html msg)
