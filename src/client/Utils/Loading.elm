@@ -2,7 +2,7 @@ module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, ge
 
 import Dict exposing (Dict, filter, fromList, get, insert, size, toList, values)
 import Http exposing (Error, Progress, emptyBody, expectWhatever, track)
-import List exposing (head, length, tail)
+import List exposing (head, length, sortWith, tail)
 import Url exposing (Url, fromString, toString)
 
 
@@ -140,8 +140,8 @@ update msg (OneModel (LoadingModel m) wrap) =
             )
 
 
-updateMany : ManyMsg -> ManyModel msg -> ( ManyModel msg, Cmd msg, List (Sub msg) )
-updateMany (ManyMsg url loadingMsg) (ManyModel mm) =
+updateMany : ManyMsg -> ManyModel msg -> (Url -> Url -> Order) -> ( ManyModel msg, Cmd msg, List (Sub msg) )
+updateMany (ManyMsg url loadingMsg) (ManyModel mm) pendingPriority =
     let
         subForOneModel ( oneUrlStr, LoadingModel m ) =
             case fromString oneUrlStr of
@@ -172,7 +172,7 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) =
                     insert (toString url) (LoadingModel oneNewModel) mm.models
 
                 ( allNewModels, newPending, newCmd ) =
-                    promotePending mm.wrap mm.maxConcurrentCount oneNewModels mm.pending
+                    promotePending mm.wrap mm.maxConcurrentCount oneNewModels <| sortWith pendingPriority mm.pending
 
                 subs =
                     allNewModels
