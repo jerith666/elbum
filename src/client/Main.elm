@@ -66,6 +66,7 @@ type MainAlbumModel
         }
     | LoadedList
         { key : Key
+        , baseUrl : Url
         , listPage : AlbumListPage
         , flags : MainAlbumFlags
         , home : Maybe String
@@ -74,6 +75,7 @@ type MainAlbumModel
         }
     | LoadedAlbum
         { key : Key
+        , baseUrl : Url
         , albumPage : AlbumPage
         , parents : List ( AlbumList, Maybe Float )
         , flags : MainAlbumFlags
@@ -123,9 +125,6 @@ type AlbumMsg
     | PageMsg AlbumPage.AlbumPageMsg
     | ViewList AlbumListPage (Maybe Float)
     | ViewAlbum AlbumPage (List ( AlbumList, Maybe Float ))
-    | ImageLoaded String
-    | ImageReadyToDisplay String
-    | ImageFailed String Http.Error
     | NavCompletedLocally
 
 
@@ -306,6 +305,7 @@ updateBootstrap bootstrapMsg model =
                                 newModel =
                                     LoadedList
                                         { key = ld.key
+                                        , baseUrl = ld.baseUrl
                                         , listPage =
                                             AlbumListPage
                                                 { albumList = albumList
@@ -332,6 +332,7 @@ updateBootstrap bootstrapMsg model =
                                 newModel =
                                     LoadedAlbum
                                         { key = ld.key
+                                        , baseUrl = ld.baseUrl
                                         , albumPage = albumPageModel
                                         , parents = []
                                         , flags = ld.flags
@@ -376,67 +377,70 @@ updateAlbum albumMsg model =
                 _ ->
                     ( model, Cmd.none )
 
-        ImageLoaded url ->
-            updateImageResult model url JustCompleted
-
-        ImageReadyToDisplay url ->
-            updateImageResult model url ReadyToDisplay
-
-        ImageFailed url err ->
-            updateImageResult model url <| Failed err
-
         ViewList albumListPage maybeScroll ->
-            let
-                newModel =
-                    LoadedList
-                        { key = keyOf model
-                        , listPage = albumListPage
-                        , flags = flagsOf model
-                        , home = homeOf model
-                        , rootDivViewport = Nothing
-                        , navState = NavInactive
-                        }
+            case baseUrlOf model of
+                Just baseUrl ->
+                    let
+                        newModel =
+                            LoadedList
+                                { key = keyOf model
+                                , baseUrl = baseUrl
+                                , listPage = albumListPage
+                                , flags = flagsOf model
+                                , home = homeOf model
+                                , rootDivViewport = Nothing
+                                , navState = NavInactive
+                                }
 
-                scrollCmd =
-                    case maybeScroll of
-                        Just pos ->
-                            Task.attempt (always NoBootstrap) <| setViewportOf rootDivId 0 pos
+                        scrollCmd =
+                            case maybeScroll of
+                                Just pos ->
+                                    Task.attempt (always NoBootstrap) <| setViewportOf rootDivId 0 pos
 
-                        Nothing ->
-                            scrollToTop NoBootstrap <| always NoBootstrap
-            in
-            ( newModel
-            , Cmd.map Meta scrollCmd
-            )
+                                Nothing ->
+                                    scrollToTop NoBootstrap <| always NoBootstrap
+                    in
+                    ( newModel
+                    , Cmd.map Meta scrollCmd
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
 
         ViewAlbum albumPage parents ->
-            let
-                newModel =
-                    LoadedAlbum
-                        { key = keyOf model
-                        , albumPage = albumPage
-                        , parents = parents
-                        , flags = flagsOf model
-                        , home = homeOf model
-                        , rootDivViewport = Nothing
-                        , navState = NavInactive
-                        }
+            case baseUrlOf model of
+                Just baseUrl ->
+                    let
+                        newModel =
+                            LoadedAlbum
+                                { key = keyOf model
+                                , baseUrl = baseUrl
+                                , albumPage = albumPage
+                                , parents = parents
+                                , flags = flagsOf model
+                                , home = homeOf model
+                                , rootDivViewport = Nothing
+                                , navState = NavInactive
+                                }
 
-                getImgPos =
-                    case albumPage of
-                        Thumbs _ ->
-                            Cmd.none
+                        getImgPos =
+                            case albumPage of
+                                Thumbs _ ->
+                                    Cmd.none
 
-                        FullImage _ ->
-                            Cmd.map PageMsg getImgPosition
-            in
-            ( newModel
-            , Cmd.batch
-                [ Cmd.map Meta <| scrollToTop NoBootstrap <| always NoBootstrap
-                , getUrls Dict.empty urls
-                , Cmd.map Album getImgPos
-                ]
-            )
+                                FullImage _ ->
+                                    Cmd.map PageMsg getImgPosition
+                    in
+                    ( newModel
+                    , Cmd.batch
+                        [ Cmd.map Meta <| scrollToTop NoBootstrap <| always NoBootstrap
+                        , getUrls Dict.empty urls --TODO need something like 'AlbumPage.cmdsFor newModel'
+                        , Cmd.map Album getImgPos
+                        ]
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
 
         SetAlbumPathFromUrl paths ->
             -- as with SetScrollFromUrl, 2 cases: early loading, save for later; and already loaded, apply now
@@ -662,6 +666,31 @@ keyOf model =
             la.key
 
 
+baseUrlOf : MainAlbumModel -> Maybe Url
+baseUrlOf model =
+    case model of
+        AwaitingBaseUrl _ ->
+            Nothing
+
+        Sizing sz ->
+            Just sz.baseUrl
+
+        LoadingHomeLink lhl ->
+            Just lhl.baseUrl
+
+        Loading l ->
+            Just l.baseUrl
+
+        LoadError le ->
+            Nothing
+
+        LoadedList ll ->
+            Just ll.baseUrl
+
+        LoadedAlbum la ->
+            Just la.baseUrl
+
+
 withScrollPos : Viewport -> MainAlbumModel -> MainAlbumModel
 withScrollPos rootDivViewport model =
     case model of
@@ -787,17 +816,18 @@ pathsToCmd model mPaths =
                             --TODO maybe don't always prepend aTN here, only if at root?
                             --TODO I think it's okay to drop the scroll positions here, should only happen at initial load (?)
                             log "pathsToCmd for LoadedList" <|
-                                pathsToCmdImpl model
+                                pathsToCmdImpl ll.baseUrl
+                                    model
                                     { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }
                                     (alp.albumList :: List.map Tuple.first alp.parents)
                                     paths
 
                 LoadedAlbum la ->
-                    log "pathsToCmd for LoadedAlbum" <| pathsToCmdImpl model (pageSize la.albumPage) (List.map Tuple.first la.parents) paths
+                    log "pathsToCmd for LoadedAlbum" <| pathsToCmdImpl la.baseUrl model (pageSize la.albumPage) (List.map Tuple.first la.parents) paths
 
 
-pathsToCmdImpl : MainAlbumModel -> ViewportInfo -> List AlbumList -> List String -> Maybe MainAlbumMsg
-pathsToCmdImpl model viewport parents paths =
+pathsToCmdImpl : Url -> MainAlbumModel -> ViewportInfo -> List AlbumList -> List String -> Maybe MainAlbumMsg
+pathsToCmdImpl baseUrl model viewport parents paths =
     let
         mRoot =
             List.head <| List.reverse parents
@@ -830,11 +860,11 @@ pathsToCmdImpl model viewport parents paths =
                             (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
                             fallbackScroll
             in
-            Just <| navFrom model viewport root [] (log "pathsToCmdImpl passing paths to navFrom" paths) fallbackMsg
+            Just <| navFrom baseUrl model viewport root [] (log "pathsToCmdImpl passing paths to navFrom" paths) fallbackMsg
 
 
-navFrom : MainAlbumModel -> ViewportInfo -> AlbumList -> List AlbumList -> List String -> MainAlbumMsg -> MainAlbumMsg
-navFrom model viewport root parents paths defMsg =
+navFrom : Url -> MainAlbumModel -> ViewportInfo -> AlbumList -> List AlbumList -> List String -> MainAlbumMsg -> MainAlbumMsg
+navFrom baseUrl model viewport root parents paths defMsg =
     case paths of
         [] ->
             log "navFrom has no paths" defMsg
@@ -952,16 +982,16 @@ navFrom model viewport root parents paths defMsg =
 
                                     _ ->
                                         log "navFrom recursive call" <|
-                                            navFrom model viewport albumList newParents ps thisAlbumMsg
+                                            navFrom baseUrl model viewport albumList newParents ps thisAlbumMsg
 
                             Leaf album ->
                                 Maybe.withDefault defMsg <|
                                     log "navFrom calls navForAlbum" <|
-                                        navForAlbum model viewport album ps newParents
+                                        navForAlbum baseUrl model viewport album ps newParents
 
 
-navForAlbum : MainAlbumModel -> ViewportInfo -> Album -> List String -> List AlbumList -> Maybe MainAlbumMsg
-navForAlbum model vpInfo album ps newParents =
+navForAlbum : Url -> MainAlbumModel -> ViewportInfo -> Album -> List String -> List AlbumList -> Maybe MainAlbumMsg
+navForAlbum baseUrl model vpInfo album ps newParents =
     let
         parentsNoScroll =
             List.map (\p -> ( p, Nothing )) newParents
@@ -971,17 +1001,14 @@ navForAlbum model vpInfo album ps newParents =
             -- no more paths remain, so create a message that will
             -- take us to the thumbnails page for this album
             let
+                ( x, _ ) =
+                    initThumbsFullVp album vpInfo baseUrl
+
                 makeViewAlbumThumbsMsg parents =
                     Just <|
                         Album <|
                             ViewAlbum
-                                (Thumbs
-                                    { album = album
-                                    , vpInfo = vpInfo
-                                    , justLoadedImages = Set.empty
-                                    , readyToDisplayImages = Set.empty
-                                    }
-                                )
+                                x
                                 parents
 
                 nonLocalMsg =
@@ -1053,14 +1080,15 @@ navForAlbum model vpInfo album ps newParents =
                                         (Album <|
                                             ViewAlbum
                                                 (FullImage
-                                                    { prevImgs = prevs
+                                                    { baseUrl = baseUrl
+                                                    , prevImgs = prevs
                                                     , album = nAlbum
                                                     , progModel = progModel
                                                     , vpInfo = vpInfo
                                                     , scroll = Nothing
                                                     , touchState = TU.init
                                                     , imgPosition = Nothing
-                                                    , thumbLoadState = SomeMissing
+                                                    , imageLoader = imageLoader
                                                     }
                                                 )
                                                 parentsNoScroll
@@ -1202,83 +1230,6 @@ locFor oldModel newModel =
 
             _ ->
                 Nothing
-
-
-updateImageResult : MainAlbumModel -> String -> UrlLoadState -> ( MainAlbumModel, Cmd MainAlbumMsg )
-updateImageResult model url result =
-    case model of
-        LoadedAlbum la ->
-            case la.albumPage of
-                Thumbs th ->
-                    let
-                        newModel =
-                            justLoadedReadyToDisplayNextState th url result
-
-                        urls =
-                            AlbumPage.urlsToGet newModel
-                    in
-                    ( LoadedAlbum
-                        { la
-                            | albumPage = newModel
-                            , pendingUrls =
-                                Dict.union (Dict.fromList [ ( url, result ) ]) <|
-                                    Dict.union la.pendingUrls <|
-                                        dictWithValues urls UrlRequested
-                        }
-                    , Cmd.batch
-                        [ getUrls la.pendingUrls urls
-                        , urlNextState url result
-                        ]
-                    )
-
-                _ ->
-                    ( model, Cmd.none )
-
-        _ ->
-            ( model, Cmd.none )
-
-
-justLoadedReadyToDisplayNextState th url result =
-    case result of
-        JustCompleted ->
-            Thumbs
-                { th | justLoadedImages = Set.insert url th.justLoadedImages }
-
-        ReadyToDisplay ->
-            Thumbs
-                { th
-                    | justLoadedImages = Set.remove url th.justLoadedImages
-                    , readyToDisplayImages = Set.insert url th.readyToDisplayImages
-                }
-
-        _ ->
-            Thumbs th
-
-
-urlNextState : String -> UrlLoadState -> Cmd MainAlbumMsg
-urlNextState url result =
-    case result of
-        JustCompleted ->
-            Delay.after 100 Millisecond <| (Album <| ImageReadyToDisplay url)
-
-        _ ->
-            Cmd.none
-
-
-getUrls : Dict String UrlLoadState -> Set String -> Cmd MainAlbumMsg
-getUrls existingUrls newUrls =
-    Cmd.map Album <|
-        Cmd.batch <|
-            List.map (\url -> getUrl (decodeUrlResult url) url) <|
-                Set.toList <|
-                    Set.diff newUrls <|
-                        Set.fromList <|
-                            keys existingUrls
-
-
-decodeUrlResult : String -> Result Http.Error () -> AlbumMsg
-decodeUrlResult origUrl result =
-    either (ImageFailed origUrl) (always <| ImageLoaded origUrl) result
 
 
 subscriptions : MainAlbumModel -> Sub MainAlbumMsg
@@ -1453,8 +1404,8 @@ viewImpl albumBootstrap a =
                                         (Thumbs
                                             { album = album
                                             , vpInfo = { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }
-                                            , justLoadedImages = Set.empty
-                                            , readyToDisplayImages = Set.empty
+                                            , baseUrl = ll.baseUrl
+                                            , imageLoader = imageLoader
                                             }
                                         )
                                     <|

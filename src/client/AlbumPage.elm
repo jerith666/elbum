@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, initThumbsFullVp, pageSize, progInit, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -69,16 +69,22 @@ type AlbumPageMsg
 
 initThumbs : Album -> Viewport -> Url -> ( AlbumPage, Cmd AlbumPageMsg )
 initThumbs album bodyViewport baseUrl =
+    initThumbsFullVp album
+        { bodyViewport = bodyViewport
+        , rootDivViewport = Nothing
+        }
+        baseUrl
+
+
+initThumbsFullVp : Album -> ViewportInfo -> Url -> ( AlbumPage, Cmd AlbumPageMsg )
+initThumbsFullVp album vpInfo baseUrl =
     let
         ( emptyLoader, _, _ ) =
             initMany [] [] <| always ()
 
         baseModel =
             { album = album
-            , vpInfo =
-                { bodyViewport = bodyViewport
-                , rootDivViewport = Nothing
-                }
+            , vpInfo = vpInfo
             , baseUrl = baseUrl
             , imageLoader = emptyLoader
             }
@@ -94,10 +100,7 @@ initThumbs album bodyViewport baseUrl =
     in
     ( Thumbs
         { album = album
-        , vpInfo =
-            { bodyViewport = bodyViewport
-            , rootDivViewport = Nothing
-            }
+        , vpInfo = vpInfo
         , baseUrl = baseUrl
         , imageLoader = imageLoader
         }
