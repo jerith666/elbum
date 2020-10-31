@@ -140,8 +140,8 @@ update msg (OneModel (LoadingModel m) wrap) =
             )
 
 
-updateMany : ManyMsg -> ManyModel msg -> (Url -> Url -> Order) -> ( ManyModel msg, Cmd msg, List (Sub msg) )
-updateMany (ManyMsg url loadingMsg) (ManyModel mm) pendingPriority =
+updateMany : ManyMsg -> ManyModel msg -> (List Url -> List Url) -> ( ManyModel msg, Cmd msg, List (Sub msg) )
+updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
     let
         subForOneModel ( oneUrlStr, LoadingModel m ) =
             case fromString oneUrlStr of
@@ -172,7 +172,7 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) pendingPriority =
                     insert (toString url) (LoadingModel oneNewModel) mm.models
 
                 ( allNewModels, newPending, newCmd ) =
-                    promotePending mm.wrap mm.maxConcurrentCount oneNewModels <| sortWith pendingPriority mm.pending
+                    promotePending mm.wrap mm.maxConcurrentCount oneNewModels <| revisePending mm.pending
 
                 subs =
                     allNewModels
