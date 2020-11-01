@@ -1,4 +1,4 @@
-module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, getOneState, getState, init, initMany, subscriptions, subscriptionsMany, update, updateMany)
+module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, cmdFor, cmdForMany, getOneState, getState, init, initMany, subscriptions, subscriptionsMany, update, updateMany)
 
 import Dict exposing (Dict, filter, fromList, get, insert, size, toList, values)
 import Http exposing (Error, Progress, emptyBody, expectWhatever, track)
@@ -50,33 +50,18 @@ init wrap url =
         tracker =
             "LoadingTracker:" ++ toString url
 
-        handle : Result Error () -> LoadingMsg
-        handle result =
-            case result of
-                Ok _ ->
-                    Finished
-
-                Err err ->
-                    Failure err
+        model =
+            OneModel
+                (LoadingModel
+                    { url = url
+                    , state = NotStarted
+                    , tracker = tracker
+                    }
+                )
+                wrap
     in
-    ( OneModel
-        (LoadingModel
-            { url = url
-            , state = NotStarted
-            , tracker = tracker
-            }
-        )
-        wrap
-    , Cmd.map wrap <|
-        Http.request
-            { method = "GET"
-            , headers = []
-            , url = toString url
-            , body = emptyBody
-            , expect = expectWhatever handle
-            , timeout = Nothing
-            , tracker = Just tracker
-            }
+    ( model
+    , cmdFor model
     )
 
 
@@ -234,6 +219,58 @@ subscriptionsMany (ManyModel mm) =
     mm.models |> toList |> List.concatMap subForOneModel |> Sub.batch
 
 
+cmdFor : OneModel msg -> Cmd msg
+cmdFor (OneModel (LoadingModel m) wrap) =
+    let
+        handle : Result Error () -> LoadingMsg
+        handle result =
+            case result of
+                Ok _ ->
+                    Finished
+
+                Err err ->
+                    Failure err
+
+        get =
+            Http.request
+                { method = "GET"
+                , headers = []
+                , url = toString m.url
+                , body = emptyBody
+                , expect = expectWhatever handle
+                , timeout = Nothing
+                , tracker = Just m.tracker
+                }
+    in
+    Cmd.map wrap <|
+        case m.state of
+            NotStarted ->
+                get
+
+            Loading _ ->
+                get
+
+            Loaded ->
+                Cmd.none
+
+            Failed _ ->
+                Cmd.none
+
+
+cmdForMany : ManyModel msg -> Cmd msg
+cmdForMany (ManyModel mm) =
+    let
+        cmdForOneModel ( oneUrlStr, LoadingModel m ) =
+            case fromString oneUrlStr of
+                Nothing ->
+                    []
+
+                Just oneUrl ->
+                    [ cmdFor <| OneModel (LoadingModel m) <| mm.wrap << ManyMsg oneUrl ]
+    in
+    Cmd.batch <| List.concatMap cmdForOneModel <| Dict.toList mm.models
+
+
 getState : OneModel msg -> LoadState
 getState (OneModel (LoadingModel m) _) =
     m.state
@@ -257,15 +294,3 @@ getOneState (ManyModel mm) url =
 getModel : OneModel msg -> LoadingModel msg
 getModel (OneModel m _) =
     m
-
-
-firstOfThree ( a, _, _ ) =
-    a
-
-
-secondOfThree ( _, b, _ ) =
-    b
-
-
-thirdOfThree ( _, _, c ) =
-    c
