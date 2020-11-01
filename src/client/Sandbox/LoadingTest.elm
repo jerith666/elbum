@@ -1,6 +1,7 @@
 module Sandbox.LoadingTest exposing (..)
 
 import Browser exposing (Document)
+import Browser.Navigation exposing (Key)
 import Html exposing (br, text)
 import String exposing (fromInt)
 import Url exposing (Protocol(..), Url, toString)
@@ -42,7 +43,6 @@ makeUrls host basePath =
 type alias Model =
     { urls : List Url
     , model : ManyModel Msg
-    , subs : List (Sub Msg)
     }
 
 
@@ -63,17 +63,19 @@ main =
         }
 
 
+init : Url -> Key -> ( Model, Cmd Msg )
 init url _ =
     let
         urls =
             makeUrls url.host url.path
 
-        ( lm, lc, ls ) =
+        ( lm, lc ) =
             Loading.initMany (List.take 5 urls) (List.drop 5 urls) Msg
     in
-    ( { urls = urls, model = lm, subs = ls }, lc )
+    ( { urls = urls, model = lm }, lc )
 
 
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->
@@ -81,10 +83,10 @@ update msg model =
 
         Msg m ->
             let
-                ( newModel, newCmd, newSub ) =
+                ( newModel, newCmd ) =
                     Loading.updateMany m model.model identity
             in
-            ( { urls = model.urls, model = newModel, subs = newSub }, newCmd )
+            ( { urls = model.urls, model = newModel }, newCmd )
 
 
 view : Model -> Document Msg
@@ -92,8 +94,7 @@ view model =
     { title = "Loading Test"
     , body =
         List.intersperse (br [] []) <|
-            (text <| "Subs: " ++ (fromInt <| List.length model.subs))
-                :: List.map (viewOne model.model) model.urls
+            List.map (viewOne model.model) model.urls
     }
 
 
@@ -121,5 +122,6 @@ viewOne model url =
                 "mysterious missing state for " ++ toString url
 
 
+subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch model.subs
+    Loading.subscriptionsMany model.model

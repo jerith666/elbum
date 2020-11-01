@@ -1,8 +1,8 @@
-module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, getOneState, getState, init, initMany, update, updateMany)
+module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, getOneState, getState, init, initMany, subscriptions, subscriptionsMany, update, updateMany)
 
 import Dict exposing (Dict, filter, fromList, get, insert, size, toList, values)
 import Http exposing (Error, Progress, emptyBody, expectWhatever, track)
-import List exposing (head, length, sortWith, tail)
+import List exposing (head, length, tail)
 import Url exposing (Url, fromString, toString)
 
 
@@ -44,7 +44,7 @@ type ManyMsg
     = ManyMsg Url LoadingMsg
 
 
-init : (LoadingMsg -> msg) -> Url -> ( OneModel msg, Cmd msg, Sub msg )
+init : (LoadingMsg -> msg) -> Url -> ( OneModel msg, Cmd msg )
 init wrap url =
     let
         tracker =
@@ -77,11 +77,10 @@ init wrap url =
             , timeout = Nothing
             , tracker = Just tracker
             }
-    , track tracker <| wrap << GotProgress
     )
 
 
-initMany : List Url -> List Url -> (ManyMsg -> msg) -> ( ManyModel msg, Cmd msg, List (Sub msg) )
+initMany : List Url -> List Url -> (ManyMsg -> msg) -> ( ManyModel msg, Cmd msg )
 initMany firstUrls restUrls wrap =
     let
         initEntry url =
@@ -93,11 +92,10 @@ initMany firstUrls restUrls wrap =
     ( ManyModel
         { pending = restUrls
         , maxConcurrentCount = length firstUrls
-        , models = Dict.map (always <| firstOfThree >> getModel) models
+        , models = Dict.map (always <| Tuple.first >> getModel) models
         , wrap = wrap
         }
-    , Cmd.batch <| values <| Dict.map (always secondOfThree) models
-    , values <| Dict.map (always thirdOfThree) models
+    , Cmd.batch <| values <| Dict.map (always Tuple.second) models
     )
 
 
@@ -140,28 +138,8 @@ update msg (OneModel (LoadingModel m) wrap) =
             )
 
 
-updateMany : ManyMsg -> ManyModel msg -> (List Url -> List Url) -> ( ManyModel msg, Cmd msg, List (Sub msg) )
+updateMany : ManyMsg -> ManyModel msg -> (List Url -> List Url) -> ( ManyModel msg, Cmd msg )
 updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
-    let
-        subForOneModel ( oneUrlStr, LoadingModel m ) =
-            case fromString oneUrlStr of
-                Nothing ->
-                    []
-
-                Just oneUrl ->
-                    case m.state of
-                        NotStarted ->
-                            [ track m.tracker (GotProgress >> ManyMsg oneUrl >> mm.wrap) ]
-
-                        Loading _ ->
-                            [ track m.tracker (GotProgress >> ManyMsg oneUrl >> mm.wrap) ]
-
-                        Loaded ->
-                            []
-
-                        Failed _ ->
-                            []
-    in
     case get (toString url) mm.models of
         Just oneModel ->
             let
@@ -173,11 +151,6 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
 
                 ( allNewModels, newPending, newCmd ) =
                     promotePending mm.wrap mm.maxConcurrentCount oneNewModels <| revisePending mm.pending
-
-                subs =
-                    allNewModels
-                        |> toList
-                        |> List.map subForOneModel
             in
             ( ManyModel
                 { pending = newPending
@@ -186,13 +159,11 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
                 , wrap = mm.wrap
                 }
             , newCmd
-            , List.concat subs
             )
 
         Nothing ->
             ( ManyModel mm
             , Cmd.none
-            , List.concat <| List.map subForOneModel <| toList mm.models
             )
 
 
@@ -224,13 +195,43 @@ promotePending wrap maxConcurrentCount currentModels pending =
 
                 Just nextUrl ->
                     let
-                        ( OneModel oneNewModel _, oneNewCmd, _ ) =
+                        ( OneModel oneNewModel _, oneNewCmd ) =
                             init (wrap << ManyMsg nextUrl) nextUrl
                     in
                     ( insert (toString nextUrl) oneNewModel currentModels
                     , Maybe.withDefault [] <| tail pending
                     , oneNewCmd
                     )
+
+
+subscriptions : OneModel msg -> Sub msg
+subscriptions (OneModel (LoadingModel lm) wrap) =
+    track lm.tracker <| wrap << GotProgress
+
+
+subscriptionsMany : ManyModel msg -> Sub msg
+subscriptionsMany (ManyModel mm) =
+    let
+        subForOneModel ( oneUrlStr, LoadingModel m ) =
+            case fromString oneUrlStr of
+                Nothing ->
+                    []
+
+                Just oneUrl ->
+                    case m.state of
+                        NotStarted ->
+                            [ track m.tracker (GotProgress >> ManyMsg oneUrl >> mm.wrap) ]
+
+                        Loading _ ->
+                            [ track m.tracker (GotProgress >> ManyMsg oneUrl >> mm.wrap) ]
+
+                        Loaded ->
+                            []
+
+                        Failed _ ->
+                            []
+    in
+    mm.models |> toList |> List.concatMap subForOneModel |> Sub.batch
 
 
 getState : OneModel msg -> LoadState
