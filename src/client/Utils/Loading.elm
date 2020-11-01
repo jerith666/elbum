@@ -140,8 +140,16 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
                 oneNewModels =
                     insert (toString url) (LoadingModel oneNewModel) mm.models
 
+                revisedPending =
+                    case isLoading <| LoadingModel oneNewModel of
+                        True ->
+                            revisePending mm.pending
+
+                        False ->
+                            revisePending <| List.filter ((/=) url) mm.pending
+
                 ( allNewModels, newPending, newCmd ) =
-                    promotePending mm.wrap mm.maxConcurrentCount oneNewModels <| revisePending mm.pending
+                    promotePending mm.wrap mm.maxConcurrentCount oneNewModels revisedPending
             in
             ( ManyModel
                 { pending = newPending
@@ -158,23 +166,27 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
             )
 
 
+isLoading (LoadingModel m) =
+    case m.state of
+        NotRequested ->
+            True
+
+        RequestedButNoProgress ->
+            True
+
+        Loading _ ->
+            True
+
+        Loaded ->
+            False
+
+        Failed _ ->
+            False
+
+
 promotePending : (ManyMsg -> msg) -> Int -> Dict String (LoadingModel msg) -> List Url -> ( Dict String (LoadingModel msg), List Url, Cmd msg )
 promotePending wrap maxConcurrentCount currentModels pending =
     let
-        isLoading (LoadingModel m) =
-            case m.state of
-                NotRequested ->
-                    True
-
-                RequestedButNoProgress ->
-                    True
-
-                Loading _ ->
-                    True
-
-                _ ->
-                    False
-
         inProgCount =
             size <| filter (always isLoading) currentModels
     in
