@@ -93,7 +93,7 @@ initThumbsFullVp album vpInfo baseUrl =
             ThumbPage.urlsToGet <| thumbModel baseModel
 
         restUrls =
-            List.filter (\u -> List.member u firstUrls) <| allUrls baseUrl <| thumbModel baseModel
+            List.filter (\u -> not <| List.member u firstUrls) <| allUrls baseUrl <| thumbModel baseModel
 
         ( imageLoader, imgCmd ) =
             initMany firstUrls restUrls LoadingMsg
