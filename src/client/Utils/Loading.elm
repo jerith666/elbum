@@ -146,7 +146,7 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
                             revisePending mm.pending
 
                         False ->
-                            revisePending <| List.filter ((/=) url) mm.pending
+                            List.filter ((/=) url) <| revisePending <| List.filter ((/=) url) mm.pending
 
                 ( allNewModels, newPending, newCmd ) =
                     promotePending mm.wrap mm.maxConcurrentCount oneNewModels revisedPending
