@@ -267,8 +267,15 @@ updateBootstrap bootstrapMsg model =
         GotBaseUrl url ->
             case model of
                 AwaitingBaseUrl abu ->
-                    ( Sizing { key = abu.key, baseUrl = url, flags = abu.flags, albumPathsAfterLoad = abu.albumPathsAfterLoad }
-                    , Task.perform (General << Resize) getViewport
+                    let
+                        modelWithBaseUrl =
+                            Sizing { key = abu.key, baseUrl = url, flags = abu.flags, albumPathsAfterLoad = abu.albumPathsAfterLoad }
+
+                        initialNavCmd =
+                            navToMsg modelWithBaseUrl url
+                    in
+                    ( modelWithBaseUrl
+                    , Cmd.batch [ initialNavCmd, Task.perform (General << Resize) getViewport ]
                     )
 
                 _ ->
