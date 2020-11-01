@@ -105,8 +105,11 @@ viewOne model url =
                 toString url
                     ++ ": "
                     ++ (case state of
-                            Loading.NotStarted ->
-                                "not started"
+                            Loading.NotRequested ->
+                                "not requested"
+
+                            Loading.RequestedButNoProgress ->
+                                "requested, awaiting initial progress"
 
                             Loading.Loading progress ->
                                 viewProgress "" <| Just progress

@@ -3,18 +3,21 @@ module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, cm
 import Dict exposing (Dict, filter, fromList, get, insert, size, toList, values)
 import Http exposing (Error, Progress, emptyBody, expectWhatever, track)
 import List exposing (head, length, tail)
+import Task
 import Url exposing (Url, fromString, toString)
 
 
 type LoadState
-    = NotStarted
+    = NotRequested
+    | RequestedButNoProgress
     | Loading Progress
     | Loaded
     | Failed Error
 
 
 type LoadingMsg
-    = GotProgress Progress
+    = Requested
+    | GotProgress Progress
     | Finished
     | Failure Error
 
@@ -54,7 +57,7 @@ init wrap url =
             OneModel
                 (LoadingModel
                     { url = url
-                    , state = NotStarted
+                    , state = NotRequested
                     , tracker = tracker
                     }
                 )
@@ -84,23 +87,30 @@ initMany firstUrls restUrls wrap =
     )
 
 
-update : LoadingMsg -> OneModel msg -> ( OneModel msg, Sub msg )
+update : LoadingMsg -> OneModel msg -> OneModel msg
 update msg (OneModel (LoadingModel m) wrap) =
     case msg of
+        Requested ->
+            case m.state of
+                NotRequested ->
+                    OneModel (LoadingModel { m | state = RequestedButNoProgress }) wrap
+
+                _ ->
+                    OneModel (LoadingModel m) wrap
+
         GotProgress progress ->
             let
                 updatedWithProgress =
-                    ( OneModel (LoadingModel { m | state = Loading progress }) wrap
-                    , track m.tracker <| wrap << GotProgress
-                    )
+                    OneModel (LoadingModel { m | state = Loading progress }) wrap
 
                 ignoreStaleProgress =
-                    ( OneModel (LoadingModel m) wrap
-                    , Sub.none
-                    )
+                    OneModel (LoadingModel m) wrap
             in
             case m.state of
-                NotStarted ->
+                NotRequested ->
+                    updatedWithProgress
+
+                RequestedButNoProgress ->
                     updatedWithProgress
 
                 Loading _ ->
@@ -113,14 +123,10 @@ update msg (OneModel (LoadingModel m) wrap) =
                     ignoreStaleProgress
 
         Finished ->
-            ( OneModel (LoadingModel { m | state = Loaded }) wrap
-            , Sub.none
-            )
+            OneModel (LoadingModel { m | state = Loaded }) wrap
 
         Failure error ->
-            ( OneModel (LoadingModel { m | state = Failed error }) wrap
-            , Sub.none
-            )
+            OneModel (LoadingModel { m | state = Failed error }) wrap
 
 
 updateMany : ManyMsg -> ManyModel msg -> (List Url -> List Url) -> ( ManyModel msg, Cmd msg )
@@ -128,7 +134,7 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
     case get (toString url) mm.models of
         Just oneModel ->
             let
-                ( OneModel (LoadingModel oneNewModel) _, _ ) =
+                (OneModel (LoadingModel oneNewModel) _) =
                     update loadingMsg (OneModel oneModel (ManyMsg url >> mm.wrap))
 
                 oneNewModels =
@@ -157,10 +163,13 @@ promotePending wrap maxConcurrentCount currentModels pending =
     let
         isLoading (LoadingModel m) =
             case m.state of
-                Loading _ ->
+                NotRequested ->
                     True
 
-                NotStarted ->
+                RequestedButNoProgress ->
+                    True
+
+                Loading _ ->
                     True
 
                 _ ->
@@ -191,7 +200,28 @@ promotePending wrap maxConcurrentCount currentModels pending =
 
 subscriptions : OneModel msg -> Sub msg
 subscriptions (OneModel (LoadingModel lm) wrap) =
-    track lm.tracker <| wrap << GotProgress
+    let
+        trackIt =
+            track lm.tracker <| wrap << GotProgress
+
+        ignoreIt =
+            Sub.none
+    in
+    case lm.state of
+        NotRequested ->
+            ignoreIt
+
+        RequestedButNoProgress ->
+            trackIt
+
+        Loading _ ->
+            trackIt
+
+        Loaded ->
+            ignoreIt
+
+        Failed _ ->
+            ignoreIt
 
 
 subscriptionsMany : ManyModel msg -> Sub msg
@@ -203,18 +233,7 @@ subscriptionsMany (ManyModel mm) =
                     []
 
                 Just oneUrl ->
-                    case m.state of
-                        NotStarted ->
-                            [ track m.tracker (GotProgress >> ManyMsg oneUrl >> mm.wrap) ]
-
-                        Loading _ ->
-                            [ track m.tracker (GotProgress >> ManyMsg oneUrl >> mm.wrap) ]
-
-                        Loaded ->
-                            []
-
-                        Failed _ ->
-                            []
+                    [ subscriptions <| OneModel (LoadingModel m) <| ManyMsg oneUrl >> mm.wrap ]
     in
     mm.models |> toList |> List.concatMap subForOneModel |> Sub.batch
 
@@ -241,14 +260,20 @@ cmdFor (OneModel (LoadingModel m) wrap) =
                 , timeout = Nothing
                 , tracker = Just m.tracker
                 }
+
+        requested =
+            Task.perform identity <| Task.succeed Requested
     in
     Cmd.map wrap <|
         case m.state of
-            NotStarted ->
-                get
+            NotRequested ->
+                Cmd.batch [ get, requested ]
+
+            RequestedButNoProgress ->
+                Cmd.none
 
             Loading _ ->
-                get
+                Cmd.none
 
             Loaded ->
                 Cmd.none
@@ -285,7 +310,7 @@ getOneState (ManyModel mm) url =
         Nothing ->
             case List.member url mm.pending of
                 True ->
-                    Just NotStarted
+                    Just NotRequested
 
                 False ->
                     Nothing
