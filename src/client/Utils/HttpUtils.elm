@@ -43,4 +43,4 @@ appendPath baseUrl relativePath =
         newPath =
             baseUrl.path ++ "/" ++ relativePath
     in
-    { baseUrl | path = newPath }
+    { baseUrl | path = newPath, query = Nothing, fragment = Nothing }
