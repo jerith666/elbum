@@ -78,7 +78,7 @@ initMany firstUrls restUrls wrap =
             fromList <| List.map initEntry firstUrls
     in
     ( ManyModel
-        { pending = List.filter (\u -> List.member u firstUrls) restUrls
+        { pending = List.filter (\u -> not <| List.member u firstUrls) restUrls
         , maxConcurrentCount = length firstUrls
         , models = Dict.map (always <| Tuple.first >> getModel) models
         , wrap = wrap
