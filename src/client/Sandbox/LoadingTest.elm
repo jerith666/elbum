@@ -84,7 +84,7 @@ update msg model =
         Msg m ->
             let
                 ( newModel, newCmd ) =
-                    Loading.updateMany m model.model identity
+                    Loading.updateMany m model.model (always model.urls)
             in
             ( { urls = model.urls, model = newModel }, newCmd )
 
