@@ -144,12 +144,7 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
                     (u /= url) && (not <| List.member u (List.map (\(LoadingModel lm) -> lm.url) <| Dict.values oneNewModels))
 
                 revisedPending =
-                    case isLoading <| LoadingModel oneNewModel of
-                        True ->
-                            revisePending mm.pending
-
-                        False ->
-                            List.filter isNewUrl <| revisePending <| List.filter isNewUrl mm.pending
+                    List.filter isNewUrl <| revisePending <| List.filter isNewUrl mm.pending
 
                 ( allNewModels, newPending, newCmd ) =
                     promotePending mm.wrap mm.maxConcurrentCount oneNewModels revisedPending
