@@ -141,7 +141,7 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
                     insert (toString url) (LoadingModel oneNewModel) mm.models
 
                 isNewUrl u =
-                    (u /= url) && (not <| List.member (toString u) (Dict.keys oneNewModels))
+                    (u /= url) && (not <| List.member u (List.map (\(LoadingModel lm) -> lm.url) <| Dict.values oneNewModels))
 
                 revisedPending =
                     case isLoading <| LoadingModel oneNewModel of
