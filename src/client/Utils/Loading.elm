@@ -78,7 +78,7 @@ initMany firstUrls restUrls wrap =
             fromList <| List.map initEntry firstUrls
     in
     ( ManyModel
-        { pending = restUrls
+        { pending = List.filter (\u -> List.member u firstUrls) restUrls
         , maxConcurrentCount = length firstUrls
         , models = Dict.map (always <| Tuple.first >> getModel) models
         , wrap = wrap
@@ -140,13 +140,16 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
                 oneNewModels =
                     insert (toString url) (LoadingModel oneNewModel) mm.models
 
+                isNewUrl u =
+                    (u /= url) && (not <| List.member (toString u) (Dict.keys oneNewModels))
+
                 revisedPending =
                     case isLoading <| LoadingModel oneNewModel of
                         True ->
                             revisePending mm.pending
 
                         False ->
-                            List.filter ((/=) url) <| revisePending <| List.filter ((/=) url) mm.pending
+                            List.filter isNewUrl <| revisePending <| List.filter isNewUrl mm.pending
 
                 ( allNewModels, newPending, newCmd ) =
                     promotePending mm.wrap mm.maxConcurrentCount oneNewModels revisedPending
