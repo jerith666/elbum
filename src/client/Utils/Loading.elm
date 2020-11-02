@@ -22,7 +22,7 @@ type LoadingMsg
     | Failure Error
 
 
-type LoadingModel msg
+type LoadingModel
     = LoadingModel
         { url : Url
         , state : LoadState
@@ -31,14 +31,14 @@ type LoadingModel msg
 
 
 type OneModel msg
-    = OneModel (LoadingModel msg) (LoadingMsg -> msg)
+    = OneModel LoadingModel (LoadingMsg -> msg)
 
 
 type ManyModel msg
     = ManyModel
         { pending : List Url
         , maxConcurrentCount : Int
-        , models : Dict String (LoadingModel msg)
+        , models : Dict String LoadingModel
         , wrap : ManyMsg -> msg
         }
 
@@ -184,7 +184,7 @@ isLoading (LoadingModel m) =
             False
 
 
-promotePending : (ManyMsg -> msg) -> Int -> Dict String (LoadingModel msg) -> List Url -> ( Dict String (LoadingModel msg), List Url, Cmd msg )
+promotePending : (ManyMsg -> msg) -> Int -> Dict String LoadingModel -> List Url -> ( Dict String LoadingModel, List Url, Cmd msg )
 promotePending wrap maxConcurrentCount currentModels pending =
     let
         inProgCount =
@@ -328,6 +328,6 @@ getOneState (ManyModel mm) url =
                     Nothing
 
 
-getModel : OneModel msg -> LoadingModel msg
+getModel : OneModel msg -> LoadingModel
 getModel (OneModel m _) =
     m
