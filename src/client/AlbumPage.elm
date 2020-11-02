@@ -9,6 +9,7 @@ import Html.Events.Extra.Touch exposing (..)
 import Html.Styled exposing (..)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)
+import List exposing (take)
 import ProgressiveImage exposing (..)
 import Task exposing (..)
 import ThumbPage exposing (..)
@@ -90,7 +91,7 @@ initThumbsFullVp album vpInfo baseUrl =
             }
 
         firstUrls =
-            ThumbPage.urlsToGet <| thumbModel baseModel
+            take 5 <| ThumbPage.urlsToGet <| thumbModel baseModel
 
         restUrls =
             List.filter (\u -> not <| List.member u firstUrls) <| allUrls baseUrl <| thumbModel baseModel
