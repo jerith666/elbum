@@ -11,7 +11,8 @@ type LoadState
     = NotRequested
     | RequestedButNoProgress
     | Loading Progress
-    | Loaded
+    | RecentlyLoaded
+    | DurablyLoaded
     | Failed Error
 
 
@@ -19,6 +20,7 @@ type LoadingMsg
     = Requested
     | GotProgress Progress
     | Finished
+    | Durable
     | Failure Error
 
 
@@ -116,14 +118,20 @@ update msg (OneModel (LoadingModel m) wrap) =
                 Loading _ ->
                     updatedWithProgress
 
-                Loaded ->
+                RecentlyLoaded ->
+                    ignoreStaleProgress
+
+                DurablyLoaded ->
                     ignoreStaleProgress
 
                 Failed _ ->
                     ignoreStaleProgress
 
         Finished ->
-            OneModel (LoadingModel { m | state = Loaded }) wrap
+            OneModel (LoadingModel { m | state = RecentlyLoaded }) wrap
+
+        Durable ->
+            OneModel (LoadingModel { m | state = DurablyLoaded }) wrap
 
         Failure error ->
             OneModel (LoadingModel { m | state = Failed error }) wrap
@@ -175,7 +183,10 @@ isLoading (LoadingModel m) =
         Loading _ ->
             True
 
-        Loaded ->
+        RecentlyLoaded ->
+            False
+
+        DurablyLoaded ->
             False
 
         Failed _ ->
@@ -227,7 +238,10 @@ subscriptions (OneModel (LoadingModel lm) wrap) =
         Loading _ ->
             trackIt
 
-        Loaded ->
+        RecentlyLoaded ->
+            ignoreIt
+
+        DurablyLoaded ->
             ignoreIt
 
         Failed _ ->
@@ -285,7 +299,10 @@ cmdFor (OneModel (LoadingModel m) wrap) =
             Loading _ ->
                 Cmd.none
 
-            Loaded ->
+            RecentlyLoaded ->
+                Task.perform identity <| Task.succeed Durable
+
+            DurablyLoaded ->
                 Cmd.none
 
             Failed _ ->

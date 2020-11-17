@@ -114,8 +114,11 @@ viewOne model url =
                             Loading.Loading progress ->
                                 viewProgress "" <| Just progress
 
-                            Loading.Loaded ->
-                                "loaded"
+                            Loading.RecentlyLoaded ->
+                                "recently loaded"
+
+                            Loading.DurablyLoaded ->
+                                "durably loaded"
 
                             Loading.Failed _ ->
                                 "failed"
