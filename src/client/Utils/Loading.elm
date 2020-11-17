@@ -1,6 +1,7 @@
-module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, cmdFor, cmdForMany, getOneState, getState, init, initMany, subscriptions, subscriptionsMany, update, updateMany)
+module Utils.Loading exposing (LoadState(..), LoadedSubstate(..), LoadingMsg, ManyModel, ManyMsg, cmdFor, cmdForMany, getOneState, getState, init, initMany, subscriptions, subscriptionsMany, update, updateMany)
 
 import Browser.Events exposing (onAnimationFrame)
+import Delay exposing (TimeUnit(..), after)
 import Dict exposing (Dict, filter, fromList, get, insert, size, toList, values)
 import Http exposing (Error, Progress, emptyBody, expectWhatever, track)
 import List exposing (head, length, tail)
@@ -8,12 +9,17 @@ import Task
 import Url exposing (Url, fromString, toString)
 
 
+type LoadedSubstate
+    = JustNow
+    | Recently
+    | Durably
+
+
 type LoadState
     = NotRequested
     | RequestedButNoProgress
     | Loading Progress
-    | RecentlyLoaded
-    | DurablyLoaded
+    | Loaded LoadedSubstate
     | Failed Error
 
 
@@ -21,6 +27,7 @@ type LoadingMsg
     = Requested
     | GotProgress Progress
     | Finished
+    | AnimationFrame
     | Durable
     | Failure Error
 
@@ -119,20 +126,20 @@ update msg (OneModel (LoadingModel m) wrap) =
                 Loading _ ->
                     updatedWithProgress
 
-                RecentlyLoaded ->
-                    ignoreStaleProgress
-
-                DurablyLoaded ->
+                Loaded _ ->
                     ignoreStaleProgress
 
                 Failed _ ->
                     ignoreStaleProgress
 
         Finished ->
-            OneModel (LoadingModel { m | state = RecentlyLoaded }) wrap
+            OneModel (LoadingModel { m | state = Loaded JustNow }) wrap
+
+        AnimationFrame ->
+            OneModel (LoadingModel { m | state = Loaded Recently }) wrap
 
         Durable ->
-            OneModel (LoadingModel { m | state = DurablyLoaded }) wrap
+            OneModel (LoadingModel { m | state = Loaded Durably }) wrap
 
         Failure error ->
             OneModel (LoadingModel { m | state = Failed error }) wrap
@@ -184,10 +191,7 @@ isLoading (LoadingModel m) =
         Loading _ ->
             True
 
-        RecentlyLoaded ->
-            False
-
-        DurablyLoaded ->
+        Loaded _ ->
             False
 
         Failed _ ->
@@ -227,7 +231,7 @@ subscriptions (OneModel (LoadingModel lm) wrap) =
             track lm.tracker <| wrap << GotProgress
 
         endureIt =
-            onAnimationFrame <| wrap << always Durable
+            onAnimationFrame <| wrap << always AnimationFrame
 
         ignoreIt =
             Sub.none
@@ -242,10 +246,13 @@ subscriptions (OneModel (LoadingModel lm) wrap) =
         Loading _ ->
             trackIt
 
-        RecentlyLoaded ->
+        Loaded JustNow ->
             endureIt
 
-        DurablyLoaded ->
+        Loaded Recently ->
+            ignoreIt
+
+        Loaded Durably ->
             ignoreIt
 
         Failed _ ->
@@ -303,10 +310,13 @@ cmdFor (OneModel (LoadingModel m) wrap) =
             Loading _ ->
                 Cmd.none
 
-            RecentlyLoaded ->
+            Loaded JustNow ->
                 Cmd.none
 
-            DurablyLoaded ->
+            Loaded Recently ->
+                after 1000 Millisecond Durable
+
+            Loaded Durably ->
                 Cmd.none
 
             Failed _ ->

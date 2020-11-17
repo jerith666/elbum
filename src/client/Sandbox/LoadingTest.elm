@@ -6,7 +6,7 @@ import Html exposing (br, text)
 import String exposing (fromInt)
 import Url exposing (Protocol(..), Url, toString)
 import Utils.HttpUtils exposing (viewProgress)
-import Utils.Loading as Loading exposing (ManyModel, ManyMsg, getOneState)
+import Utils.Loading as Loading exposing (LoadedSubstate(..), ManyModel, ManyMsg, getOneState)
 
 
 pathToUrl host basePath path =
@@ -114,10 +114,13 @@ viewOne model url =
                             Loading.Loading progress ->
                                 viewProgress "" <| Just progress
 
-                            Loading.RecentlyLoaded ->
+                            Loading.Loaded JustNow ->
+                                "just now loaded"
+
+                            Loading.Loaded Recently ->
                                 "recently loaded"
 
-                            Loading.DurablyLoaded ->
+                            Loading.Loaded Durably ->
                                 "durably loaded"
 
                             Loading.Failed _ ->
