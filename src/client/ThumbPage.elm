@@ -153,7 +153,10 @@ urlsToGet thumbPageModel =
         (\url ->
             not <|
                 case getOneState thumbPageModel.imageLoader url of
-                    Just Loaded ->
+                    Just RecentlyLoaded ->
+                        True
+
+                    Just DurablyLoaded ->
                         True
 
                     Just (Failed _) ->
@@ -232,7 +235,7 @@ viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
 
                 srcLoaded =
                     case getOneState imageLoader srcUrl of
-                        Just Loaded ->
+                        Just DurablyLoaded ->
                             True
 
                         _ ->
@@ -242,7 +245,7 @@ viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
                 let
                     opacity =
                         if False then
-                            -- TODO if member src.url justLoadedImages then
+                            -- TODO if getOneState (arrived imageLoader) srcUrl /= Just DurablyLoaded then
                             Partial ( 99, Nothing )
 
                         else
