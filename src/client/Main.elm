@@ -83,7 +83,6 @@ type MainAlbumModel
         , home : Maybe String
         , rootDivViewport : Maybe Viewport
         , navState : PostLoadNavState
-        , n : Int
         }
 
 
@@ -348,7 +347,6 @@ updateBootstrap bootstrapMsg model =
                                         , home = ld.home
                                         , rootDivViewport = Nothing
                                         , navState = NavInactive
-                                        , n = 0
                                         }
                             in
                             ( newModel
@@ -378,21 +376,10 @@ updateAlbum albumMsg model =
                     let
                         ( newPage, newPageCmd ) =
                             AlbumPage.update pageMsg la.albumPage <| Maybe.map scrollPosOf la.rootDivViewport
-
-                        n =
-                            la.n + 1
-
-                        c =
-                            case n > 100 of
-                                True ->
-                                    Cmd.none
-
-                                False ->
-                                    newPageCmd
                     in
                     ( LoadedAlbum
-                        { la | albumPage = newPage, n = n }
-                    , Cmd.map (Album << PageMsg) c
+                        { la | albumPage = newPage }
+                    , Cmd.map (Album << PageMsg) newPageCmd
                     )
 
                 _ ->
@@ -442,7 +429,6 @@ updateAlbum albumMsg model =
                                 , home = homeOf model
                                 , rootDivViewport = Nothing
                                 , navState = NavInactive
-                                , n = 0
                                 }
 
                         getImgPos =
