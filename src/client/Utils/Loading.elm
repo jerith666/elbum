@@ -1,5 +1,6 @@
 module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, cmdFor, cmdForMany, getOneState, getState, init, initMany, subscriptions, subscriptionsMany, update, updateMany)
 
+import Browser.Events exposing (onAnimationFrame)
 import Dict exposing (Dict, filter, fromList, get, insert, size, toList, values)
 import Http exposing (Error, Progress, emptyBody, expectWhatever, track)
 import List exposing (head, length, tail)
@@ -225,6 +226,9 @@ subscriptions (OneModel (LoadingModel lm) wrap) =
         trackIt =
             track lm.tracker <| wrap << GotProgress
 
+        endureIt =
+            onAnimationFrame <| wrap << always Durable
+
         ignoreIt =
             Sub.none
     in
@@ -239,7 +243,7 @@ subscriptions (OneModel (LoadingModel lm) wrap) =
             trackIt
 
         RecentlyLoaded ->
-            ignoreIt
+            endureIt
 
         DurablyLoaded ->
             ignoreIt
@@ -300,7 +304,7 @@ cmdFor (OneModel (LoadingModel m) wrap) =
                 Cmd.none
 
             RecentlyLoaded ->
-                Task.perform identity <| Task.succeed Durable
+                Cmd.none
 
             DurablyLoaded ->
                 Cmd.none
