@@ -142,11 +142,8 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
     case get (toString url) mm.models of
         Just oneModel ->
             let
-                (OneModel (LoadingModel oneNewModel) wrap) =
+                (OneModel (LoadingModel oneNewModel) _) =
                     update loadingMsg (OneModel oneModel (ManyMsg url >> mm.wrap))
-
-                oneNewCmd =
-                    cmdFor <| OneModel (LoadingModel oneNewModel) wrap
 
                 oneNewModels =
                     insert (toString url) (LoadingModel oneNewModel) mm.models
@@ -157,7 +154,7 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
                 revisedPending =
                     List.filter isNewUrl <| revisePending <| List.filter isNewUrl mm.pending
 
-                ( allNewModels, newPending, newCmds ) =
+                ( allNewModels, newPending, newCmd ) =
                     promotePending mm.wrap mm.maxConcurrentCount oneNewModels revisedPending
             in
             ( ManyModel
@@ -166,7 +163,7 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
                 , models = allNewModels
                 , wrap = mm.wrap
                 }
-            , Cmd.batch [ newCmds, oneNewCmd ]
+            , newCmd
             )
 
         Nothing ->
