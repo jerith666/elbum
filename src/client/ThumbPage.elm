@@ -9,7 +9,7 @@ import ImageViews exposing (..)
 import Url exposing (Url)
 import Utils.HttpUtils exposing (appendPath)
 import Utils.ListUtils exposing (..)
-import Utils.Loading exposing (LoadState(..), ManyModel, getOneState)
+import Utils.Loading exposing (LoadState(..), LoadedSubstate(..), ManyModel, getOneState)
 import Utils.LocationUtils exposing (AnchorFunction)
 
 
@@ -153,10 +153,7 @@ urlsToGet thumbPageModel =
         (\url ->
             not <|
                 case getOneState thumbPageModel.imageLoader url of
-                    Just RecentlyLoaded ->
-                        True
-
-                    Just DurablyLoaded ->
+                    Just (Loaded _) ->
                         True
 
                     Just (Failed _) ->
@@ -235,7 +232,7 @@ viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
 
                 srcLoaded =
                     case getOneState imageLoader srcUrl of
-                        Just DurablyLoaded ->
+                        Just (Loaded Durably) ->
                             True
 
                         _ ->
@@ -245,7 +242,7 @@ viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
                 let
                     opacity =
                         if False then
-                            -- TODO if getOneState (arrived imageLoader) srcUrl /= Just DurablyLoaded then
+                            -- TODO if getOneState (arrived imageLoader) srcUrl /= Just (Loaded Durably) then
                             Partial ( 99, Nothing )
 
                         else
