@@ -317,7 +317,7 @@ cmdFor (OneModel (LoadingModel m) wrap) =
                 Cmd.none
 
             Loaded Recently ->
-                after 1000 Millisecond Durable
+                after 100 Millisecond Durable
 
             Loaded Durably ->
                 Cmd.none
