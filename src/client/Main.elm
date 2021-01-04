@@ -25,6 +25,7 @@ import Utils.DebugSupport exposing (debugString, log)
 import Utils.HttpUtils exposing (..)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
+import Utils.Loading exposing (initMany)
 import Utils.LocationUtils exposing (..)
 import Utils.ResultUtils exposing (..)
 import Utils.TouchUtils as TU exposing (..)
@@ -434,7 +435,7 @@ updateAlbum albumMsg model =
                     ( newModel
                     , Cmd.batch
                         [ Cmd.map Meta <| scrollToTop NoBootstrap <| always NoBootstrap
-                        , getUrls Dict.empty urls --TODO need something like 'AlbumPage.cmdsFor newModel'
+                        , Cmd.map (Album << PageMsg) <| AlbumPage.cmdFor albumPage
                         , Cmd.map Album getImgPos
                         ]
                     )
@@ -1001,14 +1002,14 @@ navForAlbum baseUrl model vpInfo album ps newParents =
             -- no more paths remain, so create a message that will
             -- take us to the thumbnails page for this album
             let
-                ( x, _ ) =
+                ( thumbsModel, _ ) =
                     initThumbsFullVp album vpInfo baseUrl
 
                 makeViewAlbumThumbsMsg parents =
                     Just <|
                         Album <|
                             ViewAlbum
-                                x
+                                thumbsModel
                                 parents
 
                 nonLocalMsg =
@@ -1088,7 +1089,7 @@ navForAlbum baseUrl model vpInfo album ps newParents =
                                                     , scroll = Nothing
                                                     , touchState = TU.init
                                                     , imgPosition = Nothing
-                                                    , imageLoader = imageLoader
+                                                    , imageLoader = Tuple.first <| initMany [] [] LoadingMsg
                                                     }
                                                 )
                                                 parentsNoScroll
@@ -1401,12 +1402,10 @@ viewImpl albumBootstrap a =
                             (\album ->
                                 Album <|
                                     ViewAlbum
-                                        (Thumbs
-                                            { album = album
-                                            , vpInfo = { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }
-                                            , baseUrl = ll.baseUrl
-                                            , imageLoader = imageLoader
-                                            }
+                                        (Tuple.first <|
+                                            initThumbsFullVp album
+                                                { bodyViewport = alp.bodyViewport, rootDivViewport = ll.rootDivViewport }
+                                                ll.baseUrl
                                         )
                                     <|
                                         ( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport )

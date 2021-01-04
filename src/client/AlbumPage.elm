@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, initThumbsFullVp, pageSize, progInit, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, cmdFor, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, initThumbsFullVp, pageSize, progInit, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -16,7 +16,7 @@ import Url exposing (Url)
 import Utils.AlbumUtils exposing (..)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
-import Utils.Loading exposing (ManyModel, ManyMsg, initMany)
+import Utils.Loading exposing (ManyModel, ManyMsg, cmdForMany, initMany, subscriptionsMany, updateMany)
 import Utils.LocationUtils exposing (AnchorFunction)
 import Utils.ResultUtils exposing (..)
 import Utils.TouchUtils as TU exposing (..)
@@ -79,7 +79,7 @@ initThumbs album bodyViewport baseUrl =
 initThumbsFullVp : Album -> ViewportInfo -> Url -> ( AlbumPage, Cmd AlbumPageMsg )
 initThumbsFullVp album vpInfo baseUrl =
     let
-        ( emptyLoader, _, _ ) =
+        ( emptyLoader, _ ) =
             initMany [] [] <| always ()
 
         baseModel =
@@ -95,7 +95,7 @@ initThumbsFullVp album vpInfo baseUrl =
         restUrls =
             List.filter (\u -> List.member u firstUrls) <| allUrls baseUrl <| thumbModel baseModel
 
-        ( imageLoader, imgCmd, imgSub ) =
+        ( imageLoader, imgCmd ) =
             initMany firstUrls restUrls LoadingMsg
     in
     ( Thumbs
@@ -240,6 +240,26 @@ update msg model scroll =
 
                 _ ->
                     ( model, Cmd.none )
+
+        LoadingMsg lmsg ->
+            let
+                revisePending _ =
+                    urlsToGet model
+            in
+            case model of
+                Thumbs t ->
+                    let
+                        ( newLoadingModel, newLoadingCmd ) =
+                            updateMany lmsg t.imageLoader revisePending
+                    in
+                    ( Thumbs { t | imageLoader = newLoadingModel }, newLoadingCmd )
+
+                FullImage fi ->
+                    let
+                        ( newLoadingModel, newLoadingCmd ) =
+                            updateMany lmsg fi.imageLoader revisePending
+                    in
+                    ( FullImage { fi | imageLoader = newLoadingModel }, newLoadingCmd )
 
         NoUpdate ->
             ( model, Cmd.none )
@@ -432,13 +452,17 @@ touchPrevNext touchState _ =
 subscriptions : AlbumPage -> (AlbumPageMsg -> msg) -> msg -> Sub msg
 subscriptions albumPage wrapper showParent =
     case albumPage of
-        Thumbs _ ->
-            onEscape showParent <| wrapper NoUpdate
+        Thumbs t ->
+            Sub.batch
+                [ onEscape showParent <| wrapper NoUpdate
+                , Sub.map wrapper <| subscriptionsMany t.imageLoader
+                ]
 
         FullImage fi ->
             Sub.map wrapper <|
                 Sub.batch <|
                     [ Sub.map FullMsg <| ProgressiveImage.subscriptions fi.progModel
+                    , subscriptionsMany fi.imageLoader
                     , onKeyDown <|
                         Json.Decode.map
                             (\k ->
@@ -458,6 +482,16 @@ subscriptions albumPage wrapper showParent =
                         <|
                             field "key" string
                     ]
+
+
+cmdFor : AlbumPage -> Cmd AlbumPageMsg
+cmdFor albumPage =
+    case albumPage of
+        Thumbs t ->
+            cmdForMany t.imageLoader
+
+        FullImage fi ->
+            cmdForMany fi.imageLoader
 
 
 pageSize : AlbumPage -> ViewportInfo
