@@ -241,8 +241,7 @@ viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
             if srcLoaded then
                 let
                     opacity =
-                        if False then
-                            -- TODO if getOneState (arrived imageLoader) srcUrl /= Just (Loaded Durably) then
+                        if getOneState imageLoader srcUrl /= Just (Loaded Durably) then
                             Partial ( 99, Nothing )
 
                         else
