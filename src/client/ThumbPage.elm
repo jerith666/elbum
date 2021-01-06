@@ -248,7 +248,6 @@ viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
                             Completed
                 in
                 viewThumb a thumbWidth opacity [] (imgChosenMsgr i) img
-                --TODO opacity
 
             else
                 stubThumb thumbWidth img
