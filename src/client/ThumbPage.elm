@@ -232,7 +232,7 @@ viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
 
                 srcLoaded =
                     case getOneState imageLoader srcUrl of
-                        Just (Loaded Durably) ->
+                        Just (Loaded _) ->
                             True
 
                         _ ->
