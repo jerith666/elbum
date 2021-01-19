@@ -1,6 +1,7 @@
 module Utils.HttpUtils exposing (appendPath, getUrl, viewProgress)
 
 import Http exposing (..)
+import String exposing (endsWith, startsWith)
 import Url exposing (Url)
 import Utils.ListUtils exposing (..)
 
@@ -40,7 +41,15 @@ getUrl handler url =
 appendPath : Url -> String -> Url
 appendPath baseUrl relativePath =
     let
+        sep =
+            case endsWith "/" baseUrl.path || startsWith "/" relativePath of
+                True ->
+                    ""
+
+                False ->
+                    "/"
+
         newPath =
-            baseUrl.path ++ "/" ++ relativePath
+            baseUrl.path ++ sep ++ relativePath
     in
     { baseUrl | path = newPath, query = Nothing, fragment = Nothing }
