@@ -163,7 +163,7 @@ urlsToGet thumbPageModel =
                         False
         )
     <|
-        List.map (.url >> appendPath thumbPageModel.baseUrl) prioritySrcs
+        List.map (.url >> encodePath >> appendPath thumbPageModel.baseUrl) prioritySrcs
 
 
 viewThumbs : AnchorFunction msg -> (List Image -> Image -> List Image -> msg) -> ThumbPageModel msgB -> List (Html msg)
@@ -228,7 +228,7 @@ viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
                     srcForWidth thumbWidth img
 
                 srcUrl =
-                    appendPath baseUrl src.url
+                    appendPath baseUrl <| encodePath src.url
 
                 srcLoaded =
                     case getOneState imageLoader srcUrl of

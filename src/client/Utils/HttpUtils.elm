@@ -1,4 +1,4 @@
-module Utils.HttpUtils exposing (appendPath, getUrl, viewProgress)
+module Utils.HttpUtils exposing (appendPath, viewProgress)
 
 import Http exposing (..)
 import String exposing (endsWith, startsWith)
@@ -28,14 +28,6 @@ viewProgress prefix mProgress =
 
                         Just size ->
                             prefix ++ ": received " ++ pct r.received size
-
-
-getUrl : (Result Http.Error () -> msg) -> String -> Cmd msg
-getUrl handler url =
-    Http.get
-        { url = encodePath url
-        , expect = expectWhatever handler
-        }
 
 
 appendPath : Url -> String -> Url
