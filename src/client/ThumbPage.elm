@@ -5,7 +5,9 @@ import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
+import Http exposing (Progress(..))
 import ImageViews exposing (..)
+import String exposing (fromInt)
 import Url exposing (Url)
 import Utils.HttpUtils exposing (appendPath)
 import Utils.ListUtils exposing (..)
@@ -230,8 +232,11 @@ viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
                 srcUrl =
                     appendPath baseUrl <| encodePath src.url
 
+                loadState =
+                    getOneState imageLoader srcUrl
+
                 srcLoaded =
-                    case getOneState imageLoader srcUrl of
+                    case loadState of
                         Just (Loaded _) ->
                             True
 
@@ -241,7 +246,7 @@ viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
             if srcLoaded then
                 let
                     opacity =
-                        if getOneState imageLoader srcUrl /= Just (Loaded Durably) then
+                        if loadState /= Just (Loaded Durably) then
                             Partial ( 99, Nothing )
 
                         else
@@ -250,7 +255,7 @@ viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
                 viewThumb a thumbWidth opacity [] (imgChosenMsgr i) img
 
             else
-                stubThumb thumbWidth img
+                stubThumb thumbWidth img loadState
     in
     div
         [ styles
@@ -372,8 +377,8 @@ thumbStyles =
     ]
 
 
-stubThumb : Int -> Image -> Html msg
-stubThumb width img =
+stubThumb : Int -> Image -> Maybe LoadState -> Html msg
+stubThumb width img progress =
     let
         ( xScaled, yScaled ) =
             sizeForWidth width img
@@ -399,7 +404,30 @@ stubThumb width img =
             , margin (px -1)
             ]
         ]
-        [ Html.Styled.text "..." ]
+        [ Html.Styled.text <| renderProgress progress ]
+
+
+renderProgress : Maybe LoadState -> String
+renderProgress l =
+    case l of
+        Just (Loading (Receiving r)) ->
+            case r.size of
+                Just sz ->
+                    fromInt <| (r.received * 100) // sz
+
+                Nothing ->
+                    case modBy 3 r.received of
+                        0 ->
+                            ".  "
+
+                        1 ->
+                            " . "
+
+                        _ ->
+                            "  ."
+
+        _ ->
+            "..."
 
 
 sizeForWidth : Int -> Image -> ( Int, Int )
