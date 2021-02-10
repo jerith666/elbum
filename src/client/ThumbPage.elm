@@ -5,8 +5,10 @@ import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
+import Html.Styled.Events exposing (on)
 import Http exposing (Progress(..))
 import ImageViews exposing (..)
+import Json.Decode as Decoder
 import String exposing (fromInt)
 import Url exposing (Url)
 import Utils.HttpUtils exposing (appendPath)
@@ -40,8 +42,8 @@ grey =
     rgb 128 128 128
 
 
-view : AnchorFunction msg -> (Viewport -> msg) -> (List Image -> Image -> List Image -> msg) -> (AlbumList -> msg) -> ThumbPageModel msgB -> MainAlbumFlags -> Html msg
-view a scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
+view : AnchorFunction msg -> (Viewport -> msg) -> (List Image -> Image -> List Image -> msg) -> (Url -> msg) -> (AlbumList -> msg) -> ThumbPageModel msgB -> MainAlbumFlags -> Html msg
+view a scrollMsgMaker imgChosenMsgr loadedMsg showList thumbPageModel flags =
     rootDivFlex
         flags
         column
@@ -60,7 +62,7 @@ view a scrollMsgMaker imgChosenMsgr showList thumbPageModel flags =
                 , flexShrink <| num 0
                 ]
             ]
-            (viewThumbs a imgChosenMsgr thumbPageModel)
+            (viewThumbs a imgChosenMsgr loadedMsg thumbPageModel)
         ]
 
 
@@ -168,8 +170,8 @@ urlsToGet thumbPageModel =
         List.map (.url >> encodePath >> appendPath thumbPageModel.baseUrl) prioritySrcs
 
 
-viewThumbs : AnchorFunction msg -> (List Image -> Image -> List Image -> msg) -> ThumbPageModel msgB -> List (Html msg)
-viewThumbs a imgChosenMsgr thumbPageModel =
+viewThumbs : AnchorFunction msg -> (List Image -> Image -> List Image -> msg) -> (Url -> msg) -> ThumbPageModel msgB -> List (Html msg)
+viewThumbs a imgChosenMsgr loadedMsg thumbPageModel =
     let
         ( maxCols, thumbWidth ) =
             colsWidth thumbPageModel.bodyViewport
@@ -181,6 +183,7 @@ viewThumbs a imgChosenMsgr thumbPageModel =
         (viewThumbColumn a
             thumbWidth
             (convertImgChosenMsgr thumbPageModel.album.imageFirst imgs imgChosenMsgr)
+            loadedMsg
             thumbPageModel.imageLoader
             thumbPageModel.baseUrl
         )
@@ -221,8 +224,8 @@ convertImgChosenMsgr image1 images prevCurRestImgChosenMsgr =
         prevCurRestImgChosenMsgr prev cur next
 
 
-viewThumbColumn : AnchorFunction msg -> Int -> (Int -> msg) -> ManyModel msgB -> Url -> List ( Image, Int ) -> Html msg
-viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
+viewThumbColumn : AnchorFunction msg -> Int -> (Int -> msg) -> (Url -> msg) -> ManyModel msgB -> Url -> List ( Image, Int ) -> Html msg
+viewThumbColumn a thumbWidth imgChosenMsgr loadedMsg imageLoader baseUrl images =
     let
         viewThumbTuple ( img, i ) =
             let
@@ -238,17 +241,17 @@ viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
                 srcLoadState =
                     case loadState of
                         Just Loaded ->
-                            Just <| Partial ( 99, Nothing )
+                            Just ImgFetched
 
                         Just (Marked Loaded) ->
-                            Just Completed
+                            Just ImgLoaded
 
                         _ ->
                             Nothing
             in
             case srcLoadState of
                 Just opacity ->
-                    viewThumb a thumbWidth opacity [] (imgChosenMsgr i) img
+                    viewThumb a thumbWidth opacity [] (imgChosenMsgr i) (loadedMsg srcUrl) img
 
                 Nothing ->
                     stubThumb thumbWidth img loadState
@@ -344,11 +347,19 @@ srcForWidth width img =
     smallestImageBiggerThan xScaled yScaled img.srcSetFirst img.srcSetRest
 
 
-viewThumb : AnchorFunction msg -> Int -> ImgLoadState -> List Style -> msg -> Image -> Html msg
-viewThumb a width opasity extraStyles selectedMsg img =
+viewThumb : AnchorFunction msg -> Int -> ImgLoadState -> List Style -> msg -> msg -> Image -> Html msg
+viewThumb a width opasity extraStyles selectedMsg loadedMsg img =
     let
         ( xScaled, yScaled ) =
             sizeForWidth width img
+
+        onLoadAttr =
+            case opasity of
+                ImgFetched ->
+                    [ on "load" <| Decoder.succeed loadedMsg ]
+
+                ImgLoaded ->
+                    []
     in
     a selectedMsg
         []
@@ -361,7 +372,7 @@ viewThumb a width opasity extraStyles selectedMsg img =
                 ++ opacityStyles opasity
                 ++ extraStyles
             )
-            []
+            onLoadAttr
         ]
 
 

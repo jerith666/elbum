@@ -17,7 +17,7 @@ import Url exposing (Url)
 import Utils.AlbumUtils exposing (..)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
-import Utils.Loading exposing (ManyModel, ManyMsg, cmdForMany, initMany, subscriptionsMany, updateMany)
+import Utils.Loading exposing (ManyModel, ManyMsg, cmdForMany, initMany, markOne, subscriptionsMany, updateMany)
 import Utils.LocationUtils exposing (AnchorFunction)
 import Utils.ResultUtils exposing (..)
 import Utils.TouchUtils as TU exposing (..)
@@ -65,6 +65,7 @@ type AlbumPageMsg
     | ImgPositionFailed Browser.Dom.Error
     | GotImgPosition Element
     | LoadingMsg ManyMsg
+    | ThumbLoaded Url
     | NoUpdate
 
 
@@ -262,6 +263,14 @@ update msg model scroll =
                     in
                     ( FullImage { fi | imageLoader = newLoadingModel }, newLoadingCmd )
 
+        ThumbLoaded url ->
+            case model of
+                Thumbs t ->
+                    ( Thumbs { t | imageLoader = markOne t.imageLoader url }, Cmd.none )
+
+                FullImage fi ->
+                    ( FullImage { fi | imageLoader = markOne fi.imageLoader url }, Cmd.none )
+
         NoUpdate ->
             ( model, Cmd.none )
 
@@ -388,6 +397,7 @@ view albumPage a scrollMsgMaker showList wrapMsg parents flags =
                 a
                 scrollMsgMaker
                 (\x -> \y -> \z -> wrapMsg (View x y z))
+                (ThumbLoaded >> wrapMsg)
                 showList
                 { album = th.album
                 , parents = parents
