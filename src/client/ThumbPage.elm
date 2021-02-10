@@ -11,7 +11,7 @@ import String exposing (fromInt)
 import Url exposing (Url)
 import Utils.HttpUtils exposing (appendPath)
 import Utils.ListUtils exposing (..)
-import Utils.Loading exposing (LoadState(..), LoadedSubstate(..), ManyModel, getOneState)
+import Utils.Loading exposing (LoadState(..), ManyModel, getOneState)
 import Utils.LocationUtils exposing (AnchorFunction)
 
 
@@ -155,7 +155,7 @@ urlsToGet thumbPageModel =
         (\url ->
             not <|
                 case getOneState thumbPageModel.imageLoader url of
-                    Just (Loaded _) ->
+                    Just Loaded ->
                         True
 
                     Just (Failed _) ->
@@ -235,27 +235,23 @@ viewThumbColumn a thumbWidth imgChosenMsgr imageLoader baseUrl images =
                 loadState =
                     getOneState imageLoader srcUrl
 
-                srcLoaded =
+                srcLoadState =
                     case loadState of
-                        Just (Loaded _) ->
-                            True
+                        Just Loaded ->
+                            Just <| Partial ( 99, Nothing )
+
+                        Just (Marked Loaded) ->
+                            Just Completed
 
                         _ ->
-                            False
+                            Nothing
             in
-            if srcLoaded then
-                let
-                    opacity =
-                        if loadState /= Just (Loaded Durably) then
-                            Partial ( 99, Nothing )
+            case srcLoadState of
+                Just opacity ->
+                    viewThumb a thumbWidth opacity [] (imgChosenMsgr i) img
 
-                        else
-                            Completed
-                in
-                viewThumb a thumbWidth opacity [] (imgChosenMsgr i) img
-
-            else
-                stubThumb thumbWidth img loadState
+                Nothing ->
+                    stubThumb thumbWidth img loadState
     in
     div
         [ styles
