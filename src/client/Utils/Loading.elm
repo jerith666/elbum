@@ -1,7 +1,5 @@
-module Utils.Loading exposing (LoadState(..), LoadedSubstate(..), LoadingMsg, ManyModel, ManyMsg, cmdFor, cmdForMany, getOneState, getState, init, initMany, subscriptions, subscriptionsMany, update, updateMany)
+module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, cmdFor, cmdForMany, getOneState, getState, init, initMany, mark, markOne, subscriptions, subscriptionsMany, update, updateMany)
 
-import Browser.Events exposing (onAnimationFrame)
-import Delay exposing (TimeUnit(..), after)
 import Dict exposing (Dict, filter, fromList, get, insert, size, toList, values)
 import Http exposing (Error, Progress, emptyBody, expectWhatever, track)
 import List exposing (head, length, tail)
@@ -9,17 +7,12 @@ import Task
 import Url exposing (Url, fromString, toString)
 
 
-type LoadedSubstate
-    = JustNow
-    | Recently
-    | Durably
-
-
 type LoadState
     = NotRequested
     | RequestedButNoProgress
     | Loading Progress
-    | Loaded LoadedSubstate
+    | Loaded
+    | Marked LoadState
     | Failed Error
 
 
@@ -27,8 +20,6 @@ type LoadingMsg
     = Requested
     | GotProgress Progress
     | Finished
-    | AnimationFrame
-    | Durable
     | Failure Error
 
 
@@ -115,31 +106,31 @@ update msg (OneModel (LoadingModel m) wrap) =
 
                 ignoreStaleProgress =
                     OneModel (LoadingModel m) wrap
+
+                progressHandlerFor state =
+                    case state of
+                        NotRequested ->
+                            updatedWithProgress
+
+                        RequestedButNoProgress ->
+                            updatedWithProgress
+
+                        Loading _ ->
+                            updatedWithProgress
+
+                        Loaded ->
+                            ignoreStaleProgress
+
+                        Failed _ ->
+                            ignoreStaleProgress
+
+                        Marked s ->
+                            progressHandlerFor s
             in
-            case m.state of
-                NotRequested ->
-                    updatedWithProgress
-
-                RequestedButNoProgress ->
-                    updatedWithProgress
-
-                Loading _ ->
-                    updatedWithProgress
-
-                Loaded _ ->
-                    ignoreStaleProgress
-
-                Failed _ ->
-                    ignoreStaleProgress
+            progressHandlerFor m.state
 
         Finished ->
-            OneModel (LoadingModel { m | state = Loaded JustNow }) wrap
-
-        AnimationFrame ->
-            OneModel (LoadingModel { m | state = Loaded Recently }) wrap
-
-        Durable ->
-            OneModel (LoadingModel { m | state = Loaded Durably }) wrap
+            OneModel (LoadingModel { m | state = Loaded }) wrap
 
         Failure error ->
             OneModel (LoadingModel { m | state = Failed error }) wrap
@@ -184,21 +175,28 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
 
 
 isLoading (LoadingModel m) =
-    case m.state of
-        NotRequested ->
-            True
+    let
+        isLoadingImpl state =
+            case state of
+                NotRequested ->
+                    True
 
-        RequestedButNoProgress ->
-            True
+                RequestedButNoProgress ->
+                    True
 
-        Loading _ ->
-            True
+                Loading _ ->
+                    True
 
-        Loaded _ ->
-            False
+                Loaded ->
+                    False
 
-        Failed _ ->
-            False
+                Failed _ ->
+                    False
+
+                Marked s ->
+                    isLoadingImpl s
+    in
+    isLoadingImpl m.state
 
 
 promotePending : (ManyMsg -> msg) -> Int -> Dict String LoadingModel -> List Url -> ( Dict String LoadingModel, List Url, Cmd msg )
@@ -233,33 +231,30 @@ subscriptions (OneModel (LoadingModel lm) wrap) =
         trackIt =
             track lm.tracker <| wrap << GotProgress
 
-        endureIt =
-            onAnimationFrame <| wrap << always AnimationFrame
-
         ignoreIt =
             Sub.none
+
+        subForState state =
+            case state of
+                NotRequested ->
+                    ignoreIt
+
+                RequestedButNoProgress ->
+                    trackIt
+
+                Loading _ ->
+                    trackIt
+
+                Loaded ->
+                    ignoreIt
+
+                Failed _ ->
+                    ignoreIt
+
+                Marked s ->
+                    subForState s
     in
-    case lm.state of
-        NotRequested ->
-            ignoreIt
-
-        RequestedButNoProgress ->
-            trackIt
-
-        Loading _ ->
-            trackIt
-
-        Loaded JustNow ->
-            endureIt
-
-        Loaded Recently ->
-            ignoreIt
-
-        Loaded Durably ->
-            ignoreIt
-
-        Failed _ ->
-            ignoreIt
+    subForState lm.state
 
 
 subscriptionsMany : ManyModel msg -> Sub msg
@@ -301,29 +296,28 @@ cmdFor (OneModel (LoadingModel m) wrap) =
 
         requested =
             Task.perform identity <| Task.succeed Requested
+
+        cmdForImpl state =
+            case state of
+                NotRequested ->
+                    Cmd.batch [ get, requested ]
+
+                RequestedButNoProgress ->
+                    Cmd.none
+
+                Loading _ ->
+                    Cmd.none
+
+                Loaded ->
+                    Cmd.none
+
+                Failed _ ->
+                    Cmd.none
+
+                Marked s ->
+                    cmdForImpl s
     in
-    Cmd.map wrap <|
-        case m.state of
-            NotRequested ->
-                Cmd.batch [ get, requested ]
-
-            RequestedButNoProgress ->
-                Cmd.none
-
-            Loading _ ->
-                Cmd.none
-
-            Loaded JustNow ->
-                Cmd.none
-
-            Loaded Recently ->
-                after 100 Millisecond Durable
-
-            Loaded Durably ->
-                Cmd.none
-
-            Failed _ ->
-                Cmd.none
+    Cmd.map wrap <| cmdForImpl m.state
 
 
 cmdForMany : ManyModel msg -> Cmd msg
@@ -363,3 +357,28 @@ getOneState (ManyModel mm) url =
 getModel : OneModel msg -> LoadingModel
 getModel (OneModel m _) =
     m
+
+
+mark : OneModel msg -> OneModel msg
+mark (OneModel (LoadingModel m) wrap) =
+    case m.state of
+        Marked _ ->
+            OneModel (LoadingModel m) wrap
+
+        _ ->
+            OneModel (LoadingModel { m | state = Marked m.state }) wrap
+
+
+markOne : ManyModel msg -> Url -> ManyModel msg
+markOne (ManyModel mm) url =
+    case get (toString url) mm.models of
+        Nothing ->
+            ManyModel mm
+
+        Just (LoadingModel m) ->
+            case m.state of
+                Marked _ ->
+                    ManyModel mm
+
+                _ ->
+                    ManyModel { mm | models = insert (toString url) (LoadingModel { m | state = Marked m.state }) mm.models }
