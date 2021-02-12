@@ -2,15 +2,17 @@ module Sandbox.LoadingTest exposing (..)
 
 import Browser exposing (Document)
 import Browser.Navigation exposing (Key)
-import Html exposing (br, text)
-import String exposing (fromInt)
+import Html exposing (br, div, img, text)
+import Html.Attributes exposing (height, src, width)
+import Html.Events exposing (on)
+import Json.Decode exposing (succeed)
 import Url exposing (Protocol(..), Url, toString)
 import Utils.HttpUtils exposing (viewProgress)
-import Utils.Loading as Loading exposing (LoadedSubstate(..), ManyModel, ManyMsg, getOneState)
+import Utils.Loading as Loading exposing (ManyModel, ManyMsg, getOneState, markOne)
 
 
 pathToUrl host basePath path =
-    { protocol = Http
+    { protocol = Https
     , host = host
     , port_ = Nothing
     , path = "/" ++ basePath ++ path
@@ -48,6 +50,7 @@ type alias Model =
 
 type Msg
     = Msg ManyMsg
+    | Loaded Url
     | NoOp
 
 
@@ -86,7 +89,10 @@ update msg model =
                 ( newModel, newCmd ) =
                     Loading.updateMany m model.model (always model.urls)
             in
-            ( { urls = model.urls, model = newModel }, newCmd )
+            ( { model | model = newModel }, newCmd )
+
+        Loaded url ->
+            ( { model | model = markOne model.model url }, Cmd.none )
 
 
 view : Model -> Document Msg
@@ -99,36 +105,42 @@ view model =
 
 
 viewOne model url =
-    text <|
-        case getOneState model url of
-            Just state ->
-                toString url
-                    ++ ": "
-                    ++ (case state of
-                            Loading.NotRequested ->
-                                "not requested"
+    case getOneState model url of
+        Just state ->
+            let
+                label l =
+                    text <|
+                        toString url
+                            ++ ": "
+                            ++ l
 
-                            Loading.RequestedButNoProgress ->
-                                "requested, awaiting initial progress"
+                viewOneImpl s =
+                    case s of
+                        Loading.NotRequested ->
+                            label "not requested"
 
-                            Loading.Loading progress ->
-                                viewProgress "" <| Just progress
+                        Loading.RequestedButNoProgress ->
+                            label "requested, awaiting initial progress"
 
-                            Loading.Loaded JustNow ->
-                                "just now loaded"
+                        Loading.Loading progress ->
+                            label <| viewProgress "" <| Just progress
 
-                            Loading.Loaded Recently ->
-                                "recently loaded"
+                        Loading.Failed _ ->
+                            label "failed"
 
-                            Loading.Loaded Durably ->
-                                "durably loaded"
+                        Loading.Loaded ->
+                            div []
+                                [ img [ on "load" <| succeed <| Loaded url, src <| toString url, width 10, height 10 ] []
+                                , label "loaded"
+                                ]
 
-                            Loading.Failed _ ->
-                                "failed"
-                       )
+                        Loading.Marked st ->
+                            div [] [ text "marked: ", viewOneImpl st ]
+            in
+            viewOneImpl state
 
-            Nothing ->
-                "mysterious missing state for " ++ toString url
+        Nothing ->
+            text <| "mysterious missing state for " ++ toString url
 
 
 subscriptions : Model -> Sub Msg

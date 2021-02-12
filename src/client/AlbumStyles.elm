@@ -7,7 +7,6 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (css)
 import Html.Styled.Events exposing (..)
 import Json.Decode exposing (..)
-import Time exposing (..)
 import Utils.LocationUtils exposing (AnchorFunction)
 
 
@@ -42,13 +41,8 @@ type alias MainAlbumFlags =
 
 
 type ImgLoadState
-    = Requested
-    | Partial ( Int, Maybe Int ) --bytes loaded, maybe total bytes
-      -- | Aborted
-      -- | Failed
-    | Completed
-    | Shown --not really a state, a bit of a hack
-    | Disappearing --not really a state, a bit of a hack
+    = ImgFetched
+    | ImgLoaded
 
 
 {-| this prevents "bouncy" scrolling on iOS, as recommended at
@@ -131,20 +125,11 @@ rootDivFlex flags dir scrollMsgMaker viewport extraStyles =
 opacityStyles : ImgLoadState -> List Style
 opacityStyles imgLoadedState =
     case imgLoadedState of
-        Requested ->
+        ImgFetched ->
             [ Css.opacity <| num 0 ]
 
-        Partial int ->
-            [ Css.opacity <| num 0 ]
-
-        Completed ->
+        ImgLoaded ->
             opacityAnimatedTo 1
-
-        Shown ->
-            [ Css.opacity <| num 1 ]
-
-        Disappearing ->
-            opacityAnimatedTo 0
 
 
 opacityDurationMillis : Float

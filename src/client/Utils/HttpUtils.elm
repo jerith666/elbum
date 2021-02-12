@@ -1,6 +1,8 @@
-module Utils.HttpUtils exposing (getUrl, viewProgress)
+module Utils.HttpUtils exposing (appendPath, viewProgress)
 
 import Http exposing (..)
+import String exposing (endsWith, startsWith)
+import Url exposing (Url)
 import Utils.ListUtils exposing (..)
 
 
@@ -28,9 +30,18 @@ viewProgress prefix mProgress =
                             prefix ++ ": received " ++ pct r.received size
 
 
-getUrl : (Result Http.Error () -> msg) -> String -> Cmd msg
-getUrl handler url =
-    Http.get
-        { url = encodePath url
-        , expect = expectWhatever handler
-        }
+appendPath : Url -> String -> Url
+appendPath baseUrl relativePath =
+    let
+        sep =
+            case endsWith "/" baseUrl.path || startsWith "/" relativePath of
+                True ->
+                    ""
+
+                False ->
+                    "/"
+
+        newPath =
+            baseUrl.path ++ sep ++ relativePath
+    in
+    { baseUrl | path = newPath, query = Nothing, fragment = Nothing }

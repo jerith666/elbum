@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, eqIgnoringVpInfo, getImgPosition, hashForAlbum, pageSize, progInit, resetUrls, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, cmdFor, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, initThumbsFullVp, pageSize, progInit, subscriptions, titleOf, update, urlsToGet, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -9,13 +9,15 @@ import Html.Events.Extra.Touch exposing (..)
 import Html.Styled exposing (..)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)
+import List exposing (take)
 import ProgressiveImage exposing (..)
-import Set exposing (..)
 import Task exposing (..)
 import ThumbPage exposing (..)
+import Url exposing (Url)
 import Utils.AlbumUtils exposing (..)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
+import Utils.Loading exposing (ManyModel, ManyMsg, cmdForMany, initMany, markOne, subscriptionsMany, updateMany)
 import Utils.LocationUtils exposing (AnchorFunction)
 import Utils.ResultUtils exposing (..)
 import Utils.TouchUtils as TU exposing (..)
@@ -25,8 +27,8 @@ type AlbumPage
     = Thumbs
         { album : Album
         , vpInfo : ViewportInfo
-        , justLoadedImages : Set String
-        , readyToDisplayImages : Set String
+        , baseUrl : Url
+        , imageLoader : ManyModel AlbumPageMsg
         }
     | FullImage
         { prevImgs : List Image
@@ -36,7 +38,8 @@ type AlbumPage
         , scroll : Maybe Float
         , touchState : TouchState
         , imgPosition : Maybe Element
-        , thumbLoadState : ThumbLoadState
+        , baseUrl : Url
+        , imageLoader : ManyModel AlbumPageMsg
         }
 
 
@@ -61,7 +64,50 @@ type AlbumPageMsg
     | FullMsg ProgressiveImageMsg
     | ImgPositionFailed Browser.Dom.Error
     | GotImgPosition Element
+    | LoadingMsg ManyMsg
+    | ThumbLoaded Url
     | NoUpdate
+
+
+initThumbs : Album -> Viewport -> Url -> ( AlbumPage, Cmd AlbumPageMsg )
+initThumbs album bodyViewport baseUrl =
+    initThumbsFullVp album
+        { bodyViewport = bodyViewport
+        , rootDivViewport = Nothing
+        }
+        baseUrl
+
+
+initThumbsFullVp : Album -> ViewportInfo -> Url -> ( AlbumPage, Cmd AlbumPageMsg )
+initThumbsFullVp album vpInfo baseUrl =
+    let
+        ( emptyLoader, _ ) =
+            initMany [] [] <| always ()
+
+        baseModel =
+            { album = album
+            , vpInfo = vpInfo
+            , baseUrl = baseUrl
+            , imageLoader = emptyLoader
+            }
+
+        firstUrls =
+            take 5 <| ThumbPage.urlsToGet <| thumbModel baseModel
+
+        restUrls =
+            List.filter (\u -> not <| List.member u firstUrls) <| allUrls baseUrl <| thumbModel baseModel
+
+        ( imageLoader, imgCmd ) =
+            initMany firstUrls restUrls LoadingMsg
+    in
+    ( Thumbs
+        { album = album
+        , vpInfo = vpInfo
+        , baseUrl = baseUrl
+        , imageLoader = imageLoader
+        }
+    , imgCmd
+    )
 
 
 update : AlbumPageMsg -> AlbumPage -> Maybe Float -> ( AlbumPage, Cmd AlbumPageMsg )
@@ -79,17 +125,6 @@ update msg model scroll =
 
                         ( progModel, progCmd ) =
                             progInit th.vpInfo.bodyViewport curImg w h
-
-                        imgCount =
-                            List.length prevImgs + 1 + List.length nextImgs
-
-                        thumbLoadState =
-                            case imgCount == Set.size th.readyToDisplayImages of
-                                True ->
-                                    AllLoaded
-
-                                False ->
-                                    SomeMissing
                     in
                     ( FullImage
                         { prevImgs = prevImgs
@@ -104,7 +139,8 @@ update msg model scroll =
                         , scroll = scroll
                         , touchState = TU.init
                         , imgPosition = Nothing
-                        , thumbLoadState = thumbLoadState
+                        , baseUrl = th.baseUrl
+                        , imageLoader = th.imageLoader
                         }
                     , Cmd.batch
                         [ Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd progCmd
@@ -136,19 +172,11 @@ update msg model scroll =
                         th =
                             { album = baseAlbumOf <| FullImage fi
                             , vpInfo = fi.vpInfo
-                            , justLoadedImages = empty
-                            , readyToDisplayImages = empty
+                            , baseUrl = fi.baseUrl
+                            , imageLoader = fi.imageLoader
                             }
-
-                        readyToDisplayImages =
-                            case fi.thumbLoadState of
-                                SomeMissing ->
-                                    empty
-
-                                AllLoaded ->
-                                    allUrls <| thumbModel th
                     in
-                    ( Thumbs { th | readyToDisplayImages = readyToDisplayImages }
+                    ( Thumbs th
                     , scrollCmd
                     )
 
@@ -214,6 +242,34 @@ update msg model scroll =
 
                 _ ->
                     ( model, Cmd.none )
+
+        LoadingMsg lmsg ->
+            let
+                revisePending _ =
+                    urlsToGet model
+            in
+            case model of
+                Thumbs t ->
+                    let
+                        ( newLoadingModel, newLoadingCmd ) =
+                            updateMany lmsg t.imageLoader revisePending
+                    in
+                    ( Thumbs { t | imageLoader = newLoadingModel }, newLoadingCmd )
+
+                FullImage fi ->
+                    let
+                        ( newLoadingModel, newLoadingCmd ) =
+                            updateMany lmsg fi.imageLoader revisePending
+                    in
+                    ( FullImage { fi | imageLoader = newLoadingModel }, newLoadingCmd )
+
+        ThumbLoaded url ->
+            case model of
+                Thumbs t ->
+                    ( Thumbs { t | imageLoader = markOne t.imageLoader url }, Cmd.none )
+
+                FullImage fi ->
+                    ( FullImage { fi | imageLoader = markOne fi.imageLoader url }, Cmd.none )
 
         NoUpdate ->
             ( model, Cmd.none )
@@ -303,27 +359,14 @@ updatePrevNext model shifter =
             ( model, Cmd.none )
 
 
-resetUrls : AlbumPageMsg -> Bool
-resetUrls msg =
-    case msg of
-        BackToThumbs ->
-            True
-
-        View _ _ _ ->
-            True
-
-        _ ->
-            False
-
-
-urlsToGet : AlbumPage -> Set String
+urlsToGet : AlbumPage -> List Url
 urlsToGet albumPage =
     case albumPage of
         Thumbs th ->
             ThumbPage.urlsToGet <| thumbModel th
 
         _ ->
-            empty
+            []
 
 
 thumbModel th =
@@ -331,8 +374,8 @@ thumbModel th =
     , parents = []
     , bodyViewport = th.vpInfo.bodyViewport
     , rootDivViewport = th.vpInfo.rootDivViewport
-    , justLoadedImages = th.justLoadedImages
-    , readyToDisplayImages = th.readyToDisplayImages
+    , imageLoader = th.imageLoader
+    , baseUrl = th.baseUrl
     }
 
 
@@ -354,13 +397,14 @@ view albumPage a scrollMsgMaker showList wrapMsg parents flags =
                 a
                 scrollMsgMaker
                 (\x -> \y -> \z -> wrapMsg (View x y z))
+                (ThumbLoaded >> wrapMsg)
                 showList
                 { album = th.album
                 , parents = parents
                 , bodyViewport = th.vpInfo.bodyViewport
                 , rootDivViewport = th.vpInfo.rootDivViewport
-                , justLoadedImages = th.justLoadedImages
-                , readyToDisplayImages = th.readyToDisplayImages
+                , imageLoader = th.imageLoader
+                , baseUrl = th.baseUrl
                 }
                 flags
 
@@ -419,13 +463,17 @@ touchPrevNext touchState _ =
 subscriptions : AlbumPage -> (AlbumPageMsg -> msg) -> msg -> Sub msg
 subscriptions albumPage wrapper showParent =
     case albumPage of
-        Thumbs _ ->
-            onEscape showParent <| wrapper NoUpdate
+        Thumbs t ->
+            Sub.batch
+                [ onEscape showParent <| wrapper NoUpdate
+                , Sub.map wrapper <| subscriptionsMany t.imageLoader
+                ]
 
         FullImage fi ->
             Sub.map wrapper <|
                 Sub.batch <|
                     [ Sub.map FullMsg <| ProgressiveImage.subscriptions fi.progModel
+                    , subscriptionsMany fi.imageLoader
                     , onKeyDown <|
                         Json.Decode.map
                             (\k ->
@@ -445,6 +493,16 @@ subscriptions albumPage wrapper showParent =
                         <|
                             field "key" string
                     ]
+
+
+cmdFor : AlbumPage -> Cmd AlbumPageMsg
+cmdFor albumPage =
+    case albumPage of
+        Thumbs t ->
+            cmdForMany t.imageLoader
+
+        FullImage fi ->
+            cmdForMany fi.imageLoader
 
 
 pageSize : AlbumPage -> ViewportInfo
