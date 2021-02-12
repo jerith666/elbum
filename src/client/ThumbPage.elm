@@ -17,6 +17,44 @@ import Utils.Loading exposing (LoadState(..), ManyModel, getOneState)
 import Utils.LocationUtils exposing (AnchorFunction)
 
 
+{-| This module renders the thumbnail view of an album of images.
+
+Another interesting part is how we ensure that each thumbnail
+nicely fades in only once it is completely loaded, while also
+giving the user some indication that thumbnails are loading. This
+is hard because <img/> elements don't provide onProgress events,
+only onLoad events.
+
+After trying several work-arounds, what I've settled on that seems to
+work the best is this: We fetch the image's Url using Http.get. And
+then we know (okay, technically, "can assume/hope/bet") that the
+contents of that URL will remain cached while we add an <img/> element
+to the DOM.
+
+That <img/>'s onLoad event will still fire -- usually almost
+instantly, but if the preceding assumption fails, it'll fire after the
+browser has re-downloaded the image.
+
+At that point we can change the style from `opacity: 0` to `opacity:
+1; transition opacity NNN 0s easeInOut`. This is important because
+CSS transitions only render if the DOM element was already present
+_without_ the transition.
+
+The code in this module delegates the progress tracking to the
+`Loading` module. Once we see that the image's url is loaded, we
+create the <img/> element and attach an `onLoad` listener to it. When
+that fires, we use `Loading.markOne` to indicate that it's time to
+fade in the immage, and then the `Marked` state tells us to re-render
+the <img/> element with the transition.
+
+Another important consideration, since `Url`s are being built somewhat
+dynamically, is to ensure that the `Url` used with the `Loading`
+module is the same as that used with the <img/> element -- otherwise,
+the assumption that the <img/> element will find the image data
+already in the cache won't hold. (The two cases this bit me were
+percent-encoding and extra slashes.)
+
+-}
 type alias ThumbPageModel msg =
     { album : Album
     , parents : List AlbumList

@@ -7,6 +7,14 @@ import Task
 import Url exposing (Url, fromString, toString)
 
 
+{-| Support for loading a collection of `Url`s and tracking their progress.
+
+`LoadState` represents the states that a single tracked `Url` can be in. The `Marked` state is a special state that
+lets the client of this API indicate some additional state beyond the basic network-oriented states given here. For
+example, this can be used to track when some element that embeds the `Url` has completed its own initialization
+(perhaps an `<img>` element's `onLoad` event has happened).
+
+-}
 type LoadState
     = NotRequested
     | RequestedButNoProgress
