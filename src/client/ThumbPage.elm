@@ -160,7 +160,13 @@ urlsToGet thumbPageModel =
                     Just Loaded ->
                         True
 
+                    Just (Marked Loaded) ->
+                        True
+
                     Just (Failed _) ->
+                        True
+
+                    Just (Marked (Failed _)) ->
                         True
 
                     _ ->
