@@ -9,6 +9,7 @@ import Html.Styled.Events exposing (on)
 import Http exposing (Progress(..))
 import ImageViews exposing (..)
 import Json.Decode as Decoder
+import Progress.Ring
 import String exposing (fromInt)
 import Url exposing (Url)
 import Utils.HttpUtils exposing (appendPath)
@@ -439,7 +440,7 @@ stubThumb width img progress =
             [ Css.width <| px <| toFloat xScaled
             , Css.height <| px <| toFloat yScaled
             , color white
-            , textAlign center
+            , alignItems center
             , displayFlex
             , property "justify-content" "center"
             , property "align-content" "center"
@@ -455,30 +456,41 @@ stubThumb width img progress =
             , margin (px -1)
             ]
         ]
-        [ Html.Styled.text <| renderProgress progress ]
+        [ renderProgress progress ]
 
 
-renderProgress : Maybe LoadState -> String
+renderProgress : Maybe LoadState -> Html msg
 renderProgress l =
     case l of
         Just (Loading (Receiving r)) ->
             case r.size of
                 Just sz ->
-                    fromInt <| (r.received * 100) // sz
+                    let
+                        pct =
+                            toFloat r.received / toFloat sz
+                    in
+                    fromUnstyled <|
+                        Progress.Ring.view
+                            { color = "#bfbfbf"
+                            , progress = pct
+                            , radius = 20
+                            , stroke = 5
+                            }
 
                 Nothing ->
-                    case modBy 3 r.received of
-                        0 ->
-                            ".  "
+                    text <|
+                        case modBy 3 r.received of
+                            0 ->
+                                ".  "
 
-                        1 ->
-                            " . "
+                            1 ->
+                                " . "
 
-                        _ ->
-                            "  ."
+                            _ ->
+                                "  ."
 
         _ ->
-            "..."
+            text "..."
 
 
 sizeForWidth : Int -> Image -> ( Int, Int )

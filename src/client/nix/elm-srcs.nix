@@ -11,6 +11,10 @@
     version = "4.0.0";
     sha256 = "03dv58ppc4hvx0yriwl9mcaxynvcrbz45906jga39921a9gcbf6s";
   };
+  "cedricss/elm-progress-ring" = {
+    version = "1.0.1";
+    sha256 = "1nk5b5vzwbvl3sim6142qdw5jfcx36f6a6g3zf7a2wchwh8jz643";
+  };
   "elm/browser" = {
     version = "1.0.2";
     sha256 = "0nagb9ajacxbbg985r4k9h0jadqpp0gp84nm94kcgbr5sf8i9x13";
