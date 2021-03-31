@@ -1,4 +1,4 @@
-module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, cmdFor, cmdForMany, getOneState, getState, init, initMany, mark, markOne, subscriptions, subscriptionsMany, update, updateMany)
+module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, cmdFor, cmdForMany, getOneState, getState, init, initMany, mark, markOne, subscriptions, subscriptionsMany, update, updateMany, updatePending)
 
 import Dict exposing (Dict, filter, fromList, get, insert, size, toList, values)
 import Http exposing (Error, Progress, emptyBody, expectWhatever, track)
@@ -158,21 +158,10 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
                 oneNewModels =
                     insert (toString url) (LoadingModel oneNewModel) mm.models
 
-                isNewUrl u =
-                    (u /= url) && (not <| List.member u (List.map (\(LoadingModel lm) -> lm.url) <| Dict.values oneNewModels))
-
-                revisedPending =
-                    List.filter isNewUrl <| revisePending <| List.filter isNewUrl mm.pending
-
-                ( allNewModels, newPending, newCmds ) =
-                    promotePending mm.wrap mm.maxConcurrentCount oneNewModels revisedPending
+                ( newManyModel, newCmds ) =
+                    updatePendingImpl ((/=) url) (ManyModel { mm | models = oneNewModels }) revisePending
             in
-            ( ManyModel
-                { pending = newPending
-                , maxConcurrentCount = mm.maxConcurrentCount
-                , models = allNewModels
-                , wrap = mm.wrap
-                }
+            ( newManyModel
             , Cmd.batch [ newCmds, oneNewCmd ]
             )
 
@@ -180,6 +169,33 @@ updateMany (ManyMsg url loadingMsg) (ManyModel mm) revisePending =
             ( ManyModel mm
             , Cmd.none
             )
+
+
+updatePending : ManyModel msg -> (List Url -> List Url) -> ( ManyModel msg, Cmd msg )
+updatePending =
+    updatePendingImpl <| always True
+
+
+updatePendingImpl : (Url -> Bool) -> ManyModel msg -> (List Url -> List Url) -> ( ManyModel msg, Cmd msg )
+updatePendingImpl urlFilter (ManyModel mm) revisePending =
+    let
+        isNewUrl u =
+            urlFilter u && (not <| List.member u (List.map (\(LoadingModel lm) -> lm.url) <| Dict.values mm.models))
+
+        revisedPending =
+            List.filter isNewUrl <| revisePending <| List.filter isNewUrl mm.pending
+
+        ( allNewModels, newPending, newCmds ) =
+            promotePending mm.wrap mm.maxConcurrentCount mm.models revisedPending
+    in
+    ( ManyModel
+        { pending = newPending
+        , maxConcurrentCount = mm.maxConcurrentCount
+        , models = allNewModels
+        , wrap = mm.wrap
+        }
+    , newCmds
+    )
 
 
 isLoading (LoadingModel m) =

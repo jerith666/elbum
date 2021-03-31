@@ -17,7 +17,7 @@ import Url exposing (Url)
 import Utils.AlbumUtils exposing (..)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
-import Utils.Loading exposing (ManyModel, ManyMsg, cmdForMany, initMany, markOne, subscriptionsMany, updateMany)
+import Utils.Loading exposing (ManyModel, ManyMsg, cmdForMany, initMany, markOne, subscriptionsMany, updateMany, updatePending)
 import Utils.LocationUtils exposing (AnchorFunction)
 import Utils.ResultUtils exposing (..)
 import Utils.TouchUtils as TU exposing (..)
@@ -175,9 +175,15 @@ update msg model scroll =
                             , baseUrl = fi.baseUrl
                             , imageLoader = fi.imageLoader
                             }
+
+                        revisePending _ =
+                            urlsToGet <| Thumbs th
+
+                        ( newLoader, loadingCmd ) =
+                            updatePending th.imageLoader revisePending
                     in
-                    ( Thumbs th
-                    , scrollCmd
+                    ( Thumbs { th | imageLoader = newLoader }
+                    , Cmd.batch [ scrollCmd, loadingCmd ]
                     )
 
                 _ ->
