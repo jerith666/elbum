@@ -59,7 +59,12 @@ type alias AnimState =
 
 
 type ProgressiveImageModel
-    = ProgImgModel ProgressiveImageData ProgressiveImageStatus AnimState ProgressiveImageCompleteness
+    = ProgImgModel
+        { data : ProgressiveImageData
+        , status : ProgressiveImageStatus
+        , animState : AnimState
+        , completeness : ProgressiveImageCompleteness
+        }
 
 
 type ProgressiveImageMsg
@@ -105,37 +110,44 @@ init data =
         model =
             case data.possiblyCached of
                 [] ->
-                    ProgImgModel data LoadingFallback animState Incomplete
+                    ProgImgModel { data = data, status = LoadingFallback, animState = animState, completeness = Incomplete }
 
                 c1 :: cOthers ->
-                    ProgImgModel data (TryingCached [] c1 cOthers) animState Incomplete
+                    ProgImgModel { data = data, status = TryingCached [] c1 cOthers, animState = animState, completeness = Incomplete }
     in
     ( model, updateCmd model )
 
 
 withWidthHeight : Int -> Int -> ProgressiveImageModel -> ProgressiveImageModel
-withWidthHeight w h (ProgImgModel data status animState completeness) =
-    ProgImgModel { data | width = w, height = h } status animState completeness
+withWidthHeight w h (ProgImgModel piModel) =
+    let
+        dataOldWH =
+            piModel.data
+    in
+    ProgImgModel { piModel | data = { dataOldWH | width = w, height = h } }
 
 
 update : ProgressiveImageMsg -> ProgressiveImageModel -> ( ProgressiveImageModel, Cmd ProgressiveImageMsg, ProgressiveImageCompleteness )
 update msg oldModel =
     let
-        ( ProgImgModel data status animState completeness, cmd ) =
+        ( ProgImgModel piModel, cmd ) =
             updateImpl msg oldModel
     in
-    ( ProgImgModel data status animState completeness, cmd, completeness )
+    ( ProgImgModel piModel, cmd, piModel.completeness )
 
 
 updateImpl : ProgressiveImageMsg -> ProgressiveImageModel -> ( ProgressiveImageModel, Cmd ProgressiveImageMsg )
-updateImpl msg ((ProgImgModel data status animState completeness) as oldModel) =
+updateImpl msg ((ProgImgModel piModel) as oldModel) =
     case msg of
         AnimateMain animMsg ->
             let
+                oldAnimState =
+                    piModel.animState
+
                 ( newMainState, animCmd ) =
-                    Animation.Messenger.update animMsg animState.main
+                    Animation.Messenger.update animMsg piModel.animState.main
             in
-            ( ProgImgModel data status { animState | main = newMainState } completeness, animCmd )
+            ( ProgImgModel { piModel | animState = { oldAnimState | main = newMainState } }, animCmd )
 
         ScheduleTimeout n unit img ->
             ( oldModel, Delay.after n unit <| Timeout img )
@@ -149,29 +161,54 @@ updateImpl msg ((ProgImgModel data status animState completeness) as oldModel) =
 
 
 updateModel : ProgressiveImageMsg -> ProgressiveImageModel -> ProgressiveImageModel
-updateModel msg ((ProgImgModel data status animState completeness) as model) =
+updateModel msg ((ProgImgModel piModel) as model) =
     case msg of
         Loaded imgSrc ->
-            case status of
+            case piModel.status of
                 TryingCached _ trying _ ->
                     if imgSrc == trying then
-                        ProgImgModel data (LoadingMain trying) { animState | placeholder = show animState.placeholder } completeness
+                        let
+                            oldAnimState =
+                                piModel.animState
+                        in
+                        ProgImgModel
+                            { piModel
+                                | status = LoadingMain trying
+                                , animState = { oldAnimState | placeholder = show piModel.animState.placeholder }
+                            }
 
                     else
                         --maybe some earlier tried image?  ignore
                         model
 
                 LoadingFallback ->
-                    if imgSrc == data.fallback then
-                        ProgImgModel data (LoadingMain data.fallback) { animState | placeholder = show animState.placeholder } completeness
+                    if imgSrc == piModel.data.fallback then
+                        let
+                            oldAnimState =
+                                piModel.animState
+                        in
+                        ProgImgModel
+                            { piModel
+                                | status = LoadingMain piModel.data.fallback
+                                , animState = { oldAnimState | placeholder = show piModel.animState.placeholder }
+                            }
 
                     else
                         --maybe some earlier tryingCached?  ignore
                         model
 
                 LoadingMain placeholder ->
-                    if imgSrc == data.mainImg then
-                        ProgImgModel data (MainLoaded placeholder) { animState | main = showMsg animState.main } Complete
+                    if imgSrc == piModel.data.mainImg then
+                        let
+                            oldAnimState =
+                                piModel.animState
+                        in
+                        ProgImgModel
+                            { piModel
+                                | status = MainLoaded placeholder
+                                , animState = { oldAnimState | main = showMsg piModel.animState.main }
+                                , completeness = Complete
+                            }
 
                     else
                         --something stale, ignore
@@ -186,14 +223,14 @@ updateModel msg ((ProgImgModel data status animState completeness) as model) =
                     model
 
         Timeout _ ->
-            case status of
+            case piModel.status of
                 TryingCached tried trying upnext ->
                     case upnext of
                         [] ->
-                            ProgImgModel data LoadingFallback animState completeness
+                            ProgImgModel { piModel | status = LoadingFallback }
 
                         next :: later ->
-                            ProgImgModel data (TryingCached (tried ++ [ trying ]) next later) animState completeness
+                            ProgImgModel { piModel | status = TryingCached (tried ++ [ trying ]) next later }
 
                 LoadingFallback ->
                     --shouldn't happen
@@ -215,9 +252,18 @@ updateModel msg ((ProgImgModel data status animState completeness) as model) =
             model
 
         MainFadeinComplete ->
-            case status of
+            case piModel.status of
                 MainLoaded _ ->
-                    ProgImgModel data MainOnly { animState | placeholder = hide animState.placeholder } Complete
+                    let
+                        oldAnimState =
+                            piModel.animState
+                    in
+                    ProgImgModel
+                        { piModel
+                            | status = MainOnly
+                            , animState = { oldAnimState | placeholder = hide piModel.animState.placeholder }
+                            , completeness = Complete
+                        }
 
                 TryingCached _ _ _ ->
                     --shouldn't happen
@@ -240,12 +286,16 @@ updateModel msg ((ProgImgModel data status animState completeness) as model) =
             model
 
         AnimatePlaceholder animMsg ->
-            ProgImgModel data status { animState | placeholder = Animation.update animMsg animState.placeholder } completeness
+            let
+                oldAnimState =
+                    piModel.animState
+            in
+            ProgImgModel { piModel | animState = { oldAnimState | placeholder = Animation.update animMsg piModel.animState.placeholder } }
 
 
 updateCmd : ProgressiveImageModel -> Maybe ProgressiveImageMsg
-updateCmd (ProgImgModel _ status _ _) =
-    case status of
+updateCmd (ProgImgModel piModel) =
+    case piModel.status of
         TryingCached _ trying _ ->
             Just <| ScheduleTimeout 200 Millisecond trying
 
@@ -263,30 +313,30 @@ updateCmd (ProgImgModel _ status _ _) =
 
 
 subscriptions : ProgressiveImageModel -> Sub ProgressiveImageMsg
-subscriptions (ProgImgModel _ _ animState _) =
+subscriptions (ProgImgModel piModel) =
     Sub.batch
-        [ Animation.subscription AnimatePlaceholder [ animState.placeholder ]
-        , Animation.subscription AnimateMain [ animState.main ]
+        [ Animation.subscription AnimatePlaceholder [ piModel.animState.placeholder ]
+        , Animation.subscription AnimateMain [ piModel.animState.main ]
         ]
 
 
 view : ProgressiveImageModel -> Html ProgressiveImageMsg
-view (ProgImgModel data status animState _) =
-    case status of
+view (ProgImgModel piModel) =
+    case piModel.status of
         TryingCached _ trying _ ->
-            viewImg trying data (styledAnimation animState.placeholder) []
+            viewImg trying piModel.data (styledAnimation piModel.animState.placeholder) []
 
         LoadingFallback ->
-            viewImg data.fallback data (styledAnimation animState.placeholder) []
+            viewImg piModel.data.fallback piModel.data (styledAnimation piModel.animState.placeholder) []
 
         LoadingMain placeholder ->
-            viewLoadingMain data placeholder animState.placeholder animState.main
+            viewLoadingMain piModel.data placeholder piModel.animState.placeholder piModel.animState.main
 
         MainLoaded oldPlaceholder ->
-            viewLoadingMain data oldPlaceholder animState.placeholder animState.main
+            viewLoadingMain piModel.data oldPlaceholder piModel.animState.placeholder piModel.animState.main
 
         MainOnly ->
-            viewImg data.mainImg data (styledMsgAnimation animState.main) []
+            viewImg piModel.data.mainImg piModel.data (styledMsgAnimation piModel.animState.main) []
 
 
 viewLoadingMain : ProgressiveImageData -> ImgSrc -> Animation.State -> Animation.Messenger.State ProgressiveImageMsg -> Html ProgressiveImageMsg
