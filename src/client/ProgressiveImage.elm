@@ -14,15 +14,6 @@ import Json.Decode exposing (..)
 import Utils.ResultUtils exposing (..)
 
 
-type alias ProgressiveImageData =
-    { fallback : ImgSrc
-    , possiblyCached : List ImgSrc
-    , mainImg : ImgSrc
-    , width : Int
-    , height : Int
-    }
-
-
 {-| control flow:
 
 1.  try some images that might already be cached.
@@ -39,6 +30,15 @@ type alias ProgressiveImageData =
     again, this requires careful choreography.
 
 -}
+type alias ProgressiveImageData =
+    { fallback : ImgSrc
+    , possiblyCached : List ImgSrc
+    , mainImg : ImgSrc
+    , width : Int
+    , height : Int
+    }
+
+
 type ProgressiveImageStatus
     = TryingCached (List ImgSrc) ImgSrc (List ImgSrc)
     | LoadingFallback
