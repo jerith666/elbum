@@ -2,7 +2,7 @@ module ProgressiveImage exposing (ProgressiveImageCompleteness(..), ProgressiveI
 
 import Album exposing (ImgSrc)
 import AlbumStyles exposing (..)
-import Animation exposing (px)
+import Animation
 import Animation.Messenger exposing (..)
 import Css exposing (..)
 import Delay exposing (..)
@@ -11,7 +11,6 @@ import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)
-import Time exposing (..)
 import Utils.ResultUtils exposing (..)
 
 
@@ -154,7 +153,7 @@ updateModel msg ((ProgImgModel data status animState completeness) as model) =
     case msg of
         Loaded imgSrc ->
             case status of
-                TryingCached tried trying upnext ->
+                TryingCached _ trying _ ->
                     if imgSrc == trying then
                         ProgImgModel data (LoadingMain trying) { animState | placeholder = show animState.placeholder } completeness
 
@@ -186,7 +185,7 @@ updateModel msg ((ProgImgModel data status animState completeness) as model) =
                     --some stale loading notification, ignore
                     model
 
-        Timeout imgSrc ->
+        Timeout _ ->
             case status of
                 TryingCached tried trying upnext ->
                     case upnext of
@@ -236,7 +235,7 @@ updateModel msg ((ProgImgModel data status animState completeness) as model) =
                     --shouldn't happen
                     model
 
-        AnimateMain animMsg ->
+        AnimateMain _ ->
             --taken care of by caller, can't happen
             model
 
@@ -256,7 +255,7 @@ updateCmd (ProgImgModel _ status _ _) =
         LoadingMain _ ->
             Nothing
 
-        MainLoaded oldPlaceholder ->
+        MainLoaded _ ->
             Nothing
 
         MainOnly ->
