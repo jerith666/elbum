@@ -119,7 +119,7 @@ update msg model scroll =
                                 (floor th.vpInfo.bodyViewport.viewport.height)
 
                         ( progModel, progCmd ) =
-                            progInit th.vpInfo.bodyViewport curImg w h
+                            progInit th.vpInfo.bodyViewport th.baseUrl curImg w h
                     in
                     ( FullImage
                         { prevImgs = prevImgs
@@ -138,7 +138,7 @@ update msg model scroll =
                         , imageLoader = th.imageLoader
                         }
                     , Cmd.batch
-                        [ Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd progCmd
+                        [ Cmd.map FullMsg progCmd
                         , getImgPosition
                         ]
                     )
@@ -299,8 +299,8 @@ getImgPosition =
     Task.attempt (either (\_ -> ImgPositionFailed) GotImgPosition) <| getElement theImageId
 
 
-progInit : Viewport -> Image -> Int -> Int -> ( ProgressiveImageModel, Maybe ProgressiveImageMsg )
-progInit viewport i w h =
+progInit : Viewport -> Url -> Image -> Int -> Int -> ( ProgressiveImageModel, Cmd ProgressiveImageMsg )
+progInit viewport baseUrl i w h =
     let
         ( _, thumbWidth ) =
             colsWidth viewport
@@ -314,6 +314,7 @@ progInit viewport i w h =
         , possiblyCached = [ smBiggerThan thumbWidth 1 ]
         , width = w
         , height = h
+        , baseUrl = baseUrl
         }
 
 
@@ -327,7 +328,7 @@ updatePrevNext model shifter =
 
                 ( newProgModel, newCmd ) =
                     if fi.album.imageFirst == newCur then
-                        ( fi.progModel, Nothing )
+                        ( fi.progModel, Cmd.none )
 
                     else
                         let
@@ -337,7 +338,7 @@ updatePrevNext model shifter =
                                     (floor fi.vpInfo.bodyViewport.viewport.width)
                                     (floor fi.vpInfo.bodyViewport.viewport.height)
                         in
-                        progInit fi.vpInfo.bodyViewport newCur w h
+                        progInit fi.vpInfo.bodyViewport fi.baseUrl newCur w h
             in
             ( FullImage
                 { fi
@@ -352,7 +353,7 @@ updatePrevNext model shifter =
                     , touchState = TU.init
                 }
             , Cmd.batch
-                [ Cmd.map FullMsg <| Maybe.withDefault Cmd.none <| Maybe.map toCmd newCmd
+                [ Cmd.map FullMsg newCmd
                 , getImgPosition
                 ]
             )

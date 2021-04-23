@@ -1047,33 +1047,33 @@ navForAlbum baseUrl model vpInfo album ps newParents =
                                 (floor vpInfo.bodyViewport.viewport.height)
 
                         ( progModel, progMsg ) =
-                            progInit vpInfo.bodyViewport nAlbum.imageFirst w h
+                            progInit vpInfo.bodyViewport baseUrl nAlbum.imageFirst w h
 
                         -- prepare the default message(s) to view the full-size image
                         -- followed by the initial message for its progressively loading
                         nonLocalMsg =
                             Just <|
                                 Meta <|
-                                    Sequence
-                                        (Album <|
-                                            ViewAlbum
-                                                (FullImage
-                                                    { baseUrl = baseUrl
-                                                    , prevImgs = prevs
-                                                    , album = nAlbum
-                                                    , progModel = progModel
-                                                    , vpInfo = vpInfo
-                                                    , scroll = Nothing
-                                                    , touchState = TU.init
-                                                    , imgPosition = Nothing
-                                                    , imageLoader = Tuple.first <| initMany [] [] LoadingMsg
-                                                    }
-                                                )
-                                                parentsNoScroll
+                                    SequenceCmd
+                                        (toCmd <|
+                                            Album <|
+                                                ViewAlbum
+                                                    (FullImage
+                                                        { baseUrl = baseUrl
+                                                        , prevImgs = prevs
+                                                        , album = nAlbum
+                                                        , progModel = progModel
+                                                        , vpInfo = vpInfo
+                                                        , scroll = Nothing
+                                                        , touchState = TU.init
+                                                        , imgPosition = Nothing
+                                                        , imageLoader = Tuple.first <| initMany [] [] LoadingMsg
+                                                        }
+                                                    )
+                                                    parentsNoScroll
                                         )
                                     <|
-                                        fromMaybe <|
-                                            Maybe.map (Album << PageMsg << FullMsg) progMsg
+                                        [ Cmd.map (Album << PageMsg << FullMsg) progMsg ]
                     in
                     -- now, see if we can create a more specific message, depending on whether we're
                     -- currently viewing the thumbnails or a full size image
