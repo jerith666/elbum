@@ -1,6 +1,6 @@
 { mkDerivation, aeson, async, base, bytestring, elm-bridge
 , filepath, friday, friday-juicypixels, JuicyPixels, regex-compat, parallel
-, stdenv
+, lib
 }:
 mkDerivation {
   pname = "elbum";
@@ -14,5 +14,5 @@ mkDerivation {
   ];
   homepage = "http://matt.mchenryfamily.org";
   description = "a web photo album generator";
-  license = stdenv.lib.licenses.gpl3;
+  license = lib.licenses.gpl3;
 }
