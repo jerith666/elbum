@@ -204,5 +204,5 @@ viewTouch touch =
         ]
 
 
-subscriptions model =
+subscriptions _ =
     Sub.none
