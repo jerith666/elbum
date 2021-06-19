@@ -3,7 +3,6 @@ module Utils.HttpUtils exposing (appendPath, viewProgress)
 import Http exposing (..)
 import String exposing (endsWith, startsWith)
 import Url exposing (Url)
-import Utils.ListUtils exposing (..)
 
 
 viewProgress : String -> Maybe Progress -> String

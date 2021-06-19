@@ -2,8 +2,8 @@ module Utils.ViewportUtils exposing (scrollPosOf, scrollToTop, viewportWithNewSi
 
 import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
+import Task
 import Utils.ResultUtils exposing (..)
-import Task exposing (..)
 
 
 

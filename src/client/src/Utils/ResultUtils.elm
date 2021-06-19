@@ -1,7 +1,7 @@
 module Utils.ResultUtils exposing (either, toCmd)
 
 import Result exposing (..)
-import Task exposing (..)
+import Task
 
 
 either : (a -> c) -> (b -> c) -> Result a b -> c
