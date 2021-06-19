@@ -28,14 +28,14 @@ let
         elmfile = module: "${srcdir}/${builtins.replaceStrings ["."] ["/"] module}.elm";
       in ''
         mkdir -p $out/share/doc
-        cp -iv ${albumTypes}/Album.elm .;
+        cp -iv ${albumTypes}/Album.elm src;
         ${lib.concatStrings (map (module: ''
           elm make ${elmfile module} --output $out/${module}.js --docs $out/share/doc/${module}.json --optimize
         '') targets)}
       '';
 
       installPhase = ''
-        mv -iv $out/Main.js $out/elbum.js;
+        mv -iv $out/src/Main.js $out/elbum.js;
         cp -iv index.html $out;
         cp -iv .htaccess $out;
       '';
@@ -61,5 +61,5 @@ in mkDerivation {
       ));
   };
   srcdir = ".";
-  targets = [ "Main" ];
+  targets = [ "src/Main" ];
 }
