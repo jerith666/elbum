@@ -1,10 +1,9 @@
-module Sandbox.ScrollTest exposing (Model(..), Msg(..), main, update, view)
+module Sandbox.ScrollTest exposing (Model(..), Msg(..), main)
 
 import AlbumStyles exposing (..)
 import Browser exposing (Document)
 import Css exposing (..)
-import Html exposing (program)
-import Html.Attributes exposing (..)
+import Html
 import Html.Styled exposing (..)
 import Html.Styled.Events exposing (..)
 import Json.Decode

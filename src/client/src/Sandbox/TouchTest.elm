@@ -1,11 +1,9 @@
 module Sandbox.TouchTest exposing (main)
 
-import AlbumListPage exposing (view)
-import AlbumPage exposing (update)
 import Basics.Extra exposing (..)
-import Browser exposing (..)
+import Browser
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes
 import Html.Events.Extra.Touch exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)

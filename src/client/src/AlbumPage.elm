@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, cmdFor, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, initThumbsFullVp, pageSize, progInit, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, cmdFor, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, initThumbsFullVp, pageSize, progInit, subscriptions, titleOf, update, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -11,7 +11,7 @@ import ImageViews exposing (..)
 import Json.Decode exposing (..)
 import List exposing (take)
 import ProgressiveImage exposing (..)
-import Task exposing (..)
+import Task
 import ThumbPage exposing (..)
 import Url exposing (Url)
 import Utils.AlbumUtils exposing (..)
@@ -221,7 +221,7 @@ update msg model scroll =
                 Thumbs _ ->
                     ( model, Cmd.none )
 
-        ImgPositionFailed err ->
+        ImgPositionFailed _ ->
             case model of
                 Thumbs _ ->
                     ( model, Cmd.none )
@@ -462,7 +462,7 @@ touchPrevNext touchState _ =
             else
                 TouchDragAbandon
 
-        Zoom zoom ->
+        Zoom _ ->
             TouchEndZoom touchState
 
 
@@ -543,7 +543,7 @@ eqIgnoringVpInfo aPage1 aPage2 =
                 Thumbs th2 ->
                     { th2 | vpInfo = th1.vpInfo } == th1
 
-                FullImage fi ->
+                FullImage _ ->
                     False
 
         FullImage fi1 ->

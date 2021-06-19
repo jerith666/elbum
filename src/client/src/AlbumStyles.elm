@@ -1,4 +1,4 @@
-module AlbumStyles exposing (ImgLoadState(..), MainAlbumFlags, black, navBoxStyles, navElement, navEltSize, opacityAnimatedTo, opacityStyles, rootDiv, rootDivFlex, rootDivId, rootPos, styles, theImageId, white)
+module AlbumStyles exposing (ImgLoadState(..), MainAlbumFlags, navBoxStyles, navElement, navEltSize, opacityStyles, rootDivFlex, rootDivId, rootPos, styles, theImageId, white)
 
 import Browser.Dom exposing (..)
 import Css exposing (..)

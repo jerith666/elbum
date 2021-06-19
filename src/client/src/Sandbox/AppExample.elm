@@ -1,4 +1,4 @@
-module Sandbox.AppExample exposing (Model, Msg(..), init, main, subscriptions, update, view, viewLink)
+module Sandbox.AppExample exposing (Model, Msg(..), main)
 
 import Browser
 import Browser.Navigation as Nav
@@ -6,7 +6,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Url
-import Url.Builder exposing (..)
 
 
 

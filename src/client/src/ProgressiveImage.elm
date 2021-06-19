@@ -1,13 +1,13 @@
-module ProgressiveImage exposing (ProgressiveImageCompleteness(..), ProgressiveImageData, ProgressiveImageModel, ProgressiveImageMsg, init, subscriptions, update, updateCmd, view, withWidthHeight)
+module ProgressiveImage exposing (ProgressiveImageCompleteness(..), ProgressiveImageData, ProgressiveImageModel, ProgressiveImageMsg, init, subscriptions, update, view, withWidthHeight)
 
 import Album exposing (ImgSrc)
 import AlbumStyles exposing (..)
 import Animation
-import Animation.Messenger exposing (..)
+import Animation.Messenger
 import Css exposing (..)
 import Delay exposing (..)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (..)
+import Html.Styled.Attributes
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)

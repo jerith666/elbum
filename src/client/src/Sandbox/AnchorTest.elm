@@ -1,15 +1,15 @@
 module Sandbox.AnchorTest exposing (main)
 
-import Browser exposing (Document, UrlRequest(..))
-import Browser.Navigation exposing (Key, load, pushUrl)
+import Browser exposing (Document)
+import Browser.Navigation exposing (Key, load)
 import Html.Styled exposing (Attribute, Html, a, br, div, text, toUnstyled)
 import Html.Styled.Attributes exposing (href)
 import Html.Styled.Events exposing (onClick)
-import RouteUrl exposing (App, HistoryEntry(..), RouteUrlProgram, UrlChange(..), WrappedModel(..), unwrapModel)
+import RouteUrl exposing (HistoryEntry(..), UrlChange(..), WrappedModel(..))
 import String exposing (toInt)
 import Url exposing (Url)
 import Utils.ListUtils as ListUtils
-import Utils.LocationUtils exposing (AnchorFunction, changeToString)
+import Utils.LocationUtils exposing (AnchorFunction)
 
 
 type alias AnchorTestModel =
@@ -30,20 +30,6 @@ type AnchorTestMsg
 
 
 --
-
-
-type alias AnchorManagedAppWithFlags model msg flags =
-    { delta2url : model -> model -> Maybe UrlChange
-    , location2messages : Url -> List msg
-    , init : flags -> Key -> ( model, Cmd msg )
-    , update : msg -> model -> ( model, Cmd msg )
-    , subscriptions : model -> Sub msg
-    , view : model -> (msg -> List (Attribute msg) -> List (Html msg) -> Html msg) -> Document msg
-    , onUrlRequest : UrlRequest -> msg
-    }
-
-
-
 --
 
 
