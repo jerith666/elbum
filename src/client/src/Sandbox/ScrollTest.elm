@@ -3,7 +3,6 @@ module Sandbox.ScrollTest exposing (Model(..), Msg(..), main)
 import AlbumStyles exposing (..)
 import Browser exposing (Document)
 import Css exposing (..)
-import Html
 import Html.Styled exposing (..)
 import Html.Styled.Events exposing (..)
 import Json.Decode
@@ -29,7 +28,7 @@ main =
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update (ScrolledTo newScroll) (ScrollPos oldScroll) =
+update (ScrolledTo newScroll) _ =
     ( ScrollPos newScroll, Cmd.none )
 
 
