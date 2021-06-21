@@ -222,15 +222,21 @@ updateModel msg ((ProgImgModel piModel) as model) =
                     --some stale loading notification, ignore
                     model
 
-        Timeout _ ->
+        Timeout timedOut ->
             case piModel.status of
                 TryingCached tried trying upnext ->
-                    case upnext of
-                        [] ->
-                            ProgImgModel { piModel | status = LoadingFallback }
+                    case timedOut == trying of
+                        True ->
+                            case upnext of
+                                [] ->
+                                    ProgImgModel { piModel | status = LoadingFallback }
 
-                        next :: later ->
-                            ProgImgModel { piModel | status = TryingCached (tried ++ [ trying ]) next later }
+                                next :: later ->
+                                    ProgImgModel { piModel | status = TryingCached (tried ++ [ trying ]) next later }
+
+                        False ->
+                            --stale timeout
+                            model
 
                 LoadingFallback ->
                     --shouldn't happen
