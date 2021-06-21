@@ -11,6 +11,8 @@ when inside the directory containing this file.
 
 -}
 
+import NoDuplicatePorts
+import NoUnsafePorts
 import NoUnused.CustomTypeConstructorArgs
 import NoUnused.CustomTypeConstructors
 import NoUnused.Dependencies
@@ -19,6 +21,7 @@ import NoUnused.Modules
 import NoUnused.Parameters
 import NoUnused.Patterns
 import NoUnused.Variables
+import NoUnusedPorts
 import Review.Rule exposing (Rule, ignoreErrorsForDirectories, ignoreErrorsForFiles)
 
 
@@ -39,4 +42,7 @@ config =
             |> ignoreErrorsForFiles [ "src/Utils/DebugSupport.elm" ]
         , NoUnused.Patterns.rule
         , NoUnused.Variables.rule
+        , NoDuplicatePorts.rule
+        , NoUnsafePorts.rule NoUnsafePorts.any
+        , NoUnusedPorts.rule
         ]
