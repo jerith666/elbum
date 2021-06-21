@@ -1,4 +1,4 @@
-module Sandbox.LoadingTest exposing (..)
+module Sandbox.LoadingTest exposing (main)
 
 import Browser exposing (Document)
 import Browser.Navigation exposing (Key)
