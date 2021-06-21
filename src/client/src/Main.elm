@@ -104,7 +104,7 @@ type MetaMsg
 type BootstrapMsg
     = GotBaseUrl Url
     | YesHome String
-    | NoHome Http.Error
+    | NoHome
     | LoadAlbumProgress Progress
     | YesAlbum AlbumOrList
     | NoAlbum Http.Error
@@ -191,7 +191,7 @@ updateGeneral generalMsg model =
                         , flags = sz.flags
                         , albumPathsAfterLoad = sz.albumPathsAfterLoad
                         }
-                    , Cmd.map Bootstrap <| Http.get { url = "home", expect = expectString <| either NoHome YesHome }
+                    , Cmd.map Bootstrap <| Http.get { url = "home", expect = expectString <| either (\_ -> NoHome) YesHome }
                     )
 
                 LoadingHomeLink lh ->
@@ -277,7 +277,7 @@ updateBootstrap bootstrapMsg model =
                 _ ->
                     ( model, Cmd.none )
 
-        NoHome _ ->
+        NoHome ->
             case model of
                 LoadingHomeLink lh ->
                     gotHome lh Nothing

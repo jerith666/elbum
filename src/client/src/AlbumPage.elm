@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, cmdFor, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, initThumbsFullVp, pageSize, progInit, subscriptions, titleOf, update, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, baseAlbumOf, cmdFor, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, initThumbsFullVp, pageSize, progInit, subscriptions, titleOf, update, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -43,11 +43,6 @@ type AlbumPage
         }
 
 
-type ThumbLoadState
-    = SomeMissing
-    | AllLoaded
-
-
 type alias ViewportInfo =
     { bodyViewport : Viewport, rootDivViewport : Maybe Viewport }
 
@@ -62,7 +57,7 @@ type AlbumPageMsg
     | Next
     | BackToThumbs
     | FullMsg ProgressiveImageMsg
-    | ImgPositionFailed Browser.Dom.Error
+    | ImgPositionFailed
     | GotImgPosition Element
     | LoadingMsg ManyMsg
     | ThumbLoaded Url
@@ -221,7 +216,7 @@ update msg model scroll =
                 Thumbs _ ->
                     ( model, Cmd.none )
 
-        ImgPositionFailed _ ->
+        ImgPositionFailed ->
             case model of
                 Thumbs _ ->
                     ( model, Cmd.none )
@@ -300,7 +295,7 @@ baseAlbumOf ap =
 
 
 getImgPosition =
-    Task.attempt (either ImgPositionFailed GotImgPosition) <| getElement theImageId
+    Task.attempt (either (\_ -> ImgPositionFailed) GotImgPosition) <| getElement theImageId
 
 
 progInit : Viewport -> Image -> Int -> Int -> ( ProgressiveImageModel, Maybe ProgressiveImageMsg )
