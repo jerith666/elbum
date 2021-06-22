@@ -33,6 +33,7 @@ type AnchorTestMsg
 --
 
 
+main : RouteUrl.NavigationApp (WrappedModel AnchorTestModel) (RouteUrl.WrappedMsg AnchorTestMsg) ()
 main =
     RouteUrl.anchorManagedApp
         { delta2url = delta2url --: model -> model -> Maybe UrlChange
@@ -82,6 +83,7 @@ view model a =
     { title = "title", body = [ toUnstyled <| viewImpl model a ] }
 
 
+viewImpl : AnchorTestModel -> AnchorFunction AnchorTestMsg -> Html AnchorTestMsg
 viewImpl model a =
     div [] <|
         List.intersperse (br [] [])

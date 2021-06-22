@@ -136,6 +136,7 @@ endZoom oldState =
                                     NoState
 
 
+cumScale : { scale : Float, startPos : ( Float, Float ), offset : ( Float, Float ), prev : Maybe ZoomOffset } -> Float
 cumScale z =
     case z.prev of
         Nothing ->

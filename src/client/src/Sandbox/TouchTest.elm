@@ -36,10 +36,12 @@ main =
         }
 
 
+init : a -> ( TouchTestModel, Cmd TouchTestMsg )
 init _ =
     ( { touches = [], zoomInfo = Nothing }, Cmd.none )
 
 
+update : TouchTestMsg -> TouchTestModel -> ( TouchTestModel, Cmd TouchTestMsg )
 update msg model =
     case msg of
         TouchMsg evt ->
@@ -66,6 +68,7 @@ updateZoomPair existingZoom newTouches =
             Nothing
 
 
+view : TouchTestModel -> Html TouchTestMsg
 view model =
     div
         [ Html.Attributes.style "width" "100vw"
@@ -121,6 +124,7 @@ drawZoom zoomInfo =
                 ]
 
 
+circ : ( Float, Float ) -> Float -> String -> Svg msg
 circ ( x, y ) d color =
     circle
         [ cx <| String.fromFloat x
@@ -165,6 +169,7 @@ coords t =
     ( x, y )
 
 
+drawTouch : Touch -> List (Svg TouchTestMsg)
 drawTouch touch =
     let
         x =
@@ -204,5 +209,6 @@ viewTouch touch =
         ]
 
 
+subscriptions : a -> Sub msg
 subscriptions _ =
     Sub.none

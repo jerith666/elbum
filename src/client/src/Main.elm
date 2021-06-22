@@ -497,6 +497,7 @@ updateMeta albumMetaMsg model =
             ( model, Cmd.none )
 
 
+gotHome : { key : Key, baseUrl : Url, bodyViewport : Viewport, flags : MainAlbumFlags, albumPathsAfterLoad : Maybe (List String) } -> Maybe String -> ( MainAlbumModel, Cmd MainAlbumMsg )
 gotHome lh home =
     ( Loading
         { key = lh.key
