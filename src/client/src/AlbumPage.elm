@@ -294,6 +294,7 @@ baseAlbumOf ap =
             }
 
 
+getImgPosition : Cmd AlbumPageMsg
 getImgPosition =
     Task.attempt (either (\_ -> ImgPositionFailed) GotImgPosition) <| getElement theImageId
 
@@ -370,6 +371,7 @@ urlsToGet albumPage =
             []
 
 
+thumbModel : { album : Album, vpInfo : ViewportInfo, baseUrl : Url, imageLoader : ManyModel msg } -> ThumbPageModel msg
 thumbModel th =
     { album = th.album
     , parents = []

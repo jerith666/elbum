@@ -39,6 +39,7 @@ view model =
     }
 
 
+viewImpl : Model -> Html Msg
 viewImpl (ScrollPos s) =
     div
         [ on "scroll" <| Json.Decode.map ScrolledTo <| Json.Decode.at [ "target", "scrollTop" ] Json.Decode.float

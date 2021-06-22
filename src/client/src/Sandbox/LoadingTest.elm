@@ -11,6 +11,7 @@ import Utils.HttpUtils exposing (viewProgress)
 import Utils.Loading as Loading exposing (ManyModel, ManyMsg, getOneState, markOne)
 
 
+pathToUrl : String -> String -> String -> Url
 pathToUrl host basePath path =
     { protocol = Https
     , host = host
@@ -21,6 +22,7 @@ pathToUrl host basePath path =
     }
 
 
+makeUrls : String -> String -> List Url
 makeUrls host basePath =
     List.map
         (pathToUrl host basePath)
@@ -104,6 +106,7 @@ view model =
     }
 
 
+viewOne : ManyModel msg -> Url -> Html.Html Msg
 viewOne model url =
     case getOneState model url of
         Just state ->
