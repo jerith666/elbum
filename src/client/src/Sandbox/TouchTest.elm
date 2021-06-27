@@ -32,7 +32,7 @@ main =
         { init = init
         , view = view
         , update = update
-        , subscriptions = subscriptions
+        , subscriptions = \_ -> Sub.none
         }
 
 
@@ -207,8 +207,3 @@ viewTouch touch =
                 ++ (String.fromFloat <| second touch.clientPos)
                 ++ ")"
         ]
-
-
-subscriptions : a -> Sub msg
-subscriptions _ =
-    Sub.none
