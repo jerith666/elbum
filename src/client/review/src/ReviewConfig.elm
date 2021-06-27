@@ -14,9 +14,11 @@ when inside the directory containing this file.
 import NoDuplicatePorts
 import NoExposingEverything
 import NoImportingEverything
+import NoMissingSubscriptionsCall
 import NoMissingTypeAnnotation
 import NoMissingTypeAnnotationInLetIn
 import NoMissingTypeExpose
+import NoRecursiveUpdate
 import NoUnsafePorts
 import NoUnused.CustomTypeConstructorArgs
 import NoUnused.CustomTypeConstructors
@@ -27,6 +29,7 @@ import NoUnused.Parameters
 import NoUnused.Patterns
 import NoUnused.Variables
 import NoUnusedPorts
+import NoUselessSubscriptions
 import Review.Rule exposing (Rule, ignoreErrorsForDirectories, ignoreErrorsForFiles)
 
 
@@ -60,4 +63,8 @@ config =
         --, NoImportingEverything.rule [] -- 114 errors in 20 files; dubious benefit given IDEs
         --, NoMissingTypeAnnotationInLetIn.rule -- 166 errors in 19 files; would be quite a bit of work to fix
         --, NoMissingTypeExpose.rule -- not important for applications, only libraries
+        --
+        , NoMissingSubscriptionsCall.rule
+        , NoRecursiveUpdate.rule
+        , NoUselessSubscriptions.rule
         ]
