@@ -59,5 +59,5 @@ config =
 
         --, NoImportingEverything.rule [] -- 114 errors in 20 files; dubious benefit given IDEs
         --, NoMissingTypeAnnotationInLetIn.rule -- 166 errors in 19 files; would be quite a bit of work to fix
-        --, NoMissingTypeExpose.rule
+        --, NoMissingTypeExpose.rule -- not important for applications, only libraries
         ]
