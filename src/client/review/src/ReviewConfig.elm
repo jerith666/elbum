@@ -19,6 +19,7 @@ import NoMissingTypeAnnotation
 import NoMissingTypeAnnotationInLetIn
 import NoMissingTypeExpose
 import NoRecursiveUpdate
+import NoRedundantConcat
 import NoUnsafePorts
 import NoUnused.CustomTypeConstructorArgs
 import NoUnused.CustomTypeConstructors
@@ -67,4 +68,7 @@ config =
         , NoMissingSubscriptionsCall.rule
         , NoRecursiveUpdate.rule
         , NoUselessSubscriptions.rule
+
+        --
+        , NoRedundantConcat.rule
         ]
