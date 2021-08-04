@@ -8,10 +8,9 @@ import Html
 import Html.Events.Extra.Touch exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
-import Http exposing (Progress)
+import Http exposing (Progress(..))
 import ProgressiveImage exposing (..)
 import ThumbPage exposing (..)
-import Utils.HttpUtils exposing (viewProgress)
 import Utils.ListUtils exposing (..)
 import Utils.LocationUtils exposing (AnchorFunction)
 import Utils.TouchUtils exposing (..)
@@ -79,12 +78,13 @@ view a navMsgs touchMsgs wrapProgMsg fullImagePageModel parents flags =
                 ]
             ]
             [ albumTitle a
-                (fullImagePageModel.album.imageFirst.altText ++ xOfY ++ viewProgress "" progress)
+                (fullImagePageModel.album.imageFirst.altText ++ xOfY)
                 parents
                 navMsgs.showList
                 [ albumParent a getAlbumTitle (always navMsgs.backToThumbsMsg) fullImagePageModel.album ]
                 []
             ]
+        , progBar progress
         , imgView
         ]
             ++ navEltIf a fullImagePageModel.prevImgs navMsgs.prevMsg "<" left
@@ -104,6 +104,33 @@ view a navMsgs touchMsgs wrapProgMsg fullImagePageModel parents flags =
                     ]
                     [ Html.Styled.text "⤓" ]
                ]
+
+
+progBar : Maybe Progress -> Html never
+progBar mp =
+    let
+        size c w =
+            [ Css.width <| vw w, Css.height <| px 1, borderStyle solid, borderColor c, borderWidth <| px 1, alignSelf flexStart ]
+
+        invisibleProg =
+            div [ styles <| size black 100 ] []
+    in
+    case mp of
+        Nothing ->
+            invisibleProg
+
+        Just p ->
+            case p of
+                Receiving r ->
+                    case r.size of
+                        Just s ->
+                            div [ styles <| size white <| 100 * toFloat r.received / toFloat s ] []
+
+                        Nothing ->
+                            invisibleProg
+
+                Sending _ ->
+                    invisibleProg
 
 
 getAlbumTitle : Album -> String
