@@ -65,12 +65,15 @@ type alias AnimState =
 
 
 type ProgressiveImageModel
-    = ProgImgModel
-        { data : ProgressiveImageData
-        , status : ProgressiveImageStatus
-        , animState : AnimState
-        , completeness : ProgressiveImageCompleteness
-        }
+    = ProgImgModel ProgImgModelRec
+
+
+type alias ProgImgModelRec =
+    { data : ProgressiveImageData
+    , status : ProgressiveImageStatus
+    , animState : AnimState
+    , completeness : ProgressiveImageCompleteness
+    }
 
 
 type ProgressiveImageMsg
@@ -212,16 +215,7 @@ updateModel msg ((ProgImgModel piModel) as model) =
 
                 LoadingMain placeholder _ ->
                     if imgSrc == piModel.data.mainImg then
-                        let
-                            oldAnimState =
-                                piModel.animState
-                        in
-                        ProgImgModel
-                            { piModel
-                                | status = MainLoaded placeholder
-                                , animState = { oldAnimState | main = showMsg piModel.animState.main }
-                                , completeness = Complete
-                            }
+                        mainLoaded piModel placeholder
 
                     else
                         --something stale, ignore
@@ -318,7 +312,12 @@ updateModel msg ((ProgImgModel piModel) as model) =
                         newLoadingState =
                             Loading.update nestedMsg loadingState
                     in
-                    ProgImgModel { piModel | status = LoadingMain placeholder newLoadingState }
+                    case getState newLoadingState of
+                        Loading.Loaded ->
+                            mainLoaded piModel placeholder
+
+                        _ ->
+                            ProgImgModel { piModel | status = LoadingMain placeholder newLoadingState }
 
                 TryingCached _ _ _ ->
                     model
@@ -331,6 +330,20 @@ updateModel msg ((ProgImgModel piModel) as model) =
 
                 MainOnly ->
                     model
+
+
+mainLoaded : ProgImgModelRec -> ImgSrc -> ProgressiveImageModel
+mainLoaded piModel placeholder =
+    let
+        oldAnimState =
+            piModel.animState
+    in
+    ProgImgModel
+        { piModel
+            | status = MainLoaded placeholder
+            , animState = { oldAnimState | main = showMsg piModel.animState.main }
+            , completeness = Complete
+        }
 
 
 updateCmd : ProgressiveImageModel -> Cmd ProgressiveImageMsg
@@ -391,10 +404,10 @@ view (ProgImgModel piModel) =
             ( viewImg piModel.data.fallback piModel.data (styledAnimation piModel.animState.placeholder) [], Nothing )
 
         LoadingMain placeholder loadingState ->
-            ( viewLoadingMain piModel.data placeholder piModel.animState.placeholder piModel.animState.main, getProgress loadingState )
+            ( viewImg placeholder piModel.data (styledAnimation piModel.animState.placeholder) [], getProgress loadingState )
 
         MainLoaded oldPlaceholder ->
-            ( viewLoadingMain piModel.data oldPlaceholder piModel.animState.placeholder piModel.animState.main, Nothing )
+            ( viewMainLoaded piModel.data oldPlaceholder piModel.animState.placeholder piModel.animState.main, Nothing )
 
         MainOnly ->
             ( viewImg piModel.data.mainImg piModel.data (styledMsgAnimation piModel.animState.main) [], Nothing )
@@ -427,8 +440,8 @@ getProgressImpl loadState =
             Nothing
 
 
-viewLoadingMain : ProgressiveImageData -> ImgSrc -> Animation.State -> Animation.Messenger.State ProgressiveImageMsg -> Html ProgressiveImageMsg
-viewLoadingMain data imgSrc imgSrcAnimState mainAnimState =
+viewMainLoaded : ProgressiveImageData -> ImgSrc -> Animation.State -> Animation.Messenger.State ProgressiveImageMsg -> Html ProgressiveImageMsg
+viewMainLoaded data imgSrc imgSrcAnimState mainAnimState =
     div
         [ styles [ position relative ] ]
         [ viewImg
