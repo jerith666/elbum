@@ -1,4 +1,4 @@
-module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, OneModel, cmdFor, cmdForMany, getOneState, getState, init, initMany, mark, markOne, subscriptions, subscriptionsMany, update, updateMany, updatePending)
+module Utils.Loading exposing (LoadState(..), LoadingMsg, ManyModel, ManyMsg, OneModel, cancel, cancelOne, cmdFor, cmdForMany, getOneState, getState, init, initMany, mark, markOne, subscriptions, subscriptionsMany, update, updateMany, updatePending)
 
 import Dict exposing (Dict, filter, fromList, get, insert, size, toList, values)
 import Http exposing (Error, Progress, emptyBody, expectWhatever, track)
@@ -415,3 +415,40 @@ markOne (ManyModel mm) url =
 
                 _ ->
                     ManyModel { mm | models = insert (toString url) (LoadingModel { m | state = Marked m.state }) mm.models }
+
+
+cancel : OneModel msg1 -> Cmd msg2
+cancel (OneModel (LoadingModel m) _) =
+    cancelImpl m.state m.tracker
+
+
+cancelOne : ManyModel msg1 -> Url -> Cmd msg2
+cancelOne (ManyModel mm) url =
+    case get (toString url) mm.models of
+        Nothing ->
+            Cmd.none
+
+        Just (LoadingModel m) ->
+            cancelImpl m.state m.tracker
+
+
+cancelImpl : LoadState -> String -> Cmd msg
+cancelImpl state tracker =
+    case state of
+        NotRequested ->
+            Http.cancel tracker
+
+        RequestedButNoProgress ->
+            Http.cancel tracker
+
+        Loading _ ->
+            Http.cancel tracker
+
+        Loaded ->
+            Cmd.none
+
+        Marked loadState ->
+            cancelImpl loadState tracker
+
+        Failed _ ->
+            Cmd.none

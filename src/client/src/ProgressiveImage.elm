@@ -1,4 +1,4 @@
-module ProgressiveImage exposing (ProgressiveImageCompleteness(..), ProgressiveImageData, ProgressiveImageModel, ProgressiveImageMsg, init, subscriptions, update, view, withWidthHeight)
+module ProgressiveImage exposing (ProgressiveImageCompleteness(..), ProgressiveImageData, ProgressiveImageModel, ProgressiveImageMsg, cancel, init, subscriptions, update, view, withWidthHeight)
 
 import Album exposing (ImgSrc)
 import AlbumStyles exposing (..)
@@ -392,6 +392,25 @@ subscriptions (ProgImgModel piModel) =
                     Sub.none
     in
     Sub.batch [ animSubs, loadingSubs ]
+
+
+cancel : ProgressiveImageModel -> Cmd msg
+cancel (ProgImgModel m) =
+    case m.status of
+        TryingCached _ _ _ ->
+            Cmd.none
+
+        LoadingFallback ->
+            Cmd.none
+
+        LoadingMain _ oneModel ->
+            Loading.cancel oneModel
+
+        MainLoaded _ ->
+            Cmd.none
+
+        MainOnly ->
+            Cmd.none
 
 
 view : ProgressiveImageModel -> ( Html ProgressiveImageMsg, Maybe Progress )
