@@ -89,7 +89,11 @@ update oldState touchEvent =
                 SwipeState ss ->
                     case ss.prevZoom of
                         Nothing ->
-                            update NoState touchEvent
+                            {- we've gotten a dual-touch event when a swipe was in progress.  we interpret this as
+                               having been an intended zoom all along, the user just didn't get his fingers on the
+                               screen at precisely the same time.
+                            -}
+                            startZoom t1 t2
 
                         Just oldZoom ->
                             ZoomState <|
@@ -100,15 +104,20 @@ update oldState touchEvent =
                                     }
 
                 NoState ->
-                    ZoomState <|
-                        ZoomCurrent
-                            { prev = Nothing
-                            , start = ( t1, t2 )
-                            , current = ( t1, t2 )
-                            }
+                    startZoom t1 t2
 
         _ ->
             NoState
+
+
+startZoom : Touch -> Touch -> TouchState
+startZoom t1 t2 =
+    ZoomState <|
+        ZoomCurrent
+            { prev = Nothing
+            , start = ( t1, t2 )
+            , current = ( t1, t2 )
+            }
 
 
 endZoom : TouchState -> TouchState
@@ -136,6 +145,7 @@ endZoom oldState =
                                     NoState
 
 
+cumScale : { scale : Float, startPos : ( Float, Float ), offset : ( Float, Float ), prev : Maybe ZoomOffset } -> Float
 cumScale z =
     case z.prev of
         Nothing ->

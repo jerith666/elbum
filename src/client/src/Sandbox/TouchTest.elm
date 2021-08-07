@@ -1,11 +1,9 @@
 module Sandbox.TouchTest exposing (main)
 
-import AlbumListPage exposing (view)
-import AlbumPage exposing (update)
 import Basics.Extra exposing (..)
-import Browser exposing (..)
+import Browser
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes
 import Html.Events.Extra.Touch exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
@@ -34,14 +32,16 @@ main =
         { init = init
         , view = view
         , update = update
-        , subscriptions = subscriptions
+        , subscriptions = \_ -> Sub.none
         }
 
 
+init : a -> ( TouchTestModel, Cmd TouchTestMsg )
 init _ =
     ( { touches = [], zoomInfo = Nothing }, Cmd.none )
 
 
+update : TouchTestMsg -> TouchTestModel -> ( TouchTestModel, Cmd TouchTestMsg )
 update msg model =
     case msg of
         TouchMsg evt ->
@@ -68,6 +68,7 @@ updateZoomPair existingZoom newTouches =
             Nothing
 
 
+view : TouchTestModel -> Html TouchTestMsg
 view model =
     div
         [ Html.Attributes.style "width" "100vw"
@@ -123,6 +124,7 @@ drawZoom zoomInfo =
                 ]
 
 
+circ : ( Float, Float ) -> Float -> String -> Svg msg
 circ ( x, y ) d color =
     circle
         [ cx <| String.fromFloat x
@@ -167,6 +169,7 @@ coords t =
     ( x, y )
 
 
+drawTouch : Touch -> List (Svg TouchTestMsg)
 drawTouch touch =
     let
         x =
@@ -204,7 +207,3 @@ viewTouch touch =
                 ++ (String.fromFloat <| second touch.clientPos)
                 ++ ")"
         ]
-
-
-subscriptions model =
-    Sub.none

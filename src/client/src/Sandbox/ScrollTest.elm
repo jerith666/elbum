@@ -1,12 +1,12 @@
-module Sandbox.ScrollTest exposing (Model(..), Msg(..), main, update, view)
+module Sandbox.ScrollTest exposing (Model(..), Msg(..), main)
 
 import AlbumStyles exposing (..)
+import Browser exposing (Document)
 import Css exposing (..)
-import Html exposing (program)
-import Html.Attributes exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Events exposing (..)
 import Json.Decode
+import String exposing (fromFloat)
 
 
 type Model
@@ -17,23 +17,30 @@ type Msg
     = ScrolledTo Float
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.program
-        { init = ( ScrollPos 0, Cmd.none )
+    Browser.document
+        { init = \_ -> ( ScrollPos 0, Cmd.none )
         , update = update
-        , view = view >> toUnstyled
+        , view = view
         , subscriptions = \_ -> Sub.none
         }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update (ScrolledTo newScroll) (ScrollPos oldScroll) =
+update (ScrolledTo newScroll) _ =
     ( ScrollPos newScroll, Cmd.none )
 
 
-view : Model -> Html Msg
-view (ScrollPos s) =
+view : Model -> Document Msg
+view model =
+    { title = "title"
+    , body = [ viewImpl model |> toUnstyled ]
+    }
+
+
+viewImpl : Model -> Html Msg
+viewImpl (ScrollPos s) =
     div
         [ on "scroll" <| Json.Decode.map ScrolledTo <| Json.Decode.at [ "target", "scrollTop" ] Json.Decode.float
         , on "click" <| Json.Decode.succeed <| ScrolledTo 1
@@ -51,5 +58,5 @@ view (ScrollPos s) =
             div []
                 [ Html.Styled.text <|
                     "scroll at "
-                        ++ toString s
+                        ++ fromFloat s
                 ]

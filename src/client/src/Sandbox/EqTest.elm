@@ -3,14 +3,17 @@ module Sandbox.EqTest exposing (main)
 import Html exposing (..)
 
 
+oneThing : Bool
 oneThing =
     True
 
 
+someThings : Int -> List Bool
 someThings n =
     List.repeat n oneThing
 
 
+main : Html msg
 main =
     let
         r =

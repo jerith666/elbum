@@ -198,6 +198,7 @@ updatePendingImpl urlFilter (ManyModel mm) revisePending =
     )
 
 
+isLoading : LoadingModel -> Bool
 isLoading (LoadingModel m) =
     let
         isLoadingImpl state =

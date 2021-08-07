@@ -9,16 +9,13 @@ import Browser.Dom exposing (..)
 import Browser.Events exposing (..)
 import Browser.Navigation exposing (..)
 import Css exposing (..)
-import Delay exposing (..)
-import Dict exposing (..)
 import FullImagePage exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events
 import Http exposing (..)
 import RouteUrl exposing (..)
-import Set exposing (..)
-import Task exposing (..)
+import Task
 import Url exposing (..)
 import Utils.AlbumUtils exposing (..)
 import Utils.DebugSupport exposing (debugString, log)
@@ -28,7 +25,7 @@ import Utils.ListUtils exposing (..)
 import Utils.Loading exposing (initMany)
 import Utils.LocationUtils exposing (..)
 import Utils.ResultUtils exposing (..)
-import Utils.TouchUtils as TU exposing (..)
+import Utils.TouchUtils as TU
 import Utils.ViewportUtils exposing (..)
 
 
@@ -91,14 +88,6 @@ type PostLoadNavState
     | NavInactive
 
 
-type UrlLoadState
-    = UrlRequested
-      --| Partial Int
-    | JustCompleted
-    | ReadyToDisplay
-    | Failed Http.Error
-
-
 type MainAlbumMsg
     = Bootstrap BootstrapMsg
     | Meta MetaMsg
@@ -115,7 +104,7 @@ type MetaMsg
 type BootstrapMsg
     = GotBaseUrl Url
     | YesHome String
-    | NoHome Http.Error
+    | NoHome
     | LoadAlbumProgress Progress
     | YesAlbum AlbumOrList
     | NoAlbum Http.Error
@@ -202,7 +191,7 @@ updateGeneral generalMsg model =
                         , flags = sz.flags
                         , albumPathsAfterLoad = sz.albumPathsAfterLoad
                         }
-                    , Cmd.map Bootstrap <| Http.get { url = "home", expect = expectString <| either NoHome YesHome }
+                    , Cmd.map Bootstrap <| Http.get { url = "home", expect = expectString <| either (\_ -> NoHome) YesHome }
                     )
 
                 LoadingHomeLink lh ->
@@ -288,7 +277,7 @@ updateBootstrap bootstrapMsg model =
                 _ ->
                     ( model, Cmd.none )
 
-        NoHome _ ->
+        NoHome ->
             case model of
                 LoadingHomeLink lh ->
                     gotHome lh Nothing
@@ -508,26 +497,7 @@ updateMeta albumMetaMsg model =
             ( model, Cmd.none )
 
 
-sequence : Maybe MainAlbumMsg -> List MainAlbumMsg -> MainAlbumMsg
-sequence mm1 ms =
-    case mm1 of
-        Nothing ->
-            case List.tail ms of
-                Nothing ->
-                    case List.head ms of
-                        Nothing ->
-                            Meta NoBootstrap
-
-                        Just ms1 ->
-                            ms1
-
-                Just mst ->
-                    sequence (List.head ms) mst
-
-        Just m1 ->
-            Meta <| Sequence m1 ms
-
-
+gotHome : { key : Key, baseUrl : Url, bodyViewport : Viewport, flags : MainAlbumFlags, albumPathsAfterLoad : Maybe (List String) } -> Maybe String -> ( MainAlbumModel, Cmd MainAlbumMsg )
 gotHome lh home =
     ( Loading
         { key = lh.key
@@ -689,7 +659,7 @@ baseUrlOf model =
         Loading l ->
             Just l.baseUrl
 
-        LoadError le ->
+        LoadError _ ->
             Nothing
 
         LoadedList ll ->

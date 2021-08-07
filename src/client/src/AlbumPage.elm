@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ThumbLoadState(..), ViewportInfo, baseAlbumOf, cmdFor, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, initThumbsFullVp, pageSize, progInit, subscriptions, titleOf, update, urlsToGet, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, baseAlbumOf, cmdFor, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, initThumbsFullVp, pageSize, progInit, subscriptions, titleOf, update, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -11,7 +11,7 @@ import ImageViews exposing (..)
 import Json.Decode exposing (..)
 import List exposing (take)
 import ProgressiveImage exposing (..)
-import Task exposing (..)
+import Task
 import ThumbPage exposing (..)
 import Url exposing (Url)
 import Utils.AlbumUtils exposing (..)
@@ -43,11 +43,6 @@ type AlbumPage
         }
 
 
-type ThumbLoadState
-    = SomeMissing
-    | AllLoaded
-
-
 type alias ViewportInfo =
     { bodyViewport : Viewport, rootDivViewport : Maybe Viewport }
 
@@ -62,7 +57,7 @@ type AlbumPageMsg
     | Next
     | BackToThumbs
     | FullMsg ProgressiveImageMsg
-    | ImgPositionFailed Browser.Dom.Error
+    | ImgPositionFailed
     | GotImgPosition Element
     | LoadingMsg ManyMsg
     | ThumbLoaded Url
@@ -221,7 +216,7 @@ update msg model scroll =
                 Thumbs _ ->
                     ( model, Cmd.none )
 
-        ImgPositionFailed err ->
+        ImgPositionFailed ->
             case model of
                 Thumbs _ ->
                     ( model, Cmd.none )
@@ -299,8 +294,9 @@ baseAlbumOf ap =
             }
 
 
+getImgPosition : Cmd AlbumPageMsg
 getImgPosition =
-    Task.attempt (either ImgPositionFailed GotImgPosition) <| getElement theImageId
+    Task.attempt (either (\_ -> ImgPositionFailed) GotImgPosition) <| getElement theImageId
 
 
 progInit : Viewport -> Image -> Int -> Int -> ( ProgressiveImageModel, Maybe ProgressiveImageMsg )
@@ -375,6 +371,7 @@ urlsToGet albumPage =
             []
 
 
+thumbModel : { album : Album, vpInfo : ViewportInfo, baseUrl : Url, imageLoader : ManyModel msg } -> ThumbPageModel msg
 thumbModel th =
     { album = th.album
     , parents = []
@@ -462,7 +459,7 @@ touchPrevNext touchState _ =
             else
                 TouchDragAbandon
 
-        Zoom zoom ->
+        Zoom _ ->
             TouchEndZoom touchState
 
 
@@ -543,7 +540,7 @@ eqIgnoringVpInfo aPage1 aPage2 =
                 Thumbs th2 ->
                     { th2 | vpInfo = th1.vpInfo } == th1
 
-                FullImage fi ->
+                FullImage _ ->
                     False
 
         FullImage fi1 ->

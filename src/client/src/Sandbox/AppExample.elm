@@ -1,4 +1,4 @@
-module Sandbox.AppExample exposing (Model, Msg(..), init, main, subscriptions, update, view, viewLink)
+module Sandbox.AppExample exposing (Model, Msg(..), main)
 
 import Browser
 import Browser.Navigation as Nav
@@ -6,7 +6,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Url
-import Url.Builder exposing (..)
 
 
 
@@ -19,7 +18,7 @@ main =
         { init = init
         , view = view
         , update = update
-        , subscriptions = subscriptions
+        , subscriptions = \_ -> Sub.none
         , onUrlChange = UrlChanged
         , onUrlRequest = LinkClicked
         }
@@ -37,7 +36,7 @@ type alias Model =
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
-init flags url key =
+init _ url key =
     ( Model key url 0, Cmd.none )
 
 
@@ -76,15 +75,6 @@ update msg model =
             ( { model | url = url, n = model.n + 1 }
             , Nav.pushUrl model.key <| Url.toString url
             )
-
-
-
--- SUBSCRIPTIONS
-
-
-subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
 
 
 

@@ -1,4 +1,4 @@
-module Utils.LocationUtils exposing (AnchorFunction, changeToString, locToString, parseHash)
+module Utils.LocationUtils exposing (AnchorFunction, parseHash)
 
 import Html.Styled exposing (Attribute, Html)
 import Parser exposing (..)
@@ -33,35 +33,3 @@ parseHash href =
                 ]
     in
     run hashParser href
-
-
-locToString : Url -> String
-locToString =
-    toString
-
-
-changeToString : UrlChange -> String
-changeToString change =
-    case change of
-        NewPath _ data ->
-            data.path
-                |> addPrefixed "?" data.query
-                |> addPrefixed "#" data.fragment
-
-        NewQuery _ data ->
-            "?"
-                ++ data.query
-                |> addPrefixed "#" data.fragment
-
-        NewFragment _ fragment ->
-            "#" ++ fragment
-
-
-addPrefixed : String -> Maybe String -> String -> String
-addPrefixed prefix maybeSegment starter =
-    case maybeSegment of
-        Nothing ->
-            starter
-
-        Just segment ->
-            starter ++ prefix ++ segment

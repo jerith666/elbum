@@ -1,13 +1,13 @@
-module ProgressiveImage exposing (ProgressiveImageCompleteness(..), ProgressiveImageData, ProgressiveImageModel, ProgressiveImageMsg, init, subscriptions, update, updateCmd, view, withWidthHeight)
+module ProgressiveImage exposing (ProgressiveImageCompleteness(..), ProgressiveImageData, ProgressiveImageModel, ProgressiveImageMsg, init, subscriptions, update, view, withWidthHeight)
 
 import Album exposing (ImgSrc)
 import AlbumStyles exposing (..)
 import Animation
-import Animation.Messenger exposing (..)
+import Animation.Messenger
 import Css exposing (..)
 import Delay exposing (..)
 import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (..)
+import Html.Styled.Attributes
 import Html.Styled.Events exposing (..)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)
@@ -222,15 +222,21 @@ updateModel msg ((ProgImgModel piModel) as model) =
                     --some stale loading notification, ignore
                     model
 
-        Timeout _ ->
+        Timeout timedOut ->
             case piModel.status of
                 TryingCached tried trying upnext ->
-                    case upnext of
-                        [] ->
-                            ProgImgModel { piModel | status = LoadingFallback }
+                    case timedOut == trying of
+                        True ->
+                            case upnext of
+                                [] ->
+                                    ProgImgModel { piModel | status = LoadingFallback }
 
-                        next :: later ->
-                            ProgImgModel { piModel | status = TryingCached (tried ++ [ trying ]) next later }
+                                next :: later ->
+                                    ProgImgModel { piModel | status = TryingCached (tried ++ [ trying ]) next later }
+
+                        False ->
+                            --stale timeout
+                            model
 
                 LoadingFallback ->
                     --shouldn't happen

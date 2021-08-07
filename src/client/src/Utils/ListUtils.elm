@@ -1,26 +1,6 @@
-module Utils.ListUtils exposing (dictWithValues, dropThrough, dropThroughPred, encodePath, fromMaybe, mapI, safeEq, shiftLeft, shiftRight, shiftToBeginning)
+module Utils.ListUtils exposing (dropThroughPred, encodePath, fromMaybe, mapI, shiftLeft, shiftRight, shiftToBeginning)
 
-import Dict exposing (..)
-import Set exposing (..)
 import Url exposing (percentEncode)
-
-
-safeEq : List a -> List a -> Bool
-safeEq l1 l2 =
-    let
-        ll1 =
-            List.length l1
-
-        ll2 =
-            List.length l2
-    in
-    case max ll1 ll2 >= 100 of
-        False ->
-            l1 == l2
-
-        True ->
-            (ll1 == ll2)
-                && (List.all identity <| List.map2 (==) l1 l2)
 
 
 {-| splits the path on "/"s, calls encodeUri on each path segment, then reassembles it.
@@ -28,13 +8,6 @@ safeEq l1 l2 =
 encodePath : String -> String
 encodePath =
     String.split "/" >> List.map percentEncode >> String.join "/"
-
-
-dictWithValues : Set comparable -> a -> Dict comparable a
-dictWithValues keys val =
-    Dict.fromList <|
-        List.map (\key -> ( key, val )) <|
-            Set.toList keys
 
 
 shiftToBeginning : List a -> a -> List a -> ( a, List a )
@@ -78,14 +51,6 @@ shiftLeft xLefts x xRights =
                     shiftLeft xLeftRights x xRights
             in
             ( xLeft :: xLRss, xss, xRss )
-
-
-{-| drop elements of the given list until the given element is found.
-if that element is not present, return the entire list.
--}
-dropThrough : a -> List a -> List a
-dropThrough elem elems =
-    dropThroughPred (\e -> e == elem) elems
 
 
 {-| drop elements of the given list until the given element is found.

@@ -1,0 +1,15 @@
+{
+  "name": "elbum",
+  "version": "1.0.0",
+  "description": "",
+  "main": "elbum.js",
+  "dependencies": {},
+  "devDependencies": {
+    "elm-review": "^2.5.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "github@matt.mchenryfamily.org",
+  "license": "GNU General Public License, version 3"
+}
