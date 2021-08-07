@@ -14,6 +14,7 @@ import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Html.Styled.Events
 import Http exposing (..)
+import ProgressiveImage
 import RouteUrl exposing (..)
 import Task
 import Url exposing (..)
@@ -396,9 +397,12 @@ updateAlbum albumMsg model =
 
                                 Nothing ->
                                     scrollToTop NoBootstrap <| always NoBootstrap
+
+                        cancelCmd =
+                            cancelFullImageLoadCmd model
                     in
                     ( newModel
-                    , Cmd.map Meta scrollCmd
+                    , Cmd.batch [ Cmd.map Meta scrollCmd, cancelCmd ]
                     )
 
                 _ ->
@@ -448,6 +452,36 @@ updateAlbum albumMsg model =
 
         NavCompletedLocally ->
             ( withNavComplete model, Cmd.none )
+
+
+cancelFullImageLoadCmd : MainAlbumModel -> Cmd msg
+cancelFullImageLoadCmd model =
+    case model of
+        LoadedAlbum la ->
+            case la.albumPage of
+                FullImage fi ->
+                    ProgressiveImage.cancel fi.progModel
+
+                Thumbs _ ->
+                    Cmd.none
+
+        AwaitingBaseUrl _ ->
+            Cmd.none
+
+        Sizing _ ->
+            Cmd.none
+
+        LoadingHomeLink _ ->
+            Cmd.none
+
+        Loading _ ->
+            Cmd.none
+
+        LoadError _ ->
+            Cmd.none
+
+        LoadedList _ ->
+            Cmd.none
 
 
 updateMeta : MetaMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
