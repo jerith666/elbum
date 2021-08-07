@@ -8,6 +8,7 @@ import Html
 import Html.Events.Extra.Touch exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
+import Http exposing (Progress(..))
 import ProgressiveImage exposing (..)
 import ThumbPage exposing (..)
 import Utils.ListUtils exposing (..)
@@ -54,6 +55,9 @@ view a navMsgs touchMsgs wrapProgMsg fullImagePageModel parents flags =
                 ++ " of "
                 ++ (String.fromInt <| List.length fullImagePageModel.prevImgs + 1 + List.length fullImagePageModel.album.imageRest)
                 ++ ")"
+
+        ( imgView, progress ) =
+            viewImg a navMsgs.nextMsg touchMsgs wrapProgMsg fullImagePageModel
     in
     rootDivFlex
         flags
@@ -80,7 +84,8 @@ view a navMsgs touchMsgs wrapProgMsg fullImagePageModel parents flags =
                 [ albumParent a getAlbumTitle (always navMsgs.backToThumbsMsg) fullImagePageModel.album ]
                 []
             ]
-        , viewImg a navMsgs.nextMsg touchMsgs wrapProgMsg fullImagePageModel
+        , progBar progress
+        , imgView
         ]
             ++ navEltIf a fullImagePageModel.prevImgs navMsgs.prevMsg "<" left
             ++ navEltIf a fullImagePageModel.album.imageRest navMsgs.nextMsg ">" right
@@ -101,6 +106,33 @@ view a navMsgs touchMsgs wrapProgMsg fullImagePageModel parents flags =
                ]
 
 
+progBar : Maybe Progress -> Html never
+progBar mp =
+    let
+        size c w =
+            [ Css.width <| vw w, Css.height <| px 1, borderStyle solid, borderColor c, borderWidth <| px 1, alignSelf flexStart ]
+
+        invisibleProg =
+            div [ styles <| size black 100 ] []
+    in
+    case mp of
+        Nothing ->
+            invisibleProg
+
+        Just p ->
+            case p of
+                Receiving r ->
+                    case r.size of
+                        Just s ->
+                            div [ styles <| size white <| 100 * toFloat r.received / toFloat s ] []
+
+                        Nothing ->
+                            invisibleProg
+
+                Sending _ ->
+                    invisibleProg
+
+
 getAlbumTitle : Album -> String
 getAlbumTitle a =
     a.title
@@ -115,7 +147,7 @@ navEltIf a lst navMsg navTxt navAlign =
         [ navElement a navMsg navTxt navAlign ]
 
 
-viewImg : AnchorFunction msg -> msg -> TouchMsgs msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> Html msg
+viewImg : AnchorFunction msg -> msg -> TouchMsgs msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> ( Html msg, Maybe Progress )
 viewImg a clickMsg touchMsgs wrapProgMsg fullImagePageModel =
     let
         img =
@@ -145,8 +177,11 @@ viewImg a clickMsg touchMsgs wrapProgMsg fullImagePageModel =
 
                         _ ->
                             NeitherLimit
+
+        ( piView, progress ) =
+            ProgressiveImage.view <| withWidthHeight w h fullImagePageModel.progImgModel
     in
-    a clickMsg
+    ( a clickMsg
         (offsetStyles edgeBehaviour fullImagePageModel.imgPosition fullImagePageModel.offset
             ++ [ Html.Styled.Attributes.fromUnstyled <| onTouch "start" touchMsgs.touchStartMsg
                , Html.Styled.Attributes.fromUnstyled <| onTouch "move" touchMsgs.touchContinueMsg
@@ -154,7 +189,9 @@ viewImg a clickMsg touchMsgs wrapProgMsg fullImagePageModel =
                , id theImageId
                ]
         )
-        [ Html.Styled.map wrapProgMsg <| ProgressiveImage.view <| withWidthHeight w h fullImagePageModel.progImgModel ]
+        [ Html.Styled.map wrapProgMsg <| piView ]
+    , progress
+    )
 
 
 offsetStyles : SwipeEdgeBehaviour -> Maybe Element -> Offset -> List (Html.Styled.Attribute msg)
