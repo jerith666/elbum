@@ -1190,24 +1190,36 @@ locFor oldModel newModel =
 
                 NavInactive ->
                     nav
+
+        rawFragment =
+            log "rawFragment" <|
+                case newModel of
+                    LoadedAlbum la ->
+                        checkNavState la.navState <|
+                            Just <|
+                                hashForAlbum la.albumPage <|
+                                    List.map Tuple.first la.parents
+
+                    LoadedList ll ->
+                        checkNavState ll.navState <|
+                            Just <|
+                                hashForList ll.listPage
+
+                    _ ->
+                        Nothing
     in
-    log "locFor" <|
-        case newModel of
-            LoadedAlbum la ->
-                checkNavState la.navState <|
-                    Just <|
-                        NewFragment entry <|
-                            hashForAlbum la.albumPage <|
-                                List.map Tuple.first la.parents
+    rawFragment
+        |> Maybe.andThen
+            (\rf ->
+                case rf of
+                    "" ->
+                        Nothing
 
-            LoadedList ll ->
-                checkNavState ll.navState <|
-                    Just <|
-                        NewFragment entry <|
-                            hashForList ll.listPage
-
-            _ ->
-                Nothing
+                    _ ->
+                        Just rf
+            )
+        |> Maybe.map (NewFragment entry)
+        |> log "logFor"
 
 
 subscriptions : MainAlbumModel -> Sub MainAlbumMsg
