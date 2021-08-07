@@ -185,12 +185,20 @@ updatePendingImpl urlFilter (ManyModel mm) revisePending =
         revisedPending =
             List.filter isNewUrl <| revisePending <| List.filter isNewUrl mm.pending
 
+        newMaxConcurrentCount =
+            case mm.maxConcurrentCount > 0 of
+                True ->
+                    mm.maxConcurrentCount
+
+                False ->
+                    5
+
         ( allNewModels, newPending, newCmds ) =
-            promotePending mm.wrap mm.maxConcurrentCount mm.models revisedPending
+            promotePending mm.wrap newMaxConcurrentCount mm.models revisedPending
     in
     ( ManyModel
         { pending = newPending
-        , maxConcurrentCount = mm.maxConcurrentCount
+        , maxConcurrentCount = newMaxConcurrentCount
         , models = allNewModels
         , wrap = mm.wrap
         }
