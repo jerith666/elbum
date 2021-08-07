@@ -339,6 +339,9 @@ updatePrevNext model shifter =
                                     (floor fi.vpInfo.bodyViewport.viewport.height)
                         in
                         progInit fi.vpInfo.bodyViewport fi.baseUrl newCur w h
+
+                cancelCmd =
+                    ProgressiveImage.cancel fi.progModel
             in
             ( FullImage
                 { fi
@@ -355,6 +358,7 @@ updatePrevNext model shifter =
             , Cmd.batch
                 [ Cmd.map FullMsg newCmd
                 , getImgPosition
+                , cancelCmd
                 ]
             )
 
