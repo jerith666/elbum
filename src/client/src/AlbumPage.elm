@@ -176,9 +176,12 @@ update msg model scroll =
 
                         ( newLoader, loadingCmd ) =
                             updatePending th.imageLoader revisePending
+
+                        cancelCmd =
+                            cancel fi.progModel
                     in
                     ( Thumbs { th | imageLoader = newLoader }
-                    , Cmd.batch [ scrollCmd, loadingCmd ]
+                    , Cmd.batch [ scrollCmd, loadingCmd, cancelCmd ]
                     )
 
                 _ ->
