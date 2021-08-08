@@ -40,7 +40,7 @@ main :: IO ()
 main = do
   args <- getArgs
   case args of
-    src : dest : [] -> writeAlbumOrList src dest
+    [src, dest] -> writeAlbumOrList src dest
     _ -> usage
 
 usage :: IO ()
@@ -69,7 +69,7 @@ writeAlbumOrList src dest = do
     Nothing ->
       putStrLn "album metadata not found; all image metadata will be read from source"
     Just (_, modDate) ->
-      putStrLn $ "album metadata dated " ++ (show modDate) ++ " found; will use it for source images modified earlier than this"
+      putStrLn $ "album metadata dated " ++ show modDate ++ " found; will use it for source images modified earlier than this"
   putStrLn ""
   eAlbumOrList <- genAlbumOrList src src dest existingAlbumData ChooseAutomatically
   case eAlbumOrList of
@@ -88,7 +88,7 @@ findExistingAlbumData d albumFile = do
     True -> do
       bytes <- C.readFile $ d </> albumFile
       date <- getModificationTime $ d </> albumFile
-      return $ fmap (swap . (,) date) $ decode bytes
+      return $ swap . (,) date <$> decode bytes
 
 data ThumbnailSpec
   = ChooseAutomatically
@@ -107,7 +107,7 @@ genAlbumOrList srcRoot src dest existingAlbumData thumbspec = do
       let icount = length pimgs
           idirs = length subdirs
       if (icount > 0) && (idirs > 0)
-        then return $ Left $ ["directory " ++ src ++ " contains both images and subdirs, this is not supported"]
+        then return $ Left ["directory " ++ src ++ " contains both images and subdirs, this is not supported"]
         else case pimgs of
           imgFirst : imgRest -> do
             aOrErr <- genAlbum srcRoot src dest imgFirst imgRest
@@ -219,7 +219,7 @@ findThumb srcRoot src dest images = do
             else do
               let thumbDest = fst $ destForRaw srcRoot dest thumbPath
                   isThumb i = equalFilePath thumbDest (dest </> url (srcSetFirst i))
-                  thumb = listToMaybe $ filter isThumb images
+                  thumb = find isThumb images
               case thumb of
                 Nothing ->
                   return $ Left $ src ++ " thumbnail '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ concatMap (\i -> dest </> url (srcSetFirst i)) images
@@ -247,16 +247,16 @@ procImgsOnly srcRoot src dest existingAlbumData files = do
   let classify f = do
         classification <- classifyFile srcRoot dest existingAlbumData f
         return (f, classification)
-  putStrSameLn $ src ++ ": classifying " ++ (show $ length files) ++ " files ... "
+  putStrSameLn $ src ++ ": classifying " ++ show (length files) ++ " files ... "
   classifications <- mapConcurrently classify files
-  let tpCt = show $ length $ filter toProc $ map snd $ classifications
+  let tpCt = show $ length $ filter toProc $ map snd classifications
   putStr $ tpCt ++ " to process"
   productionResults <- mapConcurrently (produceImage srcRoot dest) classifications
   case lefts productionResults of
     [] ->
       return $ Right $ catMaybes $ rights productionResults
     errs ->
-      return $ Left $ errs
+      return $ Left errs
 
 produceImage :: FilePath -> FilePath -> (FilePath, FileClassification) -> IO (Either String (Maybe Image))
 produceImage srcRoot dest (f, classification) = do
@@ -290,10 +290,10 @@ classifyFile srcRoot destDir existingAlbumData file = do
 alreadyProcessed :: FilePath -> FilePath -> Maybe (AlbumOrList, UTCTime) -> FilePath -> IO (Maybe Image)
 alreadyProcessed s d existingAlbumData f = do
   let rawDest = fst $ destForRaw s d f
-      allDests = rawDest : (map snd $ shrinkDests s d f)
+      allDests = rawDest : map snd (shrinkDests s d f)
       existingImage = (>>=) existingAlbumData (matchExisting s f . fst)
   --putStrLn $ "alreadyProcessed " ++ s ++ ", " ++ f ++ ": " ++ (show existingImage)
-  destsExist <- mapM doesFileExist $ allDests
+  destsExist <- mapM doesFileExist allDests
   if and destsExist
     then do
       let existingImageAndModDate = liftA2 (,) existingImage $ fmap snd existingAlbumData
@@ -343,15 +343,15 @@ findImage (name : names) albumOrList =
       matchesName = (==) (titleForDir name) . getTitle
    in case albumOrList of
         List list ->
-          case filter matchesName $ (childFirst list) : (childRest list) of
+          case filter matchesName $ childFirst list : childRest list of
             [] -> Nothing
             _ : _ : _ -> Nothing
-            child : [] -> findImage names child
+            [child] -> findImage names child
         Leaf album ->
-          case filter ((==) (takeBaseName name) . altText) $ (imageFirst album) : (imageRest album) of
+          case filter ((==) (takeBaseName name) . altText) $ imageFirst album : imageRest album of
             [] -> Nothing
             _ : _ : _ -> Nothing
-            child : [] -> Just child
+            [child] -> Just child
 
 imageNewerThanSrc :: Maybe (Image, UTCTime) -> FilePath -> IO (Either UTCTime Image)
 imageNewerThanSrc mImageModTime src = do
