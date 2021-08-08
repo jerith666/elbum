@@ -13,6 +13,9 @@ pkgs.stdenv.mkDerivation {
                   pkgs.elmPackages.elm
 
                   ormolu
+
+                  ghcide
+                  haskell-language-server
                   
                   pkgs.vscodium ];
   shellHook = "eval $(egrep ^export ${ghc}/bin/ghc)";
