@@ -3,7 +3,7 @@ let
   inherit (nixpkgs) pkgs;
   ghc = pkgs.haskell.packages.${compiler}.ghcWithPackages (ps: with ps; [
   #ghc = pkgs.haskellPackages.ghcWithPackages (ps: with ps; [
-          async friday-juicypixels elm-bridge friday regex-compat parallel
+          async hip elm-bridge regex-compat parallel
         ]);
 in
 pkgs.stdenv.mkDerivation {

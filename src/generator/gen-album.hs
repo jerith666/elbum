@@ -28,9 +28,8 @@ import System.FilePath
 import System.IO
 import System.Posix.Files
 import Text.Regex
-import Vision.Image hiding (Image, map)
-import Vision.Image.JuicyPixels
-import Vision.Primitive
+import Graphics.Image (resize, Bicubic (Bicubic), Border (Edge))
+import Graphics.Image.IO.Formats (fromJPImageRGB8, toJPImageRGB8)
 
 --
 -- main & usage
@@ -456,9 +455,9 @@ shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -
 shrinkImgSrc s d f i w h maxwidth =
   let (xsm, ysm) = shrink maxwidth w h
       fsmpath = fst $ destForShrink maxwidth s d f
-      fi = toFridayRGB $ convertRGB8 i
-      fism = resize Bilinear (ix2 ysm xsm) fi
-      ism = toJuicyRGB fism
+      hipImg = fromJPImageRGB8 $ convertRGB8 i
+      hipImgSmall = resize (Bicubic $ -0.75) Edge (ysm, xsm) hipImg
+      ism = toJPImageRGB8 hipImgSmall
    in ( ism,
         fsmpath,
         maxwidth,
