@@ -21,7 +21,7 @@ import Data.List (find, intercalate, sort)
 import Data.Maybe
 import Data.Time.Clock
 import Data.Tuple
-import Graphics.Image (Border (Edge), resize, Bicubic (Bicubic))
+import Graphics.Image (Bilinear (Bilinear), Border (Edge), resize)
 import Graphics.Image.IO.Formats (fromJPImageRGB8, toJPImageRGB8)
 import System.Directory
 import System.Environment
@@ -456,7 +456,7 @@ shrinkImgSrc s d f i w h maxwidth =
   let (xsm, ysm) = shrink maxwidth w h
       fsmpath = fst $ destForShrink maxwidth s d f
       hipImg = fromJPImageRGB8 $ convertRGB8 i
-      hipImgSmall = resize (Bicubic $ -0.75) Edge (ysm, xsm) hipImg
+      hipImgSmall = resize Bilinear Edge (ysm, xsm) hipImg
       ism = toJPImageRGB8 hipImgSmall
    in ( ism,
         fsmpath,
