@@ -21,6 +21,8 @@ import Data.List (find, intercalate, sort)
 import Data.Maybe
 import Data.Time.Clock
 import Data.Tuple
+import Graphics.Image (Border (Edge), resize, Bicubic (Bicubic))
+import Graphics.Image.IO.Formats (fromJPImageRGB8, toJPImageRGB8)
 import System.Directory
 import System.Environment
 import System.Exit
@@ -28,8 +30,6 @@ import System.FilePath
 import System.IO
 import System.Posix.Files
 import Text.Regex
-import Graphics.Image (resize, Bicubic (Bicubic), Border (Edge))
-import Graphics.Image.IO.Formats (fromJPImageRGB8, toJPImageRGB8)
 
 --
 -- main & usage
