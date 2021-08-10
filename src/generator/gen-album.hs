@@ -21,8 +21,7 @@ import Data.List (find, intercalate, sort)
 import Data.Maybe
 import Data.Time.Clock
 import Data.Tuple
-import Graphics.Image (Bilinear (Bilinear), Border (Edge), resize)
-import Graphics.Image.IO.Formats (fromJPImageRGB8, toJPImageRGB8)
+import Graphics.Image (Bilinear (Bilinear), Border (Fill), resize, fromJPImageRGB16, toJPImageRGB16)
 import System.Directory
 import System.Environment
 import System.Exit
@@ -444,20 +443,20 @@ procSrcSet s d f i w h = do
   mapM_ (writeShrunkenImgSrc . fstSndThr) shrunkenSrcs
   return (rawImg, shrunken)
 
-writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGB8, FilePath, Int) -> IO ()
+writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGB16, FilePath, Int) -> IO ()
 writeShrunkenImgSrc (ism, fsmpath, _) = do
   createDirectoryIfMissing True $ takeDirectory fsmpath
   --putStr $ show maxwidth ++ "w "
   hFlush stdout
-  savePngImage fsmpath $ ImageRGB8 ism
+  savePngImage fsmpath $ ImageRGB16 ism
 
-shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGB8, FilePath, Int, ImgSrc)
+shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGB16, FilePath, Int, ImgSrc)
 shrinkImgSrc s d f i w h maxwidth =
   let (xsm, ysm) = shrink maxwidth w h
       fsmpath = fst $ destForShrink maxwidth s d f
-      hipImg = fromJPImageRGB8 $ convertRGB8 i
-      hipImgSmall = resize Bilinear Edge (ysm, xsm) hipImg
-      ism = toJPImageRGB8 hipImgSmall
+      hipImg = fromJPImageRGB16 $ convertRGB16 i
+      hipImgSmall = resize Bilinear (Fill 0) (ysm, xsm) hipImg
+      ism = toJPImageRGB16 hipImgSmall
    in ( ism,
         fsmpath,
         maxwidth,
