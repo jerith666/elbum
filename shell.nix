@@ -3,7 +3,7 @@ let
   inherit (nixpkgs) pkgs;
   ghc = pkgs.haskell.packages.${compiler}.ghcWithPackages (ps: with ps; [
   #ghc = pkgs.haskellPackages.ghcWithPackages (ps: with ps; [
-          async hip elm-bridge regex-compat parallel
+          async hip JuicyPixels-extra elm-bridge regex-compat parallel
         ]);
 in
 pkgs.stdenv.mkDerivation {
@@ -16,6 +16,9 @@ pkgs.stdenv.mkDerivation {
 
                   ghcide
                   haskell-language-server
+                  haskell-dap
+                  ghci-dap
+                  haskell-debug-adapter
                   
                   pkgs.vscodium ];
   shellHook = "eval $(egrep ^export ${ghc}/bin/ghc)";

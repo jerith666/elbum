@@ -7,7 +7,7 @@
 {-# OPTIONS_GHC -Wredundant-constraints #-}
 
 import AlbumTypes
-import Codec.Picture hiding (Image)
+import Codec.Picture (DynamicImage (ImageRGB8), PixelRGB8, convertRGB8, dynamicMap, imageHeight, imageWidth, readImageWithMetadata, savePngImage, readImage)
 import Codec.Picture.Metadata
 import qualified Codec.Picture.Types
 import Control.Applicative
@@ -21,7 +21,7 @@ import Data.List (find, intercalate, sort)
 import Data.Maybe
 import Data.Time.Clock
 import Data.Tuple
-import Graphics.Image (Bilinear (Bilinear), Border (Fill), resize, fromJPImageRGB8, toJPImageRGB8)
+import qualified Graphics.Image as GI (Bicubic (Bicubic), Bilinear (Bilinear), Border (Fill), fromJPImageRGB8, resize, toJPImageRGB8, writeImage, Nearest (Nearest), readImageRGB)
 import System.Directory
 import System.Environment
 import System.Exit
@@ -29,6 +29,8 @@ import System.FilePath
 import System.IO
 import System.Posix.Files
 import Text.Regex
+import Codec.Picture.Extra (scaleBilinear)
+import Graphics.Image (VU(VU))
 
 --
 -- main & usage
@@ -39,7 +41,35 @@ main = do
   args <- getArgs
   case args of
     [src, dest] -> writeAlbumOrList src dest
+    [oneImg] -> shrinkImg oneImg
     _ -> usage
+
+shrinkImg :: FilePath -> IO ()
+shrinkImg imgFile = do
+  let l=227
+      w=403
+  imgOrErr <- GI.readImageRGB VU imgFile -- :: IO (Either String (GI.Image GI.VS GI.RGB Double))
+  case Right imgOrErr of
+    {-Left err ->
+      putStrLn $ "error reading image file '" ++ imgFile ++ "': " ++ err-}
+    Right img -> do
+      let smallImgBilinear = GI.resize GI.Bilinear (GI.Fill 0) (l, w) img
+          smallImgNearest = GI.resize GI.Nearest (GI.Fill 0) (l,w) img
+          smallImgBicubicNegHalf = GI.resize (GI.Bicubic $ -0.5) (GI.Fill 0) (l, w) img
+          smallImgBicubicNegThreeQuarters = GI.resize (GI.Bicubic $ -0.75) (GI.Fill 0) (l, w) img
+          smallImgBicubicNegOne = GI.resize (GI.Bicubic $ -1) (GI.Fill 0) (l, w) img
+      GI.writeImage "smaller-bilinear.png" smallImgBilinear
+      GI.writeImage "smaller-nearest.png" smallImgNearest
+      GI.writeImage "smaller-bicubic-0.5.png" smallImgBicubicNegHalf
+      GI.writeImage "smaller-bicubic-0.75.png" smallImgBicubicNegThreeQuarters
+      GI.writeImage "smaller-bicubic-1.png" smallImgBicubicNegOne
+  jpImgOrErr <- readImage imgFile
+  case jpImgOrErr of
+    Left err ->
+      putStrLn $ "error (jp) reading image file '" ++ imgFile ++ "': " ++ err
+    Right img -> do
+      let smallImg = scaleBilinear w l $ convertRGB8 img
+      savePngImage "smaller-jpextra.png" $ ImageRGB8 smallImg 
 
 usage :: IO ()
 usage = do
@@ -438,6 +468,7 @@ procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> 
 procSrcSet s d f i w h = do
   let shrunkenSrcs = map (shrinkImgSrc s d f i w h) sizes `using` parList rdeepseq
       shrunken = map fth shrunkenSrcs
+  --putStrLn $ "processing " ++ show i
   rawImg <- copyRawImgSrc s d f w h
   --putStrSameLn $ "processing " ++ show f ++ " "
   mapM_ (writeShrunkenImgSrc . fstSndThr) shrunkenSrcs
@@ -454,9 +485,9 @@ shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -
 shrinkImgSrc s d f i w h maxwidth =
   let (xsm, ysm) = shrink maxwidth w h
       fsmpath = fst $ destForShrink maxwidth s d f
-      hipImg = fromJPImageRGB8 $ convertRGB8 i
-      hipImgSmall = resize Bilinear (Fill 0) (ysm, xsm) hipImg
-      ism = toJPImageRGB8 hipImgSmall
+      hipImg = GI.fromJPImageRGB8 $ convertRGB8 i
+      hipImgSmall = hipImg -- resize Bilinear (Fill 0) (ysm, xsm) hipImg
+      ism = GI.toJPImageRGB8 hipImgSmall
    in ( ism,
         fsmpath,
         maxwidth,
