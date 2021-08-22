@@ -12,6 +12,7 @@ import Codec.Picture (DynamicImage (ImageRGB8), PixelRGB8, convertRGB8, dynamicM
 
 import Codec.Picture.Extra (scaleBilinear)
 import Codec.Picture.Metadata
+import Codec.Picture.Types (pixelFold)
 import qualified Codec.Picture.Types
 import Control.Applicative
 import Control.Concurrent.Async
@@ -47,8 +48,8 @@ main = do
 
 shrinkImg :: FilePath -> IO ()
 shrinkImg imgFile = do
-  let l = 227
-      w = 403
+  let l = 2
+      w = 2
   {-imgOrErr <- GI.readImageRGB VU imgFile -- :: IO (Either String (GI.Image GI.VS GI.RGB Double))
   case Right imgOrErr of
     { -Left err ->
@@ -69,8 +70,22 @@ shrinkImg imgFile = do
     Left err ->
       putStrLn $ "error (jp) reading image file '" ++ imgFile ++ "': " ++ err
     Right img -> do
-      let smallImg = scaleBilinear w l $ convertRGB8 img
+      let srcImg = convertRGB8 img
+          smallImg = scaleBilinear w l srcImg
+      putStrLn $ "source image: " ++ showImage srcImg
+      putStrLn $ "small  image: " ++ showImage smallImg
       savePngImage "smaller-jpextra.png" $ ImageRGB8 smallImg
+
+showImage :: Codec.Picture.Types.Image PixelRGB8 -> String
+showImage i =
+  let showPixel soFar px py p =
+        let prefix =
+              case (px, py) of
+                (0, 0) -> ""
+                (0, _) -> "\n"
+                (_, _) -> " "
+         in soFar ++ prefix ++ "p@(" ++ show px ++ "," ++ show py ++ "): " ++ show p
+   in pixelFold showPixel "" i
 
 usage :: IO ()
 usage = do
