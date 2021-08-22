@@ -98,33 +98,37 @@ scaleBilinear ::
   P.Image a ->
   -- | Scaled image
   P.Image a
-scaleBilinear width height img@P.Image {..}
-  | width <= 0 || height <= 0 =
-    M.generateImage (error "scaleBilinear: absurd") (max 0 width) (max 0 height)
+scaleBilinear newWidth newHeight origImg@P.Image {..}
+  | newWidth <= 0 || newHeight <= 0 =
+    M.generateImage (error "scaleBilinear: absurd") (max 0 newWidth) (max 0 newHeight)
   | otherwise = runST $ do
-    mimg <- M.newMutableImage width height
-    let sx, sy :: Float
-        sx = fromIntegral imageWidth / fromIntegral width
-        sy = fromIntegral imageHeight / fromIntegral height
-        go x' y'
-          | x' >= width = go 0 (y' + 1)
-          | y' >= height = M.unsafeFreezeImage mimg
+    mimg <- M.newMutableImage newWidth newHeight
+    let scaleNewBackToOldX, scaleNewBackToOldY :: Int -> Float
+        scaleNewBackToOldX x = fromIntegral x * (fromIntegral imageWidth / fromIntegral newWidth)
+        scaleNewBackToOldY y = fromIntegral y * (fromIntegral imageHeight / fromIntegral newHeight)
+        go xNewInt yNewInt
+          | xNewInt >= newWidth = go 0 (yNewInt + 1)
+          | yNewInt >= newHeight = M.unsafeFreezeImage mimg
           | otherwise = do
-            let xf = fromIntegral x' * sx
-                yf = fromIntegral y' * sy
-                x, y :: Int
-                x = floor xf
-                y = floor yf
-                δx = xf - fromIntegral x
-                δy = yf - fromIntegral y
-                pixelAt' i j =
-                  M.pixelAt img (min (pred imageWidth) i) (min (pred imageHeight) j)
-            M.writePixel mimg x' y' $
-              mulp (pixelAt' x y) ((1 - δx) * (1 - δy))
-                `addp` mulp (pixelAt' (x + 1) y) (δx * (1 - δy))
-                `addp` mulp (pixelAt' x (y + 1)) ((1 - δx) * δy)
-                `addp` mulp (pixelAt' (x + 1) (y + 1)) (δx * δy)
-            go (x' + 1) y'
+            let xOrigFloat = scaleNewBackToOldX xNewInt
+                yOrigFloat = scaleNewBackToOldY yNewInt
+                x1OrigInt, y1OrigInt :: Int
+                x1OrigInt = floor xOrigFloat
+                y1OrigInt = floor yOrigFloat
+                x2OrigInt = x1OrigInt + 1
+                y2OrigInt = y1OrigInt + 1
+                --origAreaNormalizationFactor = 1 -- because x2 = x1+1 and y2=y1+1 in: 1/(x2 - x1)(y2 - y1)
+
+                δx = xOrigFloat - fromIntegral x1OrigInt
+                δy = yOrigFloat - fromIntegral y1OrigInt
+                pixelAtOrig i j =
+                  M.pixelAt origImg (min (imageWidth - 1) i) (min (imageHeight - 1) j)
+            M.writePixel mimg xNewInt yNewInt $
+              mulp (pixelAtOrig x1OrigInt y1OrigInt) ((1 - δx) * (1 - δy))
+                `addp` mulp (pixelAtOrig x2OrigInt y1OrigInt) (δx * (1 - δy))
+                `addp` mulp (pixelAtOrig x1OrigInt y2OrigInt) ((1 - δx) * δy)
+                `addp` mulp (pixelAtOrig x2OrigInt y2OrigInt) (δx * δy)
+            go (xNewInt + 1) yNewInt
     go 0 0
 {-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelRGBA16 -> P.Image M.PixelRGBA16 #-}
 {-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelRGBA8 -> P.Image M.PixelRGBA8 #-}
