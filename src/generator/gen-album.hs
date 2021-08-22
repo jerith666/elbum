@@ -1,3 +1,7 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS_GHC -Wall #-}
 {-# OPTIONS_GHC -Wcompat #-}
 {-# OPTIONS_GHC -Werror #-}
@@ -10,13 +14,17 @@ import AlbumTypes
 import Codec.Picture (DynamicImage (ImageRGB8), PixelRGB8, convertRGB8, dynamicMap, imageHeight, imageWidth, readImage, readImageWithMetadata, savePngImage)
 --import qualified Graphics.Image as GI (Bicubic (Bicubic), Bilinear (Bilinear), Border (Fill), fromJPImageRGB8, resize, toJPImageRGB8, writeImage, Nearest (Nearest), readImageRGB)
 
-import Codec.Picture.Extra (scaleBilinear)
+--import Codec.Picture.Extra (scaleBilinear)
+
+import qualified Codec.Picture as P
 import Codec.Picture.Metadata
 import Codec.Picture.Types (pixelFold)
 import qualified Codec.Picture.Types
+import qualified Codec.Picture.Types as M
 import Control.Applicative
 import Control.Concurrent.Async
 import Control.Monad
+import Control.Monad.ST
 import Control.Parallel.Strategies
 import Data.Aeson (decode, encode)
 import qualified Data.ByteString.Lazy.Char8 as C
@@ -48,8 +56,8 @@ main = do
 
 shrinkImg :: FilePath -> IO ()
 shrinkImg imgFile = do
-  let l = 2
-      w = 2
+  let l = 4
+      w = 4
   {-imgOrErr <- GI.readImageRGB VU imgFile -- :: IO (Either String (GI.Image GI.VS GI.RGB Double))
   case Right imgOrErr of
     { -Left err ->
@@ -75,6 +83,82 @@ shrinkImg imgFile = do
       putStrLn $ "source image: " ++ showImage srcImg
       putStrLn $ "small  image: " ++ showImage smallImg
       savePngImage "smaller-jpextra.png" $ ImageRGB8 smallImg
+
+-- | Scale an image using bi-linear interpolation.
+scaleBilinear ::
+  ( P.Pixel a,
+    Bounded (P.PixelBaseComponent a),
+    Integral (P.PixelBaseComponent a)
+  ) =>
+  -- | Desired width
+  Int ->
+  -- | Desired height
+  Int ->
+  -- | Original image
+  P.Image a ->
+  -- | Scaled image
+  P.Image a
+scaleBilinear width height img@P.Image {..}
+  | width <= 0 || height <= 0 =
+    M.generateImage (error "scaleBilinear: absurd") (max 0 width) (max 0 height)
+  | otherwise = runST $ do
+    mimg <- M.newMutableImage width height
+    let sx, sy :: Float
+        sx = fromIntegral imageWidth / fromIntegral width
+        sy = fromIntegral imageHeight / fromIntegral height
+        go x' y'
+          | x' >= width = go 0 (y' + 1)
+          | y' >= height = M.unsafeFreezeImage mimg
+          | otherwise = do
+            let xf = fromIntegral x' * sx
+                yf = fromIntegral y' * sy
+                x, y :: Int
+                x = floor xf
+                y = floor yf
+                δx = xf - fromIntegral x
+                δy = yf - fromIntegral y
+                pixelAt' i j =
+                  M.pixelAt img (min (pred imageWidth) i) (min (pred imageHeight) j)
+            M.writePixel mimg x' y' $
+              mulp (pixelAt' x y) ((1 - δx) * (1 - δy))
+                `addp` mulp (pixelAt' (x + 1) y) (δx * (1 - δy))
+                `addp` mulp (pixelAt' x (y + 1)) ((1 - δx) * δy)
+                `addp` mulp (pixelAt' (x + 1) (y + 1)) (δx * δy)
+            go (x' + 1) y'
+    go 0 0
+{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelRGBA16 -> P.Image M.PixelRGBA16 #-}
+{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelRGBA8 -> P.Image M.PixelRGBA8 #-}
+{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelCMYK16 -> P.Image M.PixelCMYK16 #-}
+{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelCMYK8 -> P.Image M.PixelCMYK8 #-}
+{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelYCbCr8 -> P.Image M.PixelYCbCr8 #-}
+{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelRGB16 -> P.Image M.PixelRGB16 #-}
+{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelYCbCrK8 -> P.Image M.PixelYCbCrK8 #-}
+{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelRGB8 -> P.Image M.PixelRGB8 #-}
+{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelYA16 -> P.Image M.PixelYA16 #-}
+{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelYA8 -> P.Image M.PixelYA8 #-}
+{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.Pixel32 -> P.Image M.Pixel32 #-}
+{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.Pixel16 -> P.Image M.Pixel16 #-}
+{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.Pixel8 -> P.Image M.Pixel8 #-}
+
+mulp :: (P.Pixel a, Integral (P.PixelBaseComponent a)) => a -> Float -> a
+mulp pixel x = M.colorMap (floor . (* x) . fromIntegral) pixel
+{-# INLINE mulp #-}
+
+addp ::
+  forall a.
+  ( P.Pixel a,
+    Bounded (P.PixelBaseComponent a),
+    Integral (P.PixelBaseComponent a)
+  ) =>
+  a ->
+  a ->
+  a
+addp = M.mixWith (const f)
+  where
+    f x y =
+      fromIntegral $
+        (maxBound :: P.PixelBaseComponent a) `min` (fromIntegral x + fromIntegral y)
+{-# INLINE addp #-}
 
 showImage :: Codec.Picture.Types.Image PixelRGB8 -> String
 showImage i =
