@@ -18,7 +18,6 @@ import Codec.Picture (DynamicImage (ImageRGB8), PixelRGB8, convertRGB8, dynamicM
 
 import qualified Codec.Picture as P
 import Codec.Picture.Metadata
-import Codec.Picture.Types (pixelFold)
 import qualified Codec.Picture.Types
 import qualified Codec.Picture.Types as M
 import Control.Applicative
@@ -34,7 +33,6 @@ import Data.Maybe
 import Data.Time.Clock
 import Data.Tuple
 import Data.Tuple.Extra (both)
-import Debug.Trace (trace)
 import qualified Graphics.Image as GI
 import Safe.Foldable (foldl1Def)
 import System.Directory
@@ -59,7 +57,7 @@ main = do
 
 shrinkImg :: FilePath -> IO ()
 shrinkImg imgFile = do
-  let scale = 0.5
+  let scale = 0.1
   {-imgOrErr <- GI.readImageRGB VU imgFile -- :: IO (Either String (GI.Image GI.VS GI.RGB Double))
   case Right imgOrErr of
     { -Left err ->
@@ -82,8 +80,8 @@ shrinkImg imgFile = do
     Right img -> do
       let srcImg = convertRGB8 img
           smallImg = scaleDownBoxAverage scale srcImg
-      putStrLn $ "source image: " ++ showImage srcImg
-      putStrLn $ "small  image: " ++ showImage smallImg
+      --putStrLn $ "source image: " ++ showImage srcImg
+      --putStrLn $ "small  image: " ++ showImage smallImg
       savePngImage "smaller-jpextra.png" $ ImageRGB8 smallImg
 
 -- | Scale an image using an average of a box of pixels
@@ -126,55 +124,25 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                 rBoundaryCoord = fst origLowerRight
                 tBoundaryCoord = snd origUpperLeft
                 bBoundaryCoord = snd origLowerRight
-                innerPixelsRaw =
-                  [ pixelAtOrig x y
-                    | x <- [lBoundaryCoord + 1 .. rBoundaryCoord - 1],
-                      y <- [tBoundaryCoord + 1 .. bBoundaryCoord - 1]
-                  ]
-                innerPixels = fmap (`mulp` areaFactor) innerPixelsRaw
-                tPixelsRaw = [pixelAtOrig x tBoundaryCoord | x <- [lBoundaryCoord + 1 .. rBoundaryCoord - 1]]
-                tPixels = fmap (`mulp` (tAreaFraction * areaFactor)) tPixelsRaw
-                bPixelsRaw = [pixelAtOrig x bBoundaryCoord | x <- [lBoundaryCoord + 1 .. rBoundaryCoord - 1]]
-                bPixels = fmap (`mulp` (bAreaFraction * areaFactor)) bPixelsRaw
-                lPixelsRaw = [pixelAtOrig lBoundaryCoord y | y <- [tBoundaryCoord + 1 .. bBoundaryCoord - 1]]
-                lPixels = fmap (`mulp` (lAreaFraction * areaFactor)) lPixelsRaw
-                rPixelsRaw = [pixelAtOrig rBoundaryCoord y | y <- [tBoundaryCoord + 1 .. bBoundaryCoord - 1]]
-                rPixels = fmap (`mulp` (rAreaFraction * areaFactor)) rPixelsRaw
+                hp label extraFactor = handlePixelGroup pixelAtOrig label (extraFactor * areaFactor)
+                innerPixels = hp "inner" 1 (lBoundaryCoord + 1) (rBoundaryCoord -1) (tBoundaryCoord + 1) (bBoundaryCoord -1)
+                tPixels = hp "t" tAreaFraction (lBoundaryCoord + 1) (rBoundaryCoord -1) tBoundaryCoord tBoundaryCoord
+                bPixels = hp "b" bAreaFraction (lBoundaryCoord + 1) (rBoundaryCoord -1) bBoundaryCoord bBoundaryCoord
+                lPixels = hp "l" lAreaFraction lBoundaryCoord lBoundaryCoord (tBoundaryCoord + 1) (bBoundaryCoord -1)
+                rPixels = hp "r" rAreaFraction rBoundaryCoord rBoundaryCoord (tBoundaryCoord + 1) (bBoundaryCoord -1)
+                tlPixels = hp "tl" (tAreaFraction * lAreaFraction) lBoundaryCoord lBoundaryCoord tBoundaryCoord tBoundaryCoord
+                trPixels = hp "tr" (tAreaFraction * rAreaFraction) rBoundaryCoord rBoundaryCoord tBoundaryCoord tBoundaryCoord
+                blPixels = hp "bl" (bAreaFraction * lAreaFraction) lBoundaryCoord lBoundaryCoord bBoundaryCoord bBoundaryCoord
+                brPixels = hp "br" (bAreaFraction * rAreaFraction) rBoundaryCoord rBoundaryCoord bBoundaryCoord bBoundaryCoord
+                allPixels = [innerPixels, tPixels, bPixels, lPixels, rPixels, tlPixels, trPixels, blPixels, brPixels]
                 context = "(" ++ show xNewInt ++ "," ++ show yNewInt ++ ") -> " ++ show origUpperLeft ++ " .. " ++ show origLowerRight ++ ", area " ++ show totalArea
                 newPixel =
                   logIt
                     ( context
-                        ++ "\n innerPixelsRaw: "
-                        ++ show innerPixelsRaw
-                        ++ "\n innerPixels   : "
-                        ++ show innerPixels
-                        ++ "\n tPixelsRaw    : "
-                        ++ show tPixelsRaw
-                        ++ "\n tPixels (x "
-                        ++ show tAreaFraction
-                        ++ ")      : "
-                        ++ show tPixels
-                        ++ "\n bPixelsRaw    : "
-                        ++ show bPixelsRaw
-                        ++ "\n bPixels (x "
-                        ++ show bAreaFraction
-                        ++ ")      : "
-                        ++ show bPixels
-                        ++ "\n lPixelsRaw    : "
-                        ++ show lPixelsRaw
-                        ++ "\n lPixels (x "
-                        ++ show lAreaFraction
-                        ++ ")      : "
-                        ++ show lPixels
-                        ++ "\n rPixelsRaw    : "
-                        ++ show rPixelsRaw
-                        ++ "\n rPixels (x "
-                        ++ show rAreaFraction
-                        ++ ")      : "
-                        ++ show rPixels
+                        ++ Data.List.intercalate "\n" (show <$> allPixels)
                         ++ "\n newPixel      : "
                     )
-                    $ foldl1Def (uncurry pixelAtOrig origUpperLeft) addp $ innerPixels ++ tPixels ++ bPixels ++ lPixels ++ rPixels
+                    $ foldl1Def (uncurry pixelAtOrig origUpperLeft) addp $ concatMap snd allPixels
             M.writePixel mimg xNewInt yNewInt newPixel
             go (xNewInt + 1) yNewInt
     go 0 0
@@ -192,9 +160,31 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
 {-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel16 -> P.Image M.Pixel16 #-}
 {-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel8 -> P.Image M.Pixel8 #-}
 
-logIt :: Show a => String -> a -> a
-logIt msg value =
-  trace (msg ++ ": " ++ show value) value
+handlePixelGroup :: (P.Pixel a, Integral (P.PixelBaseComponent a), Show a) => (Float -> Float -> a) -> String -> Float -> Float -> Float -> Float -> Float -> (String, [a])
+handlePixelGroup pixelAtOrig label factor xMin xMax yMin yMax =
+  let pixelsRaw =
+        [ pixelAtOrig x y
+          | x <- [xMin .. xMax],
+            y <- [yMin .. yMax]
+        ]
+      pixels = fmap (`mulp` factor) pixelsRaw
+      logStr =
+        label
+          ++ "PixelsRaw: "
+          ++ show pixelsRaw
+          ++ "; "
+          ++ label
+          ++ "Pixels (x"
+          ++ show factor
+          ++ ")"
+   in (logStr, pixels)
+
+logIt :: a -> b -> b
+logIt _ value = value
+
+{-logIt :: Show a => String -> a -> a
+  logIt msg value =
+  trace (msg ++ ": " ++ show value) value-}
 
 mulp :: (P.Pixel a, Integral (P.PixelBaseComponent a)) => a -> Float -> a
 mulp pixel x = M.colorMap (floor . (* x) . fromIntegral) pixel
@@ -216,6 +206,7 @@ addp = M.mixWith (const f)
         (maxBound :: P.PixelBaseComponent a) `min` (fromIntegral x + fromIntegral y)
 {-# INLINE addp #-}
 
+{-
 showImage :: Codec.Picture.Types.Image PixelRGB8 -> String
 showImage i =
   let showPixel soFar px py p =
@@ -226,6 +217,7 @@ showImage i =
                 (_, _) -> " "
          in soFar ++ prefix ++ "p@(" ++ show px ++ "," ++ show py ++ "): " ++ show p
    in pixelFold showPixel "" i
+-}
 
 usage :: IO ()
 usage = do
