@@ -73,6 +73,7 @@ executable elbum
                      , unix
                      , bytestring
                      , parallel
+                     , extra
                      , base >=4.10
 
   ghc-options:         -threaded -O2 -rtsopts -with-rtsopts=-N

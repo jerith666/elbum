@@ -33,6 +33,7 @@ import Data.List (find, intercalate, sort)
 import Data.Maybe
 import Data.Time.Clock
 import Data.Tuple
+import Data.Tuple.Extra (both)
 import qualified Graphics.Image as GI
 import System.Directory
 import System.Environment
@@ -79,48 +80,42 @@ shrinkImg imgFile = do
       putStrLn $ "error (jp) reading image file '" ++ imgFile ++ "': " ++ err
     Right img -> do
       let srcImg = convertRGB8 img
-          smallImg = scaleBilinear w l srcImg
+          smallImg = scaleDownBoxAverage w l srcImg
       putStrLn $ "source image: " ++ showImage srcImg
       putStrLn $ "small  image: " ++ showImage smallImg
       savePngImage "smaller-jpextra.png" $ ImageRGB8 smallImg
 
--- | Scale an image using bi-linear interpolation.
-scaleBilinear ::
+-- | Scale an image using an average of a box of pixels
+scaleDownBoxAverage ::
   ( P.Pixel a,
     Bounded (P.PixelBaseComponent a),
     Integral (P.PixelBaseComponent a)
   ) =>
-  -- | Desired width
-  Int ->
-  -- | Desired height
-  Int ->
+  -- | scale factor: to reduce an image to half its original size, pass 0.5, etc.
+  Float ->
   -- | Original image
   P.Image a ->
   -- | Scaled image
   P.Image a
-scaleBilinear newWidth newHeight origImg@P.Image {..}
-  | newWidth <= 0 || newHeight <= 0 =
-    M.generateImage (error "scaleBilinear: absurd") (max 0 newWidth) (max 0 newHeight)
-  | otherwise = runST $ do
+scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
+  runST $ do
+    let (newWidth, newHeight) = both (floor . (* origToNewScaleFactor) . fromIntegral) (imageWidth, imageHeight)
     mimg <- M.newMutableImage newWidth newHeight
-    let scaleNewBackToOldX, scaleNewBackToOldY :: Int -> Float
-        scaleNewBackToOldX x = fromIntegral x * (fromIntegral imageWidth / fromIntegral newWidth)
-        scaleNewBackToOldY y = fromIntegral y * (fromIntegral imageHeight / fromIntegral newHeight)
+    let scaleNewBackToOrig :: Int -> Float
+        scaleNewBackToOrig = (/ origToNewScaleFactor) . fromIntegral
         go xNewInt yNewInt
           | xNewInt >= newWidth = go 0 (yNewInt + 1)
           | yNewInt >= newHeight = M.unsafeFreezeImage mimg
           | otherwise = do
-            let xOrigFloat = scaleNewBackToOldX xNewInt
-                yOrigFloat = scaleNewBackToOldY yNewInt
-                x1OrigInt, y1OrigInt :: Int
-                x1OrigInt = floor xOrigFloat
-                y1OrigInt = floor yOrigFloat
-                x2OrigInt = x1OrigInt + 1
-                y2OrigInt = y1OrigInt + 1
-                --origAreaNormalizationFactor = 1 -- because x2 = x1+1 and y2=y1+1 in: 1/(x2 - x1)(y2 - y1)
-
-                δx = xOrigFloat - fromIntegral x1OrigInt
-                δy = yOrigFloat - fromIntegral y1OrigInt
+            let origUpperLeft = both scaleNewBackToOrig (xNewInt, yNewInt)
+                --gather as many pixels in the original image as are needed to cover one pixel in the new image
+                --by adding the scaled value of 1 to each coordinate
+                origLowerRight = both (+ scaleNewBackToOrig 1) origUpperLeft
+                --compute the fractions of area that the "borders" of the scaled-down region take up
+                tAreaFraction = floor (fst origUpperLeft) - fst origUpperLeft
+                bAreaFraction = 1 - tAreaFraction
+                lAreaFraction = floor (snd origUpperLeft) - snd origUpperLeft
+                rAreaFraction = 1 - lAreaFraction
                 pixelAtOrig i j =
                   M.pixelAt origImg (min (imageWidth - 1) i) (min (imageHeight - 1) j)
             M.writePixel mimg xNewInt yNewInt $
@@ -130,19 +125,19 @@ scaleBilinear newWidth newHeight origImg@P.Image {..}
                 `addp` mulp (pixelAtOrig x2OrigInt y2OrigInt) (δx * δy)
             go (xNewInt + 1) yNewInt
     go 0 0
-{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelRGBA16 -> P.Image M.PixelRGBA16 #-}
-{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelRGBA8 -> P.Image M.PixelRGBA8 #-}
-{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelCMYK16 -> P.Image M.PixelCMYK16 #-}
-{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelCMYK8 -> P.Image M.PixelCMYK8 #-}
-{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelYCbCr8 -> P.Image M.PixelYCbCr8 #-}
-{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelRGB16 -> P.Image M.PixelRGB16 #-}
-{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelYCbCrK8 -> P.Image M.PixelYCbCrK8 #-}
-{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelRGB8 -> P.Image M.PixelRGB8 #-}
-{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelYA16 -> P.Image M.PixelYA16 #-}
-{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.PixelYA8 -> P.Image M.PixelYA8 #-}
-{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.Pixel32 -> P.Image M.Pixel32 #-}
-{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.Pixel16 -> P.Image M.Pixel16 #-}
-{-# SPECIALIZE scaleBilinear :: Int -> Int -> P.Image M.Pixel8 -> P.Image M.Pixel8 #-}
+{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGBA16 -> P.Image M.PixelRGBA16 #-}
+{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGBA8 -> P.Image M.PixelRGBA8 #-}
+{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelCMYK16 -> P.Image M.PixelCMYK16 #-}
+{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelCMYK8 -> P.Image M.PixelCMYK8 #-}
+{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYCbCr8 -> P.Image M.PixelYCbCr8 #-}
+{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGB16 -> P.Image M.PixelRGB16 #-}
+{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYCbCrK8 -> P.Image M.PixelYCbCrK8 #-}
+{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGB8 -> P.Image M.PixelRGB8 #-}
+{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYA16 -> P.Image M.PixelYA16 #-}
+{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYA8 -> P.Image M.PixelYA8 #-}
+{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel32 -> P.Image M.Pixel32 #-}
+{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel16 -> P.Image M.Pixel16 #-}
+{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel8 -> P.Image M.Pixel8 #-}
 
 mulp :: (P.Pixel a, Integral (P.PixelBaseComponent a)) => a -> Float -> a
 mulp pixel x = M.colorMap (floor . (* x) . fromIntegral) pixel
