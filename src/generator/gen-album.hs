@@ -34,6 +34,7 @@ import Data.Maybe
 import Data.Time.Clock
 import Data.Tuple
 import Data.Tuple.Extra (both)
+import Debug.Trace (trace)
 import qualified Graphics.Image as GI
 import Safe.Foldable (foldl1Def)
 import System.Directory
@@ -89,7 +90,8 @@ shrinkImg imgFile = do
 scaleDownBoxAverage ::
   ( P.Pixel a,
     Bounded (P.PixelBaseComponent a),
-    Integral (P.PixelBaseComponent a)
+    Integral (P.PixelBaseComponent a),
+    Show a
   ) =>
   -- | scale factor: to reduce an image to half its original size, pass 0.5, etc.
   Float ->
@@ -99,7 +101,7 @@ scaleDownBoxAverage ::
   P.Image a
 scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
   runST $ do
-    let (newWidth, newHeight) = both (floor . (* origToNewScaleFactor) . fromIntegral) (imageWidth, imageHeight)
+    let (newWidth, newHeight) = logIt "newDims" $ both (floor . (* origToNewScaleFactor) . fromIntegral) (imageWidth, imageHeight)
     mimg <- M.newMutableImage newWidth newHeight
     let scaleNewBackToOrig :: Int -> Float
         scaleNewBackToOrig = (/ origToNewScaleFactor) . fromIntegral
@@ -118,13 +120,21 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                 rAreaFraction = 1 - lAreaFraction-}
                 totalArea = scaleNewBackToOrig 1 ^ 2
                 pixelAtOrig i j =
-                  mulp (M.pixelAt origImg (min (imageWidth - 1) (floor i)) (min (imageHeight - 1) (floor j))) (1 / totalArea)
+                  M.pixelAt origImg (min (imageWidth - 1) (floor i)) (min (imageHeight - 1) (floor j))
                 lBoundaryCoord = fst origUpperLeft
                 rBoundaryCoord = fst origLowerRight
                 tBoundaryCoord = snd origUpperLeft
                 bBoundaryCoord = snd origLowerRight
-                innerPixels = [pixelAtOrig x y | x <- [lBoundaryCoord .. rBoundaryCoord], y <- [tBoundaryCoord .. bBoundaryCoord]]
-                newPixel = foldl1Def (uncurry pixelAtOrig origUpperLeft) addp innerPixels
+                innerPixelsRaw =
+                  [ pixelAtOrig x y
+                    | x <- [lBoundaryCoord + 1 .. rBoundaryCoord - 1],
+                      y <- [tBoundaryCoord + 1 .. bBoundaryCoord - 1]
+                  ]
+                innerPixels = fmap (`mulp` (1 / totalArea)) innerPixelsRaw
+                context = "(" ++ show xNewInt ++ "," ++ show yNewInt ++ ") -> " ++ show origUpperLeft ++ " .. " ++ show origLowerRight ++ ", area " ++ show totalArea
+                newPixel =
+                  logIt (context ++ "\n innerPixelsRaw: " ++ show innerPixelsRaw ++ "\n innerPixels   : " ++ show innerPixels ++ "\n newPixel: ") $
+                    foldl1Def (uncurry pixelAtOrig origUpperLeft) addp innerPixels
             M.writePixel mimg xNewInt yNewInt newPixel
             go (xNewInt + 1) yNewInt
     go 0 0
@@ -141,6 +151,10 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
 {-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel32 -> P.Image M.Pixel32 #-}
 {-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel16 -> P.Image M.Pixel16 #-}
 {-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel8 -> P.Image M.Pixel8 #-}
+
+logIt :: Show a => String -> a -> a
+logIt msg value =
+  trace (msg ++ ": " ++ show value) value
 
 mulp :: (P.Pixel a, Integral (P.PixelBaseComponent a)) => a -> Float -> a
 mulp pixel x = M.colorMap (floor . (* x) . fromIntegral) pixel
