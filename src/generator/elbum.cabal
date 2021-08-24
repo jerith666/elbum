@@ -74,6 +74,7 @@ executable elbum
                      , bytestring
                      , parallel
                      , extra
+                     , safe
                      , base >=4.10
 
   ghc-options:         -threaded -O2 -rtsopts -with-rtsopts=-N

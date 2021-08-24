@@ -35,6 +35,7 @@ import Data.Time.Clock
 import Data.Tuple
 import Data.Tuple.Extra (both)
 import qualified Graphics.Image as GI
+import Safe.Foldable (foldl1Def)
 import System.Directory
 import System.Environment
 import System.Exit
@@ -57,8 +58,7 @@ main = do
 
 shrinkImg :: FilePath -> IO ()
 shrinkImg imgFile = do
-  let l = 4
-      w = 4
+  let scale = 0.5
   {-imgOrErr <- GI.readImageRGB VU imgFile -- :: IO (Either String (GI.Image GI.VS GI.RGB Double))
   case Right imgOrErr of
     { -Left err ->
@@ -80,7 +80,7 @@ shrinkImg imgFile = do
       putStrLn $ "error (jp) reading image file '" ++ imgFile ++ "': " ++ err
     Right img -> do
       let srcImg = convertRGB8 img
-          smallImg = scaleDownBoxAverage w l srcImg
+          smallImg = scaleDownBoxAverage scale srcImg
       putStrLn $ "source image: " ++ showImage srcImg
       putStrLn $ "small  image: " ++ showImage smallImg
       savePngImage "smaller-jpextra.png" $ ImageRGB8 smallImg
@@ -112,17 +112,20 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                 --by adding the scaled value of 1 to each coordinate
                 origLowerRight = both (+ scaleNewBackToOrig 1) origUpperLeft
                 --compute the fractions of area that the "borders" of the scaled-down region take up
-                tAreaFraction = floor (fst origUpperLeft) - fst origUpperLeft
+                {-tAreaFraction = floor (fst origUpperLeft) - fst origUpperLeft
                 bAreaFraction = 1 - tAreaFraction
                 lAreaFraction = floor (snd origUpperLeft) - snd origUpperLeft
-                rAreaFraction = 1 - lAreaFraction
+                rAreaFraction = 1 - lAreaFraction-}
+                totalArea = scaleNewBackToOrig 1 ^ 2
                 pixelAtOrig i j =
-                  M.pixelAt origImg (min (imageWidth - 1) i) (min (imageHeight - 1) j)
-            M.writePixel mimg xNewInt yNewInt $
-              mulp (pixelAtOrig x1OrigInt y1OrigInt) ((1 - δx) * (1 - δy))
-                `addp` mulp (pixelAtOrig x2OrigInt y1OrigInt) (δx * (1 - δy))
-                `addp` mulp (pixelAtOrig x1OrigInt y2OrigInt) ((1 - δx) * δy)
-                `addp` mulp (pixelAtOrig x2OrigInt y2OrigInt) (δx * δy)
+                  mulp (M.pixelAt origImg (min (imageWidth - 1) (floor i)) (min (imageHeight - 1) (floor j))) (1 / totalArea)
+                lBoundaryCoord = fst origUpperLeft
+                rBoundaryCoord = fst origLowerRight
+                tBoundaryCoord = snd origUpperLeft
+                bBoundaryCoord = snd origLowerRight
+                innerPixels = [pixelAtOrig x y | x <- [lBoundaryCoord .. rBoundaryCoord], y <- [tBoundaryCoord .. bBoundaryCoord]]
+                newPixel = foldl1Def (uncurry pixelAtOrig origUpperLeft) addp innerPixels
+            M.writePixel mimg xNewInt yNewInt newPixel
             go (xNewInt + 1) yNewInt
     go 0 0
 {-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGBA16 -> P.Image M.PixelRGBA16 #-}
