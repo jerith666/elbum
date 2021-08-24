@@ -114,11 +114,12 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                 --by adding the scaled value of 1 to each coordinate
                 origLowerRight = both (+ scaleNewBackToOrig 1) origUpperLeft
                 --compute the fractions of area that the "borders" of the scaled-down region take up
-                {-tAreaFraction = floor (fst origUpperLeft) - fst origUpperLeft
+                tAreaFraction = fromIntegral (floor (fst origUpperLeft)) - fst origUpperLeft
                 bAreaFraction = 1 - tAreaFraction
-                lAreaFraction = floor (snd origUpperLeft) - snd origUpperLeft
-                rAreaFraction = 1 - lAreaFraction-}
+                lAreaFraction = fromIntegral (floor (snd origUpperLeft)) - snd origUpperLeft
+                rAreaFraction = 1 - lAreaFraction
                 totalArea = scaleNewBackToOrig 1 ^ 2
+                areaFactor = 1 / totalArea
                 pixelAtOrig i j =
                   M.pixelAt origImg (min (imageWidth - 1) (floor i)) (min (imageHeight - 1) (floor j))
                 lBoundaryCoord = fst origUpperLeft
@@ -130,11 +131,19 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                     | x <- [lBoundaryCoord + 1 .. rBoundaryCoord - 1],
                       y <- [tBoundaryCoord + 1 .. bBoundaryCoord - 1]
                   ]
-                innerPixels = fmap (`mulp` (1 / totalArea)) innerPixelsRaw
+                innerPixels = fmap (`mulp` areaFactor) innerPixelsRaw
+                tPixelsRaw = [pixelAtOrig x tBoundaryCoord | x <- [lBoundaryCoord + 1 .. rBoundaryCoord - 1]]
+                tPixels = fmap (`mulp` tAreaFraction) tPixelsRaw
+                bPixelsRaw = [pixelAtOrig x bBoundaryCoord | x <- [lBoundaryCoord + 1 .. rBoundaryCoord - 1]]
+                bPixels = fmap (`mulp` bAreaFraction) bPixelsRaw
+                lPixelsRaw = [pixelAtOrig lBoundaryCoord y | y <- [tBoundaryCoord + 1 .. bBoundaryCoord - 1]]
+                lPixels = fmap (`mulp` lAreaFraction) lPixelsRaw
+                rPixelsRaw = [pixelAtOrig rBoundaryCoord y | y <- [tBoundaryCoord + 1 .. bBoundaryCoord - 1]]
+                rPixels = fmap (`mulp` rAreaFraction) rPixelsRaw
                 context = "(" ++ show xNewInt ++ "," ++ show yNewInt ++ ") -> " ++ show origUpperLeft ++ " .. " ++ show origLowerRight ++ ", area " ++ show totalArea
                 newPixel =
                   logIt (context ++ "\n innerPixelsRaw: " ++ show innerPixelsRaw ++ "\n innerPixels   : " ++ show innerPixels ++ "\n newPixel: ") $
-                    foldl1Def (uncurry pixelAtOrig origUpperLeft) addp innerPixels
+                    foldl1Def (uncurry pixelAtOrig origUpperLeft) addp $ innerPixels ++ tPixels ++ bPixels ++ lPixels ++ rPixels
             M.writePixel mimg xNewInt yNewInt newPixel
             go (xNewInt + 1) yNewInt
     go 0 0
