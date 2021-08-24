@@ -114,9 +114,9 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                 --by adding the scaled value of 1 to each coordinate
                 origLowerRight = both (+ scaleNewBackToOrig 1) origUpperLeft
                 --compute the fractions of area that the "borders" of the scaled-down region take up
-                tAreaFraction = fromIntegral (floor (fst origUpperLeft)) - fst origUpperLeft
+                tAreaFraction = 1 - (fst origUpperLeft - fromIntegral (floor (fst origUpperLeft)))
                 bAreaFraction = 1 - tAreaFraction
-                lAreaFraction = fromIntegral (floor (snd origUpperLeft)) - snd origUpperLeft
+                lAreaFraction = 1 - (snd origUpperLeft - fromIntegral (floor (snd origUpperLeft)))
                 rAreaFraction = 1 - lAreaFraction
                 totalArea = scaleNewBackToOrig 1 ^ 2
                 areaFactor = 1 / totalArea
@@ -133,17 +133,48 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                   ]
                 innerPixels = fmap (`mulp` areaFactor) innerPixelsRaw
                 tPixelsRaw = [pixelAtOrig x tBoundaryCoord | x <- [lBoundaryCoord + 1 .. rBoundaryCoord - 1]]
-                tPixels = fmap (`mulp` tAreaFraction) tPixelsRaw
+                tPixels = fmap (`mulp` (tAreaFraction * areaFactor)) tPixelsRaw
                 bPixelsRaw = [pixelAtOrig x bBoundaryCoord | x <- [lBoundaryCoord + 1 .. rBoundaryCoord - 1]]
-                bPixels = fmap (`mulp` bAreaFraction) bPixelsRaw
+                bPixels = fmap (`mulp` (bAreaFraction * areaFactor)) bPixelsRaw
                 lPixelsRaw = [pixelAtOrig lBoundaryCoord y | y <- [tBoundaryCoord + 1 .. bBoundaryCoord - 1]]
-                lPixels = fmap (`mulp` lAreaFraction) lPixelsRaw
+                lPixels = fmap (`mulp` (lAreaFraction * areaFactor)) lPixelsRaw
                 rPixelsRaw = [pixelAtOrig rBoundaryCoord y | y <- [tBoundaryCoord + 1 .. bBoundaryCoord - 1]]
-                rPixels = fmap (`mulp` rAreaFraction) rPixelsRaw
+                rPixels = fmap (`mulp` (rAreaFraction * areaFactor)) rPixelsRaw
                 context = "(" ++ show xNewInt ++ "," ++ show yNewInt ++ ") -> " ++ show origUpperLeft ++ " .. " ++ show origLowerRight ++ ", area " ++ show totalArea
                 newPixel =
-                  logIt (context ++ "\n innerPixelsRaw: " ++ show innerPixelsRaw ++ "\n innerPixels   : " ++ show innerPixels ++ "\n newPixel: ") $
-                    foldl1Def (uncurry pixelAtOrig origUpperLeft) addp $ innerPixels ++ tPixels ++ bPixels ++ lPixels ++ rPixels
+                  logIt
+                    ( context
+                        ++ "\n innerPixelsRaw: "
+                        ++ show innerPixelsRaw
+                        ++ "\n innerPixels   : "
+                        ++ show innerPixels
+                        ++ "\n tPixelsRaw    : "
+                        ++ show tPixelsRaw
+                        ++ "\n tPixels (x "
+                        ++ show tAreaFraction
+                        ++ ")      : "
+                        ++ show tPixels
+                        ++ "\n bPixelsRaw    : "
+                        ++ show bPixelsRaw
+                        ++ "\n bPixels (x "
+                        ++ show bAreaFraction
+                        ++ ")      : "
+                        ++ show bPixels
+                        ++ "\n lPixelsRaw    : "
+                        ++ show lPixelsRaw
+                        ++ "\n lPixels (x "
+                        ++ show lAreaFraction
+                        ++ ")      : "
+                        ++ show lPixels
+                        ++ "\n rPixelsRaw    : "
+                        ++ show rPixelsRaw
+                        ++ "\n rPixels (x "
+                        ++ show rAreaFraction
+                        ++ ")      : "
+                        ++ show rPixels
+                        ++ "\n newPixel      : "
+                    )
+                    $ foldl1Def (uncurry pixelAtOrig origUpperLeft) addp $ innerPixels ++ tPixels ++ bPixels ++ lPixels ++ rPixels
             M.writePixel mimg xNewInt yNewInt newPixel
             go (xNewInt + 1) yNewInt
     go 0 0
