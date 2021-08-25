@@ -58,7 +58,7 @@ main = do
 
 shrinkImg :: FilePath -> IO ()
 shrinkImg imgFile = do
-  let scale = 0.2
+  let scale = 0.3333
   {-imgOrErr <- GI.readImageRGB VU imgFile -- :: IO (Either String (GI.Image GI.VS GI.RGB Double))
   case Right imgOrErr of
     { -Left err ->
@@ -102,16 +102,16 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
   runST $ do
     let (newWidthExact, newHeightExact) = logIt "newDims" $ both ((* origToNewScaleFactor) . fromIntegral) (imageWidth, imageHeight)
         (newWidth, newHeight) = both floor (newWidthExact, newHeightExact)
-        (extraWidthOrig, extraHeightOrig) = ((imageWidth -) *** (imageHeight -)) $ both (floor . scaleNewBackToOrig) (newWidth, newHeight)
+        (extraWidthOrig, extraHeightOrig) = ((imageWidth -) *** (imageHeight -)) $ both (floor . scaleNewBackToOrig . fromIntegral) (newWidth, newHeight)
         (extraWidthOrigIncrement, extraHeightOrigIncrement) = (fromIntegral extraWidthOrig / fromIntegral newWidth, fromIntegral extraHeightOrig / fromIntegral newHeight)
-        scaleNewBackToOrig :: Int -> Float
-        scaleNewBackToOrig = (/ origToNewScaleFactor) . fromIntegral
+        scaleNewBackToOrig :: Float -> Float
+        scaleNewBackToOrig = (/ origToNewScaleFactor)
     mimg <- M.newMutableImage newWidth newHeight
-    let go xNewInt yNewInt
-          | xNewInt >= newWidth = go 0 (yNewInt + 1)
+    let go xNewInt yNewInt xNewFloat yNewFloat
+          | xNewInt >= newWidth = go 0 (yNewInt + 1) 0.0 (yNewFloat + 1 + extraHeightOrigIncrement * origToNewScaleFactor)
           | yNewInt >= newHeight = M.unsafeFreezeImage mimg
           | otherwise = do
-            let origUpperLeft = both scaleNewBackToOrig (xNewInt, yNewInt)
+            let origUpperLeft = both scaleNewBackToOrig (xNewFloat, yNewFloat)
                 --gather as many pixels in the original image as are needed to cover one pixel in the new image
                 --by adding the scaled value of 1 to each coordinate
                 origLowerRight = ((+ extraWidthOrigIncrement) *** (+ extraHeightOrigIncrement)) $ both (+ scaleNewBackToOrig 1) origUpperLeft
@@ -139,7 +139,7 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                 blPixels = hp "bl" (bAreaFraction * lAreaFraction) lBoundaryCoord lBoundaryCoord bBoundaryCoord bBoundaryCoord
                 brPixels = hp "br" (bAreaFraction * rAreaFraction) rBoundaryCoord rBoundaryCoord bBoundaryCoord bBoundaryCoord
                 allPixels = [innerPixels, tPixels, bPixels, lPixels, rPixels, tlPixels, trPixels, blPixels, brPixels]
-                context = "(" ++ show xNewInt ++ "," ++ show yNewInt ++ ") -> " ++ show origUpperLeft ++ " .. " ++ show origLowerRight ++ ", area " ++ show totalArea
+                context = "(" ++ show xNewFloat ++ "," ++ show yNewFloat ++ ")~(" ++ show xNewInt ++ "," ++ show yNewInt ++ ") -> " ++ show origUpperLeft ++ " .. " ++ show origLowerRight ++ ", area " ++ show totalArea
                 newPixel =
                   logIt
                     ( context
@@ -148,8 +148,8 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                     )
                     $ foldl1Def (uncurry pixelAtOrig origUpperLeft) addp $ concatMap snd allPixels
             M.writePixel mimg xNewInt yNewInt newPixel
-            go (xNewInt + 1) yNewInt
-    go 0 0
+            go (xNewInt + 1) yNewInt (xNewFloat + 1 + extraWidthOrigIncrement * origToNewScaleFactor) yNewFloat
+    go 0 0 0.0 0.0
 {-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGBA16 -> P.Image M.PixelRGBA16 #-}
 {-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGBA8 -> P.Image M.PixelRGBA8 #-}
 {-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelCMYK16 -> P.Image M.PixelCMYK16 #-}
