@@ -32,7 +32,8 @@ import Data.List (find, intercalate, sort)
 import Data.Maybe
 import Data.Time.Clock
 import Data.Tuple
-import Data.Tuple.Extra (both)
+import Data.Tuple.Extra (both, (***))
+import Debug.Trace (trace)
 import qualified Graphics.Image as GI
 import Safe.Foldable (foldl1Def)
 import System.Directory
@@ -57,7 +58,7 @@ main = do
 
 shrinkImg :: FilePath -> IO ()
 shrinkImg imgFile = do
-  let scale = 0.1
+  let scale = 0.2
   {-imgOrErr <- GI.readImageRGB VU imgFile -- :: IO (Either String (GI.Image GI.VS GI.RGB Double))
   case Right imgOrErr of
     { -Left err ->
@@ -99,18 +100,21 @@ scaleDownBoxAverage ::
   P.Image a
 scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
   runST $ do
-    let (newWidth, newHeight) = logIt "newDims" $ both (floor . (* origToNewScaleFactor) . fromIntegral) (imageWidth, imageHeight)
-    mimg <- M.newMutableImage newWidth newHeight
-    let scaleNewBackToOrig :: Int -> Float
+    let (newWidthExact, newHeightExact) = logIt "newDims" $ both ((* origToNewScaleFactor) . fromIntegral) (imageWidth, imageHeight)
+        (newWidth, newHeight) = both floor (newWidthExact, newHeightExact)
+        (extraWidthOrig, extraHeightOrig) = ((imageWidth -) *** (imageHeight -)) $ both (floor . scaleNewBackToOrig) (newWidth, newHeight)
+        (extraWidthOrigIncrement, extraHeightOrigIncrement) = (fromIntegral extraWidthOrig / fromIntegral newWidth, fromIntegral extraHeightOrig / fromIntegral newHeight)
+        scaleNewBackToOrig :: Int -> Float
         scaleNewBackToOrig = (/ origToNewScaleFactor) . fromIntegral
-        go xNewInt yNewInt
+    mimg <- M.newMutableImage newWidth newHeight
+    let go xNewInt yNewInt
           | xNewInt >= newWidth = go 0 (yNewInt + 1)
           | yNewInt >= newHeight = M.unsafeFreezeImage mimg
           | otherwise = do
             let origUpperLeft = both scaleNewBackToOrig (xNewInt, yNewInt)
                 --gather as many pixels in the original image as are needed to cover one pixel in the new image
                 --by adding the scaled value of 1 to each coordinate
-                origLowerRight = both (+ scaleNewBackToOrig 1) origUpperLeft
+                origLowerRight = ((+ extraWidthOrigIncrement) *** (+ extraHeightOrigIncrement)) $ both (+ scaleNewBackToOrig 1) origUpperLeft
                 --compute the fractions of area that the "borders" of the scaled-down region take up
                 tAreaFraction = 1 - (fst origUpperLeft - fromIntegral (floor (fst origUpperLeft)))
                 bAreaFraction = 1 - tAreaFraction
@@ -179,12 +183,12 @@ handlePixelGroup pixelAtOrig label factor xMin xMax yMin yMax =
           ++ ")"
    in (logStr, pixels)
 
-logIt :: a -> b -> b
-logIt _ value = value
+{-logIt :: a -> b -> b
+logIt _ value = value-}
 
-{-logIt :: Show a => String -> a -> a
-  logIt msg value =
-  trace (msg ++ ": " ++ show value) value-}
+logIt :: Show a => String -> a -> a
+logIt msg value =
+  trace (msg ++ ": " ++ show value) value
 
 mulp :: (P.Pixel a, Integral (P.PixelBaseComponent a)) => a -> Float -> a
 mulp pixel x = M.colorMap (floor . (* x) . fromIntegral) pixel
