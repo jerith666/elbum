@@ -33,7 +33,7 @@ import Data.Maybe
 import Data.Time.Clock
 import Data.Tuple
 import Data.Tuple.Extra (both, (***))
---import Debug.Trace (trace)
+import Debug.Trace (trace)
 import qualified Graphics.Image as GI
 import Safe.Foldable (foldl1Def)
 import System.Directory
@@ -183,12 +183,12 @@ handlePixelGroup pixelAtOrig label factor xMin xMax yMin yMax =
           ++ ")"
    in (logStr, pixels)
 
-logIt :: a -> b -> b
-logIt _ value = value
+{-logIt :: a -> b -> b
+logIt _ value = value-}
 
-{-logIt :: Show a => String -> a -> a
+logIt :: Show a => String -> a -> a
 logIt msg value =
-  trace (msg ++ ": " ++ show value) value-}
+  trace (msg ++ ": " ++ show value) value
 
 mulp :: (P.Pixel a, Integral (P.PixelBaseComponent a)) => a -> Float -> a
 mulp pixel x = M.colorMap (floor . (* x) . fromIntegral) pixel
