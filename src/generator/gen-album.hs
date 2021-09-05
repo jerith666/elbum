@@ -11,13 +11,14 @@
 {-# OPTIONS_GHC -Wredundant-constraints #-}
 
 import AlbumTypes
-import Codec.Picture (DynamicImage (ImageRGB8), PixelRGB8, convertRGB8, dynamicMap, imageHeight, imageWidth, readImage, readImageWithMetadata, savePngImage)
+import Codec.Picture (DynamicImage (ImageCMYK16, ImageCMYK8, ImageRGB16, ImageRGB8, ImageRGBA16, ImageRGBA8, ImageRGBF, ImageY16, ImageY32, ImageY8, ImageYA16, ImageYA8, ImageYCbCr8, ImageYF), Pixel8, PixelCMYK8, PixelF, PixelRGB8, PixelRGBA8, PixelRGBF, PixelYA8, convertRGB8, dynamicMap, imageHeight, imageWidth, readImage, readImageWithMetadata, savePngImage)
 --import qualified Graphics.Image as GI (Bicubic (Bicubic), Bilinear (Bilinear), Border (Fill), fromJPImageRGB8, resize, toJPImageRGB8, writeImage, Nearest (Nearest), readImageRGB)
 
 --import Codec.Picture.Extra (scaleBilinear)
 
 import qualified Codec.Picture as P
 import Codec.Picture.Metadata
+import Codec.Picture.Types (convertImage, dropAlphaLayer, promoteImage)
 import qualified Codec.Picture.Types
 import qualified Codec.Picture.Types as M
 import Control.Applicative
@@ -58,7 +59,7 @@ main = do
 
 shrinkImg :: FilePath -> IO ()
 shrinkImg imgFile = do
-  let scale = 0.3333
+  let scale = 1 / 3
   {-imgOrErr <- GI.readImageRGB VU imgFile -- :: IO (Either String (GI.Image GI.VS GI.RGB Double))
   case Right imgOrErr of
     { -Left err ->
@@ -79,29 +80,52 @@ shrinkImg imgFile = do
     Left err ->
       putStrLn $ "error (jp) reading image file '" ++ imgFile ++ "': " ++ err
     Right img -> do
-      let srcImg = convertRGB8 img
+      let srcImg = promoteImage $ convertRGB8 img
           smallImg = scaleDownBoxAverage scale srcImg
       --putStrLn $ "source image: " ++ showImage srcImg
       --putStrLn $ "small  image: " ++ showImage smallImg
-      savePngImage "smaller-jpextra.png" $ ImageRGB8 smallImg
+      savePngImage "smaller-jpextra.png" $ ImageRGBF smallImg
+
+-- | Convert by any means possible a dynamic image to an image
+-- in RGB. The process can lose precision while converting from
+-- 16bits pixels or Floating point pixels. Any alpha layer will
+-- be dropped
+
+{-convertRGBF :: DynamicImage -> P.Image PixelRGBF
+convertRGBF dynImage = case dynImage of
+  ImageY8 img -> promoteImage img
+  ImageY16 img -> promoteImage (decimateBitDepth img :: P.Image Pixel8)
+  ImageY32 img -> promoteImage (decimateBitDepth img :: P.Image Pixel8)
+  ImageYF img -> promoteImage (decimateBitDepth img :: P.Image Pixel8)
+  ImageYA8 img -> promoteImage img
+  ImageYA16 img -> promoteImage (decimateBitDepth img :: P.Image PixelYA8)
+  ImageRGB8 img -> img
+  ImageRGB16 img -> decimateBitDepth img
+  ImageRGBF img -> img
+  ImageRGBA8 img -> dropAlphaLayer img
+  ImageRGBA16 img -> dropAlphaLayer (decimateBitDepth img :: P.Image PixelRGBA8)
+  ImageYCbCr8 img -> convertImage img
+  ImageCMYK8 img -> convertImage img
+  ImageCMYK16 img -> convertImage (decimateBitDepth img :: P.Image PixelCMYK8) -}
 
 -- | Scale an image using an average of a box of pixels
 scaleDownBoxAverage ::
-  ( P.Pixel a,
-    Bounded (P.PixelBaseComponent a),
-    Integral (P.PixelBaseComponent a),
-    Show a
-  ) =>
+  -- ( P.Pixel a,
+  --  --Bounded (P.PixelBaseComponent a),
+  --Fractional (P.PixelBaseComponent a),
+  --Show a
+  --) =>
+
   -- | scale factor: to reduce an image to half its original size, pass 0.5, etc.
   Float ->
   -- | Original image
-  P.Image a ->
+  P.Image PixelRGBF ->
   -- | Scaled image
-  P.Image a
+  P.Image PixelRGBF
 scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
   runST $ do
-    let (newWidthExact, newHeightExact) = logIt "newDims" $ both ((* origToNewScaleFactor) . fromIntegral) (imageWidth, imageHeight)
-        (newWidth, newHeight) = both floor (newWidthExact, newHeightExact)
+    let (newWidthExact, newHeightExact) = logIt "newDimsExact" $ both ((* origToNewScaleFactor) . fromIntegral) (imageWidth, imageHeight)
+        (newWidth, newHeight) = logIt "newDims" $ both floor (newWidthExact, newHeightExact)
         (extraWidthOrig, extraHeightOrig) = ((imageWidth -) *** (imageHeight -)) $ both (floor . scaleNewBackToOrig . fromIntegral) (newWidth, newHeight)
         (extraWidthOrigIncrement, extraHeightOrigIncrement) = (fromIntegral extraWidthOrig / fromIntegral newWidth, fromIntegral extraHeightOrig / fromIntegral newHeight)
         scaleNewBackToOrig :: Float -> Float
@@ -142,7 +166,7 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                 context = "(" ++ show xNewFloat ++ "," ++ show yNewFloat ++ ")~(" ++ show xNewInt ++ "," ++ show yNewInt ++ ") -> " ++ show origUpperLeft ++ " .. " ++ show origLowerRight ++ ", area " ++ show totalArea
                 newPixel =
                   logIt
-                    ( context
+                    ( context ++ "\n"
                         ++ Data.List.intercalate "\n" (show <$> allPixels)
                         ++ "\n newPixel      : "
                     )
@@ -150,19 +174,20 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
             M.writePixel mimg xNewInt yNewInt newPixel
             go (xNewInt + 1) yNewInt (xNewFloat + 1 + extraWidthOrigIncrement * origToNewScaleFactor) yNewFloat
     go 0 0 0.0 0.0
-{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGBA16 -> P.Image M.PixelRGBA16 #-}
-{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGBA8 -> P.Image M.PixelRGBA8 #-}
-{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelCMYK16 -> P.Image M.PixelCMYK16 #-}
-{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelCMYK8 -> P.Image M.PixelCMYK8 #-}
-{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYCbCr8 -> P.Image M.PixelYCbCr8 #-}
-{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGB16 -> P.Image M.PixelRGB16 #-}
-{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYCbCrK8 -> P.Image M.PixelYCbCrK8 #-}
-{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGB8 -> P.Image M.PixelRGB8 #-}
-{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYA16 -> P.Image M.PixelYA16 #-}
-{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYA8 -> P.Image M.PixelYA8 #-}
-{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel32 -> P.Image M.Pixel32 #-}
-{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel16 -> P.Image M.Pixel16 #-}
-{-# SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel8 -> P.Image M.Pixel8 #-}
+
+{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGBA16 -> P.Image M.PixelRGBA16 #-}
+{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGBA8 -> P.Image M.PixelRGBA8 #-}
+{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelCMYK16 -> P.Image M.PixelCMYK16 #-}
+{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelCMYK8 -> P.Image M.PixelCMYK8 #-}
+{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYCbCr8 -> P.Image M.PixelYCbCr8 #-}
+{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGB16 -> P.Image M.PixelRGB16 #-}
+{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYCbCrK8 -> P.Image M.PixelYCbCrK8 #-}
+{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGB8 -> P.Image M.PixelRGB8 #-}
+{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYA16 -> P.Image M.PixelYA16 #-}
+{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYA8 -> P.Image M.PixelYA8 #-}
+{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel32 -> P.Image M.Pixel32 #-}
+{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel16 -> P.Image M.Pixel16 #-}
+{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel8 -> P.Image M.Pixel8 #-}
 
 handlePixelGroup :: (P.Pixel a, Integral (P.PixelBaseComponent a), Show a) => (Float -> Float -> a) -> String -> Float -> Float -> Float -> Float -> Float -> (String, [a])
 handlePixelGroup pixelAtOrig label factor xMin xMax yMin yMax =
