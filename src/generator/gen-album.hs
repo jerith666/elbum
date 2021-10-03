@@ -11,14 +11,14 @@
 {-# OPTIONS_GHC -Wredundant-constraints #-}
 
 import AlbumTypes
-import Codec.Picture (DynamicImage (ImageCMYK16, ImageCMYK8, ImageRGB16, ImageRGB8, ImageRGBA16, ImageRGBA8, ImageRGBF, ImageY16, ImageY32, ImageY8, ImageYA16, ImageYA8, ImageYCbCr8, ImageYF), Pixel8, PixelCMYK8, PixelF, PixelRGB8, PixelRGBA8, PixelRGBF, PixelYA8, convertRGB8, dynamicMap, imageHeight, imageWidth, readImage, readImageWithMetadata, savePngImage)
+import Codec.Picture (DynamicImage (ImageRGB8, ImageRGBF), PixelRGB8, PixelRGBF, convertRGB8, dynamicMap, imageHeight, imageWidth, readImage, readImageWithMetadata, savePngImage)
 --import qualified Graphics.Image as GI (Bicubic (Bicubic), Bilinear (Bilinear), Border (Fill), fromJPImageRGB8, resize, toJPImageRGB8, writeImage, Nearest (Nearest), readImageRGB)
 
 --import Codec.Picture.Extra (scaleBilinear)
 
 import qualified Codec.Picture as P
 import Codec.Picture.Metadata
-import Codec.Picture.Types (convertImage, dropAlphaLayer, promoteImage)
+import Codec.Picture.Types (promoteImage)
 import qualified Codec.Picture.Types
 import qualified Codec.Picture.Types as M
 import Control.Applicative
@@ -189,7 +189,7 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
 {-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel16 -> P.Image M.Pixel16 #-}
 {-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel8 -> P.Image M.Pixel8 #-}
 
-handlePixelGroup :: (P.Pixel a, Integral (P.PixelBaseComponent a), Show a) => (Float -> Float -> a) -> String -> Float -> Float -> Float -> Float -> Float -> (String, [a])
+handlePixelGroup :: (Float -> Float -> PixelRGBF) -> String -> Float -> Float -> Float -> Float -> Float -> (String, [PixelRGBF])
 handlePixelGroup pixelAtOrig label factor xMin xMax yMin yMax =
   let pixelsRaw =
         [ pixelAtOrig x y
@@ -215,24 +215,12 @@ logIt :: Show a => String -> a -> a
 logIt msg value =
   trace (msg ++ ": " ++ show value) value
 
-mulp :: (P.Pixel a, Integral (P.PixelBaseComponent a)) => a -> Float -> a
-mulp pixel x = M.colorMap (floor . (* x) . fromIntegral) pixel
+mulp :: PixelRGBF -> Float -> PixelRGBF
+mulp pixel x = M.colorMap (* x) pixel
 {-# INLINE mulp #-}
 
-addp ::
-  forall a.
-  ( P.Pixel a,
-    Bounded (P.PixelBaseComponent a),
-    Integral (P.PixelBaseComponent a)
-  ) =>
-  a ->
-  a ->
-  a
-addp = M.mixWith (const f)
-  where
-    f x y =
-      fromIntegral $
-        (maxBound :: P.PixelBaseComponent a) `min` (fromIntegral x + fromIntegral y)
+addp :: PixelRGBF -> PixelRGBF -> PixelRGBF
+addp = M.mixWith (const (+))
 {-# INLINE addp #-}
 
 {-
