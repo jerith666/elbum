@@ -1223,21 +1223,19 @@ locFor oldModel newModel =
                     Nothing
 
                 NavInactive ->
-                    nav
+                    Just nav
 
         rawFragment =
             log "rawFragment" <|
                 case newModel of
                     LoadedAlbum la ->
                         checkNavState la.navState <|
-                            Just <|
-                                hashForAlbum la.albumPage <|
-                                    List.map Tuple.first la.parents
+                            hashForAlbum la.albumPage <|
+                                List.map Tuple.first la.parents
 
                     LoadedList ll ->
                         checkNavState ll.navState <|
-                            Just <|
-                                hashForList ll.listPage
+                            hashForList ll.listPage
 
                     _ ->
                         Nothing
