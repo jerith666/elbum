@@ -1183,6 +1183,49 @@ navForAlbum baseUrl model vpInfo album ps newParents =
                             nonLocalMsg
 
 
+type RootViewState
+    = NotFullyLoaded
+    | ViewingRoot
+    | ViewingChild
+
+
+rootViewStateOf : MainAlbumModel -> RootViewState
+rootViewStateOf model =
+    case model of
+        AwaitingBaseUrl _ ->
+            NotFullyLoaded
+
+        Sizing _ ->
+            NotFullyLoaded
+
+        LoadingHomeLink _ ->
+            NotFullyLoaded
+
+        Loading _ ->
+            NotFullyLoaded
+
+        LoadError _ ->
+            NotFullyLoaded
+
+        LoadedList ll ->
+            case ll.listPage of
+                AlbumListPage alp ->
+                    case alp.parents of
+                        [] ->
+                            ViewingRoot
+
+                        _ ->
+                            ViewingChild
+
+        LoadedAlbum la ->
+            case la.parents of
+                [] ->
+                    ViewingRoot
+
+                _ ->
+                    ViewingChild
+
+
 locFor : MainAlbumModel -> MainAlbumModel -> Maybe UrlChange
 locFor oldModel newModel =
     let
@@ -1239,17 +1282,38 @@ locFor oldModel newModel =
 
                     _ ->
                         Nothing
+
+        {- prevent spurious url change from / to /# at album load time, but permit changes to /# on navigating back out from somewhere inside the album -}
+        noChangeRootToRoot rf =
+            case rootViewStateOf newModel of
+                ViewingRoot ->
+                    let
+                        emptyRfToNothing =
+                            case rf of
+                                "" ->
+                                    Nothing
+
+                                _ ->
+                                    Just rf
+                    in
+                    case rootViewStateOf oldModel of
+                        ViewingRoot ->
+                            emptyRfToNothing
+
+                        NotFullyLoaded ->
+                            emptyRfToNothing
+
+                        ViewingChild ->
+                            Just rf
+
+                NotFullyLoaded ->
+                    Just rf
+
+                ViewingChild ->
+                    Just rf
     in
     rawFragment
-        |> Maybe.andThen
-            (\rf ->
-                case rf of
-                    "" ->
-                        Nothing
-
-                    _ ->
-                        Just rf
-            )
+        |> Maybe.andThen noChangeRootToRoot
         |> Maybe.map (NewFragment entry)
         |> log "logFor"
 
