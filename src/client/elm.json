@@ -7,7 +7,7 @@
     "elm-version": "0.19.1",
     "dependencies": {
         "direct": {
-            "andrewMacmurray/elm-delay": "3.0.0",
+            "andrewMacmurray/elm-delay": "4.0.0",
             "bartavelle/json-helpers": "2.0.2",
             "ccapndave/elm-update-extra": "4.0.0",
             "cedricss/elm-progress-ring": "1.0.1",
