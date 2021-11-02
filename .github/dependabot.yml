@@ -1,0 +1,7 @@
+version: 2
+updates:
+    - package-ecosystem: elm
+      directory: /src/client/
+      schedule:
+          interval: daily
+      open-pull-requests-limit: 99
