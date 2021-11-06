@@ -1,7 +1,7 @@
 {
   "andrewMacmurray/elm-delay" = {
-    version = "3.0.0";
-    sha256 = "0cizz1l370aambnygvycn7fv0zbgdjrf1fzvnzimswbwd8n38i1j";
+    version = "4.0.0";
+    sha256 = "0rrcair6b9x9j79w3mly8di39slxm2iciyqyh3d2mv2yis43apm6";
   };
   "bartavelle/json-helpers" = {
     version = "2.0.2";
@@ -64,8 +64,8 @@
     sha256 = "16s14sh01g6ssabwkf2k1xdxnahnkn0s7603cg87wd0h4myg15da";
   };
   "rtfeldman/elm-css" = {
-    version = "16.1.0";
-    sha256 = "0nxiyxyw3kw55whkpwhrcgc0dr6a8zlm2nqvsaqdw6mzkykg0ba6";
+    version = "17.0.1";
+    sha256 = "0m5lpvbzb4694z1vb26a7a67362dg4js2fgsgzhpxhk341x50wlc";
   };
   "elm/bytes" = {
     version = "1.0.8";

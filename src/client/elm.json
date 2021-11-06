@@ -7,7 +7,7 @@
     "elm-version": "0.19.1",
     "dependencies": {
         "direct": {
-            "andrewMacmurray/elm-delay": "3.0.0",
+            "andrewMacmurray/elm-delay": "4.0.0",
             "bartavelle/json-helpers": "2.0.2",
             "ccapndave/elm-update-extra": "4.0.0",
             "cedricss/elm-progress-ring": "1.0.1",
@@ -23,7 +23,7 @@
             "elm-explorations/linear-algebra": "1.0.3",
             "mdgriffith/elm-style-animation": "4.0.0",
             "mpizenberg/elm-pointer-events": "4.0.2",
-            "rtfeldman/elm-css": "16.1.0"
+            "rtfeldman/elm-css": "17.0.1"
         },
         "indirect": {
             "elm/bytes": "1.0.8",

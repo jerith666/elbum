@@ -78,7 +78,7 @@ type alias ProgImgModelRec =
 
 type ProgressiveImageMsg
     = Loaded ImgSrc
-    | ScheduleTimeout Float TimeUnit ImgSrc
+    | ScheduleTimeout Int ImgSrc
     | Timeout ImgSrc
     | MainFadeinComplete
     | AnimatePlaceholder Animation.Msg
@@ -159,8 +159,8 @@ updateImpl msg ((ProgImgModel piModel) as oldModel) =
             in
             ( ProgImgModel { piModel | animState = { oldAnimState | main = newMainState } }, animCmd )
 
-        ScheduleTimeout n unit img ->
-            ( oldModel, Delay.after n unit <| Timeout img )
+        ScheduleTimeout n img ->
+            ( oldModel, Delay.after n <| Timeout img )
 
         _ ->
             let
@@ -261,7 +261,7 @@ updateModel msg ((ProgImgModel piModel) as model) =
                     --shouldn't happen
                     model
 
-        ScheduleTimeout _ _ _ ->
+        ScheduleTimeout _ _ ->
             model
 
         MainFadeinComplete ->
@@ -350,7 +350,7 @@ updateCmd : ProgressiveImageModel -> Cmd ProgressiveImageMsg
 updateCmd (ProgImgModel piModel) =
     case piModel.status of
         TryingCached _ trying _ ->
-            toCmd <| ScheduleTimeout 200 Millisecond trying
+            toCmd <| ScheduleTimeout 200 trying
 
         LoadingFallback ->
             Cmd.none
