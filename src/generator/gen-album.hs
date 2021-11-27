@@ -128,10 +128,16 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
   runST $ do
     let (newWidthExact, newHeightExact) = logIt "newDimsExact" $ both ((* origToNewScaleFactor) . fromIntegral) (imageWidth, imageHeight)
         (newWidth, newHeight) = logIt "newDims" $ both floor (newWidthExact, newHeightExact)
-        (extraWidthOrig, extraHeightOrig) = ((imageWidth -) *** (imageHeight -)) $ both (floor . scaleNewBackToOrig . fromIntegral) (newWidth, newHeight)
-        (extraWidthOrigIncrement, extraHeightOrigIncrement) = (fromIntegral extraWidthOrig / fromIntegral newWidth, fromIntegral extraHeightOrig / fromIntegral newHeight)
-        scaleNewBackToOrig :: Float -> Float
         scaleNewBackToOrig = (/ origToNewScaleFactor)
+        (extraWidthOrig, extraHeightOrig) =
+          ((imageWidth -) *** (imageHeight -)) $
+            both
+              (floor . scaleNewBackToOrig . fromIntegral)
+              (newWidth, newHeight)
+        (extraWidthOrigIncrement, extraHeightOrigIncrement) =
+          ( fromIntegral extraWidthOrig / fromIntegral newWidth,
+            fromIntegral extraHeightOrig / fromIntegral newHeight
+          )
     mimg <- M.newMutableImage newWidth newHeight
     let go xNewInt yNewInt xNewFloat yNewFloat
           | xNewInt >= newWidth = go 0 (yNewInt + 1) 0.0 (yNewFloat + 1 + extraHeightOrigIncrement * origToNewScaleFactor)
@@ -140,22 +146,32 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
             let origUpperLeft = both scaleNewBackToOrig (xNewFloat, yNewFloat)
                 --gather as many pixels in the original image as are needed to cover one pixel in the new image
                 --by adding the scaled value of 1 to each coordinate
-                origLowerRight = ((+ extraWidthOrigIncrement) *** (+ extraHeightOrigIncrement)) $ both (+ scaleNewBackToOrig 1) origUpperLeft
+                origLowerRight =
+                  ((+ extraWidthOrigIncrement) *** (+ extraHeightOrigIncrement)) $
+                    both
+                      (+ scaleNewBackToOrig 1)
+                      origUpperLeft
                 --compute the fractions of area that the "borders" of the scaled-down region take up
                 tAreaFraction = 1 - (fst origUpperLeft - fromIntegral (floor (fst origUpperLeft)))
                 bAreaFraction = 1 - tAreaFraction
                 lAreaFraction = 1 - (snd origUpperLeft - fromIntegral (floor (snd origUpperLeft)))
                 rAreaFraction = 1 - lAreaFraction
-                totalArea = scaleNewBackToOrig 1 ^ 2
+                totalArea = scaleNewBackToOrig 1 ^ 2 -- exponent binds more loosely than function application
                 areaFactor = 1 / totalArea
-                pixelAtOrig i j =
-                  M.pixelAt origImg (min (imageWidth - 1) (floor i)) (min (imageHeight - 1) (floor j))
+                --pull out some coordinates we'll need repeatedly below
                 lBoundaryCoord = fst origUpperLeft
                 rBoundaryCoord = fst origLowerRight
                 tBoundaryCoord = snd origUpperLeft
                 bBoundaryCoord = snd origLowerRight
+                --create a 'hp' helper function that specializes 'handlePixelGroup' to apply the constant areaFactor weighting
+                pixelAtOrig i j =
+                  M.pixelAt
+                    origImg
+                    (min (imageWidth - 1) (floor i))
+                    (min (imageHeight - 1) (floor j))
                 hp label extraFactor = handlePixelGroup pixelAtOrig label (extraFactor * areaFactor)
-                innerPixels = hp "inner" 1 (lBoundaryCoord + 1) (rBoundaryCoord -1) (tBoundaryCoord + 1) (bBoundaryCoord -1)
+                --use 'hp' to compute nine sets of new pixels: 4 "edge" areas, 4 "corner" areas, and the inner area
+                --applying the correct weighting factor for the area they came from
                 tPixels = hp "t" tAreaFraction (lBoundaryCoord + 1) (rBoundaryCoord -1) tBoundaryCoord tBoundaryCoord
                 bPixels = hp "b" bAreaFraction (lBoundaryCoord + 1) (rBoundaryCoord -1) bBoundaryCoord bBoundaryCoord
                 lPixels = hp "l" lAreaFraction lBoundaryCoord lBoundaryCoord (tBoundaryCoord + 1) (bBoundaryCoord -1)
@@ -164,15 +180,19 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                 trPixels = hp "tr" (tAreaFraction * rAreaFraction) rBoundaryCoord rBoundaryCoord tBoundaryCoord tBoundaryCoord
                 blPixels = hp "bl" (bAreaFraction * lAreaFraction) lBoundaryCoord lBoundaryCoord bBoundaryCoord bBoundaryCoord
                 brPixels = hp "br" (bAreaFraction * rAreaFraction) rBoundaryCoord rBoundaryCoord bBoundaryCoord bBoundaryCoord
+                innerPixels = hp "inner" 1 (lBoundaryCoord + 1) (rBoundaryCoord -1) (tBoundaryCoord + 1) (bBoundaryCoord -1)
+                --gather all those pixels together, plus some debugging strings
                 allPixels = [innerPixels, tPixels, bPixels, lPixels, rPixels, tlPixels, trPixels, blPixels, brPixels]
-                context = "(" ++ show xNewFloat ++ "," ++ show yNewFloat ++ ")~(" ++ show xNewInt ++ "," ++ show yNewInt ++ ") -> " ++ show origUpperLeft ++ " .. " ++ show origLowerRight ++ ", area " ++ show totalArea
+                c1 = "(" ++ show xNewFloat ++ "," ++ show yNewFloat ++ ")~(" ++ show xNewInt ++ "," ++ show yNewInt ++ ") -> " ++ show origUpperLeft ++ " .. " ++ show origLowerRight ++ ", area " ++ show totalArea
+                c2 = c1 ++ "\n" ++ Data.List.intercalate "\n" (show <$> allPixels) ++ "\n newPixel      : "
+                --and finally, add all the weighted pixels together to get the overall weighted average pixel
                 newPixel =
-                  logIt
-                    ( context ++ "\n"
-                        ++ Data.List.intercalate "\n" (show <$> allPixels)
-                        ++ "\n newPixel      : "
-                    )
-                    $ foldl1Def (uncurry pixelAtOrig origUpperLeft) addp $ concatMap snd allPixels
+                  logIt c2 $
+                    foldl1Def
+                      (uncurry pixelAtOrig origUpperLeft)
+                      addp
+                      $ concatMap snd allPixels
+            --write the new pixel into the image and move on to the next one
             M.writePixel mimg xNewInt yNewInt newPixel
             go (xNewInt + 1) yNewInt (xNewFloat + 1 + extraWidthOrigIncrement * origToNewScaleFactor) yNewFloat
     go 0 0 0.0 0.0
@@ -191,6 +211,9 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
 {-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel16 -> P.Image M.Pixel16 #-}
 {-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel8 -> P.Image M.Pixel8 #-}
 
+{-extracts pixels in the given x & y ranges using the given pixelAtOrig function,
+  multiplies them by the given factor, and returns the result in a list.
+  plus some debugging.-}
 handlePixelGroup :: (Float -> Float -> PixelRGBF) -> String -> Float -> Float -> Float -> Float -> Float -> (String, [PixelRGBF])
 handlePixelGroup pixelAtOrig label factor xMin xMax yMin yMax =
   let pixelsRaw =
