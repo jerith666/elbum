@@ -35,6 +35,7 @@ import Data.Time.Clock
 import Data.Tuple
 import Data.Tuple.Extra (both, (***))
 import qualified Graphics.Image as GI
+import Safe (readEitherSafe)
 import Safe.Foldable (foldl1Def)
 import System.Directory
 import System.Environment
@@ -53,12 +54,14 @@ main = do
   args <- getArgs
   case args of
     [src, dest] -> writeAlbumOrList src dest
-    [oneImg] -> shrinkImg oneImg
+    ["shrink", scale, oneImg] ->
+      case readEitherSafe scale of
+        Right s -> shrinkImg s oneImg
+        Left err -> putStrLn $ "could not parse scale '" ++ show scale ++ "': " ++ err
     _ -> usage
 
-shrinkImg :: FilePath -> IO ()
-shrinkImg imgFile = do
-  let scale = 1 / 3
+shrinkImg :: Float -> FilePath -> IO ()
+shrinkImg scale imgFile = do
   {-imgOrErr <- GI.readImageRGB VU imgFile -- :: IO (Either String (GI.Image GI.VS GI.RGB Double))
   case Right imgOrErr of
     { -Left err ->
