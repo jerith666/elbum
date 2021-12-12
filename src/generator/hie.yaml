@@ -1,0 +1,7 @@
+cradle:
+  cabal:
+    - path: "./gen-album.hs"
+      component: "elbum:exe:elbum"
+
+    - path: "./AlbumTypes.hs"
+      component: "elbum:exe:elbum"
