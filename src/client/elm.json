@@ -23,7 +23,7 @@
             "elm-explorations/linear-algebra": "1.0.3",
             "mdgriffith/elm-style-animation": "4.0.0",
             "mpizenberg/elm-pointer-events": "4.0.2",
-            "rtfeldman/elm-css": "17.0.1"
+            "rtfeldman/elm-css": "17.0.4"
         },
         "indirect": {
             "elm/bytes": "1.0.8",
