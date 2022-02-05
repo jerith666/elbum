@@ -11,7 +11,7 @@
 {-# OPTIONS_GHC -Wredundant-constraints #-}
 
 import AlbumTypes
-import Codec.Picture (DynamicImage (ImageRGB8, ImageRGBF), PixelRGB8, PixelRGBF, convertRGB8, dynamicMap, imageHeight, imageWidth, readImage, readImageWithMetadata, savePngImage)
+import Codec.Picture (DynamicImage (ImageRGBF), PixelRGBF, convertRGB8, dynamicMap, imageHeight, imageWidth, readImage, readImageWithMetadata, savePngImage)
 import qualified Codec.Picture as P
 import Codec.Picture.Metadata
 import Codec.Picture.Types (promoteImage)
@@ -30,7 +30,6 @@ import Data.Maybe
 import Data.Time.Clock
 import Data.Tuple
 import Data.Tuple.Extra (both, (***))
-import qualified Graphics.Image as GI
 import Safe (readEitherSafe)
 import Safe.Foldable (foldl1Def)
 import System.Directory
@@ -527,7 +526,7 @@ createImageWithMetadataSize s d f rawDest i = do
                 y = h
               }
           sdToImgSrc sd =
-            let (xsm, ysm) = shrink (fst sd) w h
+            let (xsm, ysm, _) = shrink (fst sd) w h
              in ImgSrc
                   { url = makeRelative d $ snd sd,
                     x = xsm,
@@ -587,21 +586,20 @@ procSrcSet s d f i w h = do
   mapM_ (writeShrunkenImgSrc . fstSndThr) shrunkenSrcs
   return (rawImg, shrunken)
 
-writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGB8, FilePath, Int) -> IO ()
+writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGBF, FilePath, Int) -> IO ()
 writeShrunkenImgSrc (ism, fsmpath, _) = do
   createDirectoryIfMissing True $ takeDirectory fsmpath
   --putStr $ show maxwidth ++ "w "
   hFlush stdout
-  savePngImage fsmpath $ ImageRGB8 ism
+  savePngImage fsmpath $ ImageRGBF ism
 
-shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGB8, FilePath, Int, ImgSrc)
+shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGBF, FilePath, Int, ImgSrc)
 shrinkImgSrc s d f i w h maxwidth =
-  let (xsm, ysm) = shrink maxwidth w h
+  let (xsm, ysm, factor) = shrink maxwidth w h
       fsmpath = fst $ destForShrink maxwidth s d f
-      hipImg = GI.fromJPImageRGB8 $ convertRGB8 i
-      hipImgSmall = hipImg -- resize Bilinear (Fill 0) (ysm, xsm) hipImg
-      ism = GI.toJPImageRGB8 hipImgSmall
-   in ( ism,
+      hipImg = M.promoteImage $ convertRGB8 i
+      hipImgSmall = scaleDownBoxAverage factor hipImg
+   in ( hipImgSmall,
         fsmpath,
         maxwidth,
         ImgSrc
@@ -639,11 +637,11 @@ destFor fNameMaker src dest fileInSrc =
       fName = fNameMaker fileInSrc
    in (dest </> srel </> fName, fName)
 
-shrink :: Int -> Int -> Int -> (Int, Int)
+shrink :: Int -> Int -> Int -> (Int, Int, Float)
 shrink maxwidth w h =
   let factor = fromIntegral maxwidth / fromIntegral w
-      scale width = floor (fromIntegral width * factor)
-   in (scale w, scale h)
+      scale dim = floor (fromIntegral dim * factor)
+   in (scale w, scale h, factor)
 
 --
 -- file/directory utilities
