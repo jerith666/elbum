@@ -12,10 +12,6 @@
 
 import AlbumTypes
 import Codec.Picture (DynamicImage (ImageRGB8, ImageRGBF), PixelRGB8, PixelRGBF, convertRGB8, dynamicMap, imageHeight, imageWidth, readImage, readImageWithMetadata, savePngImage)
---import qualified Graphics.Image as GI (Bicubic (Bicubic), Bilinear (Bilinear), Border (Fill), fromJPImageRGB8, resize, toJPImageRGB8, writeImage, Nearest (Nearest), readImageRGB)
-
---import Codec.Picture.Extra (scaleBilinear)
-
 import qualified Codec.Picture as P
 import Codec.Picture.Metadata
 import Codec.Picture.Types (promoteImage)
@@ -62,21 +58,6 @@ main = do
 
 shrinkImg :: Float -> FilePath -> IO ()
 shrinkImg scale imgFile = do
-  {-imgOrErr <- GI.readImageRGB VU imgFile -- :: IO (Either String (GI.Image GI.VS GI.RGB Double))
-  case Right imgOrErr of
-    { -Left err ->
-      putStrLn $ "error reading image file '" ++ imgFile ++ "': " ++ err- }
-    Right img -> do
-      let smallImgBilinear = GI.resize GI.Bilinear (GI.Fill 0) (l, w) img
-          smallImgNearest = GI.resize GI.Nearest (GI.Fill 0) (l,w) img
-          smallImgBicubicNegHalf = GI.resize (GI.Bicubic $ -0.5) (GI.Fill 0) (l, w) img
-          smallImgBicubicNegThreeQuarters = GI.resize (GI.Bicubic $ -0.75) (GI.Fill 0) (l, w) img
-          smallImgBicubicNegOne = GI.resize (GI.Bicubic $ -1) (GI.Fill 0) (l, w) img
-      GI.writeImage "smaller-bilinear.png" smallImgBilinear
-      GI.writeImage "smaller-nearest.png" smallImgNearest
-      GI.writeImage "smaller-bicubic-0.5.png" smallImgBicubicNegHalf
-      GI.writeImage "smaller-bicubic-0.75.png" smallImgBicubicNegThreeQuarters
-      GI.writeImage "smaller-bicubic-1.png" smallImgBicubicNegOne-}
   jpImgOrErr <- readImage imgFile
   case jpImgOrErr of
     Left err ->
@@ -84,40 +65,10 @@ shrinkImg scale imgFile = do
     Right img -> do
       let srcImg = promoteImage $ convertRGB8 img
           smallImg = scaleDownBoxAverage scale srcImg
-      --putStrLn $ "source image: " ++ showImage srcImg
-      --putStrLn $ "small  image: " ++ showImage smallImg
       savePngImage "smaller-jpextra.png" $ ImageRGBF smallImg
-
--- | Convert by any means possible a dynamic image to an image
--- in RGB. The process can lose precision while converting from
--- 16bits pixels or Floating point pixels. Any alpha layer will
--- be dropped
-
-{-convertRGBF :: DynamicImage -> P.Image PixelRGBF
-convertRGBF dynImage = case dynImage of
-  ImageY8 img -> promoteImage img
-  ImageY16 img -> promoteImage (decimateBitDepth img :: P.Image Pixel8)
-  ImageY32 img -> promoteImage (decimateBitDepth img :: P.Image Pixel8)
-  ImageYF img -> promoteImage (decimateBitDepth img :: P.Image Pixel8)
-  ImageYA8 img -> promoteImage img
-  ImageYA16 img -> promoteImage (decimateBitDepth img :: P.Image PixelYA8)
-  ImageRGB8 img -> img
-  ImageRGB16 img -> decimateBitDepth img
-  ImageRGBF img -> img
-  ImageRGBA8 img -> dropAlphaLayer img
-  ImageRGBA16 img -> dropAlphaLayer (decimateBitDepth img :: P.Image PixelRGBA8)
-  ImageYCbCr8 img -> convertImage img
-  ImageCMYK8 img -> convertImage img
-  ImageCMYK16 img -> convertImage (decimateBitDepth img :: P.Image PixelCMYK8) -}
 
 -- | Scale an image using an average of a box of pixels
 scaleDownBoxAverage ::
-  -- ( P.Pixel a,
-  --  --Bounded (P.PixelBaseComponent a),
-  --Fractional (P.PixelBaseComponent a),
-  --Show a
-  --) =>
-
   -- | scale factor: to reduce an image to half its original size, pass 0.5, etc.
   Float ->
   -- | Original image
@@ -197,20 +148,6 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
             go (xNewInt + 1) yNewInt (xNewFloat + 1 + extraWidthOrigIncrement * origToNewScaleFactor) yNewFloat
     go 0 0 0.0 0.0
 
-{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGBA16 -> P.Image M.PixelRGBA16 #-}
-{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGBA8 -> P.Image M.PixelRGBA8 #-}
-{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelCMYK16 -> P.Image M.PixelCMYK16 #-}
-{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelCMYK8 -> P.Image M.PixelCMYK8 #-}
-{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYCbCr8 -> P.Image M.PixelYCbCr8 #-}
-{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGB16 -> P.Image M.PixelRGB16 #-}
-{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYCbCrK8 -> P.Image M.PixelYCbCrK8 #-}
-{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelRGB8 -> P.Image M.PixelRGB8 #-}
-{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYA16 -> P.Image M.PixelYA16 #-}
-{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.PixelYA8 -> P.Image M.PixelYA8 #-}
-{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel32 -> P.Image M.Pixel32 #-}
-{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel16 -> P.Image M.Pixel16 #-}
-{-  # SPECIALIZE scaleDownBoxAverage :: Float -> P.Image M.Pixel8 -> P.Image M.Pixel8 #-}
-
 {-extracts pixels in the given x & y ranges using the given pixelAtOrig function,
   multiplies them by the given factor, and returns the result in a list.
   plus some debugging.-}
@@ -247,19 +184,6 @@ mulp pixel x = M.colorMap (* x) pixel
 addp :: PixelRGBF -> PixelRGBF -> PixelRGBF
 addp = M.mixWith (const (+))
 {-# INLINE addp #-}
-
-{-
-showImage :: Codec.Picture.Types.Image PixelRGB8 -> String
-showImage i =
-  let showPixel soFar px py p =
-        let prefix =
-              case (px, py) of
-                (0, 0) -> ""
-                (0, _) -> "\n"
-                (_, _) -> " "
-         in soFar ++ prefix ++ "p@(" ++ show px ++ "," ++ show py ++ "): " ++ show p
-   in pixelFold showPixel "" i
--}
 
 usage :: IO ()
 usage = do
@@ -658,7 +582,6 @@ procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> 
 procSrcSet s d f i w h = do
   let shrunkenSrcs = map (shrinkImgSrc s d f i w h) sizes `using` parList rdeepseq
       shrunken = map fth shrunkenSrcs
-  --putStrLn $ "processing " ++ show i
   rawImg <- copyRawImgSrc s d f w h
   --putStrSameLn $ "processing " ++ show f ++ " "
   mapM_ (writeShrunkenImgSrc . fstSndThr) shrunkenSrcs
