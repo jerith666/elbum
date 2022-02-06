@@ -80,7 +80,7 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
     let (newWidthExact, newHeightExact) = logIt "newDimsExact" $ both ((* origToNewScaleFactor) . fromIntegral) (imageWidth, imageHeight)
         (newWidth, newHeight) = logIt "newDims" $ both floor (newWidthExact, newHeightExact)
         scaleNewBackToOrig = (/ origToNewScaleFactor)
-        (extraWidthOrig, extraHeightOrig) =
+        {-(extraWidthOrig, extraHeightOrig) =
           ((imageWidth -) *** (imageHeight -)) $
             both
               (floor . scaleNewBackToOrig . fromIntegral)
@@ -88,6 +88,10 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
         (extraWidthOrigIncrement, extraHeightOrigIncrement) =
           ( fromIntegral extraWidthOrig / fromIntegral newWidth,
             fromIntegral extraHeightOrig / fromIntegral newHeight
+          )-}
+        (extraWidthOrigIncrement, extraHeightOrigIncrement) =
+          ( fromIntegral imageWidth / fromIntegral newWidth,
+            fromIntegral imageHeight / fromIntegral newHeight
           )
     mimg <- M.newMutableImage newWidth newHeight
     let go xNewInt yNewInt xNewFloat yNewFloat
