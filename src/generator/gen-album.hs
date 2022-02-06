@@ -90,9 +90,11 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
             fromIntegral extraHeightOrig / fromIntegral newHeight
           )-}
         (extraWidthOrigIncrement, extraHeightOrigIncrement) =
-          ( fromIntegral imageWidth / fromIntegral newWidth,
-            fromIntegral imageHeight / fromIntegral newHeight
-          )
+          both
+            (\x -> x - scaleNewBackToOrig 1)
+            ( fromIntegral imageWidth / fromIntegral newWidth,
+              fromIntegral imageHeight / fromIntegral newHeight
+            )
     mimg <- M.newMutableImage newWidth newHeight
     let go xNewInt yNewInt xNewFloat yNewFloat
           | xNewInt >= newWidth = go 0 (yNewInt + 1) 0.0 (yNewFloat + 1 + extraHeightOrigIncrement * origToNewScaleFactor)
