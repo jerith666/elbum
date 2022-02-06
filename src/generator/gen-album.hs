@@ -30,6 +30,7 @@ import Data.Maybe
 import Data.Time.Clock
 import Data.Tuple
 import Data.Tuple.Extra (both, (***))
+import Debug.Trace (trace)
 import Safe (readEitherSafe)
 import Safe.Foldable (foldl1Def)
 import System.Directory
@@ -169,12 +170,16 @@ handlePixelGroup pixelAtOrig label factor xMin xMax yMin yMax =
           ++ ")"
    in (logStr, pixels)
 
-logIt :: a -> b -> b
-logIt _ value = value
+loggingOn :: Bool
+loggingOn = True
 
-{-logIt :: Show a => String -> a -> a
+logIt :: Show a => String -> a -> a
 logIt msg value =
-  trace (msg ++ ": " ++ show value) value-}
+  case loggingOn of
+    True ->
+      trace (msg ++ ": " ++ show value) value
+    False ->
+      value
 
 mulp :: PixelRGBF -> Float -> PixelRGBF
 mulp pixel x = M.colorMap (* x) pixel
