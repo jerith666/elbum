@@ -140,7 +140,13 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                 innerPixels = hp "inner" 1 (lBoundaryCoord + 1) (rBoundaryCoord -1) (tBoundaryCoord + 1) (bBoundaryCoord -1)
                 --gather all those pixels together, plus some debugging strings
                 allPixels = [innerPixels, tPixels, bPixels, lPixels, rPixels, tlPixels, trPixels, blPixels, brPixels]
-                c1 = "(" ++ show xNewFloat ++ "," ++ show yNewFloat ++ ")~(" ++ show xNewInt ++ "," ++ show yNewInt ++ ") -> " ++ show origUpperLeft ++ " .. " ++ show origLowerRight ++ ", area " ++ show totalArea
+                c1 =
+                  "(" ++ show xNewFloat ++ "," ++ show yNewFloat ++ ")~(" ++ show xNewInt ++ "," ++ show yNewInt ++ ") -> "
+                    ++ show origUpperLeft
+                    ++ " .. "
+                    ++ show origLowerRight
+                    ++ ", area "
+                    ++ show totalArea
                 c2 = c1 ++ "\n" ++ Data.List.intercalate "\n" (show <$> allPixels) ++ "\n newPixel      : "
                 --and finally, add all the weighted pixels together to get the overall weighted average pixel
                 newPixel =
