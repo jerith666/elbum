@@ -105,9 +105,9 @@ scaleDownBoxAverage newWidth newHeight origImg@P.Image {..} =
                 areaFactor = 1 / totalArea
                 --pull out some coordinates we'll need repeatedly below
                 lBoundaryCoord = floor $ fst origUpperLeft
-                rBoundaryCoord = floor $ fst origLowerRight
+                rBoundaryCoord = ceiling $ fst origLowerRight - 1
                 tBoundaryCoord = floor $ snd origUpperLeft
-                bBoundaryCoord = floor $ snd origLowerRight
+                bBoundaryCoord = ceiling $ snd origLowerRight - 1
                 --create a 'hp' helper function that specializes 'handlePixelGroup' to apply the constant areaFactor weighting
                 pixelAtOrig i j =
                   M.pixelAt
