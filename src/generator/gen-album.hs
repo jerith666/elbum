@@ -29,7 +29,7 @@ import Data.List (find, intercalate, sort)
 import Data.Maybe
 import Data.Time.Clock
 import Data.Tuple
-import Data.Tuple.Extra (both, (***))
+import Data.Tuple.Extra (both)
 import Debug.Trace (trace)
 import Safe (readEitherSafe)
 import Safe.Foldable (foldl1Def)
@@ -50,64 +50,52 @@ main = do
   args <- getArgs
   case args of
     [src, dest] -> writeAlbumOrList src dest
-    ["shrink", scale, oneImg] ->
-      case readEitherSafe scale of
-        Right s -> shrinkImg s oneImg
-        Left err -> putStrLn $ "could not parse scale '" ++ show scale ++ "': " ++ err
+    ["shrink", newWidthStr, newHeightStr, oneImg] ->
+      case readEitherSafe newWidthStr of
+        Right newWidth ->
+          case readEitherSafe newHeightStr of
+            Right newHeight ->
+              shrinkImg newWidth newHeight oneImg
+            Left err ->
+              putStrLn $ "could not parse new height '" ++ newHeightStr ++ "': " ++ err
+        Left err -> putStrLn $ "could not parse new width '" ++ newWidthStr ++ "': " ++ err
     _ -> usage
 
-shrinkImg :: Float -> FilePath -> IO ()
-shrinkImg scale imgFile = do
+shrinkImg :: Int -> Int -> FilePath -> IO ()
+shrinkImg newWidth newHeight imgFile = do
   jpImgOrErr <- readImage imgFile
   case jpImgOrErr of
     Left err ->
       putStrLn $ "error (jp) reading image file '" ++ imgFile ++ "': " ++ err
     Right img -> do
       let srcImg = promoteImage $ convertRGB8 img
-          smallImg = scaleDownBoxAverage scale srcImg
+          smallImg = scaleDownBoxAverage newWidth newHeight srcImg
       savePngImage "smaller-jpextra.png" $ ImageRGBF smallImg
 
 -- | Scale an image using an average of a box of pixels
 scaleDownBoxAverage ::
-  -- | scale factor: to reduce an image to half its original size, pass 0.5, etc.
-  Float ->
+  -- | new width
+  Int ->
+  -- | new height
+  Int ->
   -- | Original image
   P.Image PixelRGBF ->
   -- | Scaled image
   P.Image PixelRGBF
-scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
+scaleDownBoxAverage newWidth newHeight origImg@P.Image {..} =
   runST $ do
-    let (newWidthExact, newHeightExact) = logIt "newDimsExact" $ both ((* origToNewScaleFactor) . fromIntegral) (imageWidth, imageHeight)
-        (newWidth, newHeight) = logIt "newDims" $ both floor (newWidthExact, newHeightExact)
-        scaleNewBackToOrig = (/ origToNewScaleFactor)
-        {-(extraWidthOrig, extraHeightOrig) =
-          ((imageWidth -) *** (imageHeight -)) $
-            both
-              (floor . scaleNewBackToOrig . fromIntegral)
-              (newWidth, newHeight)
-        (extraWidthOrigIncrement, extraHeightOrigIncrement) =
-          ( fromIntegral extraWidthOrig / fromIntegral newWidth,
-            fromIntegral extraHeightOrig / fromIntegral newHeight
-          )-}
-        (extraWidthOrigIncrement, extraHeightOrigIncrement) =
-          both
-            (\x -> x - scaleNewBackToOrig 1)
-            ( fromIntegral imageWidth / fromIntegral newWidth,
-              fromIntegral imageHeight / fromIntegral newHeight
-            )
+    let origToNewScaleFactor = fromIntegral newWidth / fromIntegral imageWidth
+        scaleNewBackToOrig = (/ origToNewScaleFactor) . fromIntegral
+        delta = scaleNewBackToOrig 1
     mimg <- M.newMutableImage newWidth newHeight
-    let go xNewInt yNewInt xNewFloat yNewFloat
-          | xNewInt >= newWidth = go 0 (yNewInt + 1) 0.0 (yNewFloat + 1 + extraHeightOrigIncrement * origToNewScaleFactor)
-          | yNewInt >= newHeight = M.unsafeFreezeImage mimg
+    let go xNew yNew
+          | xNew >= newWidth = go 0 (yNew + 1)
+          | yNew >= newHeight = M.unsafeFreezeImage mimg
           | otherwise = do
-            let origUpperLeft = both scaleNewBackToOrig (xNewFloat, yNewFloat)
+            let origUpperLeft = both scaleNewBackToOrig (xNew, yNew)
                 --gather as many pixels in the original image as are needed to cover one pixel in the new image
                 --by adding the scaled value of 1 to each coordinate
-                origLowerRight =
-                  ((+ extraWidthOrigIncrement) *** (+ extraHeightOrigIncrement)) $
-                    both
-                      (+ scaleNewBackToOrig 1)
-                      origUpperLeft
+                origLowerRight = both (+ delta) origUpperLeft
                 --compute the fractions of area that the "borders" of the scaled-down region take up
                 tAreaFraction = 1 - (fst origUpperLeft - fromIntegral (floor (fst origUpperLeft)))
                 bAreaFraction = 1 - tAreaFraction
@@ -141,7 +129,7 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                 --gather all those pixels together, plus some debugging strings
                 allPixels = [innerPixels, tPixels, bPixels, lPixels, rPixels, tlPixels, trPixels, blPixels, brPixels]
                 c1 =
-                  "(" ++ show xNewFloat ++ "," ++ show yNewFloat ++ ")~(" ++ show xNewInt ++ "," ++ show yNewInt ++ ") -> "
+                  "(" ++ show xNew ++ "," ++ show yNew ++ ") -> "
                     ++ show origUpperLeft
                     ++ " .. "
                     ++ show origLowerRight
@@ -156,9 +144,9 @@ scaleDownBoxAverage origToNewScaleFactor origImg@P.Image {..} =
                       addp
                       $ concatMap snd allPixels
             --write the new pixel into the image and move on to the next one
-            M.writePixel mimg xNewInt yNewInt newPixel
-            go (xNewInt + 1) yNewInt (xNewFloat + 1 + extraWidthOrigIncrement * origToNewScaleFactor) yNewFloat
-    go 0 0 0.0 0.0
+            M.writePixel mimg xNew yNew newPixel
+            go (xNew + 1) yNew
+    go 0 0
 
 {-extracts pixels in the given x & y ranges using the given pixelAtOrig function,
   multiplies them by the given factor, and returns the result in a list.
@@ -612,10 +600,10 @@ writeShrunkenImgSrc (ism, fsmpath, _) = do
 
 shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGBF, FilePath, Int, ImgSrc)
 shrinkImgSrc s d f i w h maxwidth =
-  let (xsm, ysm, factor) = shrink maxwidth w h
+  let (xsm, ysm, _) = shrink maxwidth w h
       fsmpath = fst $ destForShrink maxwidth s d f
       hipImg = M.promoteImage $ convertRGB8 i
-      hipImgSmall = scaleDownBoxAverage factor hipImg
+      hipImgSmall = scaleDownBoxAverage xsm ysm hipImg
    in ( hipImgSmall,
         fsmpath,
         maxwidth,
