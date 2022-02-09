@@ -161,7 +161,15 @@ handlePixelGroup pixelAtOrig label factor xMin xMax yMin yMax =
       pixels = fmap (`mulp` factor) pixelsRaw
       logStr =
         label
-          ++ "PixelsRaw: "
+          ++ " @ ("
+          ++ show xMin
+          ++ ","
+          ++ show yMin
+          ++ ")..("
+          ++ show xMax
+          ++ ","
+          ++ show yMax
+          ++ ") Raw: "
           ++ show pixelsRaw
           ++ "; "
           ++ label
