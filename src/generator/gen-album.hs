@@ -179,7 +179,7 @@ handlePixelGroup pixelAtOrig label factor xMin xMax yMin yMax =
    in (logStr, pixels)
 
 loggingOn :: Bool
-loggingOn = True
+loggingOn = False
 
 logIt :: Show a => String -> a -> a
 logIt msg value =
