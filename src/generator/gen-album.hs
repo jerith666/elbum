@@ -104,16 +104,16 @@ scaleDownBoxAverage newWidth newHeight origImg@P.Image {..} =
                 totalArea = scaleNewBackToOrig 1 ^ 2 -- exponent binds more loosely than function application
                 areaFactor = 1 / totalArea
                 --pull out some coordinates we'll need repeatedly below
-                lBoundaryCoord = fst origUpperLeft
-                rBoundaryCoord = fst origLowerRight
-                tBoundaryCoord = snd origUpperLeft
-                bBoundaryCoord = snd origLowerRight
+                lBoundaryCoord = floor $ fst origUpperLeft
+                rBoundaryCoord = ceiling $ fst origLowerRight
+                tBoundaryCoord = floor $ snd origUpperLeft
+                bBoundaryCoord = ceiling $ snd origLowerRight
                 --create a 'hp' helper function that specializes 'handlePixelGroup' to apply the constant areaFactor weighting
                 pixelAtOrig i j =
                   M.pixelAt
                     origImg
-                    (min (imageWidth - 1) (floor i))
-                    (min (imageHeight - 1) (floor j))
+                    (min (imageWidth - 1) i)
+                    (min (imageHeight - 1) j)
                 hp label extraFactor = handlePixelGroup pixelAtOrig label (extraFactor * areaFactor)
                 --use 'hp' to compute nine sets of new pixels: 4 "edge" areas, 4 "corner" areas, and the inner area
                 --applying the correct weighting factor for the area they came from
@@ -140,7 +140,7 @@ scaleDownBoxAverage newWidth newHeight origImg@P.Image {..} =
                 newPixel =
                   logIt c2 $
                     foldl1Def
-                      (uncurry pixelAtOrig origUpperLeft)
+                      (uncurry pixelAtOrig (both floor origUpperLeft))
                       addp
                       $ concatMap snd allPixels
             --write the new pixel into the image and move on to the next one
@@ -151,7 +151,7 @@ scaleDownBoxAverage newWidth newHeight origImg@P.Image {..} =
 {-extracts pixels in the given x & y ranges using the given pixelAtOrig function,
   multiplies them by the given factor, and returns the result in a list.
   plus some debugging.-}
-handlePixelGroup :: (Float -> Float -> PixelRGBF) -> String -> Float -> Float -> Float -> Float -> Float -> (String, [PixelRGBF])
+handlePixelGroup :: (Int -> Int -> PixelRGBF) -> String -> Float -> Int -> Int -> Int -> Int -> (String, [PixelRGBF])
 handlePixelGroup pixelAtOrig label factor xMin xMax yMin yMax =
   let pixelsRaw =
         [ pixelAtOrig x y
