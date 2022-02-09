@@ -98,9 +98,9 @@ scaleDownBoxAverage newWidth newHeight origImg@P.Image {..} =
                 origLowerRight = both (+ delta) origUpperLeft
                 --compute the fractions of area that the "borders" of the scaled-down region take up
                 tAreaFraction = 1 - (fst origUpperLeft - fromIntegral (floor (fst origUpperLeft)))
-                bAreaFraction = 1 - tAreaFraction
+                bAreaFraction = 1 - (fromIntegral (ceiling (fst origLowerRight)) - fst origLowerRight)
                 lAreaFraction = 1 - (snd origUpperLeft - fromIntegral (floor (snd origUpperLeft)))
-                rAreaFraction = 1 - lAreaFraction
+                rAreaFraction = 1 - (fromIntegral (ceiling (snd origLowerRight)) - snd origLowerRight)
                 totalArea = scaleNewBackToOrig 1 ^ 2 -- exponent binds more loosely than function application
                 areaFactor = 1 / totalArea
                 --pull out some coordinates we'll need repeatedly below
