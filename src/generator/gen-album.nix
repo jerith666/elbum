@@ -1,5 +1,5 @@
 { mkDerivation, aeson, async, base, bytestring, elm-bridge
-, filepath, friday, friday-juicypixels, JuicyPixels, regex-compat, parallel
+, filepath, JuicyPixels, regex-compat, parallel, extra, safe
 , lib
 }:
 mkDerivation {
@@ -9,8 +9,8 @@ mkDerivation {
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [
-    aeson async base bytestring elm-bridge filepath friday
-    friday-juicypixels JuicyPixels regex-compat parallel
+    aeson async base bytestring elm-bridge filepath
+    JuicyPixels regex-compat parallel extra safe
   ];
   homepage = "http://matt.mchenryfamily.org";
   description = "a web photo album generator";

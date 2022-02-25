@@ -1,3 +1,6 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS_GHC -Wall #-}
 {-# OPTIONS_GHC -Wcompat #-}
 {-# OPTIONS_GHC -Werror #-}
@@ -7,9 +10,10 @@
 {-# OPTIONS_GHC -Wredundant-constraints #-}
 
 import AlbumTypes
-import Codec.Picture hiding (Image)
+import Codec.Picture (DynamicImage (ImageRGBF), PixelRGBF, convertRGB8, dynamicMap, imageHeight, imageWidth, readImageWithMetadata, savePngImage)
 import Codec.Picture.Metadata
 import qualified Codec.Picture.Types
+import qualified Codec.Picture.Types as M
 import Control.Applicative
 import Control.Concurrent.Async
 import Control.Monad
@@ -21,6 +25,8 @@ import Data.List (find, intercalate, sort)
 import Data.Maybe
 import Data.Time.Clock
 import Data.Tuple
+import Safe (readEitherSafe)
+import ShrinkImage (scaleDownBoxAverage, shrinkImg)
 import System.Directory
 import System.Environment
 import System.Exit
@@ -28,9 +34,6 @@ import System.FilePath
 import System.IO
 import System.Posix.Files
 import Text.Regex
-import Vision.Image hiding (Image, map)
-import Vision.Image.JuicyPixels
-import Vision.Primitive
 
 --
 -- main & usage
@@ -41,6 +44,15 @@ main = do
   args <- getArgs
   case args of
     [src, dest] -> writeAlbumOrList src dest
+    ["shrink", newWidthStr, newHeightStr, oneImg] ->
+      case readEitherSafe newWidthStr of
+        Right newWidth ->
+          case readEitherSafe newHeightStr of
+            Right newHeight ->
+              shrinkImg newWidth newHeight oneImg
+            Left err ->
+              putStrLn $ "could not parse new height '" ++ newHeightStr ++ "': " ++ err
+        Left err -> putStrLn $ "could not parse new width '" ++ newWidthStr ++ "': " ++ err
     _ -> usage
 
 usage :: IO ()
@@ -445,21 +457,20 @@ procSrcSet s d f i w h = do
   mapM_ (writeShrunkenImgSrc . fstSndThr) shrunkenSrcs
   return (rawImg, shrunken)
 
-writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGB8, FilePath, Int) -> IO ()
+writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGBF, FilePath, Int) -> IO ()
 writeShrunkenImgSrc (ism, fsmpath, _) = do
   createDirectoryIfMissing True $ takeDirectory fsmpath
   --putStr $ show maxwidth ++ "w "
   hFlush stdout
-  savePngImage fsmpath $ ImageRGB8 ism
+  savePngImage fsmpath $ ImageRGBF ism
 
-shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGB8, FilePath, Int, ImgSrc)
+shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGBF, FilePath, Int, ImgSrc)
 shrinkImgSrc s d f i w h maxwidth =
   let (xsm, ysm) = shrink maxwidth w h
       fsmpath = fst $ destForShrink maxwidth s d f
-      fi = toFridayRGB $ convertRGB8 i
-      fism = resize Bilinear (ix2 ysm xsm) fi
-      ism = toJuicyRGB fism
-   in ( ism,
+      rgbfIimg = M.promoteImage $ convertRGB8 i
+      rgbfImgSmall = scaleDownBoxAverage xsm ysm rgbfIimg
+   in ( rgbfImgSmall,
         fsmpath,
         maxwidth,
         ImgSrc
@@ -500,7 +511,7 @@ destFor fNameMaker src dest fileInSrc =
 shrink :: Int -> Int -> Int -> (Int, Int)
 shrink maxwidth w h =
   let factor = fromIntegral maxwidth / fromIntegral w
-      scale width = floor (fromIntegral width * factor)
+      scale dim = floor (fromIntegral dim * factor)
    in (scale w, scale h)
 
 --
