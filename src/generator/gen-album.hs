@@ -539,7 +539,7 @@ createImageWithMetadataSize s d f rawDest i = do
                 y = h
               }
           sdToImgSrc sd =
-            let (xsm, ysm, _) = shrink (fst sd) w h
+            let (xsm, ysm) = shrink (fst sd) w h
              in ImgSrc
                   { url = makeRelative d $ snd sd,
                     x = xsm,
@@ -608,7 +608,7 @@ writeShrunkenImgSrc (ism, fsmpath, _) = do
 
 shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGBF, FilePath, Int, ImgSrc)
 shrinkImgSrc s d f i w h maxwidth =
-  let (xsm, ysm, _) = shrink maxwidth w h
+  let (xsm, ysm) = shrink maxwidth w h
       fsmpath = fst $ destForShrink maxwidth s d f
       hipImg = M.promoteImage $ convertRGB8 i
       hipImgSmall = scaleDownBoxAverage xsm ysm hipImg
@@ -650,11 +650,11 @@ destFor fNameMaker src dest fileInSrc =
       fName = fNameMaker fileInSrc
    in (dest </> srel </> fName, fName)
 
-shrink :: Int -> Int -> Int -> (Int, Int, Float)
+shrink :: Int -> Int -> Int -> (Int, Int)
 shrink maxwidth w h =
   let factor = fromIntegral maxwidth / fromIntegral w
       scale dim = floor (fromIntegral dim * factor)
-   in (scale w, scale h, factor)
+   in (scale w, scale h)
 
 --
 -- file/directory utilities
