@@ -54,7 +54,7 @@ executable elbum
   main-is:             gen-album.hs
   
   -- Modules included in this executable, other than Main.
-  other-modules:       AlbumTypes
+  other-modules:       AlbumTypes, ShrinkImage
   
   -- LANGUAGE extensions used by modules in this package.
   other-extensions:    DeriveGeneric, TemplateHaskell
