@@ -5,7 +5,7 @@ import AlbumStyles exposing (..)
 import Animation
 import Animation.Messenger
 import Css exposing (..)
-import Delay exposing (..)
+import Delay
 import Html.Styled exposing (Attribute, Html, div)
 import Html.Styled.Attributes
 import Html.Styled.Events exposing (..)

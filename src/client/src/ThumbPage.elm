@@ -10,7 +10,6 @@ import Http exposing (Progress(..))
 import ImageViews exposing (..)
 import Json.Decode as Decoder
 import Progress.Ring
-import String exposing (fromInt)
 import Url exposing (Url)
 import Utils.HttpUtils exposing (appendPath)
 import Utils.ListUtils exposing (..)
