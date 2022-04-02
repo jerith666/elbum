@@ -303,12 +303,12 @@ alreadyProcessed :: FilePath -> FilePath -> Maybe (AlbumOrList, UTCTime) -> File
 alreadyProcessed s d existingAlbumData f = do
   let rawDest = fst $ destForRaw s d f
       allDests = rawDest : map snd (shrinkDests s d f)
-      existingImage = (>>=) existingAlbumData (matchExisting s f . fst)
   --putStrLn $ "alreadyProcessed " ++ s ++ ", " ++ f ++ ": " ++ (show existingImage)
   destsExist <- mapM doesFileExist allDests
   if and destsExist
     then do
-      let existingImageAndModDate = liftA2 (,) existingImage $ fmap snd existingAlbumData
+      let existingImage = (>>=) existingAlbumData (matchExisting s f . fst)
+          existingImageAndModDate = liftA2 (,) existingImage $ fmap snd existingAlbumData
       srcModTimeOrNewerImage <- imageNewerThanSrc existingImageAndModDate f
       case srcModTimeOrNewerImage of
         Right newerImage ->
