@@ -280,7 +280,7 @@ produceImage srcRoot dest (f, classification) = do
     AlreadyProcessed img ->
       return $ Right $ Just img
     ToProcess metadata -> do
-      eImg <- procImage srcRoot dest (f, metadata)
+      !eImg <- procImage srcRoot dest (f, metadata)
       case eImg of
         Left err ->
           return $ Left err
