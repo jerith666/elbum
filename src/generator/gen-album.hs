@@ -462,7 +462,7 @@ procImage s d (f, i) = do
     Just (ww, hh) ->
       if fromIntegral ww == w && fromIntegral hh == h
         then do
-          (srcSetFst, srcSetRst) <- procSrcSet s d f (fst i) w h
+          (!srcSetFst, !srcSetRst) <- procSrcSet s d f (fst i) w h
           return $
             Right $
               Image
