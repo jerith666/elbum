@@ -302,7 +302,10 @@ classifyFile srcRoot destDir existingAlbumData file = do
 
 alreadyProcessed :: FilePath -> FilePath -> Maybe (AlbumOrList, UTCTime) -> FilePath -> IO (Maybe Image)
 alreadyProcessed s d existingAlbumData f = do
-  let existingImage = (>>=) existingAlbumData (matchExisting s f . fst)
+  let existingImage = do
+        -- note: this uses the Maybe instance of Monad
+        albumAndModTime <- existingAlbumData
+        matchExisting s f $ fst albumAndModTime
       existingImageAndModDate = liftA2 (,) existingImage $ fmap snd existingAlbumData
       destsExist maxWidth = do
         let rawDest = fst $ destForRaw s d f
