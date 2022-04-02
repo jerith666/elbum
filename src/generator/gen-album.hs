@@ -301,44 +301,63 @@ classifyFile srcRoot destDir existingAlbumData file = do
 
 alreadyProcessed :: FilePath -> FilePath -> Maybe (AlbumOrList, UTCTime) -> FilePath -> IO (Maybe Image)
 alreadyProcessed s d existingAlbumData f = do
-  let rawDest = fst $ destForRaw s d f
-      allDests = rawDest : map snd (shrinkDests s d f)
-  --putStrLn $ "alreadyProcessed " ++ s ++ ", " ++ f ++ ": " ++ (show existingImage)
-  destsExist <- mapM doesFileExist allDests
-  if and destsExist
-    then do
-      let existingImage = (>>=) existingAlbumData (matchExisting s f . fst)
-          existingImageAndModDate = liftA2 (,) existingImage $ fmap snd existingAlbumData
-      srcModTimeOrNewerImage <- imageNewerThanSrc existingImageAndModDate f
-      case srcModTimeOrNewerImage of
-        Right newerImage ->
-          return $ Just newerImage
-        Left srcModTime -> do
-          mi <- imgOnly f
-          case mi of
-            Nothing ->
-              return Nothing
-            Just i -> do
-              -- the destination images all exist
-              -- the source image exists, but is newer than the metadata we have from album.json
-              -- the source image also loads cleanly and we have its intrinsic metadata
-              -- however, it's only safe to use that instrinsic metadata if the destination images
-              -- are all *newer* than the source image
-              destModTimes <- mapM getModificationTime allDests
-              case maximum destModTimes > srcModTime of
-                True -> createImageWithMetadataSize s d f rawDest i
+  let existingImage = (>>=) existingAlbumData (matchExisting s f . fst)
+      existingImageAndModDate = liftA2 (,) existingImage $ fmap snd existingAlbumData
+      destsExist maxWidth = do
+        let rawDest = fst $ destForRaw s d f
+            allDests = rawDest : map snd (shrinkDests s d f maxWidth)
+        existences <- mapM doesFileExist allDests
+        return (rawDest, allDests, existences)
+  srcModTimeOrNewerImage <- imageNewerThanSrc existingImageAndModDate f
+  case srcModTimeOrNewerImage of
+    Right newerImage -> do
+      (_, _, existences) <- destsExist $ x $ srcSetFirst newerImage
+      return $ case and existences of
+        True ->
+          Just $
+            -- work around possible stale image metadata produced
+            -- before we were smart enough to avoid creating larger
+            -- "shrunken" images
+            Image
+              { altText = altText newerImage,
+                srcSetFirst = srcSetFirst newerImage,
+                srcSetRest =
+                  filter (\srcSet -> x (srcSetFirst newerImage) > x srcSet) $
+                    srcSetRest newerImage
+              }
+        False -> Nothing
+    Left srcModTime -> do
+      mi <- imgOnly f
+      case mi of
+        Nothing ->
+          return Nothing
+        Just i -> do
+          case Codec.Picture.Metadata.lookup Width $ snd $ snd i of
+            Nothing -> return Nothing
+            Just width -> do
+              (rawDest, allDests, existences) <- destsExist $ fromIntegral width
+              case and existences of
+                True -> do
+                  -- the destination images all exist
+                  -- the source image exists, but is newer than the metadata we have from album.json
+                  -- the source image also loads cleanly and we have its intrinsic metadata
+                  -- however, it's only safe to use that instrinsic metadata if the destination images
+                  -- are all *newer* than the source image
+                  destModTimes <- mapM getModificationTime allDests
+                  case maximum destModTimes > srcModTime of
+                    True -> createImageWithMetadataSize s d f rawDest i
+                    False -> return Nothing
                 False -> return Nothing
-    else return Nothing
 
-shrinkDests :: FilePath -> FilePath -> FilePath -> [(Int, FilePath)]
-shrinkDests s d f =
+shrinkDests :: FilePath -> FilePath -> FilePath -> Int -> [(Int, FilePath)]
+shrinkDests s d f maxWidth =
   map
-    ( \maxwidth ->
-        ( maxwidth,
-          fst $ destForShrink maxwidth s d f
+    ( \size ->
+        ( size,
+          fst $ destForShrink size s d f
         )
     )
-    sizes
+    $ filter (maxWidth >) sizes
 
 matchExisting :: FilePath -> FilePath -> AlbumOrList -> Maybe Image
 matchExisting s f albumOrList = do
@@ -403,7 +422,7 @@ createImageWithMetadataSize s d f rawDest i = do
                     x = xsm,
                     y = ysm
                   }
-          srcSetRst = map sdToImgSrc $ shrinkDests s d f
+          srcSetRst = map sdToImgSrc $ shrinkDests s d f w
       return $
         Just $
           Image
@@ -450,7 +469,8 @@ procImage s d (f, i) = do
 
 procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
 procSrcSet s d f i w h = do
-  let shrunkenSrcs = map (shrinkImgSrc s d f i w h) sizes `using` parList rdeepseq
+  let smallerSizes = filter (w >) sizes
+      shrunkenSrcs = map (shrinkImgSrc s d f i w h) smallerSizes `using` parList rdeepseq
       shrunken = map third shrunkenSrcs
   rawImg <- copyRawImgSrc s d f w h
   --putStrSameLn $ "processing " ++ show f ++ " "
