@@ -67,8 +67,9 @@ usage = do
 thumbFilename :: String
 thumbFilename = "thumbnail"
 
-sizes :: [Int]
-sizes = [1600, 1400, 1200, 1000, 800, 400, 200]
+sizes :: Int -> [Int]
+sizes maxWidth =
+  filter (maxWidth >) [1600, 1400, 1200, 1000, 800, 400, 200]
 
 --
 -- Album & AlbumList functions
@@ -357,7 +358,7 @@ shrinkDests s d f maxWidth =
           fst $ destForShrink size s d f
         )
     )
-    $ filter (maxWidth >) sizes
+    $ sizes maxWidth
 
 matchExisting :: FilePath -> FilePath -> AlbumOrList -> Maybe Image
 matchExisting s f albumOrList = do
@@ -469,8 +470,7 @@ procImage s d (f, i) = do
 
 procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
 procSrcSet s d f i w h = do
-  let smallerSizes = filter (w >) sizes
-      shrunkenSrcs = map (shrinkImgSrc s d f i w h) smallerSizes `using` parList rdeepseq
+  let shrunkenSrcs = map (shrinkImgSrc s d f i w h) (sizes w) `using` parList rdeepseq
       shrunken = map third shrunkenSrcs
   rawImg <- copyRawImgSrc s d f w h
   --putStrSameLn $ "processing " ++ show f ++ " "
