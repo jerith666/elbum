@@ -265,7 +265,7 @@ procImgsOnly srcRoot src dest existingAlbumData files = do
   !classifications <- mapConcurrently classify files
   let tpCt = show $ length $ filter toProc $ map snd classifications
   putStr $ tpCt ++ " to process"
-  productionResults <- mapConcurrently (produceImage srcRoot dest) classifications
+  !productionResults <- mapConcurrently (produceImage srcRoot dest) classifications
   case lefts productionResults of
     [] ->
       return $ Right $ catMaybes $ rights productionResults
