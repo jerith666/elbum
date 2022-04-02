@@ -474,9 +474,9 @@ procImage s d (f, i) = do
 
 procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
 procSrcSet s d f i w h = do
-  let shrunkenSrcs = map (shrinkImgSrc s d f i w h) (sizes w) `using` parList rdeepseq
+  let !shrunkenSrcs = map (shrinkImgSrc s d f i w h) (sizes w) `using` parList rdeepseq
       shrunken = map third shrunkenSrcs
-  rawImg <- copyRawImgSrc s d f w h
+  !rawImg <- copyRawImgSrc s d f w h
   --putStrSameLn $ "processing " ++ show f ++ " "
   mapM_ (writeShrunkenImgSrc . fstSnd) shrunkenSrcs
   return (rawImg, shrunken)
@@ -492,7 +492,7 @@ shrinkImgSrc s d f i w h maxwidth =
   let (xsm, ysm) = shrink maxwidth w h
       fsmpath = fst $ destForShrink maxwidth s d f
       rgbfImg = M.promoteImage $ convertRGB8 i
-      rgbfImgSmall = scaleDownBoxAverage xsm ysm rgbfImg
+      !rgbfImgSmall = scaleDownBoxAverage xsm ysm rgbfImg
    in ( rgbfImgSmall,
         fsmpath,
         ImgSrc
