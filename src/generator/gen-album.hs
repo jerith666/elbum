@@ -468,8 +468,8 @@ shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -
 shrinkImgSrc s d f i w h maxwidth =
   let (xsm, ysm) = shrink maxwidth w h
       fsmpath = fst $ destForShrink maxwidth s d f
-      rgbfIimg = M.promoteImage $ convertRGB8 i
-      rgbfImgSmall = scaleDownBoxAverage xsm ysm rgbfIimg
+      rgbfImg = M.promoteImage $ convertRGB8 i
+      rgbfImgSmall = scaleDownBoxAverage xsm ysm rgbfImg
    in ( rgbfImgSmall,
         fsmpath,
         maxwidth,
