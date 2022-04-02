@@ -451,20 +451,19 @@ procImage s d (f, i) = do
 procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
 procSrcSet s d f i w h = do
   let shrunkenSrcs = map (shrinkImgSrc s d f i w h) sizes `using` parList rdeepseq
-      shrunken = map fth shrunkenSrcs
+      shrunken = map third shrunkenSrcs
   rawImg <- copyRawImgSrc s d f w h
   --putStrSameLn $ "processing " ++ show f ++ " "
-  mapM_ (writeShrunkenImgSrc . fstSndThr) shrunkenSrcs
+  mapM_ (writeShrunkenImgSrc . fstSnd) shrunkenSrcs
   return (rawImg, shrunken)
 
-writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGBF, FilePath, Int) -> IO ()
-writeShrunkenImgSrc (ism, fsmpath, _) = do
+writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGBF, FilePath) -> IO ()
+writeShrunkenImgSrc (ism, fsmpath) = do
   createDirectoryIfMissing True $ takeDirectory fsmpath
-  --putStr $ show maxwidth ++ "w "
   hFlush stdout
   savePngImage fsmpath $ ImageRGBF ism
 
-shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGBF, FilePath, Int, ImgSrc)
+shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGBF, FilePath, ImgSrc)
 shrinkImgSrc s d f i w h maxwidth =
   let (xsm, ysm) = shrink maxwidth w h
       fsmpath = fst $ destForShrink maxwidth s d f
@@ -472,7 +471,6 @@ shrinkImgSrc s d f i w h maxwidth =
       rgbfImgSmall = scaleDownBoxAverage xsm ysm rgbfImg
    in ( rgbfImgSmall,
         fsmpath,
-        maxwidth,
         ImgSrc
           { url = makeRelative d fsmpath,
             x = xsm,
@@ -561,10 +559,10 @@ maybeTuple (ma, mb) =
     Nothing ->
       Nothing
 
-fstSndThr :: (a, b, c, d) -> (a, b, c)
-fstSndThr (a, b, c, _) =
-  (a, b, c)
+fstSnd :: (a, b, c) -> (a, b)
+fstSnd (a, b, _) =
+  (a, b)
 
-fth :: (a, b, c, d) -> d
-fth (_, _, _, d) =
-  d
+third :: (a, b, c) -> c
+third (_, _, c) =
+  c
