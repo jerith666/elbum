@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -261,7 +262,7 @@ procImgsOnly srcRoot src dest existingAlbumData files = do
         classification <- classifyFile srcRoot dest existingAlbumData f
         return (f, classification)
   putStrSameLn $ src ++ ": classifying " ++ show (length files) ++ " files ... "
-  classifications <- mapConcurrently classify files
+  !classifications <- mapConcurrently classify files
   let tpCt = show $ length $ filter toProc $ map snd classifications
   putStr $ tpCt ++ " to process"
   productionResults <- mapConcurrently (produceImage srcRoot dest) classifications
