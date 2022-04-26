@@ -64,8 +64,8 @@
     sha256 = "16s14sh01g6ssabwkf2k1xdxnahnkn0s7603cg87wd0h4myg15da";
   };
   "rtfeldman/elm-css" = {
-    version = "17.1.0";
-    sha256 = "sha256-lZ9+X2muBDozgHREFZlv8i2auPqacWoNykyeYgKgegM=";
+    version = "17.1.1";
+    sha256 = "sha256-0BtocJMfXny8cBFD8G+EKo33jX5Id+CA1ZUPPeVXzlU=";
   };
   "robinheghan/murmur3" = {
     version = "1.0.0";
