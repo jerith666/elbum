@@ -17,7 +17,7 @@ echo "configuring website";
 echo;
 
 dest=$2;
-cd $dest;
+cd "$dest";
 
 nix-store --add-root elbum --indirect -r @client@ > /dev/null;
 
