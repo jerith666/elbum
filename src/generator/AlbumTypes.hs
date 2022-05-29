@@ -20,7 +20,6 @@ where
 import Control.Parallel.Strategies
 import Elm.Derive
 import GHC.Generics
-import Data.Aeson (FromJSON, ToJSON)
 
 -- | a list of albums has a title, a thumbnail, and at least one child.
 --    Each child is either a subtree or a "leaf" album.
@@ -32,19 +31,11 @@ data AlbumList = AlbumList
   }
   deriving (Generic, Show, Eq)
 
--- derived automatically
-instance ToJSON AlbumList where
-instance FromJSON AlbumList where
-
 -- | A union type of either a list of albums or a "leaf" album.
 data AlbumOrList
   = List AlbumList
   | Leaf Album
   deriving (Generic, Show, Eq)
-
--- derived automatically
-instance ToJSON AlbumOrList where
-instance FromJSON AlbumOrList where
 
 -- | A single photo album has a title, a thumbnail,
 --    and a collection of at least one image.
@@ -55,10 +46,6 @@ data Album = Album
     imageRest :: [Image]
   }
   deriving (Generic, Show, Eq)
-
--- derived automatically
-instance ToJSON Album where
-instance FromJSON Album where
 
 -- | Each image in the album has alt-text and a srcset with at least
 --    one element.  The srcset aligns with the html <img/> tag's srcset
@@ -71,10 +58,6 @@ data Image = Image
   }
   deriving (Generic, Show, Eq)
 
--- derived automatically
-instance ToJSON Image where
-instance FromJSON Image where
-
 -- | A single image source, which comes from a particular URL and has a
 --    known fixed size.
 data ImgSrc = ImgSrc
@@ -84,12 +67,10 @@ data ImgSrc = ImgSrc
   }
   deriving (Generic, Show, Eq, NFData)
 
--- derived automatically
-instance ToJSON ImgSrc where
-instance FromJSON ImgSrc where
-
-deriveElmDef defaultOptions ''AlbumList
-deriveElmDef defaultOptions ''AlbumOrList
-deriveElmDef defaultOptions ''Album
-deriveElmDef defaultOptions ''Image
-deriveElmDef defaultOptions ''ImgSrc
+-- since these types are mutually referential, their ToJSON and FromJSON
+-- instances are as well.  that means their TH expansions must happen in
+-- a single splice.
+mconcat $
+  map
+    (deriveBoth defaultOptions)
+    [''AlbumList, ''AlbumOrList, ''ImgSrc, ''Image, ''Album]
