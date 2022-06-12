@@ -3,8 +3,9 @@
 set -o errexit;
 set -o nounset;
 
-src=$1;
-dest=$2;
+src="$1";
+dest="$2";
+keepthumbnail=${3:-true};
 
 (
     #clear out dest
@@ -19,7 +20,11 @@ dest=$2;
 
     #move existing thumbnail out of the way
     if [ -f thumbnail ]; then
-        mv -iv thumbnail thumbnail.orig;
+        if [ "${keepthumbnail}" == "true" ]; then
+            mv -iv thumbnail thumbnail.orig;
+        else
+            rm thumbnail
+        fi
     fi
 
     #move files
@@ -45,27 +50,34 @@ dest=$2;
     done
 
     if [ -L left/thumbnail.orig ]; then
-        if [ -e $(readlink left/thumbnail.orig) ]; then
-            true;
-        else
-            mv -iv left/thumbnail.orig right/;
-        fi
+        mv -iv left/thumbnail.orig .;
     fi
     if [ -L right/thumbnail.orig ]; then
-        if [ -e $(readlink right/thumbnail.orig) ]; then
-            true;
-        else
-            mv -iv right/thumbnail.orig left/;
-        fi
+        mv -iv right/thumbnail.orig .;
     fi
-    
-    #generate subdivided album
-    elbum "$src" "$dest" || ( echo; echo album generation failed, check for errors above; echo );
+
+    #see if we're small enough yet
+    n=$(ls left | wc -l);
+    if [ $n -lt 30 ]; then
+        #generate subdivided album
+        elbum "$src" "$dest" || ( echo; echo album generation failed, check for errors above; echo );
+        rm -vf "$dest"/elbum "$dest"/elbum.js "$dest"/index.html "$dest"/.htaccess;
+    else
+        mkdir "$dest/left" "$dest/right";
+        echo; echo "recursing $src/left";
+        $0 "$src/left" "$dest/left" "false";
+        echo; echo "recursing $src/right";
+        $0 "$src/right" "$dest/right" "false";
+        echo; echo "done recursing for $src";
+    fi
 
     #put things back
-    rm left/thumbnail right/thumbnail;
+    rm -f left/thumbnail right/thumbnail;
     mv -iv left/* .;
     mv -iv right/* .;
+    echo "about to remove left and right in $(pwd)"
+    ls -a left/
+    ls -a right/
     rmdir left right;
     if [ -f thumbnail.orig ]; then
         mv -iv thumbnail.orig thumbnail;
@@ -74,8 +86,12 @@ dest=$2;
     #move results up
     cd "$dest";
     mv -v left/* .;
+    echo "about to remove left in $(pwd)"
+    ls -a left/
     rmdir left;
     mv -v right/* .;
+    echo "about to remove right in $(pwd)"
+    ls -a right/
     rmdir right;
-    rm album.json;
+    rm -vf album.json;
 )
