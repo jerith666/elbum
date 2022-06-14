@@ -49,20 +49,37 @@ keepthumbnail=${3:-true};
         )
     done
 
-    if [ -L left/thumbnail.orig ]; then
-        mv -iv left/thumbnail.orig .;
-    fi
-    if [ -L right/thumbnail.orig ]; then
-        mv -iv right/thumbnail.orig .;
-    fi
-
     #see if we're small enough yet
     n=$(ls left | wc -l);
     if [ $n -lt 30 ]; then
+        # ensure thumbnail.orig is in the correct right or left subdir
+        if [ -L left/thumbnail.orig ]; then
+            if [ -e left/$(readlink left/thumbnail.orig) ]; then
+                true;
+            else
+                mv -iv left/thumbnail.orig right/;
+            fi
+        fi
+        if [ -L right/thumbnail.orig ]; then
+            if [ -e right/$(readlink right/thumbnail.orig) ]; then
+                true;
+            else
+                mv -iv right/thumbnail.orig left/;
+            fi
+        fi
+    
         #generate subdivided album
         elbum "$src" "$dest" || ( echo; echo album generation failed, check for errors above; echo );
-        rm -vf "$dest"/elbum "$dest"/elbum.js "$dest"/index.html "$dest"/.htaccess;
+        rm -vf "$dest"/elbum "$dest"/elbum.js "$dest"/index.html "$dest"/.htaccess "$dest"/album.json;
     else
+        # move thumbnail.orig out of the way since recursion will want to create it
+        if [ -L left/thumbnail.orig ]; then
+            mv -iv left/thumbnail.orig .;
+        fi
+        if [ -L right/thumbnail.orig ]; then
+            mv -iv right/thumbnail.orig .;
+        fi
+
         mkdir "$dest/left" "$dest/right";
         echo; echo "recursing $src/left";
         $0 "$src/left" "$dest/left" "false";
