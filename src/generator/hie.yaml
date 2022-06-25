@@ -5,3 +5,6 @@ cradle:
 
     - path: "./AlbumTypes.hs"
       component: "elbum:exe:elbum"
+
+    - path: "./test/test.hs"
+      component: "elbum:test:test"

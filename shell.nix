@@ -4,6 +4,7 @@ let
   ghc = pkgs.haskell.packages.${compiler}.ghcWithPackages (ps: with ps; [
   #ghc = pkgs.haskellPackages.ghcWithPackages (ps: with ps; [
           async JuicyPixels elm-bridge regex-compat parallel extra safe
+          tasty tasty-golden
         ]);
 in
 pkgs.stdenv.mkDerivation {
