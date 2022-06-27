@@ -30,7 +30,9 @@ keepthumbnail=${3:-true};
     #move files
     ls | head -n $half | while read leftFile; do
         if [ "$leftFile" != "left" ]; then
-            mv -iv "$leftFile" left;
+            if [ "$leftFile" != "right" ]; then
+                mv -iv "$leftFile" left;
+            fi
         fi
     done
     ls | while read rightFile; do
