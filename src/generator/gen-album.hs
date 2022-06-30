@@ -235,7 +235,7 @@ findThumb srcRoot src dest images = do
                   thumb = find isThumb images
               case thumb of
                 Nothing ->
-                  return $ Left $ src ++ " thumbnail '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ concatMap (\i -> dest </> url (srcSetFirst i)) images
+                  return $ Left $ src ++ " thumbnail '" ++ thumbLink ++"' -> '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ concatMap (\i -> dest </> url (srcSetFirst i)) images
                 Just t ->
                   return $ Right t
         else return $ Left $ thumbLink ++ " is not a symbolic link"
