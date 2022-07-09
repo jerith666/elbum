@@ -19,12 +19,14 @@ keepthumbnail=${3:-true};
     half=$(( n / 2 ));
 
     #move existing thumbnail out of the way
-    if [ -f thumbnail ]; then
+    if ls thumbnail >/dev/null 2>/dev/null; then
         if [ "${keepthumbnail}" == "true" ]; then
             mv -iv thumbnail thumbnail.orig;
         else
-            rm thumbnail
+            rm -v thumbnail
         fi
+    else
+        echo no thumbnail
     fi
 
     #move files
