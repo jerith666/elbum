@@ -55,7 +55,7 @@ fi
     for d in left right; do
         (
             cd $d;
-            ln -s "$(ls | grep -v '.*\.xml$' | head -1)" thumbnail;
+            ln -s "$(ls | grep -v '.*\.xml' | head -1)" thumbnail;
         )
     done
 
