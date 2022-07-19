@@ -7,6 +7,12 @@ src="$1";
 dest="$2";
 keepthumbnail=${3:-true};
 
+n=$(ls "$src" | wc -l);
+if [ $n -lt 10 ]; then
+    echo "too few files in $src; skipping"
+    exit 0;
+fi
+
 (
     #clear out dest
     cd "$dest";
