@@ -32,26 +32,22 @@ import Utils.ViewportUtils exposing (..)
 
 type MainAlbumModel
     = AwaitingBaseUrl
-        { key : Key
-        , flags : MainAlbumFlags
+        { flags : MainAlbumFlags
         , albumPathsAfterLoad : Maybe (List String)
         }
     | Sizing
-        { key : Key
-        , baseUrl : Url
+        { baseUrl : Url
         , flags : MainAlbumFlags
         , albumPathsAfterLoad : Maybe (List String)
         }
     | LoadingHomeLink
-        { key : Key
-        , baseUrl : Url
+        { baseUrl : Url
         , bodyViewport : Viewport
         , flags : MainAlbumFlags
         , albumPathsAfterLoad : Maybe (List String)
         }
     | Loading
-        { key : Key
-        , baseUrl : Url
+        { baseUrl : Url
         , bodyViewport : Viewport
         , progress : Maybe Progress
         , flags : MainAlbumFlags
@@ -59,13 +55,11 @@ type MainAlbumModel
         , albumPathsAfterLoad : Maybe (List String)
         }
     | LoadError
-        { key : Key
-        , flags : MainAlbumFlags
+        { flags : MainAlbumFlags
         , error : Http.Error
         }
     | LoadedList
-        { key : Key
-        , baseUrl : Url
+        { baseUrl : Url
         , listPage : AlbumListPage
         , flags : MainAlbumFlags
         , home : Maybe String
@@ -73,8 +67,7 @@ type MainAlbumModel
         , navState : PostLoadNavState
         }
     | LoadedAlbum
-        { key : Key
-        , baseUrl : Url
+        { baseUrl : Url
         , albumPage : AlbumPage
         , parents : List ( AlbumList, Maybe Float )
         , flags : MainAlbumFlags
@@ -154,8 +147,8 @@ makeAnchor url onClickMsg attrs =
 
 
 init : MainAlbumFlags -> Key -> ( MainAlbumModel, Cmd MainAlbumMsg )
-init flags key =
-    ( AwaitingBaseUrl { key = key, flags = flags, albumPathsAfterLoad = Nothing }
+init flags _ =
+    ( AwaitingBaseUrl { flags = flags, albumPathsAfterLoad = Nothing }
     , Cmd.none
     )
 
@@ -186,8 +179,7 @@ updateGeneral generalMsg model =
 
                 Sizing sz ->
                     ( LoadingHomeLink
-                        { key = sz.key
-                        , baseUrl = sz.baseUrl
+                        { baseUrl = sz.baseUrl
                         , bodyViewport = log "window size set" viewport
                         , flags = sz.flags
                         , albumPathsAfterLoad = sz.albumPathsAfterLoad
@@ -258,7 +250,7 @@ updateBootstrap bootstrapMsg model =
                 AwaitingBaseUrl abu ->
                     let
                         modelWithBaseUrl =
-                            Sizing { key = abu.key, baseUrl = url, flags = abu.flags, albumPathsAfterLoad = abu.albumPathsAfterLoad }
+                            Sizing { baseUrl = url, flags = abu.flags, albumPathsAfterLoad = abu.albumPathsAfterLoad }
 
                         initialNavCmd =
                             navToMsg modelWithBaseUrl url
@@ -302,8 +294,7 @@ updateBootstrap bootstrapMsg model =
                             let
                                 newModel =
                                     LoadedList
-                                        { key = ld.key
-                                        , baseUrl = ld.baseUrl
+                                        { baseUrl = ld.baseUrl
                                         , listPage =
                                             AlbumListPage
                                                 { albumList = albumList
@@ -329,8 +320,7 @@ updateBootstrap bootstrapMsg model =
 
                                 newModel =
                                     LoadedAlbum
-                                        { key = ld.key
-                                        , baseUrl = ld.baseUrl
+                                        { baseUrl = ld.baseUrl
                                         , albumPage = albumPageModel
                                         , parents = []
                                         , flags = ld.flags
@@ -352,7 +342,7 @@ updateBootstrap bootstrapMsg model =
                     ( model, Cmd.none )
 
         NoAlbum err ->
-            ( LoadError { key = keyOf model, flags = flagsOf model, error = err }
+            ( LoadError { flags = flagsOf model, error = err }
             , Cmd.none
             )
 
@@ -381,8 +371,7 @@ updateAlbum albumMsg model =
                     let
                         newModel =
                             LoadedList
-                                { key = keyOf model
-                                , baseUrl = baseUrl
+                                { baseUrl = baseUrl
                                 , listPage = albumListPage
                                 , flags = flagsOf model
                                 , home = homeOf model
@@ -414,8 +403,7 @@ updateAlbum albumMsg model =
                     let
                         newModel =
                             LoadedAlbum
-                                { key = keyOf model
-                                , baseUrl = baseUrl
+                                { baseUrl = baseUrl
                                 , albumPage = albumPage
                                 , parents = parents
                                 , flags = flagsOf model
@@ -531,11 +519,10 @@ updateMeta albumMetaMsg model =
             ( model, Cmd.none )
 
 
-gotHome : { key : Key, baseUrl : Url, bodyViewport : Viewport, flags : MainAlbumFlags, albumPathsAfterLoad : Maybe (List String) } -> Maybe String -> ( MainAlbumModel, Cmd MainAlbumMsg )
+gotHome : { baseUrl : Url, bodyViewport : Viewport, flags : MainAlbumFlags, albumPathsAfterLoad : Maybe (List String) } -> Maybe String -> ( MainAlbumModel, Cmd MainAlbumMsg )
 gotHome lh home =
     ( Loading
-        { key = lh.key
-        , baseUrl = lh.baseUrl
+        { baseUrl = lh.baseUrl
         , bodyViewport = lh.bodyViewport
         , progress = Nothing
         , flags = lh.flags
@@ -651,31 +638,6 @@ homeOf model =
 
         LoadedAlbum la ->
             la.home
-
-
-keyOf : MainAlbumModel -> Key
-keyOf model =
-    case model of
-        AwaitingBaseUrl abu ->
-            abu.key
-
-        Sizing sz ->
-            sz.key
-
-        LoadingHomeLink lh ->
-            lh.key
-
-        Loading ld ->
-            ld.key
-
-        LoadError le ->
-            le.key
-
-        LoadedList ll ->
-            ll.key
-
-        LoadedAlbum la ->
-            la.key
 
 
 baseUrlOf : MainAlbumModel -> Maybe Url
