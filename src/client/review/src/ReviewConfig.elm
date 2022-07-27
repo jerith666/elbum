@@ -65,6 +65,7 @@ config =
         --, NoMissingTypeExpose.rule -- not important for applications, only libraries
         --
         , NoMissingSubscriptionsCall.rule
+            |> ignoreErrorsForFiles [ "tests/PathsToCmd.elm" ]
         , NoRecursiveUpdate.rule
         , NoUselessSubscriptions.rule
         ]
