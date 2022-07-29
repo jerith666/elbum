@@ -32,15 +32,15 @@ findImg prevs album img =
 findChild : AlbumList -> String -> Maybe AlbumOrList
 findChild containingList name =
     let
-        f albumOrList =
+        titleIsName albumOrList =
             case albumOrList of
                 List albumList ->
-                    albumList.listTitle == name
+                    Debug.log ("findChild list " ++ albumList.listTitle ++ " =?= " ++ name) <| albumList.listTitle == name
 
                 Leaf album ->
-                    album.title == name
+                    Debug.log ("findChild leaf " ++ album.title ++ " =?= " ++ album.title) <| album.title == name
     in
-    List.head <| List.filter f <| containingList.childFirst :: containingList.childRest
+    List.head <| List.filter titleIsName <| containingList.childFirst :: containingList.childRest
 
 
 hashFromAlbumPath : List String -> List AlbumList -> String
