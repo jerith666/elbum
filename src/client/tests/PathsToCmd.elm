@@ -155,8 +155,7 @@ suite =
                                     { album = album "North America"
                                     , vpInfo = { bodyViewport = viewport, rootDivViewport = Nothing }
                                     , baseUrl = url
-                                    , imageLoader =
-                                        Tuple.first <| initMany [ { url | path = "/url" } ] [] LoadingMsg
+                                    , imageLoader = Tuple.first <| initMany [ { url | path = "/url" } ] [] LoadingMsg
                                     }
                                 )
                                 [ ( leaves "World" "North America" [], Nothing ) ]
@@ -199,28 +198,20 @@ suite =
         , test "1-level path produces ViewAlbum for child, two level" <|
             \_ ->
                 Expect.equal
-                    (Just
-                        (Meta
-                            (Sequence
-                                (Album_
-                                    (ViewList
+                    (Just <|
+                        Meta <|
+                            Sequence
+                                (Album_ <|
+                                    ViewList
                                         (AlbumListPage
-                                            { albumList =
-                                                leaves "North America" "Canada" []
+                                            { albumList = leaves "North America" "Canada" []
                                             , bodyViewport = viewport
-                                            , parents =
-                                                [ ( list "World" (List <| leaves "North America" "Canada" []) []
-                                                  , Nothing
-                                                  )
-                                                ]
+                                            , parents = [ ( list "World" (List <| leaves "North America" "Canada" []) [], Nothing ) ]
                                             }
                                         )
                                         Nothing
-                                    )
                                 )
                                 [ Album_ NavCompletedLocally ]
-                            )
-                        )
                     )
                 <|
                     pathsToCmd
@@ -237,8 +228,7 @@ suite =
                                     { album = album "Canada"
                                     , vpInfo = { bodyViewport = viewport, rootDivViewport = Nothing }
                                     , baseUrl = url
-                                    , imageLoader =
-                                        Tuple.first <| initMany [ { url | path = "/url" } ] [] LoadingMsg
+                                    , imageLoader = Tuple.first <| initMany [ { url | path = "/url" } ] [] LoadingMsg
                                     }
                                 )
                                 [ ( leaves "North America" "Canada" [], Nothing )
