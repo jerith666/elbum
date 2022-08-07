@@ -241,7 +241,9 @@ suite =
                                         Tuple.first <| initMany [ { url | path = "/url" } ] [] LoadingMsg
                                     }
                                 )
-                                [ ( list "World" (List <| leaves "North America" "Canada" []) [], Nothing ) ]
+                                [ ( leaves "North America" "Canada" [], Nothing )
+                                , ( list "World" (List <| leaves "North America" "Canada" []) [], Nothing )
+                                ]
                             )
                         )
                     )
