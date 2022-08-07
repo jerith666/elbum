@@ -227,4 +227,27 @@ suite =
                         twoLevelModel
                     <|
                         Just [ "North America" ]
+        , test "2-level path produces ViewAlbum for grand-child" <|
+            \_ ->
+                Expect.equal
+                    (Just
+                        (Album_
+                            (ViewAlbum
+                                (Thumbs
+                                    { album = album "Canada"
+                                    , vpInfo = { bodyViewport = viewport, rootDivViewport = Nothing }
+                                    , baseUrl = url
+                                    , imageLoader =
+                                        Tuple.first <| initMany [ { url | path = "/url" } ] [] LoadingMsg
+                                    }
+                                )
+                                [ ( list "World" (List <| leaves "North America" "Canada" []) [], Nothing ) ]
+                            )
+                        )
+                    )
+                <|
+                    pathsToCmd
+                        twoLevelModel
+                    <|
+                        Just [ "North America", "Canada" ]
         ]
