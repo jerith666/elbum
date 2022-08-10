@@ -1,4 +1,4 @@
-module Main exposing (AlbumMsg(..), MainAlbumModel(..), MainAlbumMsg(..), MetaMsg(..), PostLoadNavState(..), main, pathsToCmd)
+module Main exposing (AlbumMsg(..), MainAlbumModel(..), MainAlbumMsg(..), MetaMsg(..), PostLoadNavState(..), main, pathsToCmd, update)
 
 import Album exposing (..)
 import AlbumListPage exposing (..)

@@ -5,7 +5,7 @@ import AlbumListPage exposing (AlbumListPage(..))
 import AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..))
 import Browser.Dom exposing (Viewport)
 import Expect
-import Main exposing (AlbumMsg(..), MainAlbumModel(..), MainAlbumMsg(..), MetaMsg(..), PostLoadNavState(..), pathsToCmd)
+import Main exposing (AlbumMsg(..), MainAlbumModel(..), MainAlbumMsg(..), MetaMsg(..), PostLoadNavState(..), pathsToCmd, update)
 import Test exposing (Test, describe, test)
 import Url exposing (Protocol(..), Url)
 import Utils.Loading exposing (ManyModel(..), initMany)
@@ -242,4 +242,37 @@ suite =
                         twoLevelModel
                     <|
                         Just [ "North America", "Canada" ]
+        , test "2-level path then back produces ViewAlbum for child" <|
+            \_ ->
+                let
+                    msgFor2LevelPath =
+                        pathsToCmd
+                            twoLevelModel
+                        <|
+                            Just [ "North America", "Canada" ]
+
+                    mUpdate msg =
+                        Tuple.first <| update msg twoLevelModel
+
+                    modelAfter2LevelPath =
+                        Maybe.map mUpdate msgFor2LevelPath
+
+                    msgAfter1LevelPath =
+                        Maybe.andThen (\model -> pathsToCmd model <| Just [ "North America" ]) modelAfter2LevelPath
+                in
+                Expect.equal
+                    (Just
+                        (Album_
+                            (ViewList
+                                (AlbumListPage
+                                    { albumList = leaves "North America" "Canada" []
+                                    , bodyViewport = viewport
+                                    , parents = [ ( list "World" (List <| leaves "North America" "Canada" []) [], Nothing ) ]
+                                    }
+                                )
+                                Nothing
+                            )
+                        )
+                    )
+                    msgAfter1LevelPath
         ]
