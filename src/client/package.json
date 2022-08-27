@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "elbum.js",
-  "dependencies": {},
   "devDependencies": {
-    "elm-review": "^2.8.2"
+    "elm-review": "^2.8.2",
+    "elm-test": "^0.19.1-revision10"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
