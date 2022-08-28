@@ -200,6 +200,26 @@ suite =
                         twoLevelModel
                     <|
                         Just [ "South America", "Brazil" ]
+        , test "partially-valid 2-level path produces ViewAlbum for child" <|
+            \_ ->
+                Expect.equal
+                    (Just <|
+                        Album_ <|
+                            ViewList
+                                (AlbumListPage
+                                    { albumList = leaves "North America" "Canada" []
+                                    , bodyViewport = viewport
+                                    , parents = [ ( list "World" (List <| leaves "North America" "Canada" []) [], Nothing ) ]
+                                    }
+                                )
+                                Nothing
+                     -- TODO NavCompletedLocally is missing!
+                    )
+                <|
+                    pathsToCmd
+                        twoLevelModel
+                    <|
+                        Just [ "North America", "Mexico" ]
         , test "1-level path produces ViewAlbum for child, two level" <|
             \_ ->
                 Expect.equal
