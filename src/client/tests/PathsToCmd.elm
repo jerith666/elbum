@@ -169,32 +169,37 @@ suite =
         -- 2-level album
         , test "no path produces no command, 2-level" <|
             \_ ->
-                Expect.equal Nothing <|
+                Expect.equal
+                    Nothing
+                <|
                     pathsToCmd twoLevelModel Nothing
         , test "empty path produces ViewList for root, 2-level" <|
             \_ ->
-                Expect.equal (Just <| Album_ <| ViewList twoLevelListPage Nothing) <|
+                Expect.equal
+                    (Just <| Album_ <| ViewList twoLevelListPage Nothing)
+                <|
                     pathsToCmd
                         twoLevelModel
                     <|
                         Just []
         , test "bad 1-level path produces ViewList for root, 2-level" <|
             \_ ->
-                Expect.equal (Just <| Album_ <| ViewList twoLevelListPage Nothing) <|
+                Expect.equal
+                    (Just <| Album_ <| ViewList twoLevelListPage Nothing)
+                <|
                     pathsToCmd
                         twoLevelModel
                     <|
                         Just [ "Australia" ]
-
-        {-
-           , test "bad 2-level path produces ViewList for root, 2-level" <|
-               \_ ->
-                   Expect.equal (Just <| Album_ <| ViewList twoLevelListPage Nothing) <|
-                       pathsToCmd
-                           twoLevelModel
-                       <|
-                           Just [ "North America", "Mexico" ]
-        -}
+        , test "bad 2-level path produces ViewList for root, 2-level" <|
+            \_ ->
+                Expect.equal
+                    (Just <| Album_ <| ViewList twoLevelListPage Nothing)
+                <|
+                    pathsToCmd
+                        twoLevelModel
+                    <|
+                        Just [ "South America", "Brazil" ]
         , test "1-level path produces ViewAlbum for child, two level" <|
             \_ ->
                 Expect.equal
