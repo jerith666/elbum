@@ -829,10 +829,14 @@ pathsToCmdImpl baseUrl model viewport parents paths =
                     List.reverse modelParents |> List.head |> Maybe.andThen Tuple.second
 
                 fallbackMsg =
-                    Album_ <|
-                        ViewList
-                            (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
-                            fallbackScroll
+                    Meta <|
+                        Sequence
+                            (Album_ <|
+                                ViewList
+                                    (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
+                                    fallbackScroll
+                            )
+                            [ Album_ NavCompletedLocally ]
             in
             Just <| navFrom baseUrl model viewport root [] (log "pathsToCmdImpl passing paths to navFrom" paths) fallbackMsg
 

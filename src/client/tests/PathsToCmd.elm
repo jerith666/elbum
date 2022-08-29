@@ -133,14 +133,18 @@ suite =
                         Nothing
         , test "empty path produces ViewList for root" <|
             \_ ->
-                Expect.equal (Just <| Album_ <| ViewList oneLevelListPage Nothing) <|
+                Expect.equal
+                    (Just <| Meta <| Sequence (Album_ <| ViewList oneLevelListPage Nothing) [ Album_ NavCompletedLocally ])
+                <|
                     pathsToCmd
                         oneLevelModel
                     <|
                         Just []
         , test "bad 1-level path produces ViewList for root" <|
             \_ ->
-                Expect.equal (Just <| Album_ <| ViewList oneLevelListPage Nothing) <|
+                Expect.equal
+                    (Just <| Meta <| Sequence (Album_ <| ViewList oneLevelListPage Nothing) [ Album_ NavCompletedLocally ])
+                <|
                     pathsToCmd
                         oneLevelModel
                     <|
@@ -176,7 +180,7 @@ suite =
         , test "empty path produces ViewList for root, 2-level" <|
             \_ ->
                 Expect.equal
-                    (Just <| Album_ <| ViewList twoLevelListPage Nothing)
+                    (Just <| Meta <| Sequence (Album_ <| ViewList twoLevelListPage Nothing) [ Album_ NavCompletedLocally ])
                 <|
                     pathsToCmd
                         twoLevelModel
@@ -185,7 +189,7 @@ suite =
         , test "bad 1-level path produces ViewList for root, 2-level" <|
             \_ ->
                 Expect.equal
-                    (Just <| Album_ <| ViewList twoLevelListPage Nothing)
+                    (Just <| Meta <| Sequence (Album_ <| ViewList twoLevelListPage Nothing) [ Album_ NavCompletedLocally ])
                 <|
                     pathsToCmd
                         twoLevelModel
@@ -194,7 +198,7 @@ suite =
         , test "bad 2-level path produces ViewList for root, 2-level" <|
             \_ ->
                 Expect.equal
-                    (Just <| Album_ <| ViewList twoLevelListPage Nothing)
+                    (Just <| Meta <| Sequence (Album_ <| ViewList twoLevelListPage Nothing) [ Album_ NavCompletedLocally ])
                 <|
                     pathsToCmd
                         twoLevelModel
