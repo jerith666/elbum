@@ -8,7 +8,7 @@ import Expect
 import Main exposing (AlbumMsg(..), MainAlbumModel(..), MainAlbumMsg(..), MetaMsg(..), PostLoadNavState(..), pathsToCmd, update)
 import Test exposing (Test, describe, test)
 import Url exposing (Protocol(..), Url)
-import Utils.Loading exposing (ManyModel(..), initMany)
+import Utils.Loading exposing (initMany)
 
 
 
