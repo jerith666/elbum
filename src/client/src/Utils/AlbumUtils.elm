@@ -2,6 +2,7 @@ module Utils.AlbumUtils exposing (albumJson, findChild, findImg, hashFromAlbumPa
 
 import Album exposing (..)
 import Url exposing (..)
+import Utils.DebugSupport exposing (log)
 
 
 albumJson : String
@@ -35,10 +36,10 @@ findChild containingList name =
         titleIsName albumOrList =
             case albumOrList of
                 List albumList ->
-                    Debug.log ("findChild list " ++ albumList.listTitle ++ " =?= " ++ name) <| albumList.listTitle == name
+                    log ("findChild list " ++ albumList.listTitle ++ " =?= " ++ name) <| albumList.listTitle == name
 
                 Leaf album ->
-                    Debug.log ("findChild leaf " ++ album.title ++ " =?= " ++ album.title) <| album.title == name
+                    log ("findChild leaf " ++ album.title ++ " =?= " ++ album.title) <| album.title == name
     in
     List.head <| List.filter titleIsName <| containingList.childFirst :: containingList.childRest
 
