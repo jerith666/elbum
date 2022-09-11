@@ -16,7 +16,7 @@ let
     stdenv.mkDerivation rec {
       inherit name src;
 
-      buildInputs = [ elmPackages.elm ];
+      buildInputs = [ elmPackages.elm nodejs-16_x ];
 
       postUnpack = (elmPackages.fetchElmDeps {
         elmVersion = "0.19.1";
@@ -39,6 +39,11 @@ let
         cp -iv index.html $out;
         cp -iv .htaccess $out;
       '';
+
+      doCheck = true;
+      checkPhase = ''
+        npm run test
+      '';
     };
 in mkDerivation {
   name = "jerith666-elbum-0.1.0";
@@ -50,6 +55,8 @@ in mkDerivation {
         pkgs.lib.hasSuffix ".elm" path ||
         pkgs.lib.hasSuffix "elm.json" path ||
         pkgs.lib.hasSuffix "index.html" path ||
+        pkgs.lib.hasSuffix "package.json" path ||
+        pkgs.lib.hasSuffix "package-lock.json" path ||
         pkgs.lib.hasSuffix ".htaccess" path
       )) ||
       (type == "directory" && (
