@@ -60,66 +60,69 @@ album title =
     }
 
 
-{-| makes a list of albums with the given titles
--}
-leaves : String -> String -> List String -> AlbumList
-leaves title firstTitle restTitles =
-    list title
-        (Leaf <| album firstTitle)
-        (List.map (Leaf << album) restTitles)
-
-
 {-| makes an AlbumList from the given children
 -}
 list : String -> AlbumOrList -> List AlbumOrList -> AlbumList
-list title first rest =
-    { listTitle = title
+list listTitle first rest =
+    { listTitle = listTitle
     , childFirst = first
     , childRest = rest
     , listThumbnail = img
     }
 
 
-oneLevelListPage : AlbumListPage
-oneLevelListPage =
+{-| makes a list of albums with the given titles
+-}
+leaves : String -> String -> List String -> AlbumList
+leaves listTitle firstTitle restTitles =
+    list listTitle
+        (Leaf <| album firstTitle)
+        (List.map (Leaf << album) restTitles)
+
+
+{-| makes a list page around the given album list
+-}
+listPage : AlbumList -> AlbumListPage
+listPage albumList =
     AlbumListPage
-        { albumList = leaves "World" "North America" []
+        { albumList = albumList
         , bodyViewport = viewport
         , parents = []
         }
+
+
+{-| makes a full model around the given list page
+-}
+model : AlbumListPage -> MainAlbumModel
+model listPage_ =
+    LoadedList
+        { baseUrl = url
+        , flags = { scrollSupport = True }
+        , home = Nothing
+        , rootDivViewport = Nothing
+        , navState = NavInactive
+        , listPage = listPage_
+        }
+
+
+oneLevelListPage : AlbumListPage
+oneLevelListPage =
+    listPage <| leaves "World" "North America" []
 
 
 oneLevelModel : MainAlbumModel
 oneLevelModel =
-    LoadedList
-        { baseUrl = url
-        , flags = { scrollSupport = True }
-        , home = Nothing
-        , rootDivViewport = Nothing
-        , navState = NavInactive
-        , listPage = oneLevelListPage
-        }
+    model oneLevelListPage
 
 
 twoLevelListPage : AlbumListPage
 twoLevelListPage =
-    AlbumListPage
-        { albumList = list "World" (List <| leaves "North America" "Canada" []) []
-        , bodyViewport = viewport
-        , parents = []
-        }
+    listPage <| list "World" (List <| leaves "North America" "Canada" []) []
 
 
 twoLevelModel : MainAlbumModel
 twoLevelModel =
-    LoadedList
-        { baseUrl = url
-        , flags = { scrollSupport = True }
-        , home = Nothing
-        , rootDivViewport = Nothing
-        , navState = NavInactive
-        , listPage = twoLevelListPage
-        }
+    model twoLevelListPage
 
 
 suite : Test
@@ -287,7 +290,7 @@ suite =
                         Maybe.map mUpdate msgFor2LevelPath
 
                     msgAfter1LevelPath =
-                        Maybe.andThen (\model -> pathsToCmd model <| Just [ "North America" ]) modelAfter2LevelPath
+                        Maybe.andThen (\model_ -> pathsToCmd model_ <| Just [ "North America" ]) modelAfter2LevelPath
                 in
                 Expect.equal
                     (Just
