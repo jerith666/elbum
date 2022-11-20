@@ -105,9 +105,19 @@ model listPage_ =
         }
 
 
+nList : List String -> String -> String -> AlbumList
+nList grandParents parent leaf =
+    case grandParents of
+        [] ->
+            leaves parent leaf []
+
+        greatestGrandParent :: otherGrandParents ->
+            list greatestGrandParent (List <| nList otherGrandParents parent leaf) []
+
+
 oneLevelListPage : AlbumListPage
 oneLevelListPage =
-    listPage <| leaves "World" "North America" []
+    listPage <| nList [] "World" "North America"
 
 
 oneLevelModel : MainAlbumModel
@@ -117,7 +127,7 @@ oneLevelModel =
 
 twoLevelListPage : AlbumListPage
 twoLevelListPage =
-    listPage <| list "World" (List <| leaves "North America" "Canada" []) []
+    listPage <| nList [ "World" ] "North America" "Canada"
 
 
 twoLevelModel : MainAlbumModel
