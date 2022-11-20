@@ -135,6 +135,16 @@ twoLevelModel =
     model twoLevelListPage
 
 
+threeLevelListPage : AlbumListPage
+threeLevelListPage =
+    listPage <| nList [ "World", "North America" ] "Canada" "Ottawa"
+
+
+threeLevelModel : MainAlbumModel
+threeLevelModel =
+    model threeLevelListPage
+
+
 suite : Test
 suite =
     describe "pathsToCmd"
@@ -320,6 +330,39 @@ suite =
 
                     mUpdate msg =
                         Tuple.first <| update msg twoLevelModel
+
+                    modelAfter2LevelPath =
+                        Maybe.map mUpdate msgFor2LevelPath
+
+                    msgAfter1LevelPath =
+                        Maybe.andThen (\model_ -> pathsToCmd model_ <| Just [ "North America" ]) modelAfter2LevelPath
+                in
+                Expect.equal
+                    (Just
+                        (Album_
+                            (ViewList
+                                (AlbumListPage
+                                    { albumList = leaves "North America" "Canada" []
+                                    , bodyViewport = viewport
+                                    , parents = [ ( list "World" (List <| leaves "North America" "Canada" []) [], Nothing ) ]
+                                    }
+                                )
+                                Nothing
+                            )
+                        )
+                    )
+                    msgAfter1LevelPath
+        , test "2-level path then back produces ViewAlbum for child, 3 level model" <|
+            \_ ->
+                let
+                    msgFor2LevelPath =
+                        pathsToCmd
+                            threeLevelModel
+                        <|
+                            Just [ "North America", "Canada" ]
+
+                    mUpdate msg =
+                        Tuple.first <| update msg threeLevelModel
 
                     modelAfter2LevelPath =
                         Maybe.map mUpdate msgFor2LevelPath
