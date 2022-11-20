@@ -371,18 +371,25 @@ suite =
                         Maybe.andThen (\model_ -> pathsToCmd model_ <| Just [ "North America" ]) modelAfter2LevelPath
                 in
                 Expect.equal
-                    (Just
-                        (Album_
-                            (ViewList
-                                (AlbumListPage
-                                    { albumList = leaves "North America" "Canada" []
-                                    , bodyViewport = viewport
-                                    , parents = [ ( list "World" (List <| leaves "North America" "Canada" []) [], Nothing ) ]
-                                    }
+                    (Just <|
+                        Meta <|
+                            Sequence
+                                (Album_
+                                    (ViewList
+                                        (AlbumListPage
+                                            { albumList = nList [ "North America" ] "Canada" "Ottawa"
+                                            , bodyViewport = viewport
+                                            , parents =
+                                                [ ( nList [] "Canada" "Ottawa", Nothing )
+                                                , ( nList [ "North America" ] "Canada" "Ottawa", Nothing )
+                                                , ( nList [ "World", "North America" ] "Canada" "Ottawa", Nothing )
+                                                ]
+                                            }
+                                        )
+                                        Nothing
+                                    )
                                 )
-                                Nothing
-                            )
-                        )
+                                [ Album_ NavCompletedLocally ]
                     )
                     msgAfter1LevelPath
         ]
