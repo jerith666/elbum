@@ -393,3 +393,175 @@ suite =
                     )
                     msgAfter1LevelPath
         ]
+
+
+actual =
+    Just
+        (Meta
+            (Sequence
+                (Album_
+                    (ViewList
+                        (AlbumListPage
+                            { albumList =
+                                { childFirst =
+                                    List
+                                        { childFirst =
+                                            Leaf
+                                                { imageFirst =
+                                                    { altText = "img"
+                                                    , srcSetFirst =
+                                                        { url = "url", x = 1, y = 2 }
+                                                    , srcSetRest = []
+                                                    }
+                                                , imageRest = []
+                                                , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                                , title = "Ottawa"
+                                                }
+                                        , childRest = []
+                                        , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                        , listTitle = "Canada"
+                                        }
+                                , childRest = []
+                                , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                , listTitle = "North America"
+                                }
+                            , bodyViewport = { scene = { height = 768, width = 1024 }, viewport = { height = 76, width = 102, x = 0, y = 0 } }
+                            , parents =
+                                [ ( { childFirst =
+                                        Leaf
+                                            { imageFirst =
+                                                { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                            , imageRest = []
+                                            , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                            , title = "Ottawa"
+                                            }
+                                    , childRest = []
+                                    , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                    , listTitle = "Canada"
+                                    }
+                                  , Nothing
+                                  )
+                                , ( { childFirst =
+                                        List
+                                            { childFirst =
+                                                Leaf
+                                                    { imageFirst =
+                                                        { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                                    , imageRest = []
+                                                    , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                                    , title = "Ottawa"
+                                                    }
+                                            , childRest = []
+                                            , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                            , listTitle = "Canada"
+                                            }
+                                    , childRest = []
+                                    , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                    , listTitle = "North America"
+                                    }
+                                  , Nothing
+                                  )
+                                , ( { childFirst =
+                                        List
+                                            { childFirst =
+                                                List
+                                                    { childFirst =
+                                                        Leaf
+                                                            { imageFirst =
+                                                                { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                                            , imageRest = []
+                                                            , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                                            , title = "Ottawa"
+                                                            }
+                                                    , childRest = []
+                                                    , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                                    , listTitle = "Canada"
+                                                    }
+                                            , childRest = []
+                                            , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                            , listTitle = "North America"
+                                            }
+                                    , childRest = []
+                                    , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                    , listTitle = "World"
+                                    }
+                                  , Nothing
+                                  )
+                                ]
+                            }
+                        )
+                        Nothing
+                    )
+                )
+                [ Album_ NavCompletedLocally ]
+            )
+        )
+
+
+expected =
+    Just
+        (Meta
+            (Sequence
+                (Album_
+                    (ViewList
+                        (AlbumListPage
+                            { albumList =
+                                { childFirst =
+                                    List
+                                        { childFirst =
+                                            Leaf
+                                                { imageFirst =
+                                                    { altText = "img"
+                                                    , srcSetFirst =
+                                                        { url = "url", x = 1, y = 2 }
+                                                    , srcSetRest = []
+                                                    }
+                                                , imageRest = []
+                                                , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                                , title = "Ottawa"
+                                                }
+                                        , childRest = []
+                                        , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                        , listTitle = "Canada"
+                                        }
+                                , childRest = []
+                                , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                , listTitle = "North America"
+                                }
+                            , bodyViewport = { scene = { height = 768, width = 1024 }, viewport = { height = 76, width = 102, x = 0, y = 0 } }
+                            , parents =
+                                [ ( { childFirst =
+                                        List
+                                            { childFirst =
+                                                List
+                                                    { childFirst =
+                                                        Leaf
+                                                            { imageFirst =
+                                                                { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                                            , imageRest = []
+                                                            , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                                            , title = "Ottawa"
+                                                            }
+                                                    , childRest = []
+                                                    , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                                    , listTitle = "Canada"
+                                                    }
+                                            , childRest = []
+                                            , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                            , listTitle = "North America"
+                                            }
+                                    , childRest = []
+                                    , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
+                                    , listTitle = "World"
+                                    }
+                                  , Nothing
+                                  )
+                                ]
+                            }
+                        )
+                        Nothing
+                    )
+                )
+                [ Album_ NavCompletedLocally ]
+            )
+        )
