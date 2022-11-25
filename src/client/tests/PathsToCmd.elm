@@ -271,7 +271,7 @@ suite =
                                 (AlbumListPage
                                     { albumList = leaves "2004" "Road Trip" []
                                     , bodyViewport = viewport
-                                    , parents = [ ( list "src" (List <| leaves "2004" "Road Trip" []) [], Nothing ) ]
+                                    , parents = [ ( nList [ "src" ] "2004" "Road Trip", Nothing ) ]
                                     }
                                 )
                                 Nothing
@@ -293,7 +293,7 @@ suite =
                                         (AlbumListPage
                                             { albumList = leaves "2004" "Road Trip" []
                                             , bodyViewport = viewport
-                                            , parents = [ ( list "src" (List <| leaves "2004" "Road Trip" []) [], Nothing ) ]
+                                            , parents = [ ( nList [ "src" ] "2004" "Road Trip", Nothing ) ]
                                             }
                                         )
                                         Nothing
@@ -318,8 +318,8 @@ suite =
                                     , imageLoader = Tuple.first <| initMany [ { url | path = "/url" } ] [] LoadingMsg
                                     }
                                 )
-                                [ ( leaves "2004" "Road Trip" [], Nothing )
-                                , ( list "src" (List <| leaves "2004" "Road Trip" []) [], Nothing )
+                                [ ( nList [] "2004" "Road Trip", Nothing )
+                                , ( nList [ "src" ] "2004" "Road Trip", Nothing )
                                 ]
                             )
                         )
@@ -354,7 +354,7 @@ suite =
                                 (AlbumListPage
                                     { albumList = leaves "2004" "Road Trip" []
                                     , bodyViewport = viewport
-                                    , parents = [ ( list "src" (List <| leaves "2004" "Road Trip" []) [], Nothing ) ]
+                                    , parents = [ ( nList [ "src" ] "2004" "Road Trip", Nothing ) ]
                                     }
                                 )
                                 Nothing
