@@ -849,10 +849,10 @@ navFrom baseUrl model viewport root parents paths defMsg =
         p1 :: ps ->
             let
                 mChild =
-                    findChild root p1
+                    log "navFrom.mChild" <| findChild root p1
 
                 newParents =
-                    root :: parents
+                    log "navFrom.newParents" <| root :: parents
             in
             log ("navFrom first path " ++ p1) <|
                 case mChild of
@@ -883,7 +883,7 @@ navFrom baseUrl model viewport root parents paths defMsg =
                                         <|
                                             List.map (\p -> ( p, Nothing )) newParents
                                 in
-                                case ps of
+                                case log "navFrom.ps" ps of
                                     [] ->
                                         -- check if we're at a parent or child of the list identified by
                                         -- the navigation data.  if so, use a more targeted message
@@ -906,28 +906,31 @@ navFrom baseUrl model viewport root parents paths defMsg =
                                                                             (\( list, _ ) -> list == albumList)
                                                                             alp.parents
 
-                                                            localNavWithScroll scroll =
+                                                            localNavWithScroll scroll parentss =
                                                                 Meta <|
                                                                     Sequence
                                                                         (makeViewList
                                                                             alp.bodyViewport
                                                                             scroll
-                                                                         <|
-                                                                            ( alp.albumList
-                                                                            , Maybe.map scrollPosOf ll.rootDivViewport
-                                                                            )
-                                                                                :: alp.parents
+                                                                            parentss
                                                                         )
                                                                         [ Album_ NavCompletedLocally ]
                                                         in
                                                         case destIsChild of
                                                             True ->
-                                                                localNavWithScroll Nothing
+                                                                localNavWithScroll Nothing <|
+                                                                    ( alp.albumList
+                                                                    , Maybe.map scrollPosOf ll.rootDivViewport
+                                                                    )
+                                                                        :: alp.parents
 
                                                             False ->
                                                                 case destParent of
                                                                     Just ( _, scroll ) ->
-                                                                        localNavWithScroll scroll
+                                                                        localNavWithScroll scroll <|
+                                                                            dropThroughPred
+                                                                                (\( p, _ ) -> p == albumList)
+                                                                                alp.parents
 
                                                                     Nothing ->
                                                                         thisAlbumMsg
@@ -956,7 +959,7 @@ navFrom baseUrl model viewport root parents paths defMsg =
 
                                     _ ->
                                         log "navFrom recursive call" <|
-                                            navFrom baseUrl model viewport albumList newParents ps thisAlbumMsg
+                                            navFrom baseUrl model viewport albumList (log "navFrom passing newParents to recursive call" newParents) ps thisAlbumMsg
 
                             Leaf album ->
                                 Maybe.withDefault defMsg <|

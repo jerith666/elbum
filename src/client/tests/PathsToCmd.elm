@@ -361,9 +361,7 @@ suite =
                                             { albumList = nList [ "2004" ] "Road Trip" "Highlights"
                                             , bodyViewport = viewport
                                             , parents =
-                                                [ ( nList [] "Road Trip" "Highlights", Nothing )
-                                                , ( nList [ "2004" ] "Road Trip" "Highlights", Nothing )
-                                                , ( nList [ "src", "2004" ] "Road Trip" "Highlights", Nothing )
+                                                [ ( nList [ "src", "2004" ] "Road Trip" "Highlights", Nothing )
                                                 ]
                                             }
                                         )
@@ -401,9 +399,7 @@ suite =
                                             { albumList = nList [ "2004", "Road Trip" ] "Highlights" "UT"
                                             , bodyViewport = viewport
                                             , parents =
-                                                [ ( nList [ "Road Trip" ] "Highlights" "UT", Nothing )
-                                                , ( nList [ "2004", "Road Trip" ] "Highlights" "UT", Nothing )
-                                                , ( nList [ "src", "2004", "Road Trip" ] "Highlights" "UT", Nothing )
+                                                [ ( nList [ "src", "2004", "Road Trip" ] "Highlights" "UT", Nothing )
                                                 ]
                                             }
                                         )
