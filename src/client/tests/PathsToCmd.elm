@@ -109,10 +109,19 @@ nList : List String -> String -> String -> AlbumList
 nList grandParents parent leaf =
     case grandParents of
         [] ->
-            leaves parent leaf []
+            leaves parent leaf [ leaf ++ "-sibling" ]
 
-        greatestGrandParent :: otherGrandParents ->
-            list greatestGrandParent (List <| nList otherGrandParents parent leaf) []
+        [ grandParent ] ->
+            list
+                grandParent
+                (List <| nList [] parent leaf)
+                [ List <| nList [] (parent ++ "-sibling") leaf ]
+
+        greatestGrandParent :: greaterGrandParent :: otherGrandParents ->
+            list
+                greatestGrandParent
+                (List <| nList (greaterGrandParent :: otherGrandParents) parent leaf)
+                [ List <| nList ((greaterGrandParent ++ "-sibling") :: otherGrandParents) parent leaf ]
 
 
 oneLevelListPage : AlbumListPage
@@ -205,7 +214,7 @@ suite =
                                     , imageLoader = Tuple.first <| initMany [ { url | path = "/url" } ] [] LoadingMsg
                                     }
                                 )
-                                [ ( leaves "src" "2004" [], Nothing ) ]
+                                [ ( leaves "src" "2004" [ "2004-sibling" ], Nothing ) ]
                     )
                 <|
                     pathsToCmd
@@ -269,7 +278,7 @@ suite =
                         Album_ <|
                             ViewList
                                 (AlbumListPage
-                                    { albumList = leaves "2004" "Road Trip" []
+                                    { albumList = leaves "2004" "Road Trip" [ "Road Trip-sibling" ]
                                     , bodyViewport = viewport
                                     , parents = [ ( nList [ "src" ] "2004" "Road Trip", Nothing ) ]
                                     }
@@ -291,7 +300,7 @@ suite =
                                 (Album_ <|
                                     ViewList
                                         (AlbumListPage
-                                            { albumList = leaves "2004" "Road Trip" []
+                                            { albumList = leaves "2004" "Road Trip" [ "Road Trip-sibling" ]
                                             , bodyViewport = viewport
                                             , parents = [ ( nList [ "src" ] "2004" "Road Trip", Nothing ) ]
                                             }
@@ -352,7 +361,7 @@ suite =
                         (Album_
                             (ViewList
                                 (AlbumListPage
-                                    { albumList = leaves "2004" "Road Trip" []
+                                    { albumList = leaves "2004" "Road Trip" [ "Road Trip-sibling" ]
                                     , bodyViewport = viewport
                                     , parents = [ ( nList [ "src" ] "2004" "Road Trip", Nothing ) ]
                                     }
