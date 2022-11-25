@@ -145,6 +145,16 @@ threeLevelModel =
     model threeLevelListPage
 
 
+fourLevelListPage : AlbumListPage
+fourLevelListPage =
+    listPage <| nList [ "World", "North America", "Canada" ] "Ontario" "Ottawa"
+
+
+fourLevelModel : MainAlbumModel
+fourLevelModel =
+    model fourLevelListPage
+
+
 suite : Test
 suite =
     describe "pathsToCmd"
@@ -392,6 +402,43 @@ suite =
                                 [ Album_ NavCompletedLocally ]
                     )
                     msgAfter1LevelPath
+        , test "4-level path then back produces ViewAlbum for child, 4 level model" <|
+            \_ ->
+                let
+                    msgFor4LevelPath =
+                        pathsToCmd
+                            fourLevelModel
+                        <|
+                            Just [ "North America", "Canada", "Ontario", "Ottawa" ]
+
+                    mUpdate msg =
+                        Tuple.first <| update msg fourLevelModel
+
+                    modelAfter4LevelPath =
+                        Maybe.map mUpdate msgFor4LevelPath
+
+                    msgAfter3LevelPath =
+                        Maybe.andThen (\model_ -> pathsToCmd model_ <| Just [ "North America", "Canada", "Ontario" ]) modelAfter4LevelPath
+                in
+                Expect.equal
+                    (Just <|
+                                (Album_
+                                    (ViewList
+                                        (AlbumListPage
+                                            { albumList = nList [] "Ontario" "Ottawa"
+                                            , bodyViewport = viewport
+                                            , parents =
+                                                [ ( nList [ "Canada" ] "Ontario" "Ottawa", Nothing )
+                                                , ( nList [ "North America", "Canada" ] "Ontario" "Ottawa", Nothing )
+                                                , ( nList [ "World", "North America", "Canada" ] "Ontario" "Ottawa", Nothing )
+                                                ]
+                                            }
+                                        )
+                                        Nothing
+                                    )
+                                )
+                    )
+                    msgAfter3LevelPath
         ]
 
 
