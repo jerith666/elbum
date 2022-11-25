@@ -411,6 +411,46 @@ suite =
                                 [ Album_ NavCompletedLocally ]
                     )
                     msgAfter1LevelPath
+        , test "2-level path then back produces ViewAlbum for child, 4 level model" <|
+            \_ ->
+                let
+                    msgFor2LevelPath =
+                        pathsToCmd
+                            fourLevelModel
+                        <|
+                            Just [ "2004", "Road Trip" ]
+
+                    mUpdate msg =
+                        Tuple.first <| update msg fourLevelModel
+
+                    modelAfter2LevelPath =
+                        Maybe.map mUpdate msgFor2LevelPath
+
+                    msgAfter1LevelPath =
+                        Maybe.andThen (\model_ -> pathsToCmd model_ <| Just [ "2004" ]) modelAfter2LevelPath
+                in
+                Expect.equal
+                    (Just <|
+                        Meta <|
+                            Sequence
+                                (Album_
+                                    (ViewList
+                                        (AlbumListPage
+                                            { albumList = nList [ "2004", "Road Trip" ] "Highlights" "UT"
+                                            , bodyViewport = viewport
+                                            , parents =
+                                                [ ( nList [ "Road Trip" ] "Highlights" "UT", Nothing )
+                                                , ( nList [ "2004", "Road Trip" ] "Highlights" "UT", Nothing )
+                                                , ( nList [ "src", "2004", "Road Trip" ] "Highlights" "UT", Nothing )
+                                                ]
+                                            }
+                                        )
+                                        Nothing
+                                    )
+                                )
+                            [ Album_ NavCompletedLocally ]
+                    )
+                    msgAfter1LevelPath
         , test "4-level path then back produces ViewAlbum for child, 4 level model" <|
             \_ ->
                 let
