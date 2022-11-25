@@ -439,9 +439,7 @@ suite =
                                             { albumList = nList [ "2004", "Road Trip" ] "Highlights" "UT"
                                             , bodyViewport = viewport
                                             , parents =
-                                                [ ( nList [ "Road Trip" ] "Highlights" "UT", Nothing )
-                                                , ( nList [ "2004", "Road Trip" ] "Highlights" "UT", Nothing )
-                                                , ( nList [ "src", "2004", "Road Trip" ] "Highlights" "UT", Nothing )
+                                                [ ( nList [ "src", "2004", "Road Trip" ] "Highlights" "UT", Nothing )
                                                 ]
                                             }
                                         )
