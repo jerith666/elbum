@@ -137,7 +137,7 @@ twoLevelModel =
 
 threeLevelListPage : AlbumListPage
 threeLevelListPage =
-    listPage <| nList [ "World", "North America" ] "Canada" "Ottawa"
+    listPage <| nList [ "World", "North America" ] "Canada" "Ontario"
 
 
 threeLevelModel : MainAlbumModel
@@ -377,12 +377,12 @@ suite =
                                 (Album_
                                     (ViewList
                                         (AlbumListPage
-                                            { albumList = nList [ "North America" ] "Canada" "Ottawa"
+                                            { albumList = nList [ "North America" ] "Canada" "Ontario"
                                             , bodyViewport = viewport
                                             , parents =
-                                                [ ( nList [] "Canada" "Ottawa", Nothing )
-                                                , ( nList [ "North America" ] "Canada" "Ottawa", Nothing )
-                                                , ( nList [ "World", "North America" ] "Canada" "Ottawa", Nothing )
+                                                [ ( nList [] "Canada" "Ontario", Nothing )
+                                                , ( nList [ "North America" ] "Canada" "Ontario", Nothing )
+                                                , ( nList [ "World", "North America" ] "Canada" "Ontario", Nothing )
                                                 ]
                                             }
                                         )
@@ -415,7 +415,7 @@ actual =
                                                     }
                                                 , imageRest = []
                                                 , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                                , title = "Ottawa"
+                                                , title = "Ontario"
                                                 }
                                         , childRest = []
                                         , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
@@ -433,7 +433,7 @@ actual =
                                                 { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
                                             , imageRest = []
                                             , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                            , title = "Ottawa"
+                                            , title = "Ontario"
                                             }
                                     , childRest = []
                                     , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
@@ -449,7 +449,7 @@ actual =
                                                         { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
                                                     , imageRest = []
                                                     , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                                    , title = "Ottawa"
+                                                    , title = "Ontario"
                                                     }
                                             , childRest = []
                                             , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
@@ -471,7 +471,7 @@ actual =
                                                                 { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
                                                             , imageRest = []
                                                             , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                                            , title = "Ottawa"
+                                                            , title = "Ontario"
                                                             }
                                                     , childRest = []
                                                     , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
@@ -518,7 +518,7 @@ expected =
                                                     }
                                                 , imageRest = []
                                                 , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                                , title = "Ottawa"
+                                                , title = "Ontario"
                                                 }
                                         , childRest = []
                                         , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
@@ -540,7 +540,7 @@ expected =
                                                                 { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
                                                             , imageRest = []
                                                             , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                                            , title = "Ottawa"
+                                                            , title = "Ontario"
                                                             }
                                                     , childRest = []
                                                     , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
