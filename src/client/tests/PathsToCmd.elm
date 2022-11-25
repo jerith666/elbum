@@ -117,7 +117,7 @@ nList grandParents parent leaf =
 
 oneLevelListPage : AlbumListPage
 oneLevelListPage =
-    listPage <| nList [] "World" "North America"
+    listPage <| nList [] "src" "2004"
 
 
 oneLevelModel : MainAlbumModel
@@ -127,7 +127,7 @@ oneLevelModel =
 
 twoLevelListPage : AlbumListPage
 twoLevelListPage =
-    listPage <| nList [ "World" ] "North America" "Canada"
+    listPage <| nList [ "src" ] "2004" "Road Trip"
 
 
 twoLevelModel : MainAlbumModel
@@ -137,7 +137,7 @@ twoLevelModel =
 
 threeLevelListPage : AlbumListPage
 threeLevelListPage =
-    listPage <| nList [ "World", "North America" ] "Canada" "Ontario"
+    listPage <| nList [ "src", "2004" ] "Road Trip" "Highlights"
 
 
 threeLevelModel : MainAlbumModel
@@ -147,7 +147,7 @@ threeLevelModel =
 
 fourLevelListPage : AlbumListPage
 fourLevelListPage =
-    listPage <| nList [ "World", "North America", "Canada" ] "Ontario" "Ottawa"
+    listPage <| nList [ "src", "2004", "Road Trip" ] "Highlights" "UT"
 
 
 fourLevelModel : MainAlbumModel
@@ -199,19 +199,19 @@ suite =
                         Album_ <|
                             ViewAlbum
                                 (Thumbs
-                                    { album = album "North America"
+                                    { album = album "2004"
                                     , vpInfo = { bodyViewport = viewport, rootDivViewport = Nothing }
                                     , baseUrl = url
                                     , imageLoader = Tuple.first <| initMany [ { url | path = "/url" } ] [] LoadingMsg
                                     }
                                 )
-                                [ ( leaves "World" "North America" [], Nothing ) ]
+                                [ ( leaves "src" "2004" [], Nothing ) ]
                     )
                 <|
                     pathsToCmd
                         oneLevelModel
                     <|
-                        Just [ "North America" ]
+                        Just [ "2004" ]
 
         -- 2-level album
         , test "no path produces no command, 2-level" <|
@@ -269,9 +269,9 @@ suite =
                         Album_ <|
                             ViewList
                                 (AlbumListPage
-                                    { albumList = leaves "North America" "Canada" []
+                                    { albumList = leaves "2004" "Road Trip" []
                                     , bodyViewport = viewport
-                                    , parents = [ ( list "World" (List <| leaves "North America" "Canada" []) [], Nothing ) ]
+                                    , parents = [ ( list "src" (List <| leaves "2004" "Road Trip" []) [], Nothing ) ]
                                     }
                                 )
                                 Nothing
@@ -281,7 +281,7 @@ suite =
                     pathsToCmd
                         twoLevelModel
                     <|
-                        Just [ "North America", "Mexico" ]
+                        Just [ "2004", "Mexico" ]
         , test "1-level path produces ViewAlbum for child, two level" <|
             \_ ->
                 Expect.equal
@@ -291,9 +291,9 @@ suite =
                                 (Album_ <|
                                     ViewList
                                         (AlbumListPage
-                                            { albumList = leaves "North America" "Canada" []
+                                            { albumList = leaves "2004" "Road Trip" []
                                             , bodyViewport = viewport
-                                            , parents = [ ( list "World" (List <| leaves "North America" "Canada" []) [], Nothing ) ]
+                                            , parents = [ ( list "src" (List <| leaves "2004" "Road Trip" []) [], Nothing ) ]
                                             }
                                         )
                                         Nothing
@@ -304,7 +304,7 @@ suite =
                     pathsToCmd
                         twoLevelModel
                     <|
-                        Just [ "North America" ]
+                        Just [ "2004" ]
         , test "2-level path produces ViewAlbum for grand-child" <|
             \_ ->
                 Expect.equal
@@ -312,14 +312,14 @@ suite =
                         (Album_
                             (ViewAlbum
                                 (Thumbs
-                                    { album = album "Canada"
+                                    { album = album "Road Trip"
                                     , vpInfo = { bodyViewport = viewport, rootDivViewport = Nothing }
                                     , baseUrl = url
                                     , imageLoader = Tuple.first <| initMany [ { url | path = "/url" } ] [] LoadingMsg
                                     }
                                 )
-                                [ ( leaves "North America" "Canada" [], Nothing )
-                                , ( list "World" (List <| leaves "North America" "Canada" []) [], Nothing )
+                                [ ( leaves "2004" "Road Trip" [], Nothing )
+                                , ( list "src" (List <| leaves "2004" "Road Trip" []) [], Nothing )
                                 ]
                             )
                         )
@@ -328,7 +328,7 @@ suite =
                     pathsToCmd
                         twoLevelModel
                     <|
-                        Just [ "North America", "Canada" ]
+                        Just [ "2004", "Road Trip" ]
         , test "2-level path then back produces ViewAlbum for child" <|
             \_ ->
                 let
@@ -336,7 +336,7 @@ suite =
                         pathsToCmd
                             twoLevelModel
                         <|
-                            Just [ "North America", "Canada" ]
+                            Just [ "2004", "Road Trip" ]
 
                     mUpdate msg =
                         Tuple.first <| update msg twoLevelModel
@@ -345,16 +345,16 @@ suite =
                         Maybe.map mUpdate msgFor2LevelPath
 
                     msgAfter1LevelPath =
-                        Maybe.andThen (\model_ -> pathsToCmd model_ <| Just [ "North America" ]) modelAfter2LevelPath
+                        Maybe.andThen (\model_ -> pathsToCmd model_ <| Just [ "2004" ]) modelAfter2LevelPath
                 in
                 Expect.equal
                     (Just
                         (Album_
                             (ViewList
                                 (AlbumListPage
-                                    { albumList = leaves "North America" "Canada" []
+                                    { albumList = leaves "2004" "Road Trip" []
                                     , bodyViewport = viewport
-                                    , parents = [ ( list "World" (List <| leaves "North America" "Canada" []) [], Nothing ) ]
+                                    , parents = [ ( list "src" (List <| leaves "2004" "Road Trip" []) [], Nothing ) ]
                                     }
                                 )
                                 Nothing
@@ -369,7 +369,7 @@ suite =
                         pathsToCmd
                             threeLevelModel
                         <|
-                            Just [ "North America", "Canada" ]
+                            Just [ "2004", "Road Trip" ]
 
                     mUpdate msg =
                         Tuple.first <| update msg threeLevelModel
@@ -378,7 +378,7 @@ suite =
                         Maybe.map mUpdate msgFor2LevelPath
 
                     msgAfter1LevelPath =
-                        Maybe.andThen (\model_ -> pathsToCmd model_ <| Just [ "North America" ]) modelAfter2LevelPath
+                        Maybe.andThen (\model_ -> pathsToCmd model_ <| Just [ "2004" ]) modelAfter2LevelPath
                 in
                 Expect.equal
                     (Just <|
@@ -387,12 +387,12 @@ suite =
                                 (Album_
                                     (ViewList
                                         (AlbumListPage
-                                            { albumList = nList [ "North America" ] "Canada" "Ontario"
+                                            { albumList = nList [ "2004" ] "Road Trip" "Highlights"
                                             , bodyViewport = viewport
                                             , parents =
-                                                [ ( nList [] "Canada" "Ontario", Nothing )
-                                                , ( nList [ "North America" ] "Canada" "Ontario", Nothing )
-                                                , ( nList [ "World", "North America" ] "Canada" "Ontario", Nothing )
+                                                [ ( nList [] "Road Trip" "Highlights", Nothing )
+                                                , ( nList [ "2004" ] "Road Trip" "Highlights", Nothing )
+                                                , ( nList [ "src", "2004" ] "Road Trip" "Highlights", Nothing )
                                                 ]
                                             }
                                         )
@@ -409,7 +409,7 @@ suite =
                         pathsToCmd
                             fourLevelModel
                         <|
-                            Just [ "North America", "Canada", "Ontario", "Ottawa" ]
+                            Just [ "2004", "Road Trip", "Highlights", "UT" ]
 
                     mUpdate msg =
                         Tuple.first <| update msg fourLevelModel
@@ -418,19 +418,19 @@ suite =
                         Maybe.map mUpdate msgFor4LevelPath
 
                     msgAfter3LevelPath =
-                        Maybe.andThen (\model_ -> pathsToCmd model_ <| Just [ "North America", "Canada", "Ontario" ]) modelAfter4LevelPath
+                        Maybe.andThen (\model_ -> pathsToCmd model_ <| Just [ "2004", "Road Trip", "Highlights" ]) modelAfter4LevelPath
                 in
                 Expect.equal
                     (Just <|
                                 (Album_
                                     (ViewList
                                         (AlbumListPage
-                                            { albumList = nList [] "Ontario" "Ottawa"
+                                            { albumList = nList [] "Highlights" "UT"
                                             , bodyViewport = viewport
                                             , parents =
-                                                [ ( nList [ "Canada" ] "Ontario" "Ottawa", Nothing )
-                                                , ( nList [ "North America", "Canada" ] "Ontario" "Ottawa", Nothing )
-                                                , ( nList [ "World", "North America", "Canada" ] "Ontario" "Ottawa", Nothing )
+                                                [ ( nList [ "Road Trip" ] "Highlights" "UT", Nothing )
+                                                , ( nList [ "2004", "Road Trip" ] "Highlights" "UT", Nothing )
+                                                , ( nList [ "src", "2004", "Road Trip" ] "Highlights" "UT", Nothing )
                                                 ]
                                             }
                                         )
@@ -462,15 +462,15 @@ actual =
                                                     }
                                                 , imageRest = []
                                                 , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                                , title = "Ontario"
+                                                , title = "Highlights"
                                                 }
                                         , childRest = []
                                         , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                        , listTitle = "Canada"
+                                        , listTitle = "Road Trip"
                                         }
                                 , childRest = []
                                 , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                , listTitle = "North America"
+                                , listTitle = "2004"
                                 }
                             , bodyViewport = { scene = { height = 768, width = 1024 }, viewport = { height = 76, width = 102, x = 0, y = 0 } }
                             , parents =
@@ -480,11 +480,11 @@ actual =
                                                 { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
                                             , imageRest = []
                                             , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                            , title = "Ontario"
+                                            , title = "Highlights"
                                             }
                                     , childRest = []
                                     , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                    , listTitle = "Canada"
+                                    , listTitle = "Road Trip"
                                     }
                                   , Nothing
                                   )
@@ -496,15 +496,15 @@ actual =
                                                         { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
                                                     , imageRest = []
                                                     , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                                    , title = "Ontario"
+                                                    , title = "Highlights"
                                                     }
                                             , childRest = []
                                             , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                            , listTitle = "Canada"
+                                            , listTitle = "Road Trip"
                                             }
                                     , childRest = []
                                     , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                    , listTitle = "North America"
+                                    , listTitle = "2004"
                                     }
                                   , Nothing
                                   )
@@ -518,19 +518,19 @@ actual =
                                                                 { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
                                                             , imageRest = []
                                                             , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                                            , title = "Ontario"
+                                                            , title = "Highlights"
                                                             }
                                                     , childRest = []
                                                     , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                                    , listTitle = "Canada"
+                                                    , listTitle = "Road Trip"
                                                     }
                                             , childRest = []
                                             , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                            , listTitle = "North America"
+                                            , listTitle = "2004"
                                             }
                                     , childRest = []
                                     , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                    , listTitle = "World"
+                                    , listTitle = "src"
                                     }
                                   , Nothing
                                   )
@@ -565,15 +565,15 @@ expected =
                                                     }
                                                 , imageRest = []
                                                 , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                                , title = "Ontario"
+                                                , title = "Highlights"
                                                 }
                                         , childRest = []
                                         , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                        , listTitle = "Canada"
+                                        , listTitle = "Road Trip"
                                         }
                                 , childRest = []
                                 , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                , listTitle = "North America"
+                                , listTitle = "2004"
                                 }
                             , bodyViewport = { scene = { height = 768, width = 1024 }, viewport = { height = 76, width = 102, x = 0, y = 0 } }
                             , parents =
@@ -587,19 +587,19 @@ expected =
                                                                 { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
                                                             , imageRest = []
                                                             , thumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                                            , title = "Ontario"
+                                                            , title = "Highlights"
                                                             }
                                                     , childRest = []
                                                     , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                                    , listTitle = "Canada"
+                                                    , listTitle = "Road Trip"
                                                     }
                                             , childRest = []
                                             , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                            , listTitle = "North America"
+                                            , listTitle = "2004"
                                             }
                                     , childRest = []
                                     , listThumbnail = { altText = "img", srcSetFirst = { url = "url", x = 1, y = 2 }, srcSetRest = [] }
-                                    , listTitle = "World"
+                                    , listTitle = "src"
                                     }
                                   , Nothing
                                   )
