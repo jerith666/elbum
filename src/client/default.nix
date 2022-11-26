@@ -5,6 +5,12 @@ with nixpkgs;
 
 let
   albumTypes = import ./album-types-gen.nix { inherit nixpkgs; };
+  nodePackagesRaw = (pkgs.callPackage ./nix/package.nix {});
+  nodeDependencies = (nodePackagesRaw // {
+    nodeDependencies = nodePackagesRaw.nodeDependencies.override {
+      npmFlags = "--ignore-scripts";
+    };
+  }).nodeDependencies;
 
   mkDerivation =
     { srcs ? ./nix/elm-srcs.nix
@@ -42,6 +48,7 @@ let
 
       doCheck = true;
       checkPhase = ''
+        ln -s ${nodeDependencies}/lib/node_modules ./node_modules
         npm run test
       '';
     };
