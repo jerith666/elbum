@@ -439,6 +439,7 @@ let
 
         export HOME=$TMPDIR
         cd "${packageName}"
+        echo running preRebuild
         runHook preRebuild
 
         ${lib.optionalString bypassCache ''
@@ -458,6 +459,8 @@ let
           node ${addIntegrityFieldsScript}
         ''}
 
+        echo npm rebuild
+        
         npm ${forceOfflineFlag} --nodedir=${nodeSources} ${npmFlags} ${lib.optionalString production "--production"} rebuild
 
         runHook postRebuild
@@ -466,6 +469,8 @@ let
         then
             # NPM tries to download packages even when they already exist if npm-shrinkwrap is used.
             rm -f npm-shrinkwrap.json
+
+            echo npm install
 
             npm ${forceOfflineFlag} --nodedir=${nodeSources} --no-bin-links --ignore-scripts ${npmFlags} ${lib.optionalString production "--production"} install
         fi
@@ -623,6 +628,8 @@ let
           cd ..
           ${lib.optionalString (builtins.substring 0 1 packageName == "@") "cd .."}
 
+          echo buildNodeDependencies prepareAndInvokeNPM
+          
           ${prepareAndInvokeNPM { inherit packageName bypassCache reconstructLock npmFlags production; }}
 
           # Expose the executables that were installed
