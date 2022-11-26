@@ -29,6 +29,7 @@ pkgs.stdenv.mkDerivation {
   buildInputs = with pkgs.haskellPackages;
                 [ ghc
                   pkgs.elmPackages.elm
+                  pkgs.elmPackages.elm-coverage
 
                   ormolu
 
