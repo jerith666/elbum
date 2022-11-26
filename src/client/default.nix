@@ -22,7 +22,7 @@ let
     stdenv.mkDerivation rec {
       inherit name src;
 
-      buildInputs = [ elmPackages.elm nodejs-16_x ];
+      buildInputs = [ elmPackages.elm elmPackages.elm-json nodejs-16_x ];
 
       postUnpack = (elmPackages.fetchElmDeps {
         elmVersion = "0.19.1";
@@ -49,6 +49,7 @@ let
       doCheck = true;
       checkPhase = ''
         ln -s ${nodeDependencies}/lib/node_modules ./node_modules
+        export NO_ELM_TOOLING_INSTALL=true;
         npm run test
       '';
     };
@@ -71,6 +72,7 @@ in mkDerivation {
         pkgs.lib.hasSuffix "elm-route-url" path ||
         pkgs.lib.hasSuffix "touch-events" path ||
         pkgs.lib.hasSuffix "src" path ||
+        pkgs.lib.hasSuffix "review" path ||
         pkgs.lib.hasSuffix "Utils" path
       ));
   };
