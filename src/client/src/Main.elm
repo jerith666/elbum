@@ -920,7 +920,7 @@ navFrom baseUrl model viewport root parents paths defMsg =
                                                                             ( alp.albumList
                                                                             , Maybe.map scrollPosOf ll.rootDivViewport
                                                                             )
-                                                                                :: alp.parents
+                                                                                :: alp.parents -- this is sus if destIsChild is false!!
                                                                         )
                                                                         [ Album_ NavCompletedLocally ]
                                                         in
