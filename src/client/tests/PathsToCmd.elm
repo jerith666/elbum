@@ -6,7 +6,7 @@ import AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..))
 import Browser.Dom exposing (Viewport)
 import Expect
 import Main exposing (AlbumMsg(..), MainAlbumModel(..), MainAlbumMsg(..), MetaMsg(..), PostLoadNavState(..), pathsToCmd, update)
-import Test exposing (Test, describe, test, only)
+import Test exposing (Test, describe, test)
 import Url exposing (Protocol(..), Url)
 import Utils.Loading exposing (initMany)
 
@@ -402,7 +402,7 @@ suite =
                                 [ Album_ NavCompletedLocally ]
                     )
                     msgAfter1LevelPath
-        , only <| test "2-level path then back produces ViewAlbum for child, 4 level model" <|
+        , test "2-level path then back produces ViewAlbum for child, 4 level model" <|
             \_ ->
                 let
                     msgFor2LevelPath =
