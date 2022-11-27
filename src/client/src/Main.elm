@@ -85,7 +85,7 @@ type PostLoadNavState
 type MainAlbumMsg
     = Bootstrap BootstrapMsg
     | Meta MetaMsg
-    | Album AlbumMsg
+    | Album_ AlbumMsg
     | General GeneralMsg
 
 
@@ -162,7 +162,7 @@ update msg model =
         Meta albumMetaMsg ->
             updateMeta albumMetaMsg model
 
-        Album albumMsg ->
+        Album_ albumMsg ->
             updateAlbum albumMsg model
 
         General generalMsg ->
@@ -221,7 +221,7 @@ updateGeneral generalMsg model =
                                     fi.vpInfo
                             in
                             ( LoadedAlbum { la | albumPage = FullImage { fi | vpInfo = { oldVpInfo | bodyViewport = log "window size updated for full" viewport } } }
-                            , Cmd.map (Album << PageMsg) getImgPosition
+                            , Cmd.map (Album_ << PageMsg) getImgPosition
                             )
 
                 LoadedList ll ->
@@ -331,7 +331,7 @@ updateBootstrap bootstrapMsg model =
                             in
                             ( newModel
                             , Cmd.batch
-                                [ Cmd.map (Album << PageMsg) albumPageCmd
+                                [ Cmd.map (Album_ << PageMsg) albumPageCmd
                                 , Maybe.withDefault Cmd.none <|
                                     Maybe.map toCmd <|
                                         pathsToCmd newModel ld.albumPathsAfterLoad
@@ -359,7 +359,7 @@ updateAlbum albumMsg model =
                     in
                     ( LoadedAlbum
                         { la | albumPage = newPage }
-                    , Cmd.map (Album << PageMsg) newPageCmd
+                    , Cmd.map (Album_ << PageMsg) newPageCmd
                     )
 
                 _ ->
@@ -423,8 +423,8 @@ updateAlbum albumMsg model =
                     ( newModel
                     , Cmd.batch
                         [ Cmd.map Meta <| scrollToTop NoBootstrap <| always NoBootstrap
-                        , Cmd.map (Album << PageMsg) <| AlbumPage.cmdFor albumPage
-                        , Cmd.map Album getImgPos
+                        , Cmd.map (Album_ << PageMsg) <| AlbumPage.cmdFor albumPage
+                        , Cmd.map Album_ getImgPos
                         ]
                     )
 
@@ -577,7 +577,7 @@ navToMsgInternal loc =
                     []
 
                 Ok paths ->
-                    [ Album <| SetAlbumPathFromUrl paths ]
+                    [ Album_ <| SetAlbumPathFromUrl paths ]
     in
     case hashMsgs of
         [] ->
@@ -829,7 +829,7 @@ pathsToCmdImpl baseUrl model viewport parents paths =
                     List.reverse modelParents |> List.head |> Maybe.andThen Tuple.second
 
                 fallbackMsg =
-                    Album <|
+                    Album_ <|
                         ViewList
                             (AlbumListPage { albumList = root, bodyViewport = viewport.bodyViewport, parents = [] })
                             fallbackScroll
@@ -866,7 +866,7 @@ navFrom baseUrl model viewport root parents paths defMsg =
                                     -- a generic message that will navigate to the album we found
                                     -- no matter where we currently are
                                     makeViewList bodyViewport scroll parentss =
-                                        Album <|
+                                        Album_ <|
                                             ViewList
                                                 (AlbumListPage
                                                     { albumList = albumList
@@ -918,7 +918,7 @@ navFrom baseUrl model viewport root parents paths defMsg =
                                                                             )
                                                                                 :: alp.parents
                                                                         )
-                                                                        [ Album NavCompletedLocally ]
+                                                                        [ Album_ NavCompletedLocally ]
                                                         in
                                                         case destIsChild of
                                                             True ->
@@ -980,7 +980,7 @@ navForAlbum baseUrl model vpInfo album ps newParents =
 
                 makeViewAlbumThumbsMsg parents =
                     Just <|
-                        Album <|
+                        Album_ <|
                             ViewAlbum
                                 thumbsModel
                                 parents
@@ -1016,8 +1016,8 @@ navForAlbum baseUrl model vpInfo album ps newParents =
                                     Just <|
                                         Meta <|
                                             Sequence
-                                                (Album <| PageMsg BackToThumbs)
-                                                [ Album NavCompletedLocally ]
+                                                (Album_ <| PageMsg BackToThumbs)
+                                                [ Album_ NavCompletedLocally ]
 
                                 False ->
                                     nonLocalMsg
@@ -1052,7 +1052,7 @@ navForAlbum baseUrl model vpInfo album ps newParents =
                                 Meta <|
                                     SequenceCmd
                                         (toCmd <|
-                                            Album <|
+                                            Album_ <|
                                                 ViewAlbum
                                                     (FullImage
                                                         { baseUrl = baseUrl
@@ -1069,7 +1069,7 @@ navForAlbum baseUrl model vpInfo album ps newParents =
                                                     parentsNoScroll
                                         )
                                     <|
-                                        [ Cmd.map (Album << PageMsg << FullMsg) progMsg ]
+                                        [ Cmd.map (Album_ << PageMsg << FullMsg) progMsg ]
                     in
                     -- now, see if we can create a more specific message, depending on whether we're
                     -- currently viewing the thumbnails or a full size image
@@ -1086,8 +1086,8 @@ navForAlbum baseUrl model vpInfo album ps newParents =
                                                 Just <|
                                                     Meta <|
                                                         Sequence
-                                                            (Album <| PageMsg <| View prevs nAlbum.imageFirst nAlbum.imageRest)
-                                                            [ Album NavCompletedLocally ]
+                                                            (Album_ <| PageMsg <| View prevs nAlbum.imageFirst nAlbum.imageRest)
+                                                            [ Album_ NavCompletedLocally ]
 
                                         False ->
                                             log "navForAlbum t.album != album" nonLocalMsg
@@ -1114,8 +1114,8 @@ navForAlbum baseUrl model vpInfo album ps newParents =
                                                                 True ->
                                                                     Just <|
                                                                         Meta <|
-                                                                            Sequence (Album <| PageMsg <| msgOnMatch)
-                                                                                [ Album NavCompletedLocally ]
+                                                                            Sequence (Album_ <| PageMsg <| msgOnMatch)
+                                                                                [ Album_ NavCompletedLocally ]
 
                                                                 False ->
                                                                     Nothing
@@ -1291,7 +1291,7 @@ subscriptions model =
                             Meta NoBootstrap
 
                         ( parent, scroll ) :: grandParents ->
-                            Album <|
+                            Album_ <|
                                 ViewList
                                     (AlbumListPage
                                         { albumList = parent
@@ -1302,7 +1302,7 @@ subscriptions model =
                                     scroll
             in
             Sub.batch
-                [ AlbumPage.subscriptions la.albumPage (Album << PageMsg) showParent
+                [ AlbumPage.subscriptions la.albumPage (Album_ << PageMsg) showParent
                 , onResize <| newSize <| (pageSize la.albumPage).bodyViewport
                 ]
 
@@ -1317,7 +1317,7 @@ subscriptions model =
                             let
                                 upParent =
                                     onEscape
-                                        (Album <|
+                                        (Album_ <|
                                             ViewList
                                                 (AlbumListPage { alp | albumList = parent, parents = grandParents })
                                                 scroll
@@ -1431,7 +1431,7 @@ viewImpl albumBootstrap a =
                         -- don't want to save that anywhere in the list of parents
                         la.parents
                     )
-                    (Album << PageMsg)
+                    (Album_ << PageMsg)
                     (List.map Tuple.first la.parents)
                     la.flags
 
@@ -1447,7 +1447,7 @@ viewImpl albumBootstrap a =
                                 (( alp.albumList, Maybe.map scrollPosOf ll.rootDivViewport ) :: alp.parents)
                             )
                             (\album ->
-                                Album <|
+                                Album_ <|
                                     ViewAlbum
                                         (Tuple.first <|
                                             initThumbsFullVp album
@@ -1464,7 +1464,7 @@ viewImpl albumBootstrap a =
 
 viewList : Viewport -> List ( AlbumList, Maybe Float ) -> AlbumList -> MainAlbumMsg
 viewList viewport parents list =
-    Album <|
+    Album_ <|
         ViewList
             (AlbumListPage
                 { albumList = list
