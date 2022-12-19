@@ -4,7 +4,7 @@
   "description": "",
   "main": "elbum.js",
   "devDependencies": {
-    "elm-review": "^2.8.5",
+    "elm-review": "^2.9.0",
     "elm-test": "^0.19.1-revision10"
   },
   "scripts": {
