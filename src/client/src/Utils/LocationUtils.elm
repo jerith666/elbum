@@ -2,7 +2,6 @@ module Utils.LocationUtils exposing (AnchorFunction, parseHash)
 
 import Html.Styled exposing (Attribute, Html)
 import Parser exposing (..)
-import RouteUrl exposing (UrlChange(..))
 import Url exposing (..)
 
 

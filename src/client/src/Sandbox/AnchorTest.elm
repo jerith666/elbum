@@ -5,7 +5,7 @@ import Browser.Navigation exposing (Key, load)
 import Html.Styled exposing (Attribute, Html, a, br, div, text, toUnstyled)
 import Html.Styled.Attributes exposing (href)
 import Html.Styled.Events exposing (onClick)
-import RouteUrl exposing (HistoryEntry(..), UrlChange(..), WrappedModel(..))
+import RouteUrl exposing (HistoryEntry(..), UrlChange(..), WrappedModel)
 import String exposing (toInt)
 import Url exposing (Url)
 import Utils.ListUtils as ListUtils

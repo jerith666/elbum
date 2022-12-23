@@ -26,13 +26,9 @@ let
     stdenv.mkDerivation rec {
       inherit name src;
 
-      buildInputs = with elmPackages; [
-        elm
-        elm-json
-        elm-review
-        elm-test
+      buildInputs = [
+        elmPackages.elm
         nodejs-16_x
-        tree
       ];
 
       postUnpack = (elmPackages.fetchElmDeps {
@@ -89,10 +85,10 @@ let
         chmod -R ugo+w elm-stuff/generated-code/;
 
         echo; echo running elm-review ...
-        elm-review
+        ./node_modules/.bin/elm-review
 
         echo; echo running elm-test ...
-        elm-test --seed 20221126
+        ./node_modules/.bin/elm-test --seed 20221126
       '';
     };
 in mkDerivation {

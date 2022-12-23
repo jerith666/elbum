@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.cm.cP === region.b6.cP)
+	if (region.cN.di === region.cp.di)
 	{
-		return 'on line ' + region.cm.cP;
+		return 'on line ' + region.cN.di;
 	}
-	return 'on lines ' + region.cm.cP + ' through ' + region.b6.cP;
+	return 'on lines ' + region.cN.di + ' through ' + region.cp.di;
 }
 
 
@@ -2024,9 +2024,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.gc,
-		impl.gY,
-		impl.gP,
+		impl.gM,
+		impl.hx,
+		impl.ho,
 		function() { return function() {} }
 	);
 });
@@ -2939,25 +2939,25 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.y) {
+		if (!builder.A) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.C),
+				$elm$core$Elm$JsArray$length(builder.G),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.C);
+				builder.G);
 		} else {
-			var treeLen = builder.y * $elm$core$Array$branchFactor;
+			var treeLen = builder.A * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.I) : builder.I;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.y);
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.L) : builder.L;
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.A);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.C) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.G) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.C);
+				builder.G);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -2970,7 +2970,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{I: nodeList, y: (len / $elm$core$Array$branchFactor) | 0, C: tail});
+					{L: nodeList, A: (len / $elm$core$Array$branchFactor) | 0, G: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -3031,10 +3031,10 @@ var $author$project$Elm$Review$Main$abortWithDetails = _Platform_outgoingPort(
 				[
 					_Utils_Tuple2(
 					'message',
-					$elm$json$Json$Encode$string($.a2)),
+					$elm$json$Json$Encode$string($.a8)),
 					_Utils_Tuple2(
 					'title',
-					$elm$json$Json$Encode$string($.cU))
+					$elm$json$Json$Encode$string($.dp))
 				]));
 	});
 var $elm$core$Basics$composeR = F3(
@@ -3179,13 +3179,14 @@ var $jfmengels$elm_review$Review$Rule$ignoreErrorsForDirectories = F2(
 	function (directories, _v0) {
 		var rule = _v0;
 		return {
-			aH: rule.aH,
-			q: A2($jfmengels$elm_review$Review$Exceptions$addDirectories, directories, rule.q),
-			a$: rule.a$,
-			bT: rule.bT,
-			gB: rule.gB,
-			ah: rule.ah,
-			aV: rule.aV
+			aM: rule.aM,
+			p: A2($jfmengels$elm_review$Review$Exceptions$addDirectories, directories, rule.p),
+			a6: rule.a6,
+			dH: rule.dH,
+			b5: rule.b5,
+			g9: rule.g9,
+			af: rule.af,
+			aZ: rule.aZ
 		};
 	});
 var $elm$core$Set$Set_elm_builtin = $elm$core$Basics$identity;
@@ -3366,13 +3367,14 @@ var $jfmengels$elm_review$Review$Rule$ignoreErrorsForFiles = F2(
 	function (files, _v0) {
 		var rule = _v0;
 		return {
-			aH: rule.aH,
-			q: A2($jfmengels$elm_review$Review$Exceptions$addFiles, files, rule.q),
-			a$: rule.a$,
-			bT: rule.bT,
-			gB: rule.gB,
-			ah: rule.ah,
-			aV: rule.aV
+			aM: rule.aM,
+			p: A2($jfmengels$elm_review$Review$Exceptions$addFiles, files, rule.p),
+			a6: rule.a6,
+			dH: rule.dH,
+			b5: rule.b5,
+			g9: rule.g9,
+			af: rule.af,
+			aZ: rule.aZ
 		};
 	});
 var $elm$core$String$concat = function (strings) {
@@ -3380,9 +3382,9 @@ var $elm$core$String$concat = function (strings) {
 };
 var $sparksp$elm_review_ports$NoDuplicatePorts$error = function (portName) {
 	return {
-		c2: _List_fromArray(
+		dx: _List_fromArray(
 			['When there are multiple ports with the same name you may encounter a JavaScript runtime error.']),
-		a2: $elm$core$String$concat(
+		a8: $elm$core$String$concat(
 			_List_fromArray(
 				['Another port named `', portName, '` already exists.']))
 	};
@@ -3392,9 +3394,9 @@ var $jfmengels$elm_review$Review$Error$Module = 0;
 var $jfmengels$elm_review$Review$Rule$errorForModule = F3(
 	function (_v0, _v1, range) {
 		var path = _v0;
-		var message = _v1.a2;
-		var details = _v1.c2;
-		return {c2: details, f3: path, dP: $elm$core$Maybe$Nothing, a2: message, $7: false, d6: range, ea: '', ft: 0};
+		var message = _v1.a8;
+		var details = _v1.dx;
+		return {dx: details, gD: path, ek: $elm$core$Maybe$Nothing, a8: message, dU: false, eD: range, eH: '', f1: 0};
 	});
 var $sparksp$elm_review_ports$NoDuplicatePorts$errorFromPortLocation = F2(
 	function (portName, _v0) {
@@ -3601,8 +3603,7 @@ var $sparksp$elm_review_ports$NoDuplicatePorts$fromModuleToProject = F2(
 				moduleKey,
 				$stil4m$elm_syntax$Elm$Syntax$Node$value(moduleNameNode)));
 	});
-var $jfmengels$elm_review$Review$Rule$RequestedData = $elm$core$Basics$identity;
-var $jfmengels$elm_review$Review$Rule$emptyCache = {aM: $elm$core$Maybe$Nothing, c5: $elm$core$Maybe$Nothing, eJ: $elm$core$Maybe$Nothing, bC: $elm$core$Maybe$Nothing, H: $elm$core$Dict$empty, d9: $elm$core$Maybe$Nothing};
+var $jfmengels$elm_review$Review$Rule$emptyCache = {aR: $elm$core$Maybe$Nothing, dz: $elm$core$Maybe$Nothing, ff: $elm$core$Maybe$Nothing, cs: $elm$core$Maybe$Nothing, z: $elm$core$Dict$empty, eG: $elm$core$Maybe$Nothing};
 var $jfmengels$elm_review$Review$Rule$TraverseAllModulesInParallel = function (a) {
 	return {$: 0, a: a};
 };
@@ -3645,11 +3646,11 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Internal$empty = function
 	return A2($jfmengels$elm_review$Review$ModuleNameLookupTable$Internal$ModuleNameLookupTable, currentModuleName, $elm$core$Dict$empty);
 };
 var $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange = {
-	b6: {bb: 0, bs: 0},
-	cm: {bb: 0, bs: 0}
+	cp: {bh: 0, bD: 0},
+	cN: {bh: 0, bD: 0}
 };
 var $jfmengels$elm_review$Review$Rule$functionToExpression = function (_function) {
-	return $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).da;
+	return $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).dE;
 };
 var $jfmengels$elm_review$Review$Rule$expressionChildren = function (node) {
 	var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
@@ -3710,8 +3711,8 @@ var $jfmengels$elm_review$Review$Rule$expressionChildren = function (node) {
 			return _List_fromArray(
 				[cond, then_, else_]);
 		case 15:
-			var expression = _v0.a.da;
-			var declarations = _v0.a.ew;
+			var expression = _v0.a.dE;
+			var declarations = _v0.a.e2;
 			return A3(
 				$elm$core$List$foldr,
 				F2(
@@ -3732,8 +3733,8 @@ var $jfmengels$elm_review$Review$Rule$expressionChildren = function (node) {
 					[expression]),
 				declarations);
 		case 16:
-			var expression = _v0.a.da;
-			var cases = _v0.a.fQ;
+			var expression = _v0.a.dE;
+			var cases = _v0.a.go;
 			return A2(
 				$elm$core$List$cons,
 				expression,
@@ -3745,7 +3746,7 @@ var $jfmengels$elm_review$Review$Rule$expressionChildren = function (node) {
 					},
 					cases));
 		case 17:
-			var expression = _v0.a.da;
+			var expression = _v0.a.dE;
 			return _List_fromArray(
 				[expression]);
 		case 13:
@@ -3817,14 +3818,14 @@ var $jfmengels$elm_review$Review$Rule$visitCaseBranch = F4(
 		var caseExpression = caseBranch.b;
 		return A4(
 			$jfmengels$elm_review$Review$Rule$visitWithListOfVisitors2,
-			expressionRelatedVisitors.ap,
+			expressionRelatedVisitors.aw,
 			caseBlockWithRange,
 			caseBranch,
 			A3(
 				$jfmengels$elm_review$Review$Rule$visitExpression,
 				expressionRelatedVisitors,
 				caseExpression,
-				A4($jfmengels$elm_review$Review$Rule$visitWithListOfVisitors2, expressionRelatedVisitors.ao, caseBlockWithRange, caseBranch, errorsAndContext)));
+				A4($jfmengels$elm_review$Review$Rule$visitWithListOfVisitors2, expressionRelatedVisitors.av, caseBlockWithRange, caseBranch, errorsAndContext)));
 	});
 var $jfmengels$elm_review$Review$Rule$visitExpression = F3(
 	function (expressionRelatedVisitors, node, errorsAndContext) {
@@ -3834,12 +3835,12 @@ var $jfmengels$elm_review$Review$Rule$visitExpression = F3(
 				var letBlock = _v1.a;
 				return A3(
 					$jfmengels$elm_review$Review$Rule$visitWithListOfVisitors,
-					expressionRelatedVisitors.O,
+					expressionRelatedVisitors.R,
 					node,
 					A3(
 						$jfmengels$elm_review$Review$Rule$visitExpression,
 						expressionRelatedVisitors,
-						letBlock.da,
+						letBlock.dE,
 						function (errorsAndContext_) {
 							return A3(
 								$elm$core$List$foldl,
@@ -3851,14 +3852,14 @@ var $jfmengels$elm_review$Review$Rule$visitExpression = F3(
 										$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
 										letBlock)),
 								errorsAndContext_,
-								letBlock.ew);
+								letBlock.e2);
 						}(
-							A3($jfmengels$elm_review$Review$Rule$visitWithListOfVisitors, expressionRelatedVisitors.F, node, errorsAndContext))));
+							A3($jfmengels$elm_review$Review$Rule$visitWithListOfVisitors, expressionRelatedVisitors.K, node, errorsAndContext))));
 			case 16:
 				var caseBlock = _v1.a;
 				return A3(
 					$jfmengels$elm_review$Review$Rule$visitWithListOfVisitors,
-					expressionRelatedVisitors.O,
+					expressionRelatedVisitors.R,
 					node,
 					function (errorsAndContext_) {
 						return A3(
@@ -3871,17 +3872,17 @@ var $jfmengels$elm_review$Review$Rule$visitExpression = F3(
 									$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
 									caseBlock)),
 							errorsAndContext_,
-							caseBlock.fQ);
+							caseBlock.go);
 					}(
 						A3(
 							$jfmengels$elm_review$Review$Rule$visitExpression,
 							expressionRelatedVisitors,
-							caseBlock.da,
-							A3($jfmengels$elm_review$Review$Rule$visitWithListOfVisitors, expressionRelatedVisitors.F, node, errorsAndContext))));
+							caseBlock.dE,
+							A3($jfmengels$elm_review$Review$Rule$visitWithListOfVisitors, expressionRelatedVisitors.K, node, errorsAndContext))));
 			default:
 				return A3(
 					$jfmengels$elm_review$Review$Rule$visitWithListOfVisitors,
-					expressionRelatedVisitors.O,
+					expressionRelatedVisitors.R,
 					node,
 					function (errorsAndContext_) {
 						return A3(
@@ -3890,7 +3891,7 @@ var $jfmengels$elm_review$Review$Rule$visitExpression = F3(
 							errorsAndContext_,
 							$jfmengels$elm_review$Review$Rule$expressionChildren(node));
 					}(
-						A3($jfmengels$elm_review$Review$Rule$visitWithListOfVisitors, expressionRelatedVisitors.F, node, errorsAndContext)));
+						A3($jfmengels$elm_review$Review$Rule$visitWithListOfVisitors, expressionRelatedVisitors.K, node, errorsAndContext)));
 		}
 	});
 var $jfmengels$elm_review$Review$Rule$visitLetDeclaration = F4(
@@ -3907,14 +3908,14 @@ var $jfmengels$elm_review$Review$Rule$visitLetDeclaration = F4(
 		}();
 		return A4(
 			$jfmengels$elm_review$Review$Rule$visitWithListOfVisitors2,
-			expressionRelatedVisitors.ax,
+			expressionRelatedVisitors.aD,
 			letBlockWithRange,
 			letDeclarationWithRange,
 			A3(
 				$jfmengels$elm_review$Review$Rule$visitExpression,
 				expressionRelatedVisitors,
 				expressionNode,
-				A4($jfmengels$elm_review$Review$Rule$visitWithListOfVisitors2, expressionRelatedVisitors.aw, letBlockWithRange, letDeclarationWithRange, errorsAndContext)));
+				A4($jfmengels$elm_review$Review$Rule$visitWithListOfVisitors2, expressionRelatedVisitors.aC, letBlockWithRange, letDeclarationWithRange, errorsAndContext)));
 	});
 var $jfmengels$elm_review$Review$Rule$visitOnlyExpressions = F4(
 	function (expressionVisitorsOnEnter, expressionVisitorsOnExit, node, errorsAndContext) {
@@ -4039,8 +4040,8 @@ var $jfmengels$elm_review$Review$Rule$expressionChildrenTCO = F2(
 						acc = $temp$acc;
 						continue expressionChildrenTCO;
 					case 15:
-						var expression = _v1.a.da;
-						var declarations = _v1.a.ew;
+						var expression = _v1.a.dE;
+						var declarations = _v1.a.e2;
 						var $temp$nodesToVisit = A3(
 							$elm$core$List$foldl,
 							F2(
@@ -4064,8 +4065,8 @@ var $jfmengels$elm_review$Review$Rule$expressionChildrenTCO = F2(
 						acc = $temp$acc;
 						continue expressionChildrenTCO;
 					case 16:
-						var expression = _v1.a.da;
-						var cases = _v1.a.fQ;
+						var expression = _v1.a.dE;
+						var cases = _v1.a.go;
 						var $temp$nodesToVisit = A2(
 							$elm$core$List$cons,
 							expression,
@@ -4083,7 +4084,7 @@ var $jfmengels$elm_review$Review$Rule$expressionChildrenTCO = F2(
 						acc = $temp$acc;
 						continue expressionChildrenTCO;
 					case 17:
-						var expression = _v1.a.da;
+						var expression = _v1.a.dE;
 						var $temp$nodesToVisit = A2($elm$core$List$cons, expression, rest),
 							$temp$acc = A2($elm$core$List$cons, head, acc);
 						nodesToVisit = $temp$nodesToVisit;
@@ -4136,28 +4137,28 @@ var $jfmengels$elm_review$Review$Rule$visitOnlyExpressionsOnlyOnEnter = F3(
 				_List_Nil));
 	});
 var $jfmengels$elm_review$Review$Rule$createExpressionVisitor = function (schema) {
-	if ((!$elm$core$List$isEmpty(schema.aw)) || ((!$elm$core$List$isEmpty(schema.ax)) || ((!$elm$core$List$isEmpty(schema.ao)) || (!$elm$core$List$isEmpty(schema.ap))))) {
+	if ((!$elm$core$List$isEmpty(schema.aC)) || ((!$elm$core$List$isEmpty(schema.aD)) || ((!$elm$core$List$isEmpty(schema.av)) || (!$elm$core$List$isEmpty(schema.aw))))) {
 		var expressionRelatedVisitors = {
-			ao: $elm$core$List$reverse(schema.ao),
-			ap: schema.ap,
-			F: $elm$core$List$reverse(schema.F),
-			O: schema.O,
-			aw: $elm$core$List$reverse(schema.aw),
-			ax: schema.ax
+			av: $elm$core$List$reverse(schema.av),
+			aw: schema.aw,
+			K: $elm$core$List$reverse(schema.K),
+			R: schema.R,
+			aC: $elm$core$List$reverse(schema.aC),
+			aD: schema.aD
 		};
 		return $elm$core$Maybe$Just(
 			$jfmengels$elm_review$Review$Rule$visitExpression(expressionRelatedVisitors));
 	} else {
-		if (!$elm$core$List$isEmpty(schema.O)) {
-			var exitVisitors = schema.O;
-			var enterVisitors = $elm$core$List$reverse(schema.F);
+		if (!$elm$core$List$isEmpty(schema.R)) {
+			var exitVisitors = schema.R;
+			var enterVisitors = $elm$core$List$reverse(schema.K);
 			return $elm$core$Maybe$Just(
 				A2($jfmengels$elm_review$Review$Rule$visitOnlyExpressions, enterVisitors, exitVisitors));
 		} else {
-			if (!$elm$core$List$isEmpty(schema.F)) {
+			if (!$elm$core$List$isEmpty(schema.K)) {
 				return $elm$core$Maybe$Just(
 					$jfmengels$elm_review$Review$Rule$visitOnlyExpressionsOnlyOnEnter(
-						$elm$core$List$reverse(schema.F)));
+						$elm$core$List$reverse(schema.K)));
 			} else {
 				return $elm$core$Maybe$Nothing;
 			}
@@ -4165,7 +4166,7 @@ var $jfmengels$elm_review$Review$Rule$createExpressionVisitor = function (schema
 	}
 };
 var $jfmengels$elm_review$Review$Rule$shouldVisitDeclarations = function (schema) {
-	return (!$elm$core$List$isEmpty(schema.aL)) || (!$elm$core$List$isEmpty(schema.aq));
+	return (!$elm$core$List$isEmpty(schema.aQ)) || (!$elm$core$List$isEmpty(schema.ax));
 };
 var $jfmengels$elm_review$Review$Rule$visitOnlyDeclaration = F4(
 	function (declarationVisitorsOnEnter, declarationVisitorsOnExit, node, errorsAndContext) {
@@ -4186,7 +4187,7 @@ var $jfmengels$elm_review$Review$Rule$visitDeclaration = F5(
 				node,
 				A2(
 					expressionVisitor,
-					$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).da,
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).dE,
 					A3($jfmengels$elm_review$Review$Rule$visitWithListOfVisitors, declarationVisitorsOnEnter, node, errorsAndContext)));
 		} else {
 			return A4($jfmengels$elm_review$Review$Rule$visitOnlyDeclaration, declarationVisitorsOnEnter, declarationVisitorsOnExit, node, errorsAndContext);
@@ -4199,7 +4200,7 @@ var $jfmengels$elm_review$Review$Rule$visitDeclarationButOnlyExpressions = F3(
 			var _function = _v0.a;
 			return A2(
 				expressionVisitor,
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).da,
+				$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).dE,
 				errorsAndContext);
 		} else {
 			return errorsAndContext;
@@ -4207,7 +4208,7 @@ var $jfmengels$elm_review$Review$Rule$visitDeclarationButOnlyExpressions = F3(
 	});
 var $jfmengels$elm_review$Review$Rule$createDeclarationAndExpressionVisitor = function (schema) {
 	if ($jfmengels$elm_review$Review$Rule$shouldVisitDeclarations(schema)) {
-		var declarationVisitorsOnEnter = $elm$core$List$reverse(schema.aL);
+		var declarationVisitorsOnEnter = $elm$core$List$reverse(schema.aQ);
 		var _v0 = $jfmengels$elm_review$Review$Rule$createExpressionVisitor(schema);
 		if (!_v0.$) {
 			var expressionVisitor = _v0.a;
@@ -4215,12 +4216,12 @@ var $jfmengels$elm_review$Review$Rule$createDeclarationAndExpressionVisitor = fu
 				function (nodes, initialErrorsAndContext) {
 					return A3(
 						$elm$core$List$foldl,
-						A3($jfmengels$elm_review$Review$Rule$visitDeclaration, declarationVisitorsOnEnter, schema.aq, expressionVisitor),
+						A3($jfmengels$elm_review$Review$Rule$visitDeclaration, declarationVisitorsOnEnter, schema.ax, expressionVisitor),
 						initialErrorsAndContext,
 						nodes);
 				});
 		} else {
-			var visitor = A2($jfmengels$elm_review$Review$Rule$visitOnlyDeclaration, declarationVisitorsOnEnter, schema.aq);
+			var visitor = A2($jfmengels$elm_review$Review$Rule$visitOnlyDeclaration, declarationVisitorsOnEnter, schema.ax);
 			return F2(
 				function (nodes, initialErrorsAndContext) {
 					return A3($elm$core$List$foldl, visitor, initialErrorsAndContext, nodes);
@@ -4249,76 +4250,79 @@ var $jfmengels$elm_review$Review$Rule$createDeclarationAndExpressionVisitor = fu
 var $jfmengels$elm_review$Review$Rule$fromModuleRuleSchemaToRunnableModuleVisitor = function (_v0) {
 	var schema = _v0;
 	return {
-		aF: $elm$core$List$reverse(schema.aF),
-		dF: $jfmengels$elm_review$Review$Rule$createDeclarationAndExpressionVisitor(schema),
 		aK: $elm$core$List$reverse(schema.aK),
+		ea: $jfmengels$elm_review$Review$Rule$createDeclarationAndExpressionVisitor(schema),
+		aP: $elm$core$List$reverse(schema.aP),
 		u: $elm$core$List$reverse(schema.u),
-		aN: $elm$core$List$reverse(schema.aN),
-		aO: $elm$core$List$reverse(schema.aO),
-		aP: $elm$core$List$reverse(schema.aP)
+		aT: $elm$core$List$reverse(schema.aT),
+		aU: $elm$core$List$reverse(schema.aU),
+		aV: $elm$core$List$reverse(schema.aV)
 	};
 };
 var $jfmengels$elm_review$Review$Rule$ContextCreator = F2(
 	function (a, b) {
 		return {$: 0, a: a, b: b};
 	});
+var $jfmengels$elm_review$Review$Rule$RequestedData = $elm$core$Basics$identity;
+var $jfmengels$elm_review$Review$Rule$noRequestedData = {eo: false, b4: false, eJ: false};
 var $jfmengels$elm_review$Review$Rule$initContextCreator = function (fromProjectToModule) {
 	return A2(
 		$jfmengels$elm_review$Review$Rule$ContextCreator,
 		$elm$core$Basics$always(fromProjectToModule),
-		{aQ: false, cl: false});
+		$jfmengels$elm_review$Review$Rule$noRequestedData);
 };
 var $jfmengels$elm_review$Review$Rule$mergeModuleVisitorsHelp = F3(
 	function (initialProjectContext, moduleContextCreator, visitors) {
 		var dummyAst = {
-			fU: _List_Nil,
-			ew: _List_Nil,
-			f9: _List_Nil,
-			gj: A2(
+			gs: _List_Nil,
+			e2: _List_Nil,
+			gJ: _List_Nil,
+			gT: A2(
 				$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 				$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 				$stil4m$elm_syntax$Elm$Syntax$Module$NormalModule(
 					{
-						dJ: A2(
+						ef: A2(
 							$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 							$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$Explicit(_List_Nil)),
-						dn: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, _List_Nil)
+						dR: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, _List_Nil)
 					}))
 		};
 		var dummyAvailableData = {
-			fI: dummyAst,
-			db: $elm$core$Basics$always('dummy'),
-			f3: 'dummy file path',
-			dX: true,
-			dm: 'dummy',
-			aQ: $jfmengels$elm_review$Review$ModuleNameLookupTable$Internal$empty(_List_Nil)
+			gg: dummyAst,
+			dF: $elm$core$Basics$always('dummy'),
+			gD: 'dummy file path',
+			dJ: false,
+			es: true,
+			dQ: 'dummy',
+			b4: $jfmengels$elm_review$Review$ModuleNameLookupTable$Internal$empty(_List_Nil)
 		};
 		var initialModuleContext = A3($jfmengels$elm_review$Review$Rule$applyContextCreator, dummyAvailableData, moduleContextCreator, initialProjectContext);
 		var emptyModuleVisitor = {
-			ao: _List_Nil,
-			ap: _List_Nil,
-			aF: _List_Nil,
-			aK: _List_Nil,
-			aL: _List_Nil,
-			aq: _List_Nil,
-			K: _List_Nil,
-			L: _List_Nil,
-			M: _List_Nil,
-			F: _List_Nil,
-			O: _List_Nil,
-			u: _List_Nil,
-			aN: _List_Nil,
-			cK: $elm$core$Maybe$Just(initialModuleContext),
+			av: _List_Nil,
 			aw: _List_Nil,
-			ax: _List_Nil,
-			P: $jfmengels$elm_review$Review$Rule$initContextCreator(
-				$elm$core$Basics$always(initialModuleContext)),
-			aO: _List_Nil,
+			aK: _List_Nil,
 			aP: _List_Nil,
-			bT: '',
-			gB: false,
-			R: _List_Nil
+			aQ: _List_Nil,
+			ax: _List_Nil,
+			N: _List_Nil,
+			O: _List_Nil,
+			P: _List_Nil,
+			K: _List_Nil,
+			R: _List_Nil,
+			u: _List_Nil,
+			aT: _List_Nil,
+			dd: $elm$core$Maybe$Just(initialModuleContext),
+			aC: _List_Nil,
+			aD: _List_Nil,
+			S: $jfmengels$elm_review$Review$Rule$initContextCreator(
+				$elm$core$Basics$always(initialModuleContext)),
+			aU: _List_Nil,
+			aV: _List_Nil,
+			b5: '',
+			g9: false,
+			U: _List_Nil
 		};
 		return _Utils_Tuple2(
 			$jfmengels$elm_review$Review$Rule$fromModuleRuleSchemaToRunnableModuleVisitor(
@@ -4346,31 +4350,31 @@ var $jfmengels$elm_review$Review$Rule$mergeModuleVisitors = F3(
 var $jfmengels$elm_review$Review$Rule$fromProjectRuleSchemaToRunnableProjectVisitor = function (_v0) {
 	var schema = _v0;
 	return {
-		aJ: schema.aJ,
-		K: $elm$core$List$reverse(schema.K),
-		L: $elm$core$List$reverse(schema.L),
-		M: $elm$core$List$reverse(schema.M),
+		aO: schema.aO,
+		N: $elm$core$List$reverse(schema.N),
+		O: $elm$core$List$reverse(schema.O),
+		P: $elm$core$List$reverse(schema.P),
 		u: $elm$core$List$reverse(schema.u),
-		bl: schema.bl,
-		ce: A3($jfmengels$elm_review$Review$Rule$mergeModuleVisitors, schema.bl, schema.P, schema.cf),
-		bT: schema.bT,
-		gB: schema.gB,
-		R: $elm$core$List$reverse(schema.R),
-		ah: function () {
-			var _v1 = schema.P;
+		bt: schema.bt,
+		cF: A3($jfmengels$elm_review$Review$Rule$mergeModuleVisitors, schema.bt, schema.S, schema.cG),
+		b5: schema.b5,
+		g9: schema.g9,
+		U: $elm$core$List$reverse(schema.U),
+		af: function () {
+			var _v1 = schema.S;
 			if (!_v1.$) {
 				var _v2 = _v1.a;
 				var requestedData = _v2.b;
 				return requestedData;
 			} else {
-				return {aQ: false, cl: false};
+				return $jfmengels$elm_review$Review$Rule$noRequestedData;
 			}
 		}(),
-		cn: function () {
-			var _v3 = _Utils_Tuple2(schema.cV, schema.bH);
+		cO: function () {
+			var _v3 = _Utils_Tuple2(schema.dq, schema.bT);
 			if (!_v3.a) {
 				var _v4 = _v3.a;
-				return $jfmengels$elm_review$Review$Rule$TraverseAllModulesInParallel(schema.bH);
+				return $jfmengels$elm_review$Review$Rule$TraverseAllModulesInParallel(schema.bT);
 			} else {
 				if (!_v3.b.$) {
 					var _v5 = _v3.a;
@@ -4386,7 +4390,41 @@ var $jfmengels$elm_review$Review$Rule$fromProjectRuleSchemaToRunnableProjectVisi
 	};
 };
 var $jfmengels$elm_review$Review$Exceptions$init = _List_Nil;
+var $jfmengels$elm_review$Review$Rule$initialCacheMarker = F3(
+  function (ruleName, ruleId, defaultCache) {
+    return global.loadResultFromCache(ruleName, ruleId) || defaultCache;
+  });
 var $elm$core$Basics$neq = _Utils_notEqual;
+var $jfmengels$elm_review$Review$Project$Valid$doesModuleExist = F2(
+	function (path, _v0) {
+		var project = _v0;
+		return A2($elm$core$Dict$member, path, project.bb);
+	});
+var $elm$core$Dict$filter = F2(
+	function (isGood, dict) {
+		return A3(
+			$elm$core$Dict$foldl,
+			F3(
+				function (k, v, d) {
+					return A2(isGood, k, v) ? A3($elm$core$Dict$insert, k, v, d) : d;
+				}),
+			$elm$core$Dict$empty,
+			dict);
+	});
+var $jfmengels$elm_review$Review$Rule$removeUnknownModulesFromInitialCache = F2(
+	function (validProject, projectRuleCache) {
+		return _Utils_update(
+			projectRuleCache,
+			{
+				z: A2(
+					$elm$core$Dict$filter,
+					F2(
+						function (path, _v0) {
+							return A2($jfmengels$elm_review$Review$Project$Valid$doesModuleExist, path, validProject);
+						}),
+					projectRuleCache.z)
+			});
+	});
 var $jfmengels$elm_review$Review$Rule$ElmJson = function (a) {
 	return {$: 0, a: a};
 };
@@ -4415,17 +4453,77 @@ var $jfmengels$elm_review$Review$Rule$accumulateWithListOfVisitors = F3(
 			initialErrorsAndContext,
 			visitors);
 	});
+var $jfmengels$elm_review$Review$Cache$ContextHash$ContextHash = $elm$core$Basics$identity;
+var $jfmengels$elm_review$Review$Cache$ContextHash$createContextHashMarker = function (context) {
+  return jsonToHash(contextToJson(context));
+};
+
+const stringifyMap = new WeakMap();
+function contextToJson(context) {
+  const isObject = typeof context === 'object';
+  if (!isObject) {
+    return JSON.stringify(context);
+  }
+  if (stringifyMap.has(context)) {
+    return stringifyMap.get(context);
+  } else {
+    const json = JSON.stringify(context, global.elmJsonReplacer);
+    stringifyMap.set(context, json);
+    return json;
+  }
+}
+
+const contextHashMap = new Map();
+function jsonToHash(json) {
+  if (contextHashMap.has(json)) {
+    return contextHashMap.get(json);
+  }
+  const hash = A2($jfmengels$elm_review$Vendor$Murmur3$hashString, 0, json);
+  contextHashMap.set(json, hash);
+  return hash;
+}
+var $jfmengels$elm_review$Review$Cache$ContextHash$create = function (context) {
+	return $jfmengels$elm_review$Review$Cache$ContextHash$createContextHashMarker(context);
+};
+var $jfmengels$elm_review$Review$Cache$EntryMaybe = $elm$core$Basics$identity;
+var $jfmengels$elm_review$Review$Cache$createEntryMaybe = function (entry) {
+	return {
+		ck: entry.ck,
+		bo: entry.bo,
+		cA: $jfmengels$elm_review$Review$Cache$ContextHash$create(entry.cA),
+		cJ: entry.cJ
+	};
+};
 var $jfmengels$elm_review$Review$Project$Valid$dependencies = function (_v0) {
 	var project = _v0;
-	return project.aM;
+	return project.aR;
 };
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $elm$core$Tuple$second = function (_v0) {
+	var y = _v0.b;
+	return y;
+};
+var $jfmengels$elm_review$Review$Project$Valid$elmJsonHash = function (_v0) {
+	var project = _v0;
+	return A2($elm$core$Maybe$map, $elm$core$Tuple$second, project.dz);
+};
+var $jfmengels$elm_review$Review$Project$Valid$dependenciesHash = $jfmengels$elm_review$Review$Project$Valid$elmJsonHash;
 var $jfmengels$elm_review$Review$Project$Valid$directDependencies = function (_v0) {
 	var project = _v0;
-	return project.be;
+	return project.bk;
 };
 var $jfmengels$elm_review$Review$Rule$errorFilePathInternal = function (_v0) {
 	var err = _v0;
-	return err.f3;
+	return err.gD;
 };
 var $elm$core$Basics$composeL = F3(
 	function (g, f, x) {
@@ -4473,7 +4571,7 @@ var $jfmengels$elm_review$Review$Rule$setRuleName = F2(
 			function (err) {
 				return _Utils_update(
 					err,
-					{ea: ruleName_});
+					{eH: ruleName_});
 			},
 			error_);
 	});
@@ -4511,7 +4609,7 @@ var $elm$core$Maybe$andThen = F2(
 	});
 var $jfmengels$elm_review$Review$Rule$errorFilePath = function (_v0) {
 	var err = _v0;
-	return err.f3;
+	return err.gD;
 };
 var $jfmengels$elm_review$Review$Rule$FixedElmJson = {$: 1};
 var $jfmengels$elm_review$Review$Rule$FixedElmModule = F2(
@@ -4521,8 +4619,8 @@ var $jfmengels$elm_review$Review$Rule$FixedElmModule = F2(
 var $jfmengels$elm_review$Review$Rule$FixedReadme = {$: 2};
 var $jfmengels$elm_review$Review$Project$Valid$ValidProject = $elm$core$Basics$identity;
 var $jfmengels$elm_review$Review$Project$Valid$areDependenciesUnchanged = function (_v0) {
-	var before = _v0.en;
-	var after = _v0.ei;
+	var before = _v0.eV;
+	var after = _v0.eQ;
 	var _v1 = _Utils_Tuple2(before, after);
 	_v1$2:
 	while (true) {
@@ -4530,7 +4628,7 @@ var $jfmengels$elm_review$Review$Project$Valid$areDependenciesUnchanged = functi
 			if (!_v1.b.$) {
 				var beforeApp = _v1.a.a;
 				var afterApp = _v1.b.a;
-				return _Utils_eq(beforeApp.eA, afterApp.eA) && (_Utils_eq(beforeApp.eB, afterApp.eB) && (_Utils_eq(beforeApp.fv, afterApp.fv) && _Utils_eq(beforeApp.fw, afterApp.fw)));
+				return _Utils_eq(beforeApp.e6, afterApp.e6) && (_Utils_eq(beforeApp.e7, afterApp.e7) && (_Utils_eq(beforeApp.f3, afterApp.f3) && _Utils_eq(beforeApp.f4, afterApp.f4)));
 			} else {
 				break _v1$2;
 			}
@@ -4538,7 +4636,7 @@ var $jfmengels$elm_review$Review$Project$Valid$areDependenciesUnchanged = functi
 			if (_v1.b.$ === 1) {
 				var beforePkg = _v1.a.a;
 				var afterPkg = _v1.b.a;
-				return _Utils_eq(beforePkg.ez, afterPkg.ez) && _Utils_eq(beforePkg.fu, afterPkg.fu);
+				return _Utils_eq(beforePkg.e5, afterPkg.e5) && _Utils_eq(beforePkg.f2, afterPkg.f2);
 			} else {
 				break _v1$2;
 			}
@@ -4548,7 +4646,7 @@ var $jfmengels$elm_review$Review$Project$Valid$areDependenciesUnchanged = functi
 };
 var $jfmengels$elm_review$Review$Project$Dependency$modules = function (_v0) {
 	var dependency = _v0;
-	return dependency.a3;
+	return dependency.ba;
 };
 var $jfmengels$elm_review$Review$Project$Valid$computeDependencyModules = function (directDependencies_) {
 	return A3(
@@ -4561,7 +4659,7 @@ var $jfmengels$elm_review$Review$Project$Valid$computeDependencyModules = functi
 						function (mod, subAcc) {
 							return A2(
 								$elm$core$Set$insert,
-								A2($elm$core$String$split, '.', mod.bT),
+								A2($elm$core$String$split, '.', mod.b5),
 								subAcc);
 						}),
 					acc,
@@ -4570,27 +4668,6 @@ var $jfmengels$elm_review$Review$Project$Valid$computeDependencyModules = functi
 		$elm$core$Set$empty,
 		directDependencies_);
 };
-var $elm$core$Dict$filter = F2(
-	function (isGood, dict) {
-		return A3(
-			$elm$core$Dict$foldl,
-			F3(
-				function (k, v, d) {
-					return A2(isGood, k, v) ? A3($elm$core$Dict$insert, k, v, d) : d;
-				}),
-			$elm$core$Dict$empty,
-			dict);
-	});
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $elm$core$List$member = F2(
 	function (x, xs) {
 		return A2(
@@ -4608,68 +4685,149 @@ var $elm$project_metadata_utils$Elm$Package$toString = function (_v0) {
 var $jfmengels$elm_review$Review$Project$Valid$computeDirectDependencies = function (project) {
 	var _v0 = A2(
 		$elm$core$Maybe$map,
-		function ($) {
-			return $.e;
+		function (_v1) {
+			var elmJson_ = _v1.a;
+			return elmJson_.e;
 		},
-		project.c5);
+		project.dz);
 	if (!_v0.$) {
 		if (!_v0.a.$) {
-			var depsDirect = _v0.a.a.eA;
-			var testDepsDirect = _v0.a.a.fv;
+			var depsDirect = _v0.a.a.e6;
+			var testDepsDirect = _v0.a.a.f3;
 			var allDeps = A2(
 				$elm$core$List$map,
-				function (_v2) {
-					var name = _v2.a;
+				function (_v3) {
+					var name = _v3.a;
 					return $elm$project_metadata_utils$Elm$Package$toString(name);
 				},
 				_Utils_ap(depsDirect, testDepsDirect));
 			return A2(
 				$elm$core$Dict$filter,
 				F2(
-					function (depName, _v1) {
+					function (depName, _v2) {
 						return A2($elm$core$List$member, depName, allDeps);
 					}),
-				project.aM);
+				project.aR);
 		} else {
-			var deps = _v0.a.a.ez;
-			var testDeps = _v0.a.a.fu;
+			var deps = _v0.a.a.e5;
+			var testDeps = _v0.a.a.f2;
 			var allDeps = A2(
 				$elm$core$List$map,
-				function (_v4) {
-					var name = _v4.a;
+				function (_v5) {
+					var name = _v5.a;
 					return $elm$project_metadata_utils$Elm$Package$toString(name);
 				},
 				_Utils_ap(deps, testDeps));
 			return A2(
 				$elm$core$Dict$filter,
 				F2(
-					function (depName, _v3) {
+					function (depName, _v4) {
 						return A2($elm$core$List$member, depName, allDeps);
 					}),
-				project.aM);
+				project.aR);
 		}
 	} else {
-		return project.aM;
+		return project.aR;
 	}
+};
+var $jfmengels$elm_review$Review$Cache$ContentHash$ContentHash = $elm$core$Basics$identity;
+var $jfmengels$elm_review$Vendor$Murmur3$HashData = F4(
+	function (shift, seed, hash, charsProcessed) {
+		return {ch: charsProcessed, cy: hash, fT: seed, cM: shift};
+	});
+var $jfmengels$elm_review$Vendor$Murmur3$c1 = 3432918353;
+var $jfmengels$elm_review$Vendor$Murmur3$c2 = 461845907;
+var $elm$core$Bitwise$and = _Bitwise_and;
+var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
+var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
+var $jfmengels$elm_review$Vendor$Murmur3$multiplyBy = F2(
+	function (b, a) {
+		return ((a & 65535) * b) + ((((a >>> 16) * b) & 65535) << 16);
+	});
+var $elm$core$Bitwise$or = _Bitwise_or;
+var $jfmengels$elm_review$Vendor$Murmur3$rotlBy = F2(
+	function (b, a) {
+		return (a << b) | (a >>> (32 - b));
+	});
+var $elm$core$Bitwise$xor = _Bitwise_xor;
+var $jfmengels$elm_review$Vendor$Murmur3$finalize = function (data) {
+	var acc = (!(!data.cy)) ? (data.fT ^ A2(
+		$jfmengels$elm_review$Vendor$Murmur3$multiplyBy,
+		$jfmengels$elm_review$Vendor$Murmur3$c2,
+		A2(
+			$jfmengels$elm_review$Vendor$Murmur3$rotlBy,
+			15,
+			A2($jfmengels$elm_review$Vendor$Murmur3$multiplyBy, $jfmengels$elm_review$Vendor$Murmur3$c1, data.cy)))) : data.fT;
+	var h0 = acc ^ data.ch;
+	var h1 = A2($jfmengels$elm_review$Vendor$Murmur3$multiplyBy, 2246822507, h0 ^ (h0 >>> 16));
+	var h2 = A2($jfmengels$elm_review$Vendor$Murmur3$multiplyBy, 3266489909, h1 ^ (h1 >>> 13));
+	return (h2 ^ (h2 >>> 16)) >>> 0;
+};
+var $elm$core$String$foldl = _String_foldl;
+var $jfmengels$elm_review$Vendor$Murmur3$mix = F2(
+	function (h1, k1) {
+		return A2(
+			$jfmengels$elm_review$Vendor$Murmur3$multiplyBy,
+			5,
+			A2(
+				$jfmengels$elm_review$Vendor$Murmur3$rotlBy,
+				13,
+				h1 ^ A2(
+					$jfmengels$elm_review$Vendor$Murmur3$multiplyBy,
+					$jfmengels$elm_review$Vendor$Murmur3$c2,
+					A2(
+						$jfmengels$elm_review$Vendor$Murmur3$rotlBy,
+						15,
+						A2($jfmengels$elm_review$Vendor$Murmur3$multiplyBy, $jfmengels$elm_review$Vendor$Murmur3$c1, k1))))) + 3864292196;
+	});
+var $jfmengels$elm_review$Vendor$Murmur3$hashFold = F2(
+	function (c, data) {
+		var res = data.cy | ((255 & $elm$core$Char$toCode(c)) << data.cM);
+		var _v0 = data.cM;
+		if (_v0 === 24) {
+			return {
+				ch: data.ch + 1,
+				cy: 0,
+				fT: A2($jfmengels$elm_review$Vendor$Murmur3$mix, data.fT, res),
+				cM: 0
+			};
+		} else {
+			return {ch: data.ch + 1, cy: res, fT: data.fT, cM: data.cM + 8};
+		}
+	});
+var $jfmengels$elm_review$Vendor$Murmur3$hashString = F2(
+	function (seed, str) {
+		return $jfmengels$elm_review$Vendor$Murmur3$finalize(
+			A3(
+				$elm$core$String$foldl,
+				$jfmengels$elm_review$Vendor$Murmur3$hashFold,
+				A4($jfmengels$elm_review$Vendor$Murmur3$HashData, 0, seed, 0, 0),
+				str));
+	});
+var $jfmengels$elm_review$Review$Cache$ContentHash$hash = function (source) {
+	return A2($jfmengels$elm_review$Vendor$Murmur3$hashString, 0, source);
 };
 var $jfmengels$elm_review$Review$Project$Valid$computeUpdatedDependencies = F3(
 	function (previousElmJsonProject, newElmJson, project) {
 		if ($jfmengels$elm_review$Review$Project$Valid$areDependenciesUnchanged(
-			{ei: newElmJson.e, en: previousElmJsonProject})) {
+			{eQ: newElmJson.e, eV: previousElmJsonProject})) {
 			return $elm$core$Maybe$Just(
-				{aM: project.aM, aZ: project.aZ, be: project.be});
+				{aR: project.aR, a3: project.a3, bk: project.bk});
 		} else {
-			var newDependencies = project.aM;
+			var newDependencies = project.aR;
 			var directDependencies_ = $jfmengels$elm_review$Review$Project$Valid$computeDirectDependencies(
 				{
-					aM: newDependencies,
-					c5: $elm$core$Maybe$Just(newElmJson)
+					aR: newDependencies,
+					dz: $elm$core$Maybe$Just(
+						_Utils_Tuple2(
+							newElmJson,
+							$jfmengels$elm_review$Review$Cache$ContentHash$hash(newElmJson.cL)))
 				});
 			return $elm$core$Maybe$Just(
 				{
-					aM: newDependencies,
-					aZ: $jfmengels$elm_review$Review$Project$Valid$computeDependencyModules(directDependencies_),
-					be: directDependencies_
+					aR: newDependencies,
+					a3: $jfmengels$elm_review$Review$Project$Valid$computeDependencyModules(directDependencies_),
+					bk: directDependencies_
 				});
 		}
 	});
@@ -4691,7 +4849,7 @@ var $jfmengels$elm_review$Review$Project$Internal$removeDotSlashAtBeginning = fu
 };
 var $jfmengels$elm_review$Review$Project$Internal$sourceDirectoriesForProject = function (elmJson_) {
 	if (!elmJson_.$) {
-		var dirs = elmJson_.a.eC;
+		var dirs = elmJson_.a.e8;
 		return A2(
 			$elm$core$List$map,
 			A2(
@@ -4707,7 +4865,13 @@ var $jfmengels$elm_review$Review$Project$Internal$sourceDirectoriesForProject = 
 var $jfmengels$elm_review$Review$Project$Valid$addElmJson = F2(
 	function (elmJson_, _v0) {
 		var project = _v0;
-		var _v1 = project.c5;
+		var _v1 = A2(
+			$elm$core$Maybe$map,
+			function (_v2) {
+				var e = _v2.a;
+				return e.e;
+			},
+			project.dz);
 		if (_v1.$ === 1) {
 			return $elm$core$Maybe$Nothing;
 		} else {
@@ -4715,20 +4879,23 @@ var $jfmengels$elm_review$Review$Project$Valid$addElmJson = F2(
 			var sourceDirectories = $jfmengels$elm_review$Review$Project$Internal$sourceDirectoriesForProject(elmJson_.e);
 			return (!_Utils_eq(
 				sourceDirectories,
-				$jfmengels$elm_review$Review$Project$Internal$sourceDirectoriesForProject(previousElmJson.e))) ? $elm$core$Maybe$Nothing : A2(
+				$jfmengels$elm_review$Review$Project$Internal$sourceDirectoriesForProject(previousElmJson))) ? $elm$core$Maybe$Nothing : A2(
 				$elm$core$Maybe$map,
 				function (updatedDependencies) {
 					return _Utils_update(
 						project,
 						{
-							aM: updatedDependencies.aM,
-							aZ: updatedDependencies.aZ,
-							be: updatedDependencies.be,
-							c5: $elm$core$Maybe$Just(elmJson_),
-							ec: sourceDirectories
+							aR: updatedDependencies.aR,
+							a3: updatedDependencies.a3,
+							bk: updatedDependencies.bk,
+							dz: $elm$core$Maybe$Just(
+								_Utils_Tuple2(
+									elmJson_,
+									$jfmengels$elm_review$Review$Cache$ContentHash$hash(elmJson_.cL))),
+							eK: sourceDirectories
 						});
 				},
-				A3($jfmengels$elm_review$Review$Project$Valid$computeUpdatedDependencies, previousElmJson.e, elmJson_, project));
+				A3($jfmengels$elm_review$Review$Project$Valid$computeUpdatedDependencies, previousElmJson, elmJson_, project));
 		}
 	});
 var $jfmengels$elm_review$Vendor$Zipper$current = function (_v0) {
@@ -4776,13 +4943,13 @@ var $elm$core$Tuple$pair = F2(
 		return _Utils_Tuple2(a, b);
 	});
 var $jfmengels$elm_review$Review$Project$Valid$advanceZipper = F3(
-	function (moduleName, oldZipper, newZipper) {
+	function (path, oldZipper, newZipper) {
 		advanceZipper:
 		while (true) {
-			var current = $jfmengels$elm_review$Vendor$Zipper$current(newZipper).e8.cO;
-			if (_Utils_eq(current, moduleName) || (!_Utils_eq(
+			var current = $jfmengels$elm_review$Vendor$Zipper$current(newZipper).fG.dh;
+			if (_Utils_eq(current, path) || (!_Utils_eq(
 				current,
-				$jfmengels$elm_review$Vendor$Zipper$current(oldZipper).e8.cO))) {
+				$jfmengels$elm_review$Vendor$Zipper$current(oldZipper).fG.dh))) {
 				return newZipper;
 			} else {
 				var _v0 = A3(
@@ -4794,10 +4961,10 @@ var $jfmengels$elm_review$Review$Project$Valid$advanceZipper = F3(
 					var _v1 = _v0.a;
 					var old = _v1.a;
 					var _new = _v1.b;
-					var $temp$moduleName = moduleName,
+					var $temp$path = path,
 						$temp$oldZipper = old,
 						$temp$newZipper = _new;
-					moduleName = $temp$moduleName;
+					path = $temp$path;
 					oldZipper = $temp$oldZipper;
 					newZipper = $temp$newZipper;
 					continue advanceZipper;
@@ -4807,28 +4974,10 @@ var $jfmengels$elm_review$Review$Project$Valid$advanceZipper = F3(
 			}
 		}
 	});
-var $elm$core$List$concat = function (lists) {
-  if (!lists.b) {
-    return _List_Nil;
-  }
-  var tmp = _List_Cons(undefined, _List_Nil);
-  var end = tmp;
-  for (; lists.b.b; lists = lists.b) {
-    var xs = lists.a;
-    for (; xs.b; xs = xs.b) {
-      var next = _List_Cons(xs.a, _List_Nil);
-      end.b = next;
-      end = next;
-    }
-  }
-  end.b = lists.a;
-
-  return tmp.b;
-};
 var $jfmengels$elm_review$Vendor$Graph$Graph = $elm$core$Basics$identity;
 var $jfmengels$elm_review$Vendor$Graph$NodeContext = F3(
 	function (node, incoming, outgoing) {
-		return {ga: incoming, e8: node, k: outgoing};
+		return {gK: incoming, fG: node, k: outgoing};
 	});
 var $jfmengels$elm_review$Vendor$IntDict$Empty = {$: 0};
 var $jfmengels$elm_review$Vendor$IntDict$empty = $jfmengels$elm_review$Vendor$IntDict$Empty;
@@ -4843,7 +4992,7 @@ var $jfmengels$elm_review$Vendor$IntDict$size = function (dict) {
 			return 1;
 		default:
 			var i = dict.a;
-			return i.bX;
+			return i.ca;
 	}
 };
 var $jfmengels$elm_review$Vendor$IntDict$inner = F3(
@@ -4862,15 +5011,12 @@ var $jfmengels$elm_review$Vendor$IntDict$inner = F3(
 						f: l,
 						j: p,
 						g: r,
-						bX: $jfmengels$elm_review$Vendor$IntDict$size(l) + $jfmengels$elm_review$Vendor$IntDict$size(r)
+						ca: $jfmengels$elm_review$Vendor$IntDict$size(l) + $jfmengels$elm_review$Vendor$IntDict$size(r)
 					});
 			}
 		}
 	});
-var $elm$core$Bitwise$and = _Bitwise_and;
 var $elm$core$Bitwise$complement = _Bitwise_complement;
-var $elm$core$Bitwise$or = _Bitwise_or;
-var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
 var $jfmengels$elm_review$Vendor$IntDict$highestBitSet = function (n) {
 	var shiftOr = F2(
 		function (i, shift) {
@@ -4887,14 +5033,13 @@ var $elm$core$Basics$negate = function (n) {
 	return -n;
 };
 var $jfmengels$elm_review$Vendor$IntDict$signBit = $jfmengels$elm_review$Vendor$IntDict$highestBitSet(-1);
-var $elm$core$Bitwise$xor = _Bitwise_xor;
 var $jfmengels$elm_review$Vendor$IntDict$isBranchingBitSet = function (p) {
 	return A2(
 		$elm$core$Basics$composeR,
 		$elm$core$Bitwise$xor($jfmengels$elm_review$Vendor$IntDict$signBit),
 		A2(
 			$elm$core$Basics$composeR,
-			$elm$core$Bitwise$and(p.b$),
+			$elm$core$Bitwise$and(p.cg),
 			$elm$core$Basics$neq(0)));
 };
 var $jfmengels$elm_review$Vendor$IntDict$higherBitMask = function (branchingBit) {
@@ -4905,7 +5050,7 @@ var $jfmengels$elm_review$Vendor$IntDict$lcp = F2(
 		var branchingBit = $jfmengels$elm_review$Vendor$IntDict$highestBitSet(x ^ y);
 		var mask = $jfmengels$elm_review$Vendor$IntDict$higherBitMask(branchingBit);
 		var prefixBits = x & mask;
-		return {b$: branchingBit, aU: prefixBits};
+		return {cg: branchingBit, aY: prefixBits};
 	});
 var $jfmengels$elm_review$Vendor$IntDict$Leaf = function (a) {
 	return {$: 1, a: a};
@@ -4913,13 +5058,13 @@ var $jfmengels$elm_review$Vendor$IntDict$Leaf = function (a) {
 var $jfmengels$elm_review$Vendor$IntDict$leaf = F2(
 	function (k, v) {
 		return $jfmengels$elm_review$Vendor$IntDict$Leaf(
-			{cN: k, b: v});
+			{dg: k, b: v});
 	});
 var $jfmengels$elm_review$Vendor$IntDict$prefixMatches = F2(
 	function (p, n) {
 		return _Utils_eq(
-			n & $jfmengels$elm_review$Vendor$IntDict$higherBitMask(p.b$),
-			p.aU);
+			n & $jfmengels$elm_review$Vendor$IntDict$higherBitMask(p.cg),
+			p.aY);
 	});
 var $jfmengels$elm_review$Vendor$IntDict$update = F3(
 	function (key, alter, dict) {
@@ -4946,13 +5091,13 @@ var $jfmengels$elm_review$Vendor$IntDict$update = F3(
 				return alteredNode($elm$core$Maybe$Nothing);
 			case 1:
 				var l = dict.a;
-				return _Utils_eq(l.cN, key) ? alteredNode(
+				return _Utils_eq(l.dg, key) ? alteredNode(
 					$elm$core$Maybe$Just(l.b)) : A2(
 					join,
 					_Utils_Tuple2(
 						key,
 						alteredNode($elm$core$Maybe$Nothing)),
-					_Utils_Tuple2(l.cN, dict));
+					_Utils_Tuple2(l.dg, dict));
 			default:
 				var i = dict.a;
 				return A2($jfmengels$elm_review$Vendor$IntDict$prefixMatches, i.j, key) ? (A2($jfmengels$elm_review$Vendor$IntDict$isBranchingBitSet, i.j, key) ? A3(
@@ -4968,7 +5113,7 @@ var $jfmengels$elm_review$Vendor$IntDict$update = F3(
 					_Utils_Tuple2(
 						key,
 						alteredNode($elm$core$Maybe$Nothing)),
-					_Utils_Tuple2(i.j.aU, dict));
+					_Utils_Tuple2(i.j.aY, dict));
 		}
 	});
 var $jfmengels$elm_review$Vendor$IntDict$insert = F3(
@@ -4989,7 +5134,7 @@ var $jfmengels$elm_review$Vendor$IntDict$get = F2(
 					return $elm$core$Maybe$Nothing;
 				case 1:
 					var l = dict.a;
-					return _Utils_eq(l.cN, key) ? $elm$core$Maybe$Just(l.b) : $elm$core$Maybe$Nothing;
+					return _Utils_eq(l.dg, key) ? $elm$core$Maybe$Just(l.b) : $elm$core$Maybe$Nothing;
 				default:
 					var i = dict.a;
 					if (!A2($jfmengels$elm_review$Vendor$IntDict$prefixMatches, i.j, key)) {
@@ -5028,7 +5173,7 @@ var $jfmengels$elm_review$Vendor$Graph$fromNodesAndEdges = F2(
 			function (n) {
 				return A2(
 					$jfmengels$elm_review$Vendor$IntDict$insert,
-					n.df,
+					n.dH,
 					A3($jfmengels$elm_review$Vendor$Graph$NodeContext, n, $jfmengels$elm_review$Vendor$IntDict$empty, $jfmengels$elm_review$Vendor$IntDict$empty));
 			},
 			$jfmengels$elm_review$Vendor$IntDict$empty,
@@ -5039,29 +5184,29 @@ var $jfmengels$elm_review$Vendor$Graph$fromNodesAndEdges = F2(
 					return _Utils_update(
 						ctx,
 						{
-							k: A3($jfmengels$elm_review$Vendor$IntDict$insert, edge.gT, edge.cO, ctx.k)
+							k: A3($jfmengels$elm_review$Vendor$IntDict$insert, edge.hs, edge.dh, ctx.k)
 						});
 				};
 				var updateIncoming = function (ctx) {
 					return _Utils_update(
 						ctx,
 						{
-							ga: A3($jfmengels$elm_review$Vendor$IntDict$insert, edge.f5, edge.cO, ctx.ga)
+							gK: A3($jfmengels$elm_review$Vendor$IntDict$insert, edge.gF, edge.dh, ctx.gK)
 						});
 				};
 				return A3(
 					$jfmengels$elm_review$Vendor$IntDict$update,
-					edge.gT,
+					edge.hs,
 					$elm$core$Maybe$map(updateIncoming),
 					A3(
 						$jfmengels$elm_review$Vendor$IntDict$update,
-						edge.f5,
+						edge.gF,
 						$elm$core$Maybe$map(updateOutgoing),
 						rep));
 			});
 		var addEdgeIfValid = F2(
 			function (edge, rep) {
-				return (A2($jfmengels$elm_review$Vendor$IntDict$member, edge.f5, rep) && A2($jfmengels$elm_review$Vendor$IntDict$member, edge.gT, rep)) ? A2(addEdge, edge, rep) : rep;
+				return (A2($jfmengels$elm_review$Vendor$IntDict$member, edge.gF, rep) && A2($jfmengels$elm_review$Vendor$IntDict$member, edge.hs, rep)) ? A2(addEdge, edge, rep) : rep;
 			});
 		return A3($elm$core$List$foldl, addEdgeIfValid, nodeRep, edges_);
 	});
@@ -5069,26 +5214,26 @@ var $stil4m$elm_syntax$Elm$Syntax$Module$moduleName = function (m) {
 	switch (m.$) {
 		case 0:
 			var x = m.a;
-			return $stil4m$elm_syntax$Elm$Syntax$Node$value(x.dn);
+			return $stil4m$elm_syntax$Elm$Syntax$Node$value(x.dR);
 		case 1:
 			var x = m.a;
-			return $stil4m$elm_syntax$Elm$Syntax$Node$value(x.dn);
+			return $stil4m$elm_syntax$Elm$Syntax$Node$value(x.dR);
 		default:
 			var x = m.a;
-			return $stil4m$elm_syntax$Elm$Syntax$Node$value(x.dn);
+			return $stil4m$elm_syntax$Elm$Syntax$Node$value(x.dR);
 	}
 };
 var $jfmengels$elm_review$Review$Project$Valid$getModuleName = function (module_) {
 	return $stil4m$elm_syntax$Elm$Syntax$Module$moduleName(
-		$stil4m$elm_syntax$Elm$Syntax$Node$value(module_.fI.gj));
+		$stil4m$elm_syntax$Elm$Syntax$Node$value(module_.gg.gT));
 };
 var $jfmengels$elm_review$Vendor$Graph$Edge = F3(
 	function (from, to, label) {
-		return {f5: from, cO: label, gT: to};
+		return {gF: from, dh: label, hs: to};
 	});
 var $jfmengels$elm_review$Vendor$Graph$Node = F2(
 	function (id, label) {
-		return {df: id, cO: label};
+		return {dH: id, dh: label};
 	});
 var $elm$core$List$maybeCons = F3(
 	function (f, mx, xs) {
@@ -5122,16 +5267,15 @@ var $jfmengels$elm_review$Review$Project$Valid$importedModules = function (modul
 			A2(
 				$elm$core$Basics$composeR,
 				function ($) {
-					return $.dn;
+					return $.dR;
 				},
 				$stil4m$elm_syntax$Elm$Syntax$Node$value)),
-		module_.fI.f9);
+		module_.gg.gJ);
 };
 var $jfmengels$elm_review$Review$Project$Valid$nodesAndEdges = F3(
 	function (getModuleId, module_, moduleId) {
-		var moduleName = $jfmengels$elm_review$Review$Project$Valid$getModuleName(module_);
 		return _Utils_Tuple2(
-			A2($jfmengels$elm_review$Vendor$Graph$Node, moduleId, moduleName),
+			A2($jfmengels$elm_review$Vendor$Graph$Node, moduleId, module_.g5),
 			A2(
 				$elm$core$List$map,
 				function (importedModuleId) {
@@ -5142,10 +5286,6 @@ var $jfmengels$elm_review$Review$Project$Valid$nodesAndEdges = F3(
 					getModuleId,
 					$jfmengels$elm_review$Review$Project$Valid$importedModules(module_))));
 	});
-var $elm$core$Tuple$second = function (_v0) {
-	var y = _v0.b;
-	return y;
-};
 var $jfmengels$elm_review$Review$Project$Valid$buildModuleGraph = function (mods) {
 	var moduleIds = A3(
 		$elm$core$Dict$foldl,
@@ -5195,9 +5335,7 @@ var $jfmengels$elm_review$Review$Project$Valid$buildModuleGraph = function (mods
 				var modulesEdges = _v4.b;
 				return _Utils_Tuple2(
 					A2($elm$core$List$cons, moduleNode, resNodes),
-					$elm$core$List$concat(
-						_List_fromArray(
-							[modulesEdges, resEdges])));
+					_Utils_ap(modulesEdges, resEdges));
 			}),
 		_Utils_Tuple2(_List_Nil, _List_Nil),
 		mods);
@@ -5228,7 +5366,7 @@ var $jfmengels$elm_review$Vendor$IntDict$findMin = function (dict) {
 			case 1:
 				var l = dict.a;
 				return $elm$core$Maybe$Just(
-					_Utils_Tuple2(l.cN, l.b));
+					_Utils_Tuple2(l.dg, l.b));
 			default:
 				var i = dict.a;
 				var $temp$dict = i.f;
@@ -5261,12 +5399,12 @@ var $jfmengels$elm_review$Vendor$IntDict$determineBranchRelation = F2(
 		var rp = r.j;
 		var lp = l.j;
 		var mask = $jfmengels$elm_review$Vendor$IntDict$highestBitSet(
-			A2($jfmengels$elm_review$Vendor$IntDict$mostSignificantBranchingBit, lp.b$, rp.b$));
-		var modifiedRightPrefix = A3($jfmengels$elm_review$Vendor$IntDict$combineBits, rp.aU, ~lp.aU, mask);
-		var prefix = A2($jfmengels$elm_review$Vendor$IntDict$lcp, lp.aU, modifiedRightPrefix);
+			A2($jfmengels$elm_review$Vendor$IntDict$mostSignificantBranchingBit, lp.cg, rp.cg));
+		var modifiedRightPrefix = A3($jfmengels$elm_review$Vendor$IntDict$combineBits, rp.aY, ~lp.aY, mask);
+		var prefix = A2($jfmengels$elm_review$Vendor$IntDict$lcp, lp.aY, modifiedRightPrefix);
 		var childEdge = F2(
 			function (branchPrefix, c) {
-				return A2($jfmengels$elm_review$Vendor$IntDict$isBranchingBitSet, branchPrefix, c.j.aU) ? 1 : 0;
+				return A2($jfmengels$elm_review$Vendor$IntDict$isBranchingBitSet, branchPrefix, c.j.aY) ? 1 : 0;
 			});
 		return _Utils_eq(lp, rp) ? $jfmengels$elm_review$Vendor$IntDict$SamePrefix : (_Utils_eq(prefix, lp) ? A2(
 			$jfmengels$elm_review$Vendor$IntDict$Parent,
@@ -5307,10 +5445,10 @@ var $jfmengels$elm_review$Vendor$IntDict$intersect = F2(
 									break _v0$1;
 								case 1:
 									var lr = _v0.b.a;
-									var _v3 = A2($jfmengels$elm_review$Vendor$IntDict$get, lr.cN, l);
+									var _v3 = A2($jfmengels$elm_review$Vendor$IntDict$get, lr.dg, l);
 									if (!_v3.$) {
 										var v = _v3.a;
-										return A2($jfmengels$elm_review$Vendor$IntDict$leaf, lr.cN, v);
+										return A2($jfmengels$elm_review$Vendor$IntDict$leaf, lr.dg, v);
 									} else {
 										return $jfmengels$elm_review$Vendor$IntDict$Empty;
 									}
@@ -5370,7 +5508,7 @@ var $jfmengels$elm_review$Vendor$IntDict$intersect = F2(
 					}
 				}
 				var ll = _v0.a.a;
-				return A2($jfmengels$elm_review$Vendor$IntDict$member, ll.cN, r) ? l : $jfmengels$elm_review$Vendor$IntDict$Empty;
+				return A2($jfmengels$elm_review$Vendor$IntDict$member, ll.dg, r) ? l : $jfmengels$elm_review$Vendor$IntDict$Empty;
 			}
 			var _v2 = _v0.b;
 			return $jfmengels$elm_review$Vendor$IntDict$Empty;
@@ -5464,7 +5602,7 @@ var $jfmengels$elm_review$Vendor$IntDict$foldr = F3(
 					return acc;
 				case 1:
 					var l = dict.a;
-					return A3(f, l.cN, l.b, acc);
+					return A3(f, l.dg, l.b, acc);
 				default:
 					var i = dict.a;
 					var $temp$f = f,
@@ -5499,7 +5637,7 @@ var $jfmengels$elm_review$Vendor$IntDict$foldl = F3(
 					return acc;
 				case 1:
 					var l = dict.a;
-					return A3(f, l.cN, l.b, acc);
+					return A3(f, l.dg, l.b, acc);
 				default:
 					var i = dict.a;
 					var $temp$f = f,
@@ -5527,7 +5665,7 @@ var $jfmengels$elm_review$Vendor$Graph$applyEdgeDiff = F3(
 				return _Utils_update(
 					node,
 					{
-						ga: A3($jfmengels$elm_review$Vendor$IntDict$update, nodeId, upd, node.ga)
+						gK: A3($jfmengels$elm_review$Vendor$IntDict$update, nodeId, upd, node.gK)
 					});
 			});
 		var flippedFoldl = F3(
@@ -5559,7 +5697,7 @@ var $jfmengels$elm_review$Vendor$Graph$applyEdgeDiff = F3(
 			A3(
 				flippedFoldl,
 				updateAdjacency(updateIncomingEdge),
-				diff.ga,
+				diff.gK,
 				graphRep));
 	});
 var $jfmengels$elm_review$Vendor$Graph$Insert = function (a) {
@@ -5568,7 +5706,7 @@ var $jfmengels$elm_review$Vendor$Graph$Insert = function (a) {
 var $jfmengels$elm_review$Vendor$Graph$Remove = function (a) {
 	return {$: 1, a: a};
 };
-var $jfmengels$elm_review$Vendor$Graph$emptyDiff = {ga: $jfmengels$elm_review$Vendor$IntDict$empty, k: $jfmengels$elm_review$Vendor$IntDict$empty};
+var $jfmengels$elm_review$Vendor$Graph$emptyDiff = {gK: $jfmengels$elm_review$Vendor$IntDict$empty, k: $jfmengels$elm_review$Vendor$IntDict$empty};
 var $jfmengels$elm_review$Vendor$Graph$computeEdgeDiff = F2(
 	function (old, _new) {
 		var collectUpdates = F3(
@@ -5616,8 +5754,8 @@ var $jfmengels$elm_review$Vendor$Graph$computeEdgeDiff = F2(
 				var _v4 = _v0.a;
 				var ins = _v0.b.a;
 				return {
-					ga: A3(collect, $jfmengels$elm_review$Vendor$Graph$Insert, ins.k, $jfmengels$elm_review$Vendor$IntDict$empty),
-					k: A3(collect, $jfmengels$elm_review$Vendor$Graph$Insert, ins.ga, $jfmengels$elm_review$Vendor$IntDict$empty)
+					gK: A3(collect, $jfmengels$elm_review$Vendor$Graph$Insert, ins.k, $jfmengels$elm_review$Vendor$IntDict$empty),
+					k: A3(collect, $jfmengels$elm_review$Vendor$Graph$Insert, ins.gK, $jfmengels$elm_review$Vendor$IntDict$empty)
 				};
 			}
 		} else {
@@ -5625,14 +5763,14 @@ var $jfmengels$elm_review$Vendor$Graph$computeEdgeDiff = F2(
 				var rem = _v0.a.a;
 				var _v3 = _v0.b;
 				return {
-					ga: A3(collect, $jfmengels$elm_review$Vendor$Graph$Remove, rem.k, $jfmengels$elm_review$Vendor$IntDict$empty),
-					k: A3(collect, $jfmengels$elm_review$Vendor$Graph$Remove, rem.ga, $jfmengels$elm_review$Vendor$IntDict$empty)
+					gK: A3(collect, $jfmengels$elm_review$Vendor$Graph$Remove, rem.k, $jfmengels$elm_review$Vendor$IntDict$empty),
+					k: A3(collect, $jfmengels$elm_review$Vendor$Graph$Remove, rem.gK, $jfmengels$elm_review$Vendor$IntDict$empty)
 				};
 			} else {
 				var rem = _v0.a.a;
 				var ins = _v0.b.a;
 				return _Utils_eq(rem, ins) ? $jfmengels$elm_review$Vendor$Graph$emptyDiff : {
-					ga: A3(
+					gK: A3(
 						collect,
 						$jfmengels$elm_review$Vendor$Graph$Insert,
 						ins.k,
@@ -5640,8 +5778,8 @@ var $jfmengels$elm_review$Vendor$Graph$computeEdgeDiff = F2(
 					k: A3(
 						collect,
 						$jfmengels$elm_review$Vendor$Graph$Insert,
-						ins.ga,
-						A3(collect, $jfmengels$elm_review$Vendor$Graph$Remove, rem.ga, $jfmengels$elm_review$Vendor$IntDict$empty))
+						ins.gK,
+						A3(collect, $jfmengels$elm_review$Vendor$Graph$Remove, rem.gK, $jfmengels$elm_review$Vendor$IntDict$empty))
 				};
 			}
 		}
@@ -5662,14 +5800,14 @@ var $jfmengels$elm_review$Vendor$Graph$update = F2(
 				return $jfmengels$elm_review$Vendor$IntDict$filter(
 					F2(
 						function (id, _v0) {
-							return _Utils_eq(id, ctx.e8.df) || A2($jfmengels$elm_review$Vendor$IntDict$member, id, rep);
+							return _Utils_eq(id, ctx.fG.dH) || A2($jfmengels$elm_review$Vendor$IntDict$member, id, rep);
 						}));
 			};
 			var cleanUpEdges = function (ctx) {
 				return _Utils_update(
 					ctx,
 					{
-						ga: A2(filterInvalidEdges, ctx, ctx.ga),
+						gK: A2(filterInvalidEdges, ctx, ctx.gK),
 						k: A2(filterInvalidEdges, ctx, ctx.k)
 					});
 			};
@@ -5767,12 +5905,12 @@ var $jfmengels$elm_review$Vendor$Graph$checkAcyclic = function (graph) {
 			A2(
 				$elm$core$Basics$composeR,
 				function ($) {
-					return $.e8;
+					return $.fG;
 				},
 				A2(
 					$elm$core$Basics$composeR,
 					function ($) {
-						return $.df;
+						return $.dH;
 					},
 					$elm$core$List$cons))),
 		_List_Nil,
@@ -6191,16 +6329,16 @@ var $jfmengels$elm_review$Review$Project$Valid$importedModulesSet = F2(
 						return A2(
 							$elm$core$Set$insert,
 							$stil4m$elm_syntax$Elm$Syntax$Node$value(
-								$stil4m$elm_syntax$Elm$Syntax$Node$value(import_).dn),
+								$stil4m$elm_syntax$Elm$Syntax$Node$value(import_).dR),
 							set);
 					}),
 				$elm$core$Set$empty,
-				ast.f9),
+				ast.gJ),
 			dependencyModules);
 	});
 var $jfmengels$elm_review$Review$Project$Internal$positionAsInt = function (_v0) {
-	var row = _v0.bs;
-	var column = _v0.bb;
+	var row = _v0.bD;
+	var column = _v0.bh;
 	return (row * 1000000) + column;
 };
 var $elm$core$List$sortBy = _List_sortBy;
@@ -6208,13 +6346,13 @@ var $jfmengels$elm_review$Review$Project$Internal$sanitizeModule = function (ast
 	return _Utils_update(
 		ast,
 		{
-			fU: A2(
+			gs: A2(
 				$elm$core$List$sortBy,
 				function (_v0) {
 					var range = _v0.a;
-					return $jfmengels$elm_review$Review$Project$Internal$positionAsInt(range.cm);
+					return $jfmengels$elm_review$Review$Project$Internal$positionAsInt(range.cN);
 				},
-				ast.fU)
+				ast.gs)
 		});
 };
 var $jfmengels$elm_review$Vendor$Zipper$prev = function (_v0) {
@@ -6307,19 +6445,18 @@ var $elm$core$Maybe$withDefault = F2(
 	});
 var $jfmengels$elm_review$Review$Project$Valid$addParsedModule = F3(
 	function (_v0, maybeModuleZipper, _v1) {
-		var path = _v0.gx;
-		var source = _v0.gK;
-		var ast = _v0.fI;
+		var path = _v0.g5;
+		var source = _v0.hj;
+		var ast = _v0.gg;
 		var project = _v1;
-		var moduleName = $stil4m$elm_syntax$Elm$Syntax$Module$moduleName(
-			$stil4m$elm_syntax$Elm$Syntax$Node$value(ast.gj));
-		var _v2 = A2($elm$core$Dict$get, moduleName, project.cg);
+		var _v2 = A2($elm$core$Dict$get, path, project.bb);
 		if (!_v2.$) {
 			var existingModule = _v2.a;
 			var osAgnosticPath = $jfmengels$elm_review$Path$makeOSAgnostic(path);
 			var module_ = {
-				fI: $jfmengels$elm_review$Review$Project$Internal$sanitizeModule(ast),
-				dX: A2(
+				gg: $jfmengels$elm_review$Review$Project$Internal$sanitizeModule(ast),
+				ck: $jfmengels$elm_review$Review$Cache$ContentHash$hash(source),
+				es: A2(
 					$elm$core$List$any,
 					function (dir) {
 						return A2(
@@ -6327,32 +6464,31 @@ var $jfmengels$elm_review$Review$Project$Valid$addParsedModule = F3(
 							$jfmengels$elm_review$Path$makeOSAgnostic(dir),
 							osAgnosticPath);
 					},
-					project.ec),
-				gx: path,
-				gK: source
+					project.eK),
+				g5: path,
+				hj: source
 			};
 			var newProject = _Utils_update(
 				project,
 				{
-					cg: A3($elm$core$Dict$insert, moduleName, module_, project.cg),
-					bS: A3($elm$core$Dict$insert, path, module_, project.bS)
+					bb: A3($elm$core$Dict$insert, path, module_, project.bb)
 				});
 			if (_Utils_eq(
-				A2($jfmengels$elm_review$Review$Project$Valid$importedModulesSet, existingModule.fI, project.aZ),
-				A2($jfmengels$elm_review$Review$Project$Valid$importedModulesSet, ast, project.aZ))) {
+				A2($jfmengels$elm_review$Review$Project$Valid$importedModulesSet, existingModule.gg, project.a3),
+				A2($jfmengels$elm_review$Review$Project$Valid$importedModulesSet, ast, project.a3))) {
 				var newModuleZipper = function () {
 					if (!maybeModuleZipper.$) {
 						var moduleZipper_ = maybeModuleZipper.a;
 						return moduleZipper_;
 					} else {
-						var moduleZipper_ = $jfmengels$elm_review$Review$Project$Valid$unsafeCreateZipper(newProject.cT);
+						var moduleZipper_ = $jfmengels$elm_review$Review$Project$Valid$unsafeCreateZipper(newProject.$7);
 						return A2(
 							$elm$core$Maybe$withDefault,
 							moduleZipper_,
 							A2(
 								$jfmengels$elm_review$Vendor$Zipper$focusr,
 								function (mod) {
-									return _Utils_eq(mod.e8.cO, moduleName);
+									return _Utils_eq(mod.fG.dh, path);
 								},
 								moduleZipper_));
 					}
@@ -6360,7 +6496,7 @@ var $jfmengels$elm_review$Review$Project$Valid$addParsedModule = F3(
 				return $elm$core$Maybe$Just(
 					_Utils_Tuple2(newProject, newModuleZipper));
 			} else {
-				var graph = $jfmengels$elm_review$Review$Project$Valid$buildModuleGraph(newProject.bS);
+				var graph = $jfmengels$elm_review$Review$Project$Valid$buildModuleGraph(newProject.bb);
 				var _v4 = $jfmengels$elm_review$Vendor$Graph$checkAcyclic(graph);
 				if (_v4.$ === 1) {
 					return $elm$core$Maybe$Nothing;
@@ -6373,7 +6509,7 @@ var $jfmengels$elm_review$Review$Project$Valid$addParsedModule = F3(
 							var prevModuleZipper = maybeModuleZipper.a;
 							return A3(
 								$jfmengels$elm_review$Review$Project$Valid$advanceZipper,
-								moduleName,
+								path,
 								$jfmengels$elm_review$Vendor$Zipper$start(prevModuleZipper),
 								moduleZipper_);
 						} else {
@@ -6383,7 +6519,7 @@ var $jfmengels$elm_review$Review$Project$Valid$addParsedModule = F3(
 								A2(
 									$jfmengels$elm_review$Vendor$Zipper$focusr,
 									function (mod) {
-										return _Utils_eq(mod.e8.cO, moduleName);
+										return _Utils_eq(mod.fG.dh, path);
 									},
 									moduleZipper_));
 						}
@@ -6392,7 +6528,7 @@ var $jfmengels$elm_review$Review$Project$Valid$addParsedModule = F3(
 						_Utils_Tuple2(
 							_Utils_update(
 								newProject,
-								{e2: graph, cT: sortedModules}),
+								{fA: graph, $7: sortedModules}),
 							newModuleZipper));
 				}
 			}
@@ -6406,12 +6542,15 @@ var $jfmengels$elm_review$Review$Project$Valid$addReadme = F2(
 		return _Utils_update(
 			project,
 			{
-				d9: $elm$core$Maybe$Just(readme_)
+				eG: $elm$core$Maybe$Just(
+					_Utils_Tuple2(
+						readme_,
+						$jfmengels$elm_review$Review$Cache$ContentHash$hash(readme_.cj)))
 			});
 	});
 var $jfmengels$elm_review$Review$Project$Valid$elmJson = function (_v0) {
 	var project = _v0;
-	return project.c5;
+	return A2($elm$core$Maybe$map, $elm$core$Tuple$first, project.dz);
 };
 var $jfmengels$elm_review$Review$Error$ReviewError = $elm$core$Basics$identity;
 var $jfmengels$elm_review$Review$Rule$errorToReviewError = function (_v0) {
@@ -6428,7 +6567,7 @@ var $elm$project_metadata_utils$Elm$Project$Package = function (a) {
 };
 var $elm$project_metadata_utils$Elm$Project$ApplicationInfo = F6(
 	function (elm, dirs, depsDirect, depsIndirect, testDepsDirect, testDepsIndirect) {
-		return {eA: depsDirect, eB: depsIndirect, eC: dirs, c4: elm, fv: testDepsDirect, fw: testDepsIndirect};
+		return {e6: depsDirect, e7: depsIndirect, e8: dirs, dy: elm, f3: testDepsDirect, f4: testDepsIndirect};
 	});
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$at = F2(
@@ -6575,7 +6714,7 @@ var $elm$project_metadata_utils$Elm$Project$applicationDecoder = A7(
 var $elm$json$Json$Decode$map = _Json_map1;
 var $elm$project_metadata_utils$Elm$Project$PackageInfo = F8(
 	function (name, summary, license, version, exposed, deps, testDeps, elm) {
-		return {ez: deps, c4: elm, eG: exposed, e1: license, bT: name, fp: summary, fu: testDeps, fC: version};
+		return {e5: deps, dy: elm, fc: exposed, fz: license, b5: name, fZ: summary, f2: testDeps, ga: version};
 	});
 var $elm$project_metadata_utils$Elm$Constraint$Constraint = F4(
 	function (a, b, c, d) {
@@ -6960,6 +7099,24 @@ var $elm$project_metadata_utils$Elm$Project$decoder = A2(
 	$elm$json$Json$Decode$andThen,
 	$elm$project_metadata_utils$Elm$Project$decoderHelp,
 	A2($elm$json$Json$Decode$field, 'type', $elm$json$Json$Decode$string));
+var $elm$core$List$concat = function (lists) {
+  if (!lists.b) {
+    return _List_Nil;
+  }
+  var tmp = _List_Cons(undefined, _List_Nil);
+  var end = tmp;
+  for (; lists.b.b; lists = lists.b) {
+    var xs = lists.a;
+    for (; xs.b; xs = xs.b) {
+      var next = _List_Cons(xs.a, _List_Nil);
+      end.b = next;
+      end = next;
+    }
+  }
+  end.b = lists.a;
+
+  return tmp.b;
+};
 var $elm$core$List$drop = F2(
 	function (n, list) {
 		drop:
@@ -7007,7 +7164,7 @@ var $elm$core$Array$fromListHelp = F3(
 				return A2(
 					$elm$core$Array$builderToArray,
 					true,
-					{I: nodeList, y: nodeListSize, C: jsArray});
+					{L: nodeList, A: nodeListSize, G: jsArray});
 			} else {
 				var $temp$list = remainingItems,
 					$temp$nodeList = A2(
@@ -7052,7 +7209,6 @@ var $elm$core$Array$getHelp = F3(
 			}
 		}
 	});
-var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
 var $elm$core$Array$tailIndex = function (len) {
 	return (len >>> 5) << 5;
 };
@@ -7227,14 +7383,14 @@ var $jfmengels$elm_review$Review$Fix$Internal$applyReplace = F3(
 	function (range, replacement, lines) {
 		var startLine = A2(
 			$jfmengels$elm_review$Unicode$left,
-			range.cm.bb - 1,
-			A2($jfmengels$elm_review$Review$Fix$Internal$getRowAtLine, lines, range.cm.bs - 1));
-		var linesBefore = A2($elm$core$List$take, range.cm.bs - 1, lines);
-		var linesAfter = A2($elm$core$List$drop, range.b6.bs, lines);
+			range.cN.bh - 1,
+			A2($jfmengels$elm_review$Review$Fix$Internal$getRowAtLine, lines, range.cN.bD - 1));
+		var linesBefore = A2($elm$core$List$take, range.cN.bD - 1, lines);
+		var linesAfter = A2($elm$core$List$drop, range.cp.bD, lines);
 		var endLine = A2(
 			$jfmengels$elm_review$Unicode$dropLeft,
-			range.b6.bb - 1,
-			A2($jfmengels$elm_review$Review$Fix$Internal$getRowAtLine, lines, range.b6.bs - 1));
+			range.cp.bh - 1,
+			A2($jfmengels$elm_review$Review$Fix$Internal$getRowAtLine, lines, range.cp.bD - 1));
 		return $elm$core$List$concat(
 			_List_fromArray(
 				[
@@ -7261,7 +7417,7 @@ var $jfmengels$elm_review$Review$Fix$Internal$applyFix = F2(
 				var insertion = fix_.b;
 				return A3(
 					$jfmengels$elm_review$Review$Fix$Internal$applyReplace,
-					{b6: position, cm: position},
+					{cp: position, cN: position},
 					insertion,
 					lines);
 		}
@@ -7294,9 +7450,9 @@ var $jfmengels$elm_review$Vendor$ListExtra$anyCombination = F2(
 	});
 var $jfmengels$elm_review$Review$Fix$Internal$comparePosition = F2(
 	function (a, b) {
-		var _v0 = A2($elm$core$Basics$compare, a.bs, b.bs);
+		var _v0 = A2($elm$core$Basics$compare, a.bD, b.bD);
 		if (_v0 === 1) {
-			return A2($elm$core$Basics$compare, a.bb, b.bb);
+			return A2($elm$core$Basics$compare, a.bh, b.bh);
 		} else {
 			var order = _v0;
 			return order;
@@ -7304,14 +7460,14 @@ var $jfmengels$elm_review$Review$Fix$Internal$comparePosition = F2(
 	});
 var $jfmengels$elm_review$Review$Fix$Internal$collide = F2(
 	function (a, b) {
-		var _v0 = A2($jfmengels$elm_review$Review$Fix$Internal$comparePosition, a.b6, b.cm);
+		var _v0 = A2($jfmengels$elm_review$Review$Fix$Internal$comparePosition, a.cp, b.cN);
 		switch (_v0) {
 			case 0:
 				return false;
 			case 1:
 				return false;
 			default:
-				var _v1 = A2($jfmengels$elm_review$Review$Fix$Internal$comparePosition, b.b6, a.cm);
+				var _v1 = A2($jfmengels$elm_review$Review$Fix$Internal$comparePosition, b.cp, a.cN);
 				switch (_v1) {
 					case 0:
 						return false;
@@ -7332,7 +7488,7 @@ var $jfmengels$elm_review$Review$Fix$Internal$getFixRange = function (fix_) {
 			return range;
 		default:
 			var position = fix_.a;
-			return {b6: position, cm: position};
+			return {cp: position, cN: position};
 	}
 };
 var $jfmengels$elm_review$Review$Fix$Internal$containRangeCollisions = function (fixes) {
@@ -7342,8 +7498,8 @@ var $jfmengels$elm_review$Review$Fix$Internal$containRangeCollisions = function 
 		A2($elm$core$List$map, $jfmengels$elm_review$Review$Fix$Internal$getFixRange, fixes));
 };
 var $jfmengels$elm_review$Review$Fix$Internal$positionAsInt = function (_v0) {
-	var row = _v0.bs;
-	var column = _v0.bb;
+	var row = _v0.bD;
+	var column = _v0.bh;
 	return (row * 1000000) + column;
 };
 var $jfmengels$elm_review$Review$Fix$Internal$rangePosition = function (fix_) {
@@ -7352,10 +7508,10 @@ var $jfmengels$elm_review$Review$Fix$Internal$rangePosition = function (fix_) {
 			switch (fix_.$) {
 				case 1:
 					var range = fix_.a;
-					return range.cm;
+					return range.cN;
 				case 0:
 					var range = fix_.a;
-					return range.cm;
+					return range.cN;
 				default:
 					var position = fix_.a;
 					return position;
@@ -7390,7 +7546,7 @@ var $jfmengels$elm_review$Review$Fix$Internal$fixElmJson = F2(
 			if (!_v1.$) {
 				var project = _v1.a;
 				return $elm$core$Maybe$Just(
-					{e: project, ck: resultAfterFix});
+					{e: project, cL: resultAfterFix});
 			} else {
 				return $elm$core$Maybe$Nothing;
 			}
@@ -7402,7 +7558,7 @@ var $stil4m$elm_syntax$Elm$Processing$ProcessContext = $elm$core$Basics$identity
 var $stil4m$elm_syntax$Elm$Processing$addDependency = F2(
 	function (dep, _v0) {
 		var x = _v0;
-		return A2($elm$core$Dict$union, dep.dV, x);
+		return A2($elm$core$Dict$union, dep.eq, x);
 	});
 var $stil4m$elm_syntax$Elm$Syntax$Infix$Left = 0;
 var $stil4m$elm_syntax$Elm$Syntax$Infix$Non = 2;
@@ -7411,7 +7567,7 @@ var $stil4m$elm_syntax$Elm$Interface$Operator = function (a) {
 };
 var $stil4m$elm_syntax$Elm$Syntax$Infix$Right = 1;
 var $jfmengels$elm_review$Review$Dependencies$elmCore = {
-	dV: $elm$core$Dict$fromList(
+	eq: $elm$core$Dict$fromList(
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
@@ -7421,136 +7577,136 @@ var $jfmengels$elm_review$Review$Dependencies$elmCore = {
 					[
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'apL'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '<|'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'apL'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '<|'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'apR'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '|>'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'apR'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '|>'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'or'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '||'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'or'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '||'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'and'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '&&'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 3)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'and'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '&&'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 3)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'eq'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '=='),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 4)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'eq'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '=='),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 4)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'neq'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '/='),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 4)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'neq'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '/='),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 4)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'lt'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '<'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 4)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'lt'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '<'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 4)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'gt'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '>'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 4)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'gt'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '>'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 4)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'le'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '<='),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 4)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'le'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '<='),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 4)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'ge'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '>='),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 4)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 2),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'ge'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '>='),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 4)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'append'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '++'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 5)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'append'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '++'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 5)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'add'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '+'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 6)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'add'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '+'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 6)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'sub'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '-'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 6)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'sub'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '-'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 6)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'mul'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '*'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 7)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'mul'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '*'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 7)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'fdiv'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '/'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 7)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'fdiv'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '/'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 7)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'idiv'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '//'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 7)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'idiv'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '//'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 7)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'pow'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '^'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 8)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'pow'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '^'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 8)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'composeL'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '<<'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 9)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'composeL'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '<<'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 9)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'composeR'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '>>'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 9)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'composeR'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '>>'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 9)
 						})
 					])),
 				_Utils_Tuple2(
@@ -7560,18 +7716,18 @@ var $jfmengels$elm_review$Review$Dependencies$elmCore = {
 					[
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'cons'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '::'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 5)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'cons'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '::'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 5)
 						})
 					]))
 			])),
-	bT: 'elm/core',
-	fC: '1.0.0'
+	b5: 'elm/core',
+	ga: '1.0.0'
 };
 var $jfmengels$elm_review$Review$Dependencies$elmParser = {
-	dV: $elm$core$Dict$fromList(
+	eq: $elm$core$Dict$fromList(
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
@@ -7581,17 +7737,17 @@ var $jfmengels$elm_review$Review$Dependencies$elmParser = {
 					[
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'keeper'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '|='),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 5)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'keeper'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '|='),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 5)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'ignorer'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '|.'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 6)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'ignorer'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '|.'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 6)
 						})
 					])),
 				_Utils_Tuple2(
@@ -7601,25 +7757,25 @@ var $jfmengels$elm_review$Review$Dependencies$elmParser = {
 					[
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'keeper'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '|='),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 5)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'keeper'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '|='),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 5)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'ignorer'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '|.'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 6)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'ignorer'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '|.'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 6)
 						})
 					]))
 			])),
-	bT: 'elm/parser',
-	fC: '1.0.0'
+	b5: 'elm/parser',
+	ga: '1.0.0'
 };
 var $jfmengels$elm_review$Review$Dependencies$elmUrl = {
-	dV: $elm$core$Dict$fromList(
+	eq: $elm$core$Dict$fromList(
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
@@ -7629,22 +7785,22 @@ var $jfmengels$elm_review$Review$Dependencies$elmUrl = {
 					[
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'slash'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '</>'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 7)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 1),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'slash'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '</>'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 7)
 						}),
 						$stil4m$elm_syntax$Elm$Interface$Operator(
 						{
-							fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
-							f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'questionMark'),
-							gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '<?>'),
-							gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 8)
+							gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
+							gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'questionMark'),
+							g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, '<?>'),
+							g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 8)
 						})
 					]))
 			])),
-	bT: 'elm/url',
-	fC: '1.0.0'
+	b5: 'elm/url',
+	ga: '1.0.0'
 };
 var $stil4m$elm_syntax$Elm$Processing$init = $elm$core$Dict$empty;
 var $jfmengels$elm_review$Review$FileParser$elmProcessContext = A2(
@@ -7655,10 +7811,10 @@ var $jfmengels$elm_review$Review$FileParser$elmProcessContext = A2(
 		$jfmengels$elm_review$Review$Dependencies$elmUrl,
 		A2($stil4m$elm_syntax$Elm$Processing$addDependency, $jfmengels$elm_review$Review$Dependencies$elmCore, $stil4m$elm_syntax$Elm$Processing$init)));
 var $stil4m$elm_syntax$Elm$Parser$State$State = $elm$core$Basics$identity;
-var $stil4m$elm_syntax$Elm$Parser$State$emptyState = {fU: _List_Nil, bO: _List_Nil};
+var $stil4m$elm_syntax$Elm$Parser$State$emptyState = {gs: _List_Nil, b_: _List_Nil};
 var $stil4m$elm_syntax$Elm$Syntax$File$File = F4(
 	function (moduleDefinition, imports, declarations, comments) {
-		return {fU: comments, ew: declarations, f9: imports, gj: moduleDefinition};
+		return {gs: comments, e2: declarations, gJ: imports, gT: moduleDefinition};
 	});
 var $stil4m$elm_syntax$Combine$Parser = $elm$core$Basics$identity;
 var $elm$parser$Parser$Advanced$Bad = F2(
@@ -7750,7 +7906,7 @@ var $stil4m$elm_syntax$Combine$andMap = F2(
 	});
 var $stil4m$elm_syntax$Elm$Parser$State$getComments = function (_v0) {
 	var s = _v0;
-	return $elm$core$List$reverse(s.fU);
+	return $elm$core$List$reverse(s.gs);
 };
 var $elm$parser$Parser$Advanced$succeed = function (a) {
 	return function (s) {
@@ -7842,7 +7998,7 @@ var $stil4m$elm_syntax$Elm$Syntax$Declaration$Destructuring = F2(
 	});
 var $stil4m$elm_syntax$Elm$Syntax$Range$Range = F2(
 	function (start, end) {
-		return {b6: end, cm: start};
+		return {cp: end, cN: start};
 	});
 var $elm$core$List$head = function (list) {
 	if (list.b) {
@@ -7855,7 +8011,7 @@ var $elm$core$List$head = function (list) {
 };
 var $stil4m$elm_syntax$Elm$Syntax$Range$compareLocations = F2(
 	function (left, right) {
-		return (_Utils_cmp(left.bs, right.bs) < 0) ? 0 : ((_Utils_cmp(left.bs, right.bs) > 0) ? 2 : A2($elm$core$Basics$compare, left.bb, right.bb));
+		return (_Utils_cmp(left.bD, right.bD) < 0) ? 0 : ((_Utils_cmp(left.bD, right.bD) > 0) ? 2 : A2($elm$core$Basics$compare, left.bh, right.bh));
 	});
 var $elm$core$List$sortWith = _List_sortWith;
 var $stil4m$elm_syntax$Elm$Syntax$Range$sortLocations = $elm$core$List$sortWith($stil4m$elm_syntax$Elm$Syntax$Range$compareLocations);
@@ -7864,7 +8020,7 @@ var $stil4m$elm_syntax$Elm$Syntax$Range$combine = function (ranges) {
 		A2(
 			$elm$core$List$map,
 			function ($) {
-				return $.cm;
+				return $.cN;
 			},
 			ranges));
 	var ends = $elm$core$List$reverse(
@@ -7872,7 +8028,7 @@ var $stil4m$elm_syntax$Elm$Syntax$Range$combine = function (ranges) {
 			A2(
 				$elm$core$List$map,
 				function ($) {
-					return $.b6;
+					return $.cp;
 				},
 				ranges)));
 	return A2(
@@ -7900,7 +8056,7 @@ var $stil4m$elm_syntax$Elm$Syntax$Expression$Application = function (a) {
 };
 var $stil4m$elm_syntax$Elm$Syntax$Expression$CaseBlock = F2(
 	function (expression, cases) {
-		return {fQ: cases, da: expression};
+		return {go: cases, dE: expression};
 	});
 var $stil4m$elm_syntax$Elm$Syntax$Expression$CaseExpression = function (a) {
 	return {$: 16, a: a};
@@ -7910,11 +8066,11 @@ var $stil4m$elm_syntax$Combine$Done = function (a) {
 };
 var $stil4m$elm_syntax$Elm$Syntax$Expression$Function = F3(
 	function (documentation, signature, declaration) {
-		return {fX: declaration, dH: documentation, gJ: signature};
+		return {gv: declaration, ed: documentation, hi: signature};
 	});
 var $stil4m$elm_syntax$Elm$Syntax$Expression$FunctionImplementation = F3(
 	function (name, _arguments, expression) {
-		return {el: _arguments, da: expression, bT: name};
+		return {eT: _arguments, dE: expression, b5: name};
 	});
 var $stil4m$elm_syntax$Elm$Syntax$Expression$IfBlock = F3(
 	function (a, b, c) {
@@ -7922,14 +8078,14 @@ var $stil4m$elm_syntax$Elm$Syntax$Expression$IfBlock = F3(
 	});
 var $stil4m$elm_syntax$Elm$Syntax$Expression$Lambda = F2(
 	function (args, expression) {
-		return {fG: args, da: expression};
+		return {ge: args, dE: expression};
 	});
 var $stil4m$elm_syntax$Elm$Syntax$Expression$LambdaExpression = function (a) {
 	return {$: 17, a: a};
 };
 var $stil4m$elm_syntax$Elm$Syntax$Expression$LetBlock = F2(
 	function (declarations, expression) {
-		return {ew: declarations, da: expression};
+		return {e2: declarations, dE: expression};
 	});
 var $stil4m$elm_syntax$Elm$Syntax$Expression$LetDestructuring = F2(
 	function (a, b) {
@@ -8057,14 +8213,14 @@ var $elm$parser$Parser$Advanced$AddRight = F2(
 	});
 var $elm$parser$Parser$Advanced$DeadEnd = F4(
 	function (row, col, problem, contextStack) {
-		return {es: col, fW: contextStack, fb: problem, bs: row};
+		return {e_: col, gu: contextStack, fL: problem, bD: row};
 	});
 var $elm$parser$Parser$Advanced$fromState = F2(
 	function (s, x) {
 		return A2(
 			$elm$parser$Parser$Advanced$AddRight,
 			$elm$parser$Parser$Advanced$Empty,
-			A4($elm$parser$Parser$Advanced$DeadEnd, s.bs, s.es, x, s.i));
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.bD, s.e_, x, s.i));
 	});
 var $elm$core$String$isEmpty = function (string) {
 	return string === '';
@@ -8075,7 +8231,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 	var expecting = _v0.b;
 	var progress = !$elm$core$String$isEmpty(str);
 	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.d, s.bs, s.es, s.c);
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.d, s.bD, s.e_, s.c);
 		var newOffset = _v1.a;
 		var newRow = _v1.b;
 		var newCol = _v1.c;
@@ -8086,7 +8242,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 			$elm$parser$Parser$Advanced$Good,
 			progress,
 			0,
-			{es: newCol, i: s.i, m: s.m, d: newOffset, bs: newRow, c: s.c});
+			{e_: newCol, i: s.i, m: s.m, d: newOffset, bD: newRow, c: s.c});
 	};
 };
 var $elm$parser$Parser$token = function (str) {
@@ -8146,11 +8302,11 @@ var $elm$parser$Parser$Advanced$chompIf = F2(
 				$elm$parser$Parser$Advanced$Good,
 				true,
 				0,
-				{es: 1, i: s.i, m: s.m, d: s.d + 1, bs: s.bs + 1, c: s.c}) : A3(
+				{e_: 1, i: s.i, m: s.m, d: s.d + 1, bD: s.bD + 1, c: s.c}) : A3(
 				$elm$parser$Parser$Advanced$Good,
 				true,
 				0,
-				{es: s.es + 1, i: s.i, m: s.m, d: newOffset, bs: s.bs, c: s.c}));
+				{e_: s.e_ + 1, i: s.i, m: s.m, d: newOffset, bD: s.bD, c: s.c}));
 		};
 	});
 var $elm$parser$Parser$chompIf = function (isGood) {
@@ -8303,7 +8459,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 					$elm$parser$Parser$Advanced$Good,
 					_Utils_cmp(s0.d, offset) < 0,
 					0,
-					{es: col, i: s0.i, m: s0.m, d: offset, bs: row, c: s0.c});
+					{e_: col, i: s0.i, m: s0.m, d: offset, bD: row, c: s0.c});
 			} else {
 				if (_Utils_eq(newOffset, -2)) {
 					var $temp$isGood = isGood,
@@ -8335,7 +8491,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 	});
 var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
 	return function (s) {
-		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.d, s.bs, s.es, s);
+		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.d, s.bD, s.e_, s);
 	};
 };
 var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
@@ -8679,9 +8835,9 @@ var $stil4m$elm_syntax$Elm$Parser$Tokens$characterLiteral = A2(
 			$stil4m$elm_syntax$Combine$Char$anyChar,
 			$stil4m$elm_syntax$Combine$Char$char('\''))));
 var $stil4m$elm_syntax$Elm$Parser$Node$asPointerLocation = function (_v0) {
-	var line = _v0.cP;
-	var column = _v0.bb;
-	return {bb: column, bs: line};
+	var line = _v0.di;
+	var column = _v0.bh;
+	return {bh: column, bD: line};
 };
 var $stil4m$elm_syntax$Combine$app = function (_v0) {
 	var inner = _v0;
@@ -8691,7 +8847,7 @@ var $elm$parser$Parser$Advanced$getPosition = function (s) {
 	return A3(
 		$elm$parser$Parser$Advanced$Good,
 		false,
-		_Utils_Tuple2(s.bs, s.es),
+		_Utils_Tuple2(s.bD, s.e_),
 		s);
 };
 var $elm$parser$Parser$getPosition = $elm$parser$Parser$Advanced$getPosition;
@@ -8710,7 +8866,7 @@ var $stil4m$elm_syntax$Combine$withLocation = function (f) {
 				function (_v0) {
 					var row = _v0.a;
 					var col = _v0.b;
-					return {bb: col, cP: row};
+					return {bh: col, di: row};
 				},
 				$elm$parser$Parser$getPosition));
 	};
@@ -8724,8 +8880,8 @@ var $stil4m$elm_syntax$Elm$Parser$Node$parser = function (p) {
 					function (end) {
 						return $stil4m$elm_syntax$Combine$succeed(
 							{
-								b6: $stil4m$elm_syntax$Elm$Parser$Node$asPointerLocation(end),
-								cm: $stil4m$elm_syntax$Elm$Parser$Node$asPointerLocation(start)
+								cp: $stil4m$elm_syntax$Elm$Parser$Node$asPointerLocation(end),
+								cN: $stil4m$elm_syntax$Elm$Parser$Node$asPointerLocation(start)
 							});
 					}),
 				A2(
@@ -8742,7 +8898,7 @@ var $stil4m$elm_syntax$Elm$Parser$Declarations$charLiteralExpression = $stil4m$e
 	A2($stil4m$elm_syntax$Combine$map, $stil4m$elm_syntax$Elm$Syntax$Expression$CharLiteral, $stil4m$elm_syntax$Elm$Parser$Tokens$characterLiteral));
 var $stil4m$elm_syntax$Elm$Parser$Tokens$elseToken = $stil4m$elm_syntax$Combine$string('else');
 var $stil4m$elm_syntax$Elm$Parser$State$currentIndent = function (_v0) {
-	var indents = _v0.bO;
+	var indents = _v0.b_;
 	return A2(
 		$elm$core$Maybe$withDefault,
 		0,
@@ -8772,7 +8928,7 @@ var $stil4m$elm_syntax$Elm$Syntax$Pattern$ParenthesizedPattern = function (a) {
 };
 var $stil4m$elm_syntax$Elm$Syntax$Pattern$QualifiedNameRef = F2(
 	function (moduleName, name) {
-		return {dn: moduleName, bT: name};
+		return {dR: moduleName, b5: name};
 	});
 var $stil4m$elm_syntax$Elm$Syntax$Pattern$StringPattern = function (a) {
 	return {$: 3, a: a};
@@ -8795,11 +8951,38 @@ var $stil4m$elm_syntax$Combine$between = F3(
 var $elm$core$Basics$modBy = _Basics_modBy;
 var $miniBill$elm_unicode$Unicode$isAlphaNum = function (c) {
 	var code = $elm$core$Char$toCode(c);
-	return (code < 256) ? (((code >= 48) && (code <= 57)) || (((code >= 65) && (code <= 90)) || (((code >= 97) && (code <= 122)) || ((code === 170) || (((code >= 178) && (code <= 179)) || ((code === 181) || (((code >= 185) && (code <= 186)) || (((code >= 188) && (code <= 190)) || (((code >= 192) && (code <= 214)) || (((code >= 216) && (code <= 246)) || ((code >= 248) && (code <= 255)))))))))))) : ((code < 42785) ? ((code < 4303) ? ((code < 2748) ? ((code < 1983) ? ((code < 1375) ? ((code < 894) ? (((code >= 256) && (code <= 705)) || (((code >= 710) && (code <= 721)) || (((code >= 736) && (code <= 740)) || (((code >= 880) && (code <= 884)) || (((code >= 886) && (code <= 887)) || (((code >= 890) && (code <= 893)) || ((!A2($elm$core$Basics$modBy, 2, code)) && ((code >= 748) && (code <= 750))))))))) : ((code === 895) || ((code === 902) || (((code >= 904) && (code <= 1013)) || (((code >= 1015) && (code <= 1153)) || (((code >= 1162) && (code <= 1327)) || (((code >= 1329) && (code <= 1366)) || (code === 1369)))))))) : ((code < 1764) ? (((code >= 1376) && (code <= 1416)) || (((code >= 1488) && (code <= 1522)) || (((code >= 1568) && (code <= 1610)) || (((code >= 1632) && (code <= 1641)) || (((code >= 1646) && (code <= 1647)) || (((code >= 1649) && (code <= 1747)) || (code === 1749))))))) : (((code >= 1765) && (code <= 1766)) || (((code >= 1774) && (code <= 1788)) || ((code === 1791) || ((code === 1808) || (((code >= 1810) && (code <= 1839)) || (((code >= 1869) && (code <= 1957)) || (code === 1969))))))))) : ((code < 2405) ? ((code < 2087) ? (((code >= 1984) && (code <= 2026)) || (((code >= 2036) && (code <= 2037)) || ((code === 2042) || (((code >= 2048) && (code <= 2069)) || ((code === 2074) || (code === 2084)))))) : ((code === 2088) || (((code >= 2112) && (code <= 2136)) || (((code >= 2144) && (code <= 2247)) || (((code >= 2308) && (code <= 2361)) || ((code === 2365) || ((code === 2384) || ((code >= 2392) && (code <= 2401))))))))) : ((code < 2547) ? (((code >= 2406) && (code <= 2415)) || (((code >= 2417) && (code <= 2432)) || (((code >= 2437) && (code <= 2489)) || ((code === 2493) || ((code === 2510) || (((code >= 2524) && (code <= 2529)) || ((code >= 2534) && (code <= 2545)))))))) : (((code >= 2548) && (code <= 2553)) || ((code === 2556) || (((code >= 2565) && (code <= 2617)) || (((code >= 2649) && (code <= 2654)) || (((code >= 2662) && (code <= 2671)) || (((code >= 2674) && (code <= 2676)) || ((code >= 2693) && (code <= 2745))))))))))) : ((code < 3429) ? ((code < 3159) ? ((code < 2907) ? ((code === 2749) || (((code >= 2768) && (code <= 2785)) || (((code >= 2790) && (code <= 2799)) || ((code === 2809) || (((code >= 2821) && (code <= 2873)) || (code === 2877)))))) : (((code >= 2908) && (code <= 2913)) || (((code >= 2918) && (code <= 2927)) || (((code >= 2929) && (code <= 2935)) || (((code >= 2947) && (code <= 3001)) || ((code === 3024) || (((code >= 3046) && (code <= 3058)) || ((code >= 3077) && (code <= 3133))))))))) : ((code < 3301) ? (((code >= 3160) && (code <= 3169)) || (((code >= 3174) && (code <= 3183)) || (((code >= 3192) && (code <= 3198)) || ((code === 3200) || (((code >= 3205) && (code <= 3257)) || ((code === 3261) || ((code >= 3294) && (code <= 3297)))))))) : (((code >= 3302) && (code <= 3311)) || (((code >= 3313) && (code <= 3314)) || (((code >= 3332) && (code <= 3386)) || ((code === 3389) || ((code === 3406) || (((code >= 3412) && (code <= 3414)) || ((code >= 3416) && (code <= 3425)))))))))) : ((code < 3871) ? ((code < 3663) ? (((code >= 3430) && (code <= 3448)) || (((code >= 3450) && (code <= 3455)) || (((code >= 3461) && (code <= 3526)) || (((code >= 3558) && (code <= 3567)) || (((code >= 3585) && (code <= 3632)) || (((code >= 3634) && (code <= 3635)) || ((code >= 3648) && (code <= 3654)))))))) : (((code >= 3664) && (code <= 3673)) || (((code >= 3713) && (code <= 3760)) || (((code >= 3762) && (code <= 3763)) || (((code >= 3773) && (code <= 3780)) || ((code === 3782) || (((code >= 3792) && (code <= 3801)) || ((code >= 3804) && (code <= 3840))))))))) : ((code < 4192) ? (((code >= 3872) && (code <= 3891)) || (((code >= 3904) && (code <= 3948)) || (((code >= 3976) && (code <= 3980)) || (((code >= 4096) && (code <= 4138)) || (((code >= 4159) && (code <= 4169)) || (((code >= 4176) && (code <= 4181)) || ((code >= 4186) && (code <= 4189)))))))) : ((code === 4193) || (((code >= 4197) && (code <= 4198)) || (((code >= 4206) && (code <= 4208)) || (((code >= 4213) && (code <= 4225)) || ((code === 4238) || (((code >= 4240) && (code <= 4249)) || ((code >= 4256) && (code <= 4301)))))))))))) : ((code < 8177) ? ((code < 6783) ? ((code < 5983) ? ((code < 5120) ? (((code >= 4304) && (code <= 4346)) || (((code >= 4348) && (code <= 4954)) || (((code >= 4969) && (code <= 4988)) || (((code >= 4992) && (code <= 5007)) || (((code >= 5024) && (code <= 5109)) || ((code >= 5112) && (code <= 5117))))))) : (((code >= 5121) && (code <= 5740)) || (((code >= 5743) && (code <= 5759)) || (((code >= 5761) && (code <= 5786)) || (((code >= 5792) && (code <= 5866)) || (((code >= 5870) && (code <= 5905)) || (((code >= 5920) && (code <= 5937)) || ((code >= 5952) && (code <= 5969))))))))) : ((code < 6175) ? (((code >= 5984) && (code <= 6000)) || (((code >= 6016) && (code <= 6067)) || ((code === 6103) || ((code === 6108) || (((code >= 6112) && (code <= 6121)) || (((code >= 6128) && (code <= 6137)) || ((code >= 6160) && (code <= 6169)))))))) : (((code >= 6176) && (code <= 6276)) || (((code >= 6279) && (code <= 6312)) || (((code >= 6314) && (code <= 6430)) || (((code >= 6470) && (code <= 6601)) || (((code >= 6608) && (code <= 6618)) || (((code >= 6656) && (code <= 6678)) || ((code >= 6688) && (code <= 6740)))))))))) : ((code < 7405) ? ((code < 7085) ? (((code >= 6784) && (code <= 6809)) || ((code === 6823) || (((code >= 6917) && (code <= 6963)) || (((code >= 6981) && (code <= 6987)) || (((code >= 6992) && (code <= 7001)) || ((code >= 7043) && (code <= 7072))))))) : (((code >= 7086) && (code <= 7141)) || (((code >= 7168) && (code <= 7203)) || (((code >= 7232) && (code <= 7241)) || (((code >= 7245) && (code <= 7293)) || (((code >= 7296) && (code <= 7304)) || (((code >= 7312) && (code <= 7359)) || ((code >= 7401) && (code <= 7404))))))))) : ((code < 8007) ? (((code >= 7406) && (code <= 7411)) || (((code >= 7413) && (code <= 7414)) || ((code === 7418) || (((code >= 7424) && (code <= 7615)) || (((code >= 7680) && (code <= 7957)) || (((code >= 7960) && (code <= 7965)) || ((code >= 7968) && (code <= 8005)))))))) : (((code >= 8008) && (code <= 8013)) || (((code >= 8016) && (code <= 8023)) || (((code >= 8025) && (code <= 8124)) || ((code === 8126) || (((code >= 8130) && (code <= 8140)) || (((code >= 8144) && (code <= 8155)) || ((code >= 8160) && (code <= 8172))))))))))) : ((code < 11630) ? ((code < 8516) ? ((code < 8454) ? (((code >= 8178) && (code <= 8188)) || (((code >= 8304) && (code <= 8305)) || (((code >= 8308) && (code <= 8313)) || (((code >= 8319) && (code <= 8329)) || (((code >= 8336) && (code <= 8348)) || (code === 8450)))))) : ((code === 8455) || (((code >= 8458) && (code <= 8467)) || ((code === 8469) || (((code >= 8473) && (code <= 8477)) || (((code >= 8490) && (code <= 8493)) || (((code >= 8495) && (code <= 8505)) || (((code >= 8508) && (code <= 8511)) || ((!A2($elm$core$Basics$modBy, 2, code)) && ((code >= 8484) && (code <= 8488))))))))))) : ((code < 11311) ? (((code >= 8517) && (code <= 8521)) || ((code === 8526) || (((code >= 8528) && (code <= 8585)) || (((code >= 9312) && (code <= 9371)) || (((code >= 9450) && (code <= 9471)) || (((code >= 10102) && (code <= 10131)) || ((code >= 11264) && (code <= 11310)))))))) : (((code >= 11312) && (code <= 11358)) || (((code >= 11360) && (code <= 11492)) || (((code >= 11499) && (code <= 11502)) || (((code >= 11506) && (code <= 11507)) || ((code === 11517) || (((code >= 11520) && (code <= 11565)) || ((code >= 11568) && (code <= 11623)))))))))) : ((code < 12831) ? ((code < 12352) ? ((code === 11631) || (((code >= 11648) && (code <= 11742)) || ((code === 11823) || (((code >= 12293) && (code <= 12295)) || (((code >= 12321) && (code <= 12329)) || (((code >= 12337) && (code <= 12341)) || ((code >= 12344) && (code <= 12348)))))))) : (((code >= 12353) && (code <= 12438)) || (((code >= 12445) && (code <= 12447)) || (((code >= 12449) && (code <= 12538)) || (((code >= 12540) && (code <= 12686)) || (((code >= 12690) && (code <= 12693)) || (((code >= 12704) && (code <= 12735)) || ((code >= 12784) && (code <= 12799))))))))) : ((code < 42191) ? (((code >= 12832) && (code <= 12841)) || (((code >= 12872) && (code <= 12879)) || (((code >= 12881) && (code <= 12895)) || (((code >= 12928) && (code <= 12937)) || (((code >= 12977) && (code <= 12991)) || (((code >= 13312) && (code <= 19903)) || ((code >= 19968) && (code <= 42124)))))))) : (((code >= 42192) && (code <= 42237)) || (((code >= 42240) && (code <= 42508)) || (((code >= 42512) && (code <= 42539)) || (((code >= 42560) && (code <= 42606)) || (((code >= 42623) && (code <= 42653)) || (((code >= 42656) && (code <= 42735)) || ((code >= 42775) && (code <= 42783))))))))))))) : ((code < 69958) ? ((code < 65855) ? ((code < 43696) ? ((code < 43260) ? ((code < 43019) ? (((code >= 42786) && (code <= 42888)) || (((code >= 42891) && (code <= 42943)) || (((code >= 42946) && (code <= 42954)) || (((code >= 42997) && (code <= 43009)) || (((code >= 43011) && (code <= 43013)) || ((code >= 43015) && (code <= 43018))))))) : (((code >= 43020) && (code <= 43042)) || (((code >= 43056) && (code <= 43061)) || (((code >= 43072) && (code <= 43123)) || (((code >= 43138) && (code <= 43187)) || (((code >= 43216) && (code <= 43225)) || (((code >= 43250) && (code <= 43255)) || (code === 43259)))))))) : ((code < 43493) ? (((code >= 43261) && (code <= 43262)) || (((code >= 43264) && (code <= 43301)) || (((code >= 43312) && (code <= 43334)) || (((code >= 43360) && (code <= 43388)) || (((code >= 43396) && (code <= 43442)) || (((code >= 43471) && (code <= 43481)) || ((code >= 43488) && (code <= 43492)))))))) : (((code >= 43494) && (code <= 43560)) || (((code >= 43584) && (code <= 43586)) || (((code >= 43588) && (code <= 43595)) || (((code >= 43600) && (code <= 43609)) || (((code >= 43616) && (code <= 43638)) || ((code === 43642) || ((code >= 43646) && (code <= 43695)))))))))) : ((code < 63743) ? ((code < 43761) ? ((code === 43697) || (((code >= 43701) && (code <= 43702)) || (((code >= 43705) && (code <= 43709)) || ((code === 43712) || (((code >= 43714) && (code <= 43741)) || ((code >= 43744) && (code <= 43754))))))) : (((code >= 43762) && (code <= 43764)) || (((code >= 43777) && (code <= 43822)) || (((code >= 43824) && (code <= 43866)) || (((code >= 43868) && (code <= 43881)) || (((code >= 43888) && (code <= 44002)) || (((code >= 44016) && (code <= 44025)) || ((code >= 44032) && (code <= 55291))))))))) : ((code < 65135) ? (((code >= 63744) && (code <= 64217)) || (((code >= 64256) && (code <= 64279)) || ((code === 64285) || (((code >= 64287) && (code <= 64296)) || (((code >= 64298) && (code <= 64433)) || (((code >= 64467) && (code <= 64829)) || ((code >= 64848) && (code <= 65019)))))))) : (((code >= 65136) && (code <= 65276)) || (((code >= 65296) && (code <= 65305)) || (((code >= 65313) && (code <= 65338)) || (((code >= 65345) && (code <= 65370)) || (((code >= 65382) && (code <= 65500)) || (((code >= 65536) && (code <= 65786)) || ((code >= 65799) && (code <= 65843))))))))))) : ((code < 68223) ? ((code < 66775) ? ((code < 66383) ? (((code >= 65856) && (code <= 65912)) || (((code >= 65930) && (code <= 65931)) || (((code >= 66176) && (code <= 66256)) || (((code >= 66273) && (code <= 66299)) || (((code >= 66304) && (code <= 66339)) || ((code >= 66349) && (code <= 66378))))))) : (((code >= 66384) && (code <= 66421)) || (((code >= 66432) && (code <= 66461)) || (((code >= 66464) && (code <= 66511)) || (((code >= 66513) && (code <= 66517)) || (((code >= 66560) && (code <= 66717)) || (((code >= 66720) && (code <= 66729)) || ((code >= 66736) && (code <= 66771))))))))) : ((code < 67834) ? (((code >= 66776) && (code <= 66811)) || (((code >= 66816) && (code <= 66915)) || (((code >= 67072) && (code <= 67669)) || (((code >= 67672) && (code <= 67702)) || (((code >= 67705) && (code <= 67742)) || (((code >= 67751) && (code <= 67759)) || ((code >= 67808) && (code <= 67829)))))))) : (((code >= 67835) && (code <= 67867)) || (((code >= 67872) && (code <= 67897)) || (((code >= 67968) && (code <= 68023)) || (((code >= 68028) && (code <= 68096)) || (((code >= 68112) && (code <= 68149)) || (((code >= 68160) && (code <= 68168)) || ((code >= 68192) && (code <= 68222)))))))))) : ((code < 69215) ? ((code < 68471) ? (((code >= 68224) && (code <= 68255)) || (((code >= 68288) && (code <= 68295)) || (((code >= 68297) && (code <= 68324)) || (((code >= 68331) && (code <= 68335)) || (((code >= 68352) && (code <= 68405)) || (((code >= 68416) && (code <= 68437)) || ((code >= 68440) && (code <= 68466)))))))) : (((code >= 68472) && (code <= 68497)) || (((code >= 68521) && (code <= 68527)) || (((code >= 68608) && (code <= 68680)) || (((code >= 68736) && (code <= 68786)) || (((code >= 68800) && (code <= 68850)) || (((code >= 68858) && (code <= 68899)) || ((code >= 68912) && (code <= 68921))))))))) : ((code < 69713) ? (((code >= 69216) && (code <= 69246)) || (((code >= 69248) && (code <= 69289)) || (((code >= 69296) && (code <= 69445)) || (((code >= 69457) && (code <= 69460)) || (((code >= 69552) && (code <= 69579)) || (((code >= 69600) && (code <= 69622)) || ((code >= 69635) && (code <= 69687)))))))) : (((code >= 69714) && (code <= 69743)) || (((code >= 69763) && (code <= 69807)) || (((code >= 69840) && (code <= 69864)) || (((code >= 69872) && (code <= 69881)) || (((code >= 69891) && (code <= 69926)) || (((code >= 69942) && (code <= 69951)) || (code === 69956))))))))))) : ((code < 73647) ? ((code < 71295) ? ((code < 70479) ? ((code < 70112) ? (((code >= 69959) && (code <= 70002)) || ((code === 70006) || (((code >= 70019) && (code <= 70066)) || (((code >= 70081) && (code <= 70084)) || (((code >= 70096) && (code <= 70106)) || (code === 70108)))))) : (((code >= 70113) && (code <= 70132)) || (((code >= 70144) && (code <= 70187)) || (((code >= 70272) && (code <= 70312)) || (((code >= 70320) && (code <= 70366)) || (((code >= 70384) && (code <= 70393)) || (((code >= 70405) && (code <= 70457)) || (code === 70461)))))))) : ((code < 70854) ? ((code === 70480) || (((code >= 70493) && (code <= 70497)) || (((code >= 70656) && (code <= 70708)) || (((code >= 70727) && (code <= 70730)) || (((code >= 70736) && (code <= 70745)) || (((code >= 70751) && (code <= 70831)) || ((code >= 70852) && (code <= 70853)))))))) : ((code === 70855) || (((code >= 70864) && (code <= 70873)) || (((code >= 71040) && (code <= 71086)) || (((code >= 71128) && (code <= 71131)) || (((code >= 71168) && (code <= 71215)) || ((code === 71236) || ((code >= 71248) && (code <= 71257)))))))))) : ((code < 72271) ? ((code < 71839) ? (((code >= 71296) && (code <= 71338)) || ((code === 71352) || (((code >= 71360) && (code <= 71369)) || (((code >= 71424) && (code <= 71450)) || (((code >= 71472) && (code <= 71483)) || ((code >= 71680) && (code <= 71723))))))) : (((code >= 71840) && (code <= 71922)) || (((code >= 71935) && (code <= 71983)) || (((code >= 72016) && (code <= 72025)) || (((code >= 72096) && (code <= 72144)) || ((code === 72192) || (((code >= 72203) && (code <= 72242)) || ((code === 72250) || ((A2($elm$core$Basics$modBy, 2, code) === 1) && (((code >= 71999) && (code <= 72001)) || ((code >= 72161) && (code <= 72163)))))))))))) : ((code < 72959) ? ((code === 72272) || (((code >= 72284) && (code <= 72329)) || ((code === 72349) || (((code >= 72384) && (code <= 72750)) || ((code === 72768) || (((code >= 72784) && (code <= 72812)) || ((code >= 72818) && (code <= 72847)))))))) : (((code >= 72960) && (code <= 73008)) || ((code === 73030) || (((code >= 73040) && (code <= 73049)) || (((code >= 73056) && (code <= 73097)) || ((code === 73112) || (((code >= 73120) && (code <= 73129)) || ((code >= 73440) && (code <= 73458))))))))))) : ((code < 120571) ? ((code < 93759) ? ((code < 92767) ? ((code === 73648) || (((code >= 73664) && (code <= 73684)) || (((code >= 73728) && (code <= 74649)) || (((code >= 74752) && (code <= 74862)) || (((code >= 74880) && (code <= 78894)) || ((code >= 82944) && (code <= 92766))))))) : (((code >= 92768) && (code <= 92777)) || (((code >= 92880) && (code <= 92909)) || (((code >= 92928) && (code <= 92975)) || (((code >= 92992) && (code <= 92995)) || (((code >= 93008) && (code <= 93017)) || (((code >= 93019) && (code <= 93025)) || ((code >= 93027) && (code <= 93071))))))))) : ((code < 119647) ? (((code >= 93760) && (code <= 93846)) || (((code >= 93952) && (code <= 94026)) || ((code === 94032) || (((code >= 94099) && (code <= 94177)) || ((code === 94179) || (((code >= 94208) && (code <= 113817)) || ((code >= 119520) && (code <= 119539)))))))) : (((code >= 119648) && (code <= 119672)) || (((code >= 119808) && (code <= 120092)) || (((code >= 120094) && (code <= 120144)) || (((code >= 120146) && (code <= 120485)) || (((code >= 120488) && (code <= 120512)) || (((code >= 120514) && (code <= 120538)) || ((code >= 120540) && (code <= 120570)))))))))) : ((code < 123631) ? ((code < 120771) ? (((code >= 120572) && (code <= 120596)) || (((code >= 120598) && (code <= 120628)) || (((code >= 120630) && (code <= 120654)) || (((code >= 120656) && (code <= 120686)) || (((code >= 120688) && (code <= 120712)) || (((code >= 120714) && (code <= 120744)) || ((code >= 120746) && (code <= 120770)))))))) : (((code >= 120772) && (code <= 120779)) || (((code >= 120782) && (code <= 120831)) || (((code >= 123136) && (code <= 123180)) || (((code >= 123191) && (code <= 123197)) || (((code >= 123200) && (code <= 123209)) || ((code === 123214) || ((code >= 123584) && (code <= 123627))))))))) : ((code < 126124) ? (((code >= 123632) && (code <= 123641)) || (((code >= 124928) && (code <= 125124)) || (((code >= 125127) && (code <= 125135)) || (((code >= 125184) && (code <= 125251)) || ((code === 125259) || (((code >= 125264) && (code <= 125273)) || ((code >= 126065) && (code <= 126123)))))))) : (((code >= 126125) && (code <= 126127)) || (((code >= 126129) && (code <= 126253)) || (((code >= 126255) && (code <= 126269)) || (((code >= 126464) && (code <= 126651)) || (((code >= 127232) && (code <= 127244)) || (((code >= 130032) && (code <= 130041)) || ((code >= 131072) && (code <= 201546))))))))))))));
+	var e = function (hex) {
+		return _Utils_eq(hex, code);
+	};
+	var l = function (hex) {
+		return _Utils_cmp(code, hex) < 0;
+	};
+	var r = F2(
+		function (from, to) {
+			return (_Utils_cmp(from, code) < 1) && (_Utils_cmp(code, to) < 1);
+		});
+	return l(256) ? ((((((((((A2(r, 48, 57) || A2(r, 65, 90)) || A2(r, 97, 122)) || e(170)) || A2(r, 178, 179)) || e(181)) || A2(r, 185, 186)) || A2(r, 188, 190)) || A2(r, 192, 214)) || A2(r, 216, 246)) || A2(r, 248, 255)) : (l(43761) ? (l(4695) ? (l(2876) ? (l(2383) ? (l(1648) ? (l(930) ? (((((((((((A2(r, 256, 705) || A2(r, 710, 721)) || A2(r, 736, 740)) || A2(r, 880, 884)) || A2(r, 886, 887)) || A2(r, 890, 893)) || e(895)) || e(902)) || A2(r, 904, 906)) || e(908)) || A2(r, 910, 929)) || ((!A2($elm$core$Basics$modBy, 2, code)) && A2(r, 748, 750))) : ((((((((((A2(r, 931, 1013) || A2(r, 1015, 1153)) || A2(r, 1162, 1327)) || A2(r, 1329, 1366)) || e(1369)) || A2(r, 1376, 1416)) || A2(r, 1488, 1514)) || A2(r, 1519, 1522)) || A2(r, 1568, 1610)) || A2(r, 1632, 1641)) || A2(r, 1646, 1647))) : (l(2041) ? ((((((((((A2(r, 1649, 1747) || e(1749)) || A2(r, 1765, 1766)) || A2(r, 1774, 1788)) || e(1791)) || e(1808)) || A2(r, 1810, 1839)) || A2(r, 1869, 1957)) || e(1969)) || A2(r, 1984, 2026)) || A2(r, 2036, 2037)) : (((((((((((e(2042) || A2(r, 2048, 2069)) || e(2074)) || e(2084)) || e(2088)) || A2(r, 2112, 2136)) || A2(r, 2144, 2154)) || A2(r, 2160, 2183)) || A2(r, 2185, 2190)) || A2(r, 2208, 2249)) || A2(r, 2308, 2361)) || e(2365)))) : (l(2612) ? (l(2509) ? ((((((((((e(2384) || A2(r, 2392, 2401)) || A2(r, 2406, 2415)) || A2(r, 2417, 2432)) || A2(r, 2437, 2444)) || A2(r, 2447, 2448)) || A2(r, 2451, 2472)) || A2(r, 2474, 2480)) || e(2482)) || A2(r, 2486, 2489)) || e(2493)) : ((((((((((e(2510) || A2(r, 2524, 2525)) || A2(r, 2527, 2529)) || A2(r, 2534, 2545)) || A2(r, 2548, 2553)) || e(2556)) || A2(r, 2565, 2570)) || A2(r, 2575, 2576)) || A2(r, 2579, 2600)) || A2(r, 2602, 2608)) || A2(r, 2610, 2611))) : (l(2740) ? ((((((((((A2(r, 2613, 2614) || A2(r, 2616, 2617)) || A2(r, 2649, 2652)) || e(2654)) || A2(r, 2662, 2671)) || A2(r, 2674, 2676)) || A2(r, 2693, 2701)) || A2(r, 2703, 2705)) || A2(r, 2707, 2728)) || A2(r, 2730, 2736)) || A2(r, 2738, 2739)) : (((((((((((A2(r, 2741, 2745) || e(2749)) || e(2768)) || A2(r, 2784, 2785)) || A2(r, 2790, 2799)) || e(2809)) || A2(r, 2821, 2828)) || A2(r, 2831, 2832)) || A2(r, 2835, 2856)) || A2(r, 2858, 2864)) || A2(r, 2866, 2867)) || A2(r, 2869, 2873))))) : (l(3429) ? (l(3159) ? (l(2973) ? ((((((((((e(2877) || A2(r, 2908, 2909)) || A2(r, 2911, 2913)) || A2(r, 2918, 2927)) || A2(r, 2929, 2935)) || e(2947)) || A2(r, 2949, 2954)) || A2(r, 2958, 2960)) || A2(r, 2962, 2965)) || A2(r, 2969, 2970)) || e(2972)) : ((((((((((A2(r, 2974, 2975) || A2(r, 2979, 2980)) || A2(r, 2984, 2986)) || A2(r, 2990, 3001)) || e(3024)) || A2(r, 3046, 3058)) || A2(r, 3077, 3084)) || A2(r, 3086, 3088)) || A2(r, 3090, 3112)) || A2(r, 3114, 3129)) || e(3133))) : (l(3260) ? ((((((((((A2(r, 3160, 3162) || e(3165)) || A2(r, 3168, 3169)) || A2(r, 3174, 3183)) || A2(r, 3192, 3198)) || e(3200)) || A2(r, 3205, 3212)) || A2(r, 3214, 3216)) || A2(r, 3218, 3240)) || A2(r, 3242, 3251)) || A2(r, 3253, 3257)) : (((((((((((e(3261) || A2(r, 3293, 3294)) || A2(r, 3296, 3297)) || A2(r, 3302, 3311)) || A2(r, 3313, 3314)) || A2(r, 3332, 3340)) || A2(r, 3342, 3344)) || A2(r, 3346, 3386)) || e(3389)) || e(3406)) || A2(r, 3412, 3414)) || A2(r, 3416, 3425)))) : (l(3803) ? (l(3663) ? ((((((((((A2(r, 3430, 3448) || A2(r, 3450, 3455)) || A2(r, 3461, 3478)) || A2(r, 3482, 3505)) || A2(r, 3507, 3515)) || e(3517)) || A2(r, 3520, 3526)) || A2(r, 3558, 3567)) || A2(r, 3585, 3632)) || A2(r, 3634, 3635)) || A2(r, 3648, 3654)) : (((((((((((A2(r, 3664, 3673) || A2(r, 3713, 3714)) || e(3716)) || A2(r, 3718, 3722)) || A2(r, 3724, 3747)) || e(3749)) || A2(r, 3751, 3760)) || A2(r, 3762, 3763)) || e(3773)) || A2(r, 3776, 3780)) || e(3782)) || A2(r, 3792, 3801))) : (l(4196) ? ((((((((((A2(r, 3804, 3807) || e(3840)) || A2(r, 3872, 3891)) || A2(r, 3904, 3911)) || A2(r, 3913, 3948)) || A2(r, 3976, 3980)) || A2(r, 4096, 4138)) || A2(r, 4159, 4169)) || A2(r, 4176, 4181)) || A2(r, 4186, 4189)) || e(4193)) : (((((((((((A2(r, 4197, 4198) || A2(r, 4206, 4208)) || A2(r, 4213, 4225)) || e(4238)) || A2(r, 4240, 4249)) || A2(r, 4256, 4293)) || e(4295)) || e(4301)) || A2(r, 4304, 4346)) || A2(r, 4348, 4680)) || A2(r, 4682, 4685)) || A2(r, 4688, 4694)))))) : (l(8489) ? (l(6687) ? (l(5887) ? (l(4881) ? ((((((((((e(4696) || A2(r, 4698, 4701)) || A2(r, 4704, 4744)) || A2(r, 4746, 4749)) || A2(r, 4752, 4784)) || A2(r, 4786, 4789)) || A2(r, 4792, 4798)) || e(4800)) || A2(r, 4802, 4805)) || A2(r, 4808, 4822)) || A2(r, 4824, 4880)) : ((((((((((A2(r, 4882, 4885) || A2(r, 4888, 4954)) || A2(r, 4969, 4988)) || A2(r, 4992, 5007)) || A2(r, 5024, 5109)) || A2(r, 5112, 5117)) || A2(r, 5121, 5740)) || A2(r, 5743, 5759)) || A2(r, 5761, 5786)) || A2(r, 5792, 5866)) || A2(r, 5870, 5880))) : (l(6175) ? ((((((((((A2(r, 5888, 5905) || A2(r, 5919, 5937)) || A2(r, 5952, 5969)) || A2(r, 5984, 5996)) || A2(r, 5998, 6000)) || A2(r, 6016, 6067)) || e(6103)) || e(6108)) || A2(r, 6112, 6121)) || A2(r, 6128, 6137)) || A2(r, 6160, 6169)) : (((((((((((A2(r, 6176, 6264) || A2(r, 6272, 6276)) || A2(r, 6279, 6312)) || e(6314)) || A2(r, 6320, 6389)) || A2(r, 6400, 6430)) || A2(r, 6470, 6509)) || A2(r, 6512, 6516)) || A2(r, 6528, 6571)) || A2(r, 6576, 6601)) || A2(r, 6608, 6618)) || A2(r, 6656, 6678)))) : (l(7967) ? (l(7244) ? ((((((((((A2(r, 6688, 6740) || A2(r, 6784, 6793)) || A2(r, 6800, 6809)) || e(6823)) || A2(r, 6917, 6963)) || A2(r, 6981, 6988)) || A2(r, 6992, 7001)) || A2(r, 7043, 7072)) || A2(r, 7086, 7141)) || A2(r, 7168, 7203)) || A2(r, 7232, 7241)) : ((((((((((A2(r, 7245, 7293) || A2(r, 7296, 7304)) || A2(r, 7312, 7354)) || A2(r, 7357, 7359)) || A2(r, 7401, 7404)) || A2(r, 7406, 7411)) || A2(r, 7413, 7414)) || e(7418)) || A2(r, 7424, 7615)) || A2(r, 7680, 7957)) || A2(r, 7960, 7965))) : (l(8159) ? (((((((((((A2(r, 7968, 8005) || A2(r, 8008, 8013)) || A2(r, 8016, 8023)) || A2(r, 8032, 8061)) || A2(r, 8064, 8116)) || A2(r, 8118, 8124)) || e(8126)) || A2(r, 8130, 8132)) || A2(r, 8134, 8140)) || A2(r, 8144, 8147)) || A2(r, 8150, 8155)) || ((A2($elm$core$Basics$modBy, 2, code) === 1) && A2(r, 8025, 8031))) : ((((((((((((A2(r, 8160, 8172) || A2(r, 8178, 8180)) || A2(r, 8182, 8188)) || A2(r, 8304, 8305)) || A2(r, 8308, 8313)) || A2(r, 8319, 8329)) || A2(r, 8336, 8348)) || e(8450)) || e(8455)) || A2(r, 8458, 8467)) || e(8469)) || A2(r, 8473, 8477)) || ((!A2($elm$core$Basics$modBy, 2, code)) && A2(r, 8484, 8488)))))) : (l(12976) ? (l(11703) ? (l(11505) ? ((((((((((A2(r, 8490, 8493) || A2(r, 8495, 8505)) || A2(r, 8508, 8511)) || A2(r, 8517, 8521)) || e(8526)) || A2(r, 8528, 8585)) || A2(r, 9312, 9371)) || A2(r, 9450, 9471)) || A2(r, 10102, 10131)) || A2(r, 11264, 11492)) || A2(r, 11499, 11502)) : ((((((((((A2(r, 11506, 11507) || e(11517)) || A2(r, 11520, 11557)) || e(11559)) || e(11565)) || A2(r, 11568, 11623)) || e(11631)) || A2(r, 11648, 11670)) || A2(r, 11680, 11686)) || A2(r, 11688, 11694)) || A2(r, 11696, 11702))) : (l(12444) ? ((((((((((A2(r, 11704, 11710) || A2(r, 11712, 11718)) || A2(r, 11720, 11726)) || A2(r, 11728, 11734)) || A2(r, 11736, 11742)) || e(11823)) || A2(r, 12293, 12295)) || A2(r, 12321, 12329)) || A2(r, 12337, 12341)) || A2(r, 12344, 12348)) || A2(r, 12353, 12438)) : (((((((((((A2(r, 12445, 12447) || A2(r, 12449, 12538)) || A2(r, 12540, 12543)) || A2(r, 12549, 12591)) || A2(r, 12593, 12686)) || A2(r, 12690, 12693)) || A2(r, 12704, 12735)) || A2(r, 12784, 12799)) || A2(r, 12832, 12841)) || A2(r, 12872, 12879)) || A2(r, 12881, 12895)) || A2(r, 12928, 12937)))) : (l(43215) ? (l(42774) ? ((((((((((A2(r, 12977, 12991) || e(13312)) || e(19903)) || e(19968)) || A2(r, 40959, 42124)) || A2(r, 42192, 42237)) || A2(r, 42240, 42508)) || A2(r, 42512, 42539)) || A2(r, 42560, 42606)) || A2(r, 42623, 42653)) || A2(r, 42656, 42735)) : ((((((((((((A2(r, 42775, 42783) || A2(r, 42786, 42888)) || A2(r, 42891, 42954)) || A2(r, 42960, 42961)) || A2(r, 42966, 42969)) || A2(r, 42994, 43009)) || A2(r, 43011, 43013)) || A2(r, 43015, 43018)) || A2(r, 43020, 43042)) || A2(r, 43056, 43061)) || A2(r, 43072, 43123)) || A2(r, 43138, 43187)) || ((A2($elm$core$Basics$modBy, 2, code) === 1) && A2(r, 42963, 42965)))) : (l(43519) ? ((((((((((A2(r, 43216, 43225) || A2(r, 43250, 43255)) || e(43259)) || A2(r, 43261, 43262)) || A2(r, 43264, 43301)) || A2(r, 43312, 43334)) || A2(r, 43360, 43388)) || A2(r, 43396, 43442)) || A2(r, 43471, 43481)) || A2(r, 43488, 43492)) || A2(r, 43494, 43518)) : ((((((((((((A2(r, 43520, 43560) || A2(r, 43584, 43586)) || A2(r, 43588, 43595)) || A2(r, 43600, 43609)) || A2(r, 43616, 43638)) || e(43642)) || A2(r, 43646, 43695)) || e(43697)) || A2(r, 43701, 43702)) || A2(r, 43705, 43709)) || A2(r, 43739, 43741)) || A2(r, 43744, 43754)) || ((!A2($elm$core$Basics$modBy, 2, code)) && A2(r, 43712, 43714)))))))) : (l(71839) ? (l(67827) ? (l(65615) ? (l(64317) ? (l(55202) ? ((((((((((A2(r, 43762, 43764) || A2(r, 43777, 43782)) || A2(r, 43785, 43790)) || A2(r, 43793, 43798)) || A2(r, 43808, 43814)) || A2(r, 43816, 43822)) || A2(r, 43824, 43866)) || A2(r, 43868, 43881)) || A2(r, 43888, 44002)) || A2(r, 44016, 44025)) || e(44032)) : ((((((((((e(55203) || A2(r, 55216, 55238)) || A2(r, 55243, 55291)) || A2(r, 63744, 64109)) || A2(r, 64112, 64217)) || A2(r, 64256, 64262)) || A2(r, 64275, 64279)) || e(64285)) || A2(r, 64287, 64296)) || A2(r, 64298, 64310)) || A2(r, 64312, 64316))) : (l(65312) ? ((((((((((e(64318) || A2(r, 64320, 64321)) || A2(r, 64323, 64324)) || A2(r, 64326, 64433)) || A2(r, 64467, 64829)) || A2(r, 64848, 64911)) || A2(r, 64914, 64967)) || A2(r, 65008, 65019)) || A2(r, 65136, 65140)) || A2(r, 65142, 65276)) || A2(r, 65296, 65305)) : (((((((((((A2(r, 65313, 65338) || A2(r, 65345, 65370)) || A2(r, 65382, 65470)) || A2(r, 65474, 65479)) || A2(r, 65482, 65487)) || A2(r, 65490, 65495)) || A2(r, 65498, 65500)) || A2(r, 65536, 65547)) || A2(r, 65549, 65574)) || A2(r, 65576, 65594)) || A2(r, 65596, 65597)) || A2(r, 65599, 65613)))) : (l(66939) ? (l(66431) ? ((((((((((A2(r, 65616, 65629) || A2(r, 65664, 65786)) || A2(r, 65799, 65843)) || A2(r, 65856, 65912)) || A2(r, 65930, 65931)) || A2(r, 66176, 66204)) || A2(r, 66208, 66256)) || A2(r, 66273, 66299)) || A2(r, 66304, 66339)) || A2(r, 66349, 66378)) || A2(r, 66384, 66421)) : ((((((((((A2(r, 66432, 66461) || A2(r, 66464, 66499)) || A2(r, 66504, 66511)) || A2(r, 66513, 66517)) || A2(r, 66560, 66717)) || A2(r, 66720, 66729)) || A2(r, 66736, 66771)) || A2(r, 66776, 66811)) || A2(r, 66816, 66855)) || A2(r, 66864, 66915)) || A2(r, 66928, 66938))) : (l(67462) ? ((((((((((A2(r, 66940, 66954) || A2(r, 66956, 66962)) || A2(r, 66964, 66965)) || A2(r, 66967, 66977)) || A2(r, 66979, 66993)) || A2(r, 66995, 67001)) || A2(r, 67003, 67004)) || A2(r, 67072, 67382)) || A2(r, 67392, 67413)) || A2(r, 67424, 67431)) || A2(r, 67456, 67461)) : (((((((((((A2(r, 67463, 67504) || A2(r, 67506, 67514)) || A2(r, 67584, 67589)) || e(67592)) || A2(r, 67594, 67637)) || A2(r, 67639, 67640)) || e(67644)) || A2(r, 67647, 67669)) || A2(r, 67672, 67702)) || A2(r, 67705, 67742)) || A2(r, 67751, 67759)) || A2(r, 67808, 67826))))) : (l(69967) ? (l(68799) ? (l(68223) ? ((((((((((A2(r, 67828, 67829) || A2(r, 67835, 67867)) || A2(r, 67872, 67897)) || A2(r, 67968, 68023)) || A2(r, 68028, 68047)) || A2(r, 68050, 68096)) || A2(r, 68112, 68115)) || A2(r, 68117, 68119)) || A2(r, 68121, 68149)) || A2(r, 68160, 68168)) || A2(r, 68192, 68222)) : ((((((((((A2(r, 68224, 68255) || A2(r, 68288, 68295)) || A2(r, 68297, 68324)) || A2(r, 68331, 68335)) || A2(r, 68352, 68405)) || A2(r, 68416, 68437)) || A2(r, 68440, 68466)) || A2(r, 68472, 68497)) || A2(r, 68521, 68527)) || A2(r, 68608, 68680)) || A2(r, 68736, 68786))) : (l(69599) ? ((((((((((A2(r, 68800, 68850) || A2(r, 68858, 68899)) || A2(r, 68912, 68921)) || A2(r, 69216, 69246)) || A2(r, 69248, 69289)) || A2(r, 69296, 69297)) || A2(r, 69376, 69415)) || A2(r, 69424, 69445)) || A2(r, 69457, 69460)) || A2(r, 69488, 69505)) || A2(r, 69552, 69579)) : (((((((((((A2(r, 69600, 69622) || A2(r, 69635, 69687)) || A2(r, 69714, 69743)) || A2(r, 69745, 69746)) || e(69749)) || A2(r, 69763, 69807)) || A2(r, 69840, 69864)) || A2(r, 69872, 69881)) || A2(r, 69891, 69926)) || A2(r, 69942, 69951)) || e(69956)) || e(69959)))) : (l(70460) ? (l(70279) ? ((((((((((A2(r, 69968, 70002) || e(70006)) || A2(r, 70019, 70066)) || A2(r, 70081, 70084)) || A2(r, 70096, 70106)) || e(70108)) || A2(r, 70113, 70132)) || A2(r, 70144, 70161)) || A2(r, 70163, 70187)) || A2(r, 70207, 70208)) || A2(r, 70272, 70278)) : (((((((((((e(70280) || A2(r, 70282, 70285)) || A2(r, 70287, 70301)) || A2(r, 70303, 70312)) || A2(r, 70320, 70366)) || A2(r, 70384, 70393)) || A2(r, 70405, 70412)) || A2(r, 70415, 70416)) || A2(r, 70419, 70440)) || A2(r, 70442, 70448)) || A2(r, 70450, 70451)) || A2(r, 70453, 70457))) : (l(71039) ? ((((((((((e(70461) || e(70480)) || A2(r, 70493, 70497)) || A2(r, 70656, 70708)) || A2(r, 70727, 70730)) || A2(r, 70736, 70745)) || A2(r, 70751, 70753)) || A2(r, 70784, 70831)) || A2(r, 70852, 70853)) || e(70855)) || A2(r, 70864, 70873)) : (((((((((((A2(r, 71040, 71086) || A2(r, 71128, 71131)) || A2(r, 71168, 71215)) || e(71236)) || A2(r, 71248, 71257)) || A2(r, 71296, 71338)) || e(71352)) || A2(r, 71360, 71369)) || A2(r, 71424, 71450)) || A2(r, 71472, 71483)) || A2(r, 71488, 71494)) || A2(r, 71680, 71723)))))) : (l(119981) ? (l(92159) ? (l(72967) ? (l(72249) ? (((((((((((A2(r, 71840, 71922) || A2(r, 71935, 71942)) || e(71945)) || A2(r, 71948, 71955)) || A2(r, 71957, 71958)) || A2(r, 71960, 71983)) || A2(r, 72016, 72025)) || A2(r, 72096, 72103)) || A2(r, 72106, 72144)) || e(72192)) || A2(r, 72203, 72242)) || ((A2($elm$core$Basics$modBy, 2, code) === 1) && (A2(r, 71999, 72001) || A2(r, 72161, 72163)))) : ((((((((((e(72250) || e(72272)) || A2(r, 72284, 72329)) || e(72349)) || A2(r, 72368, 72440)) || A2(r, 72704, 72712)) || A2(r, 72714, 72750)) || e(72768)) || A2(r, 72784, 72812)) || A2(r, 72818, 72847)) || A2(r, 72960, 72966))) : (l(73475) ? ((((((((((A2(r, 72968, 72969) || A2(r, 72971, 73008)) || e(73030)) || A2(r, 73040, 73049)) || A2(r, 73056, 73061)) || A2(r, 73063, 73064)) || A2(r, 73066, 73097)) || e(73112)) || A2(r, 73120, 73129)) || A2(r, 73440, 73458)) || e(73474)) : (((((((((((A2(r, 73476, 73488) || A2(r, 73490, 73523)) || A2(r, 73552, 73561)) || e(73648)) || A2(r, 73664, 73684)) || A2(r, 73728, 74649)) || A2(r, 74752, 74862)) || A2(r, 74880, 75075)) || A2(r, 77712, 77808)) || A2(r, 77824, 78895)) || A2(r, 78913, 78918)) || A2(r, 82944, 83526)))) : (l(101639) ? (l(93052) ? ((((((((((A2(r, 92160, 92728) || A2(r, 92736, 92766)) || A2(r, 92768, 92777)) || A2(r, 92784, 92862)) || A2(r, 92864, 92873)) || A2(r, 92880, 92909)) || A2(r, 92928, 92975)) || A2(r, 92992, 92995)) || A2(r, 93008, 93017)) || A2(r, 93019, 93025)) || A2(r, 93027, 93047)) : ((((((((((A2(r, 93053, 93071) || A2(r, 93760, 93846)) || A2(r, 93952, 94026)) || e(94032)) || A2(r, 94099, 94111)) || A2(r, 94176, 94177)) || e(94179)) || e(94208)) || e(100343)) || A2(r, 100352, 101589)) || e(101632))) : (l(113775) ? ((((((((((e(101640) || A2(r, 110576, 110579)) || A2(r, 110581, 110587)) || A2(r, 110589, 110590)) || A2(r, 110592, 110882)) || e(110898)) || A2(r, 110928, 110930)) || e(110933)) || A2(r, 110948, 110951)) || A2(r, 110960, 111355)) || A2(r, 113664, 113770)) : (((((((((((A2(r, 113776, 113788) || A2(r, 113792, 113800)) || A2(r, 113808, 113817)) || A2(r, 119488, 119507)) || A2(r, 119520, 119539)) || A2(r, 119648, 119672)) || A2(r, 119808, 119892)) || A2(r, 119894, 119964)) || A2(r, 119966, 119967)) || e(119970)) || A2(r, 119973, 119974)) || A2(r, 119977, 119980))))) : (l(125263) ? (l(120745) ? (l(120137) ? ((((((((((A2(r, 119982, 119993) || e(119995)) || A2(r, 119997, 120003)) || A2(r, 120005, 120069)) || A2(r, 120071, 120074)) || A2(r, 120077, 120084)) || A2(r, 120086, 120092)) || A2(r, 120094, 120121)) || A2(r, 120123, 120126)) || A2(r, 120128, 120132)) || e(120134)) : ((((((((((A2(r, 120138, 120144) || A2(r, 120146, 120485)) || A2(r, 120488, 120512)) || A2(r, 120514, 120538)) || A2(r, 120540, 120570)) || A2(r, 120572, 120596)) || A2(r, 120598, 120628)) || A2(r, 120630, 120654)) || A2(r, 120656, 120686)) || A2(r, 120688, 120712)) || A2(r, 120714, 120744))) : (l(123583) ? ((((((((((A2(r, 120746, 120770) || A2(r, 120772, 120779)) || A2(r, 120782, 120831)) || A2(r, 122624, 122654)) || A2(r, 122661, 122666)) || A2(r, 122928, 122989)) || A2(r, 123136, 123180)) || A2(r, 123191, 123197)) || A2(r, 123200, 123209)) || e(123214)) || A2(r, 123536, 123565)) : (((((((((((A2(r, 123584, 123627) || A2(r, 123632, 123641)) || A2(r, 124112, 124139)) || A2(r, 124144, 124153)) || A2(r, 124896, 124902)) || A2(r, 124904, 124907)) || A2(r, 124909, 124910)) || A2(r, 124912, 124926)) || A2(r, 124928, 125124)) || A2(r, 125127, 125135)) || A2(r, 125184, 125251)) || e(125259)))) : (l(126589) ? (l(126504) ? ((((((((((A2(r, 125264, 125273) || A2(r, 126065, 126123)) || A2(r, 126125, 126127)) || A2(r, 126129, 126132)) || A2(r, 126209, 126253)) || A2(r, 126255, 126269)) || A2(r, 126464, 126467)) || A2(r, 126469, 126495)) || A2(r, 126497, 126498)) || e(126500)) || e(126503)) : ((((((((((((A2(r, 126505, 126514) || A2(r, 126516, 126519)) || e(126530)) || A2(r, 126541, 126543)) || A2(r, 126545, 126546)) || e(126548)) || A2(r, 126561, 126562)) || e(126564)) || A2(r, 126567, 126570)) || A2(r, 126572, 126578)) || A2(r, 126580, 126583)) || A2(r, 126585, 126588)) || ((A2($elm$core$Basics$modBy, 2, code) === 1) && ((A2(r, 126521, 126523) || A2(r, 126535, 126539)) || A2(r, 126551, 126559))))) : (l(177976) ? ((((((((((e(126590) || A2(r, 126592, 126601)) || A2(r, 126603, 126619)) || A2(r, 126625, 126627)) || A2(r, 126629, 126633)) || A2(r, 126635, 126651)) || A2(r, 127232, 127244)) || A2(r, 130032, 130041)) || e(131072)) || e(173791)) || e(173824)) : (((((((((((e(177977) || e(177984)) || e(178205)) || e(178208)) || e(183969)) || e(183984)) || e(191456)) || A2(r, 194560, 195101)) || e(196608)) || e(201546)) || e(201552)) || e(205743))))))));
 };
+var $elm$core$Char$toLower = _Char_toLower;
+var $elm$core$Char$toUpper = _Char_toUpper;
 var $miniBill$elm_unicode$Unicode$isLower = function (c) {
+	var simple = _Utils_eq(
+		$elm$core$Char$toLower(c),
+		c) && (!_Utils_eq(
+		$elm$core$Char$toUpper(c),
+		c));
 	var code = $elm$core$Char$toCode(c);
-	return (code < 256) ? (((code >= 97) && (code <= 122)) || ((code === 181) || (((code >= 223) && (code <= 246)) || ((code >= 248) && (code <= 255))))) : ((code < 8457) ? ((code < 1006) ? ((code < 453) ? ((code < 408) ? (((code >= 311) && (code <= 312)) || (((code >= 328) && (code <= 329)) || (((code >= 382) && (code <= 384)) || ((code === 392) || (((code >= 396) && (code <= 397)) || ((code === 402) || ((code === 405) || ((!A2($elm$core$Basics$modBy, 2, code)) ? (((code >= 314) && (code <= 326)) || ((code >= 378) && (code <= 380))) : (((code >= 257) && (code <= 309)) || (((code >= 331) && (code <= 375)) || ((code >= 387) && (code <= 389)))))))))))) : (((code >= 409) && (code <= 411)) || ((code === 414) || ((code === 424) || (((code >= 426) && (code <= 427)) || ((code === 429) || ((code === 432) || (((code >= 441) && (code <= 442)) || (((code >= 445) && (code <= 447)) || ((!A2($elm$core$Basics$modBy, 2, code)) ? ((code >= 436) && (code <= 438)) : ((code >= 417) && (code <= 421)))))))))))) : ((code < 590) ? ((code === 454) || ((code === 457) || (((code >= 476) && (code <= 477)) || (((code >= 495) && (code <= 496)) || (((code >= 563) && (code <= 569)) || ((code === 572) || (((code >= 575) && (code <= 576)) || ((code === 578) || ((!A2($elm$core$Basics$modBy, 2, code)) ? ((code >= 460) && (code <= 474)) : (((code >= 479) && (code <= 493)) || (((code >= 499) && (code <= 501)) || (((code >= 505) && (code <= 561)) || ((code >= 583) && (code <= 589)))))))))))))) : (((code >= 591) && (code <= 659)) || (((code >= 661) && (code <= 687)) || ((code === 887) || (((code >= 891) && (code <= 893)) || ((code === 912) || (((code >= 940) && (code <= 974)) || (((code >= 976) && (code <= 977)) || (((code >= 981) && (code <= 983)) || ((A2($elm$core$Basics$modBy, 2, code) === 1) && (((code >= 881) && (code <= 883)) || ((code >= 985) && (code <= 1005)))))))))))))) : ((code < 7934) ? ((code < 4303) ? (((code >= 1007) && (code <= 1011)) || ((code === 1013) || ((code === 1016) || (((code >= 1019) && (code <= 1020)) || (((code >= 1072) && (code <= 1119)) || (((code >= 1230) && (code <= 1231)) || (((code >= 1376) && (code <= 1416)) || ((!A2($elm$core$Basics$modBy, 2, code)) ? ((code >= 1218) && (code <= 1228)) : (((code >= 1121) && (code <= 1153)) || (((code >= 1163) && (code <= 1215)) || ((code >= 1233) && (code <= 1327)))))))))))) : (((code >= 4304) && (code <= 4346)) || (((code >= 4349) && (code <= 4351)) || (((code >= 5112) && (code <= 5117)) || (((code >= 7296) && (code <= 7304)) || (((code >= 7424) && (code <= 7467)) || (((code >= 7531) && (code <= 7543)) || (((code >= 7545) && (code <= 7578)) || (((code >= 7829) && (code <= 7837)) || ((A2($elm$core$Basics$modBy, 2, code) === 1) && (((code >= 7681) && (code <= 7827)) || ((code >= 7839) && (code <= 7933))))))))))))) : ((code < 8079) ? (((code >= 7935) && (code <= 7943)) || (((code >= 7952) && (code <= 7957)) || (((code >= 7968) && (code <= 7975)) || (((code >= 7984) && (code <= 7991)) || (((code >= 8000) && (code <= 8005)) || (((code >= 8016) && (code <= 8023)) || (((code >= 8032) && (code <= 8039)) || ((code >= 8048) && (code <= 8071))))))))) : (((code >= 8080) && (code <= 8087)) || (((code >= 8096) && (code <= 8103)) || (((code >= 8112) && (code <= 8119)) || ((code === 8126) || (((code >= 8130) && (code <= 8135)) || (((code >= 8144) && (code <= 8151)) || (((code >= 8160) && (code <= 8167)) || ((code >= 8178) && (code <= 8183)))))))))))) : ((code < 65344) ? ((code < 11381) ? ((code < 8517) ? ((code === 8458) || (((code >= 8462) && (code <= 8463)) || ((code === 8467) || ((code === 8495) || ((code === 8500) || ((code === 8505) || ((code >= 8508) && (code <= 8509)))))))) : (((code >= 8518) && (code <= 8521)) || ((code === 8526) || ((code === 8580) || (((code >= 11312) && (code <= 11358)) || ((code === 11361) || (((code >= 11365) && (code <= 11366)) || ((code === 11377) || (((code >= 11379) && (code <= 11380)) || ((!A2($elm$core$Basics$modBy, 2, code)) && ((code >= 11368) && (code <= 11372)))))))))))) : ((code < 42926) ? (((code >= 11382) && (code <= 11387)) || (((code >= 11491) && (code <= 11492)) || ((code === 11507) || (((code >= 11520) && (code <= 11565)) || (((code >= 42799) && (code <= 42801)) || (((code >= 42865) && (code <= 42872)) || ((code === 42897) || (((code >= 42899) && (code <= 42901)) || ((!A2($elm$core$Basics$modBy, 2, code)) ? (((code >= 11500) && (code <= 11502)) || (((code >= 42874) && (code <= 42876)) || ((code >= 42892) && (code <= 42894)))) : (((code >= 11393) && (code <= 11489)) || (((code >= 42561) && (code <= 42605)) || (((code >= 42625) && (code <= 42651)) || (((code >= 42787) && (code <= 42797)) || (((code >= 42803) && (code <= 42863)) || (((code >= 42879) && (code <= 42887)) || ((code >= 42903) && (code <= 42921))))))))))))))))) : ((code === 42927) || ((code === 42947) || ((code === 42998) || ((code === 43002) || (((code >= 43824) && (code <= 43866)) || (((code >= 43872) && (code <= 43880)) || (((code >= 43888) && (code <= 43967)) || (((code >= 64256) && (code <= 64279)) || ((!A2($elm$core$Basics$modBy, 2, code)) ? ((code >= 42952) && (code <= 42954)) : ((code >= 42933) && (code <= 42943))))))))))))) : ((code < 120301) ? ((code < 119885) ? (((code >= 65345) && (code <= 65370)) || (((code >= 66600) && (code <= 66639)) || (((code >= 66776) && (code <= 66811)) || (((code >= 68800) && (code <= 68850)) || (((code >= 71872) && (code <= 71903)) || (((code >= 93792) && (code <= 93823)) || ((code >= 119834) && (code <= 119859)))))))) : (((code >= 119886) && (code <= 119911)) || (((code >= 119938) && (code <= 119963)) || (((code >= 119990) && (code <= 120015)) || (((code >= 120042) && (code <= 120067)) || (((code >= 120094) && (code <= 120119)) || (((code >= 120146) && (code <= 120171)) || (((code >= 120198) && (code <= 120223)) || ((code >= 120250) && (code <= 120275)))))))))) : ((code < 120629) ? (((code >= 120302) && (code <= 120327)) || (((code >= 120354) && (code <= 120379)) || (((code >= 120406) && (code <= 120431)) || (((code >= 120458) && (code <= 120485)) || (((code >= 120514) && (code <= 120538)) || (((code >= 120540) && (code <= 120545)) || (((code >= 120572) && (code <= 120596)) || ((code >= 120598) && (code <= 120603))))))))) : (((code >= 120630) && (code <= 120654)) || (((code >= 120656) && (code <= 120661)) || (((code >= 120688) && (code <= 120712)) || (((code >= 120714) && (code <= 120719)) || (((code >= 120746) && (code <= 120770)) || (((code >= 120772) && (code <= 120777)) || ((code === 120779) || ((code >= 125218) && (code <= 125251)))))))))))));
+	var e = function (hex) {
+		return _Utils_eq(hex, code);
+	};
+	var l = function (hex) {
+		return _Utils_cmp(code, hex) < 0;
+	};
+	var r = F2(
+		function (from, to) {
+			return (_Utils_cmp(from, code) < 1) && (_Utils_cmp(code, to) < 1);
+		});
+	return (simple && ((((code <= 836) || A2(r, 838, 8559)) || A2(r, 8576, 9423)) || A2(r, 9450, 983040))) || (l(43001) ? (l(8457) ? (l(590) ? (((((((A2(r, 311, 312) || A2(r, 396, 397)) || A2(r, 409, 411)) || A2(r, 426, 427)) || A2(r, 441, 442)) || A2(r, 445, 447)) || e(545)) || A2(r, 563, 569)) : ((((((((A2(r, 591, 659) || A2(r, 661, 687)) || A2(r, 1019, 1020)) || A2(r, 1376, 1416)) || A2(r, 7424, 7467)) || A2(r, 7531, 7543)) || A2(r, 7545, 7578)) || A2(r, 7829, 7837)) || e(7839))) : (l(11376) ? (((((((e(8458) || A2(r, 8462, 8463)) || e(8467)) || e(8495)) || e(8500)) || e(8505)) || A2(r, 8508, 8509)) || A2(r, 8518, 8521)) : (((((((((e(11377) || A2(r, 11379, 11380)) || A2(r, 11382, 11387)) || A2(r, 11491, 11492)) || A2(r, 42799, 42801)) || A2(r, 42865, 42872)) || e(42894)) || A2(r, 42899, 42901)) || e(42927)) || ((A2($elm$core$Basics$modBy, 2, code) === 1) && A2(r, 42963, 42965))))) : (l(120353) ? (l(119994) ? (((((((e(43002) || A2(r, 43824, 43866)) || A2(r, 43872, 43880)) || A2(r, 119834, 119859)) || A2(r, 119886, 119892)) || A2(r, 119894, 119911)) || A2(r, 119938, 119963)) || A2(r, 119990, 119993)) : ((((((((e(119995) || A2(r, 119997, 120003)) || A2(r, 120005, 120015)) || A2(r, 120042, 120067)) || A2(r, 120094, 120119)) || A2(r, 120146, 120171)) || A2(r, 120198, 120223)) || A2(r, 120250, 120275)) || A2(r, 120302, 120327))) : (l(120655) ? (((((((A2(r, 120354, 120379) || A2(r, 120406, 120431)) || A2(r, 120458, 120485)) || A2(r, 120514, 120538)) || A2(r, 120540, 120545)) || A2(r, 120572, 120596)) || A2(r, 120598, 120603)) || A2(r, 120630, 120654)) : ((((((((A2(r, 120656, 120661) || A2(r, 120688, 120712)) || A2(r, 120714, 120719)) || A2(r, 120746, 120770)) || A2(r, 120772, 120777)) || e(120779)) || A2(r, 122624, 122633)) || A2(r, 122635, 122654)) || A2(r, 122661, 122666)))));
 };
 var $stil4m$elm_syntax$Elm$Parser$Tokens$reservedList = _List_fromArray(
 	['module', 'exposing', 'import', 'as', 'if', 'then', 'else', 'let', 'in', 'case', 'of', 'port', 'type', 'where']);
@@ -8810,7 +8993,7 @@ var $elm$parser$Parser$Advanced$varHelp = F7(
 		while (true) {
 			var newOffset = A3($elm$parser$Parser$Advanced$isSubChar, isGood, offset, src);
 			if (_Utils_eq(newOffset, -1)) {
-				return {es: col, i: context, m: indent, d: offset, bs: row, c: src};
+				return {e_: col, i: context, m: indent, d: offset, bD: row, c: src};
 			} else {
 				if (_Utils_eq(newOffset, -2)) {
 					var $temp$isGood = isGood,
@@ -8850,34 +9033,34 @@ var $elm$parser$Parser$Advanced$varHelp = F7(
 	});
 var $elm$parser$Parser$Advanced$variable = function (i) {
 	return function (s) {
-		var firstOffset = A3($elm$parser$Parser$Advanced$isSubChar, i.cm, s.d, s.c);
+		var firstOffset = A3($elm$parser$Parser$Advanced$isSubChar, i.cN, s.d, s.c);
 		if (_Utils_eq(firstOffset, -1)) {
 			return A2(
 				$elm$parser$Parser$Advanced$Bad,
 				false,
-				A2($elm$parser$Parser$Advanced$fromState, s, i.eF));
+				A2($elm$parser$Parser$Advanced$fromState, s, i.fb));
 		} else {
-			var s1 = _Utils_eq(firstOffset, -2) ? A7($elm$parser$Parser$Advanced$varHelp, i.eW, s.d + 1, s.bs + 1, 1, s.c, s.m, s.i) : A7($elm$parser$Parser$Advanced$varHelp, i.eW, firstOffset, s.bs, s.es + 1, s.c, s.m, s.i);
+			var s1 = _Utils_eq(firstOffset, -2) ? A7($elm$parser$Parser$Advanced$varHelp, i.fs, s.d + 1, s.bD + 1, 1, s.c, s.m, s.i) : A7($elm$parser$Parser$Advanced$varHelp, i.fs, firstOffset, s.bD, s.e_ + 1, s.c, s.m, s.i);
 			var name = A3($elm$core$String$slice, s.d, s1.d, s.c);
-			return A2($elm$core$Set$member, name, i.ff) ? A2(
+			return A2($elm$core$Set$member, name, i.fP) ? A2(
 				$elm$parser$Parser$Advanced$Bad,
 				false,
-				A2($elm$parser$Parser$Advanced$fromState, s, i.eF)) : A3($elm$parser$Parser$Advanced$Good, true, name, s1);
+				A2($elm$parser$Parser$Advanced$fromState, s, i.fb)) : A3($elm$parser$Parser$Advanced$Good, true, name, s1);
 		}
 	};
 };
 var $elm$parser$Parser$variable = function (i) {
 	return $elm$parser$Parser$Advanced$variable(
-		{eF: $elm$parser$Parser$ExpectingVariable, eW: i.eW, ff: i.ff, cm: i.cm});
+		{fb: $elm$parser$Parser$ExpectingVariable, fs: i.fs, fP: i.fP, cN: i.cN});
 };
 var $stil4m$elm_syntax$Elm$Parser$Tokens$functionName = $stil4m$elm_syntax$Combine$fromCore(
 	$elm$parser$Parser$variable(
 		{
-			eW: function (c) {
+			fs: function (c) {
 				return $miniBill$elm_unicode$Unicode$isAlphaNum(c) || (c === '_');
 			},
-			ff: $elm$core$Set$fromList($stil4m$elm_syntax$Elm$Parser$Tokens$reservedList),
-			cm: $miniBill$elm_unicode$Unicode$isLower
+			fP: $elm$core$Set$fromList($stil4m$elm_syntax$Elm$Parser$Tokens$reservedList),
+			cN: $miniBill$elm_unicode$Unicode$isLower
 		}));
 var $elm$parser$Parser$ExpectingKeyword = function (a) {
 	return {$: 9, a: a};
@@ -8887,7 +9070,7 @@ var $elm$parser$Parser$Advanced$keyword = function (_v0) {
 	var expecting = _v0.b;
 	var progress = !$elm$core$String$isEmpty(kwd);
 	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, kwd, s.d, s.bs, s.es, s.c);
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, kwd, s.d, s.bD, s.e_, s.c);
 		var newOffset = _v1.a;
 		var newRow = _v1.b;
 		var newCol = _v1.c;
@@ -8904,7 +9087,7 @@ var $elm$parser$Parser$Advanced$keyword = function (_v0) {
 			$elm$parser$Parser$Advanced$Good,
 			progress,
 			0,
-			{es: newCol, i: s.i, m: s.m, d: newOffset, bs: newRow, c: s.c});
+			{e_: newCol, i: s.i, m: s.m, d: newOffset, bD: newRow, c: s.c});
 	};
 };
 var $elm$parser$Parser$keyword = function (kwd) {
@@ -8947,7 +9130,7 @@ var $elm$parser$Parser$Advanced$chompUntil = function (_v0) {
 	var str = _v0.a;
 	var expecting = _v0.b;
 	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$findSubString, str, s.d, s.bs, s.es, s.c);
+		var _v1 = A5($elm$parser$Parser$Advanced$findSubString, str, s.d, s.bD, s.e_, s.c);
 		var newOffset = _v1.a;
 		var newRow = _v1.b;
 		var newCol = _v1.c;
@@ -8958,7 +9141,7 @@ var $elm$parser$Parser$Advanced$chompUntil = function (_v0) {
 			$elm$parser$Parser$Advanced$Good,
 			_Utils_cmp(s.d, newOffset) < 0,
 			0,
-			{es: newCol, i: s.i, m: s.m, d: newOffset, bs: newRow, c: s.c});
+			{e_: newCol, i: s.i, m: s.m, d: newOffset, bD: newRow, c: s.c});
 	};
 };
 var $elm$parser$Parser$Advanced$isChar = function (_char) {
@@ -9072,7 +9255,7 @@ var $stil4m$elm_syntax$Elm$Parser$State$addComment = F2(
 		return _Utils_update(
 			s,
 			{
-				fU: A2($elm$core$List$cons, pair, s.fU)
+				gs: A2($elm$core$List$cons, pair, s.gs)
 			});
 	});
 var $stil4m$elm_syntax$Combine$modifyState = function (f) {
@@ -9267,8 +9450,8 @@ var $stil4m$elm_syntax$Elm$Parser$Layout$verifyIndent = function (f) {
 					return A2(
 						f,
 						$stil4m$elm_syntax$Elm$Parser$State$expectedColumn(s),
-						l.bb) ? $stil4m$elm_syntax$Combine$succeed(0) : $stil4m$elm_syntax$Combine$fail(
-						'Expected higher indent than ' + $elm$core$String$fromInt(l.bb));
+						l.bh) ? $stil4m$elm_syntax$Combine$succeed(0) : $stil4m$elm_syntax$Combine$fail(
+						'Expected higher indent than ' + $elm$core$String$fromInt(l.bh));
 				});
 		});
 };
@@ -9350,7 +9533,7 @@ var $elm$parser$Parser$Advanced$consumeBase = _Parser_consumeBase;
 var $elm$parser$Parser$Advanced$consumeBase16 = _Parser_consumeBase16;
 var $elm$parser$Parser$Advanced$bumpOffset = F2(
 	function (newOffset, s) {
-		return {es: s.es + (newOffset - s.d), i: s.i, m: s.m, d: newOffset, bs: s.bs, c: s.c};
+		return {e_: s.e_ + (newOffset - s.d), i: s.i, m: s.m, d: newOffset, bD: s.bD, c: s.c};
 	});
 var $elm$parser$Parser$Advanced$chompBase10 = _Parser_chompBase10;
 var $elm$parser$Parser$Advanced$isAsciiCode = _Parser_isAsciiCode;
@@ -9403,7 +9586,7 @@ var $elm$parser$Parser$Advanced$finalizeFloat = F6(
 			return A2(
 				$elm$parser$Parser$Advanced$Bad,
 				true,
-				A4($elm$parser$Parser$Advanced$fromInfo, s.bs, s.es - (floatOffset + s.d), invalid, s.i));
+				A4($elm$parser$Parser$Advanced$fromInfo, s.bD, s.e_ - (floatOffset + s.d), invalid, s.i));
 		} else {
 			if (_Utils_eq(s.d, floatOffset)) {
 				return A2(
@@ -9449,37 +9632,37 @@ var $elm$parser$Parser$Advanced$number = function (c) {
 			var baseOffset = zeroOffset + 1;
 			return A3($elm$parser$Parser$Advanced$isAsciiCode, 120, zeroOffset, s.c) ? A5(
 				$elm$parser$Parser$Advanced$finalizeInt,
-				c.gd,
-				c.eT,
+				c.gN,
+				c.fp,
 				baseOffset,
 				A2($elm$parser$Parser$Advanced$consumeBase16, baseOffset, s.c),
 				s) : (A3($elm$parser$Parser$Advanced$isAsciiCode, 111, zeroOffset, s.c) ? A5(
 				$elm$parser$Parser$Advanced$finalizeInt,
-				c.gd,
-				c.e9,
+				c.gN,
+				c.fH,
 				baseOffset,
 				A3($elm$parser$Parser$Advanced$consumeBase, 8, baseOffset, s.c),
 				s) : (A3($elm$parser$Parser$Advanced$isAsciiCode, 98, zeroOffset, s.c) ? A5(
 				$elm$parser$Parser$Advanced$finalizeInt,
-				c.gd,
-				c.eo,
+				c.gN,
+				c.eW,
 				baseOffset,
 				A3($elm$parser$Parser$Advanced$consumeBase, 2, baseOffset, s.c),
 				s) : A6(
 				$elm$parser$Parser$Advanced$finalizeFloat,
-				c.gd,
-				c.eF,
-				c.eX,
-				c.eN,
+				c.gN,
+				c.fb,
+				c.ft,
+				c.fj,
 				_Utils_Tuple2(zeroOffset, 0),
 				s)));
 		} else {
 			return A6(
 				$elm$parser$Parser$Advanced$finalizeFloat,
-				c.gd,
-				c.eF,
-				c.eX,
-				c.eN,
+				c.gN,
+				c.fb,
+				c.ft,
+				c.fj,
 				A3($elm$parser$Parser$Advanced$consumeBase, 10, s.d, s.c),
 				s);
 		}
@@ -9488,24 +9671,24 @@ var $elm$parser$Parser$Advanced$number = function (c) {
 var $elm$parser$Parser$number = function (i) {
 	return $elm$parser$Parser$Advanced$number(
 		{
-			eo: A2($elm$core$Result$fromMaybe, $elm$parser$Parser$ExpectingBinary, i.eo),
-			eF: $elm$parser$Parser$ExpectingNumber,
-			eN: A2($elm$core$Result$fromMaybe, $elm$parser$Parser$ExpectingFloat, i.eN),
-			eT: A2($elm$core$Result$fromMaybe, $elm$parser$Parser$ExpectingHex, i.eT),
-			eX: A2($elm$core$Result$fromMaybe, $elm$parser$Parser$ExpectingInt, i.eX),
-			gd: $elm$parser$Parser$ExpectingNumber,
-			e9: A2($elm$core$Result$fromMaybe, $elm$parser$Parser$ExpectingOctal, i.e9)
+			eW: A2($elm$core$Result$fromMaybe, $elm$parser$Parser$ExpectingBinary, i.eW),
+			fb: $elm$parser$Parser$ExpectingNumber,
+			fj: A2($elm$core$Result$fromMaybe, $elm$parser$Parser$ExpectingFloat, i.fj),
+			fp: A2($elm$core$Result$fromMaybe, $elm$parser$Parser$ExpectingHex, i.fp),
+			ft: A2($elm$core$Result$fromMaybe, $elm$parser$Parser$ExpectingInt, i.ft),
+			gN: $elm$parser$Parser$ExpectingNumber,
+			fH: A2($elm$core$Result$fromMaybe, $elm$parser$Parser$ExpectingOctal, i.fH)
 		});
 };
 var $stil4m$elm_syntax$Elm$Parser$Numbers$raw = F3(
 	function (floatf, intf, hexf) {
 		return $elm$parser$Parser$number(
 			{
-				eo: $elm$core$Maybe$Nothing,
-				eN: $elm$core$Maybe$Just(floatf),
-				eT: $elm$core$Maybe$Just(hexf),
-				eX: $elm$core$Maybe$Just(intf),
-				e9: $elm$core$Maybe$Nothing
+				eW: $elm$core$Maybe$Nothing,
+				fj: $elm$core$Maybe$Just(floatf),
+				fp: $elm$core$Maybe$Just(hexf),
+				ft: $elm$core$Maybe$Just(intf),
+				fH: $elm$core$Maybe$Nothing
 			});
 	});
 var $stil4m$elm_syntax$Elm$Parser$Numbers$number = F3(
@@ -9564,12 +9747,12 @@ var $elm$parser$Parser$Advanced$getOffset = function (s) {
 var $elm$parser$Parser$getOffset = $elm$parser$Parser$Advanced$getOffset;
 var $stil4m$elm_syntax$Elm$Parser$Tokens$stringLiteral = function () {
 	var helper = function (s) {
-		return s.N ? A2(
+		return s.Q ? A2(
 			$elm$parser$Parser$map,
 			function (v) {
 				return $elm$parser$Parser$Loop(
 					{
-						N: false,
+						Q: false,
 						v: A2(
 							$elm$core$List$cons,
 							$elm$core$String$fromList(
@@ -9593,7 +9776,7 @@ var $stil4m$elm_syntax$Elm$Parser$Tokens$stringLiteral = function () {
 					$elm$parser$Parser$map,
 					function (_v1) {
 						return $elm$parser$Parser$Loop(
-							{N: true, v: s.v});
+							{Q: true, v: s.v});
 					},
 					$elm$parser$Parser$getChompedString(
 						$elm$parser$Parser$symbol('\\'))),
@@ -9606,7 +9789,7 @@ var $stil4m$elm_syntax$Elm$Parser$Tokens$stringLiteral = function () {
 						return _Utils_eq(start, end) ? $elm$parser$Parser$problem('Expected a string character or a double quote') : $elm$parser$Parser$succeed(
 							$elm$parser$Parser$Loop(
 								{
-									N: s.N,
+									Q: s.Q,
 									v: A2($elm$core$List$cons, value, s.v)
 								}));
 					},
@@ -9639,21 +9822,36 @@ var $stil4m$elm_syntax$Elm$Parser$Tokens$stringLiteral = function () {
 				$elm$parser$Parser$symbol('\"')),
 			A2(
 				$elm$parser$Parser$loop,
-				{N: false, v: _List_Nil},
+				{Q: false, v: _List_Nil},
 				helper)));
 }();
 var $miniBill$elm_unicode$Unicode$isUpper = function (c) {
+	var simple = _Utils_eq(
+		$elm$core$Char$toUpper(c),
+		c) && (!_Utils_eq(
+		$elm$core$Char$toLower(c),
+		c));
 	var code = $elm$core$Char$toCode(c);
-	return (code < 256) ? (((code >= 65) && (code <= 90)) || (((code >= 192) && (code <= 214)) || ((code >= 216) && (code <= 222)))) : ((code < 8167) ? ((code < 578) ? ((code < 429) ? ((code < 402) ? (((code >= 376) && (code <= 377)) || (((code >= 385) && (code <= 386)) || ((code === 388) || (((code >= 390) && (code <= 391)) || (((code >= 393) && (code <= 395)) || (((code >= 398) && (code <= 401)) || ((!A2($elm$core$Basics$modBy, 2, code)) ? (((code >= 256) && (code <= 310)) || ((code >= 330) && (code <= 374))) : (((code >= 313) && (code <= 327)) || ((code >= 379) && (code <= 381)))))))))) : (((code >= 403) && (code <= 404)) || (((code >= 406) && (code <= 408)) || (((code >= 412) && (code <= 413)) || (((code >= 415) && (code <= 416)) || (((code >= 422) && (code <= 423)) || ((code === 425) || ((code === 428) || ((!A2($elm$core$Basics$modBy, 2, code)) && ((code >= 418) && (code <= 420))))))))))) : ((code < 457) ? (((code >= 430) && (code <= 431)) || (((code >= 433) && (code <= 435)) || ((code === 437) || (((code >= 439) && (code <= 440)) || ((code === 444) || ((code === 452) || (code === 455))))))) : ((code === 458) || ((code === 497) || ((code === 500) || (((code >= 502) && (code <= 504)) || (((code >= 570) && (code <= 571)) || (((code >= 573) && (code <= 574)) || ((code === 577) || ((!A2($elm$core$Basics$modBy, 2, code)) ? (((code >= 478) && (code <= 494)) || ((code >= 506) && (code <= 562))) : ((code >= 461) && (code <= 475)))))))))))) : ((code < 1328) ? ((code < 974) ? (((code >= 579) && (code <= 582)) || ((code === 886) || ((code === 895) || ((code === 902) || (((code >= 904) && (code <= 911)) || (((code >= 913) && (code <= 939)) || ((!A2($elm$core$Basics$modBy, 2, code)) && (((code >= 584) && (code <= 590)) || ((code >= 880) && (code <= 882)))))))))) : ((code === 975) || (((code >= 978) && (code <= 980)) || ((code === 1012) || ((code === 1015) || (((code >= 1017) && (code <= 1018)) || (((code >= 1021) && (code <= 1071)) || (((code >= 1216) && (code <= 1217)) || ((!A2($elm$core$Basics$modBy, 2, code)) ? (((code >= 984) && (code <= 1006)) || (((code >= 1120) && (code <= 1152)) || (((code >= 1162) && (code <= 1214)) || ((code >= 1232) && (code <= 1326))))) : ((code >= 1219) && (code <= 1229))))))))))) : ((code < 7991) ? (((code >= 1329) && (code <= 1366)) || (((code >= 4256) && (code <= 4301)) || (((code >= 5024) && (code <= 5109)) || (((code >= 7312) && (code <= 7359)) || (((code >= 7944) && (code <= 7951)) || (((code >= 7960) && (code <= 7965)) || (((code >= 7976) && (code <= 7983)) || ((!A2($elm$core$Basics$modBy, 2, code)) && (((code >= 7680) && (code <= 7828)) || ((code >= 7838) && (code <= 7934))))))))))) : (((code >= 7992) && (code <= 7999)) || (((code >= 8008) && (code <= 8013)) || (((code >= 8025) && (code <= 8031)) || (((code >= 8040) && (code <= 8047)) || (((code >= 8120) && (code <= 8123)) || (((code >= 8136) && (code <= 8139)) || ((code >= 8152) && (code <= 8155))))))))))) : ((code < 42996) ? ((code < 11263) ? ((code < 8468) ? (((code >= 8168) && (code <= 8172)) || (((code >= 8184) && (code <= 8187)) || ((code === 8450) || ((code === 8455) || (((code >= 8459) && (code <= 8461)) || ((code >= 8464) && (code <= 8466))))))) : ((code === 8469) || (((code >= 8473) && (code <= 8477)) || (((code >= 8490) && (code <= 8493)) || (((code >= 8496) && (code <= 8499)) || (((code >= 8510) && (code <= 8511)) || ((code === 8517) || ((code === 8579) || ((!A2($elm$core$Basics$modBy, 2, code)) && ((code >= 8484) && (code <= 8488))))))))))) : ((code < 11505) ? (((code >= 11264) && (code <= 11310)) || ((code === 11360) || (((code >= 11362) && (code <= 11364)) || (((code >= 11373) && (code <= 11376)) || ((code === 11378) || ((code === 11381) || (((code >= 11390) && (code <= 11392)) || ((!A2($elm$core$Basics$modBy, 2, code)) ? ((code >= 11394) && (code <= 11490)) : (((code >= 11367) && (code <= 11371)) || ((code >= 11499) && (code <= 11501))))))))))) : ((code === 11506) || (((code >= 42877) && (code <= 42878)) || (((code >= 42922) && (code <= 42926)) || (((code >= 42928) && (code <= 42932)) || ((code === 42946) || (((code >= 42948) && (code <= 42951)) || ((code === 42953) || ((!A2($elm$core$Basics$modBy, 2, code)) ? (((code >= 42560) && (code <= 42604)) || (((code >= 42624) && (code <= 42650)) || (((code >= 42786) && (code <= 42798)) || (((code >= 42802) && (code <= 42862)) || (((code >= 42880) && (code <= 42886)) || (((code >= 42896) && (code <= 42898)) || (((code >= 42902) && (code <= 42920)) || ((code >= 42934) && (code <= 42942))))))))) : (((code >= 42873) && (code <= 42875)) || ((code >= 42891) && (code <= 42893))))))))))))) : ((code < 120119) ? ((code < 93759) ? ((code === 42997) || (((code >= 65313) && (code <= 65338)) || (((code >= 66560) && (code <= 66599)) || (((code >= 66736) && (code <= 66771)) || (((code >= 68736) && (code <= 68786)) || ((code >= 71840) && (code <= 71871))))))) : (((code >= 93760) && (code <= 93791)) || (((code >= 119808) && (code <= 119833)) || (((code >= 119860) && (code <= 119885)) || (((code >= 119912) && (code <= 119937)) || (((code >= 119964) && (code <= 119989)) || (((code >= 120016) && (code <= 120041)) || ((code >= 120068) && (code <= 120092))))))))) : ((code < 120487) ? (((code >= 120120) && (code <= 120144)) || (((code >= 120172) && (code <= 120197)) || (((code >= 120224) && (code <= 120249)) || (((code >= 120276) && (code <= 120301)) || (((code >= 120328) && (code <= 120353)) || (((code >= 120380) && (code <= 120405)) || ((code >= 120432) && (code <= 120457)))))))) : (((code >= 120488) && (code <= 120512)) || (((code >= 120546) && (code <= 120570)) || (((code >= 120604) && (code <= 120628)) || (((code >= 120662) && (code <= 120686)) || (((code >= 120720) && (code <= 120744)) || ((code === 120778) || ((code >= 125184) && (code <= 125217))))))))))));
+	var e = function (hex) {
+		return _Utils_eq(hex, code);
+	};
+	var l = function (hex) {
+		return _Utils_cmp(code, hex) < 0;
+	};
+	var r = F2(
+		function (from, to) {
+			return (_Utils_cmp(from, code) < 1) && (_Utils_cmp(code, to) < 1);
+		});
+	return (simple && (((code <= 8543) || A2(r, 8560, 9397)) || A2(r, 9424, 983040))) || (l(120015) ? (l(8509) ? ((((((((((A2(r, 978, 980) || e(8450)) || e(8455)) || A2(r, 8459, 8461)) || A2(r, 8464, 8466)) || e(8469)) || A2(r, 8473, 8477)) || e(8484)) || e(8488)) || A2(r, 8490, 8493)) || A2(r, 8496, 8499)) : ((((((((((A2(r, 8510, 8511) || e(8517)) || A2(r, 119808, 119833)) || A2(r, 119860, 119885)) || A2(r, 119912, 119937)) || e(119964)) || A2(r, 119966, 119967)) || e(119970)) || A2(r, 119973, 119974)) || A2(r, 119977, 119980)) || A2(r, 119982, 119989))) : (l(120223) ? ((((((((((A2(r, 120016, 120041) || A2(r, 120068, 120069)) || A2(r, 120071, 120074)) || A2(r, 120077, 120084)) || A2(r, 120086, 120092)) || A2(r, 120120, 120121)) || A2(r, 120123, 120126)) || A2(r, 120128, 120132)) || e(120134)) || A2(r, 120138, 120144)) || A2(r, 120172, 120197)) : ((((((((((A2(r, 120224, 120249) || A2(r, 120276, 120301)) || A2(r, 120328, 120353)) || A2(r, 120380, 120405)) || A2(r, 120432, 120457)) || A2(r, 120488, 120512)) || A2(r, 120546, 120570)) || A2(r, 120604, 120628)) || A2(r, 120662, 120686)) || A2(r, 120720, 120744)) || e(120778))));
 };
 var $stil4m$elm_syntax$Elm$Parser$Tokens$typeName = $stil4m$elm_syntax$Combine$fromCore(
 	$elm$parser$Parser$variable(
 		{
-			eW: function (c) {
+			fs: function (c) {
 				return $miniBill$elm_unicode$Unicode$isAlphaNum(c) || (c === '_');
 			},
-			ff: $elm$core$Set$fromList($stil4m$elm_syntax$Elm$Parser$Tokens$reservedList),
-			cm: $miniBill$elm_unicode$Unicode$isUpper
+			fP: $elm$core$Set$fromList($stil4m$elm_syntax$Elm$Parser$Tokens$reservedList),
+			cN: $miniBill$elm_unicode$Unicode$isUpper
 		}));
 var $stil4m$elm_syntax$Elm$Parser$Base$typeIndicator = function () {
 	var helper = function (_v0) {
@@ -9907,7 +10105,7 @@ var $stil4m$elm_syntax$Elm$Syntax$Expression$functionRange = function (_function
 		_List_fromArray(
 			[
 				function () {
-				var _v0 = _function.dH;
+				var _v0 = _function.ed;
 				if (!_v0.$) {
 					var documentation = _v0.a;
 					return $stil4m$elm_syntax$Elm$Syntax$Node$range(documentation);
@@ -9918,28 +10116,28 @@ var $stil4m$elm_syntax$Elm$Syntax$Expression$functionRange = function (_function
 							var r = _v3.a;
 							return r;
 						}(
-							$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).bT),
+							$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).b5),
 						A2(
 							$elm$core$Maybe$map,
 							function (_v1) {
 								var value = _v1.b;
-								var _v2 = value.bT;
+								var _v2 = value.b5;
 								var r = _v2.a;
 								return r;
 							},
-							_function.gJ));
+							_function.hi));
 				}
 			}(),
 				function (_v4) {
 				var r = _v4.a;
 				return r;
 			}(
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).da)
+				$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).dE)
 			]));
 };
 var $stil4m$elm_syntax$Elm$Syntax$Signature$Signature = F2(
 	function (name, typeAnnotation) {
-		return {bT: name, fz: typeAnnotation};
+		return {b5: name, f7: typeAnnotation};
 	});
 var $stil4m$elm_syntax$Elm$Parser$TypeAnnotation$Eager = 0;
 var $stil4m$elm_syntax$Elm$Syntax$TypeAnnotation$FunctionTypeAnnotation = F2(
@@ -9983,7 +10181,7 @@ var $stil4m$elm_syntax$Elm$Parser$TypeAnnotation$genericTypeAnnotation = $stil4m
 var $stil4m$elm_syntax$Elm$Parser$Layout$Indented = 1;
 var $stil4m$elm_syntax$Elm$Parser$Layout$Strict = 0;
 var $stil4m$elm_syntax$Elm$Parser$State$storedColumns = function (_v0) {
-	var indents = _v0.bO;
+	var indents = _v0.b_;
 	return A2(
 		$elm$core$List$map,
 		$elm$core$Basics$add(1),
@@ -9997,7 +10195,7 @@ var $stil4m$elm_syntax$Elm$Parser$Layout$compute = $stil4m$elm_syntax$Combine$wi
 					$elm$core$List$cons,
 					1,
 					$stil4m$elm_syntax$Elm$Parser$State$storedColumns(s));
-				return A2($elm$core$List$member, l.bb, known) ? $stil4m$elm_syntax$Combine$succeed(0) : $stil4m$elm_syntax$Combine$succeed(1);
+				return A2($elm$core$List$member, l.bh, known) ? $stil4m$elm_syntax$Combine$succeed(0) : $stil4m$elm_syntax$Combine$succeed(1);
 			});
 	});
 var $stil4m$elm_syntax$Elm$Parser$Layout$optimisticLayout = A2(
@@ -10447,13 +10645,13 @@ var $stil4m$elm_syntax$Elm$Syntax$Expression$Literal = function (a) {
 };
 var $stil4m$elm_syntax$Elm$Parser$Tokens$multiLineStringLiteral = function () {
 	var helper = function (s) {
-		return s.N ? A2(
+		return s.Q ? A2(
 			$elm$parser$Parser$map,
 			function (v) {
 				return $elm$parser$Parser$Loop(
 					{
-						aI: s.aI,
-						N: false,
+						aN: s.aN,
+						Q: false,
 						v: A2(
 							$elm$core$List$cons,
 							$elm$core$String$fromChar(v),
@@ -10476,8 +10674,8 @@ var $stil4m$elm_syntax$Elm$Parser$Tokens$multiLineStringLiteral = function () {
 					function (v) {
 						return $elm$parser$Parser$Loop(
 							{
-								aI: s.aI + 1,
-								N: s.N,
+								aN: s.aN + 1,
+								Q: s.Q,
 								v: A2($elm$core$List$cons, v, s.v)
 							});
 					},
@@ -10487,7 +10685,7 @@ var $stil4m$elm_syntax$Elm$Parser$Tokens$multiLineStringLiteral = function () {
 					$elm$parser$Parser$map,
 					function (_v1) {
 						return $elm$parser$Parser$Loop(
-							{aI: s.aI + 1, N: true, v: s.v});
+							{aN: s.aN + 1, Q: true, v: s.v});
 					},
 					$elm$parser$Parser$getChompedString(
 						$elm$parser$Parser$symbol('\\'))),
@@ -10500,8 +10698,8 @@ var $stil4m$elm_syntax$Elm$Parser$Tokens$multiLineStringLiteral = function () {
 						return _Utils_eq(start, end) ? $elm$parser$Parser$problem('Expected a string character or a triple double quote') : $elm$parser$Parser$succeed(
 							$elm$parser$Parser$Loop(
 								{
-									aI: s.aI + 1,
-									N: s.N,
+									aN: s.aN + 1,
+									Q: s.Q,
 									v: A2($elm$core$List$cons, value, s.v)
 								}));
 					},
@@ -10534,7 +10732,7 @@ var $stil4m$elm_syntax$Elm$Parser$Tokens$multiLineStringLiteral = function () {
 				$elm$parser$Parser$symbol('\"\"\"')),
 			A2(
 				$elm$parser$Parser$loop,
-				{aI: 0, N: false, v: _List_Nil},
+				{aN: 0, Q: false, v: _List_Nil},
 				helper)));
 }();
 var $stil4m$elm_syntax$Elm$Parser$Declarations$literalExpression = $stil4m$elm_syntax$Combine$lazy(
@@ -10691,16 +10889,16 @@ var $stil4m$elm_syntax$Elm$Parser$Declarations$referenceExpression = $stil4m$elm
 		$stil4m$elm_syntax$Elm$Parser$Declarations$reference));
 var $stil4m$elm_syntax$Elm$Parser$Tokens$thenToken = $stil4m$elm_syntax$Combine$string('then');
 var $stil4m$elm_syntax$Elm$Parser$Ranges$asPointerLocation = function (_v0) {
-	var line = _v0.cP;
-	var column = _v0.bb;
-	return {bb: column, bs: line};
+	var line = _v0.di;
+	var column = _v0.bh;
+	return {bh: column, bD: line};
 };
 var $stil4m$elm_syntax$Elm$Parser$Ranges$withCurrentPoint = function (p) {
 	return $stil4m$elm_syntax$Combine$withLocation(
 		function (start) {
 			var k = $stil4m$elm_syntax$Elm$Parser$Ranges$asPointerLocation(start);
 			return p(
-				{b6: k, cm: k});
+				{cp: k, cN: k});
 		});
 };
 var $stil4m$elm_syntax$Elm$Parser$State$popIndent = function (_v0) {
@@ -10708,7 +10906,7 @@ var $stil4m$elm_syntax$Elm$Parser$State$popIndent = function (_v0) {
 	return _Utils_update(
 		s,
 		{
-			bO: A2($elm$core$List$drop, 1, s.bO)
+			b_: A2($elm$core$List$drop, 1, s.b_)
 		});
 };
 var $stil4m$elm_syntax$Elm$Parser$State$pushIndent = F2(
@@ -10717,7 +10915,7 @@ var $stil4m$elm_syntax$Elm$Parser$State$pushIndent = F2(
 		return _Utils_update(
 			s,
 			{
-				bO: A2($elm$core$List$cons, x, s.bO)
+				b_: A2($elm$core$List$cons, x, s.b_)
 			});
 	});
 var $stil4m$elm_syntax$Elm$Parser$State$pushColumn = F2(
@@ -10734,7 +10932,7 @@ var $stil4m$elm_syntax$Elm$Parser$Declarations$withIndentedState = function (p) 
 					$stil4m$elm_syntax$Combine$continueWith,
 					p,
 					$stil4m$elm_syntax$Combine$modifyState(
-						$stil4m$elm_syntax$Elm$Parser$State$pushColumn(location.bb))));
+						$stil4m$elm_syntax$Elm$Parser$State$pushColumn(location.bh))));
 		});
 };
 var $stil4m$elm_syntax$Elm$Parser$Declarations$functionWithNameNode = function (pointer) {
@@ -10778,9 +10976,9 @@ var $stil4m$elm_syntax$Elm$Parser$Declarations$functionWithNameNode = function (
 	var fromParts = F2(
 		function (sig, decl) {
 			return {
-				fX: decl,
-				dH: $elm$core$Maybe$Nothing,
-				gJ: $elm$core$Maybe$Just(sig)
+				gv: decl,
+				ed: $elm$core$Maybe$Nothing,
+				hi: $elm$core$Maybe$Just(sig)
 			};
 		});
 	var functionWithSignature = function (varPointer) {
@@ -10860,7 +11058,7 @@ function $stil4m$elm_syntax$Elm$Parser$Declarations$cyclic$caseExpression() {
 										A2(
 											$elm$core$List$map,
 											A2($elm$core$Basics$composeR, $elm$core$Tuple$second, $stil4m$elm_syntax$Elm$Syntax$Node$range),
-											cb.fQ))),
+											cb.go))),
 								$stil4m$elm_syntax$Elm$Syntax$Expression$CaseExpression(cb));
 						},
 						A2(
@@ -10911,7 +11109,7 @@ function $stil4m$elm_syntax$Elm$Parser$Declarations$cyclic$caseStatements() {
 							function (l) {
 								return _Utils_eq(
 									$stil4m$elm_syntax$Elm$Parser$State$expectedColumn(s),
-									l.bb) ? $stil4m$elm_syntax$Combine$choice(
+									l.bh) ? $stil4m$elm_syntax$Combine$choice(
 									_List_fromArray(
 										[
 											A2(
@@ -11065,8 +11263,8 @@ function $stil4m$elm_syntax$Elm$Parser$Declarations$cyclic$ifBlockExpression() {
 																	return A2(
 																		$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 																		{
-																			b6: $stil4m$elm_syntax$Elm$Syntax$Node$range(ifFalse).b6,
-																			cm: current.cm
+																			cp: $stil4m$elm_syntax$Elm$Syntax$Node$range(ifFalse).cp,
+																			cN: current.cN
 																		},
 																		A3($stil4m$elm_syntax$Elm$Syntax$Expression$IfBlock, condition, ifTrue, ifFalse));
 																}))))))))));
@@ -11104,8 +11302,8 @@ function $stil4m$elm_syntax$Elm$Parser$Declarations$cyclic$lambdaExpression() {
 												return A2(
 													$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 													{
-														b6: $stil4m$elm_syntax$Elm$Syntax$Node$range(expr).b6,
-														cm: current.cm
+														cp: $stil4m$elm_syntax$Elm$Syntax$Node$range(expr).cp,
+														cN: current.cN
 													},
 													$stil4m$elm_syntax$Elm$Syntax$Expression$LambdaExpression(
 														A2($stil4m$elm_syntax$Elm$Syntax$Expression$Lambda, args, expr)));
@@ -11207,8 +11405,8 @@ function $stil4m$elm_syntax$Elm$Parser$Declarations$cyclic$letExpression() {
 										return A2(
 											$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 											{
-												b6: $stil4m$elm_syntax$Elm$Syntax$Node$range(expr).b6,
-												cm: current.cm
+												cp: $stil4m$elm_syntax$Elm$Syntax$Node$range(expr).cp,
+												cN: current.cN
 											},
 											$stil4m$elm_syntax$Elm$Syntax$Expression$LetExpression(
 												A2($stil4m$elm_syntax$Elm$Syntax$Expression$LetBlock, decls, expr)));
@@ -11602,7 +11800,7 @@ var $stil4m$elm_syntax$Elm$Syntax$Declaration$InfixDeclaration = function (a) {
 };
 var $stil4m$elm_syntax$Elm$Syntax$Infix$Infix = F4(
 	function (direction, precedence, operator, _function) {
-		return {fY: direction, f6: _function, gv: operator, gz: precedence};
+		return {gw: direction, gG: _function, g3: operator, g7: precedence};
 	});
 var $stil4m$elm_syntax$Elm$Parser$Infix$infixDirection = $stil4m$elm_syntax$Combine$choice(
 	_List_fromArray(
@@ -11624,13 +11822,13 @@ var $elm$parser$Parser$Advanced$int = F2(
 	function (expecting, invalid) {
 		return $elm$parser$Parser$Advanced$number(
 			{
-				eo: $elm$core$Result$Err(invalid),
-				eF: expecting,
-				eN: $elm$core$Result$Err(invalid),
-				eT: $elm$core$Result$Err(invalid),
-				eX: $elm$core$Result$Ok($elm$core$Basics$identity),
-				gd: invalid,
-				e9: $elm$core$Result$Err(invalid)
+				eW: $elm$core$Result$Err(invalid),
+				fb: expecting,
+				fj: $elm$core$Result$Err(invalid),
+				fp: $elm$core$Result$Err(invalid),
+				ft: $elm$core$Result$Ok($elm$core$Basics$identity),
+				gN: invalid,
+				fH: $elm$core$Result$Err(invalid)
 			});
 	});
 var $elm$parser$Parser$int = A2($elm$parser$Parser$Advanced$int, $elm$parser$Parser$ExpectingInt, $elm$parser$Parser$ExpectingInt);
@@ -11682,7 +11880,7 @@ var $stil4m$elm_syntax$Elm$Parser$Declarations$infixDeclaration = $stil4m$elm_sy
 						_List_fromArray(
 							[
 								current,
-								$stil4m$elm_syntax$Elm$Syntax$Node$range(inf.f6)
+								$stil4m$elm_syntax$Elm$Syntax$Node$range(inf.gG)
 							])),
 					$stil4m$elm_syntax$Elm$Syntax$Declaration$InfixDeclaration(inf));
 			},
@@ -11720,7 +11918,7 @@ var $stil4m$elm_syntax$Elm$Parser$Declarations$portDeclaration = $stil4m$elm_syn
 								function (_v0) {
 								var r = _v0.a;
 								return r;
-							}(sig.fz)
+							}(sig.f7)
 							])),
 					$stil4m$elm_syntax$Elm$Syntax$Declaration$PortDeclaration(sig));
 			},
@@ -11739,11 +11937,11 @@ var $stil4m$elm_syntax$Elm$Parser$Typings$DefinedType = F2(
 	});
 var $stil4m$elm_syntax$Elm$Syntax$Type$Type = F4(
 	function (documentation, name, generics, constructors) {
-		return {fV: constructors, dH: documentation, eP: generics, bT: name};
+		return {gt: constructors, ed: documentation, fl: generics, b5: name};
 	});
 var $stil4m$elm_syntax$Elm$Syntax$TypeAlias$TypeAlias = F4(
 	function (documentation, name, generics, typeAnnotation) {
-		return {dH: documentation, eP: generics, bT: name, fz: typeAnnotation};
+		return {ed: documentation, fl: generics, b5: name, f7: typeAnnotation};
 	});
 var $stil4m$elm_syntax$Elm$Parser$Typings$genericList = $stil4m$elm_syntax$Combine$many(
 	A2(
@@ -11756,7 +11954,7 @@ var $stil4m$elm_syntax$Elm$Parser$Typings$typePrefix = A2(
 	$stil4m$elm_syntax$Combine$string('type'));
 var $stil4m$elm_syntax$Elm$Syntax$Type$ValueConstructor = F2(
 	function (name, _arguments) {
-		return {el: _arguments, bT: name};
+		return {eT: _arguments, b5: name};
 	});
 var $stil4m$elm_syntax$Elm$Parser$TypeAnnotation$typeAnnotationNonGreedy = $stil4m$elm_syntax$Combine$choice(
 	_List_fromArray(
@@ -11847,7 +12045,7 @@ var $stil4m$elm_syntax$Elm$Parser$Typings$typeDefinition = $stil4m$elm_syntax$El
 									_List_fromArray(
 										[
 											start,
-											$stil4m$elm_syntax$Elm$Syntax$Node$range(typeAlias.fz)
+											$stil4m$elm_syntax$Elm$Syntax$Node$range(typeAlias.f7)
 										])),
 								typeAlias);
 						},
@@ -11895,7 +12093,7 @@ var $stil4m$elm_syntax$Elm$Parser$Typings$typeDefinition = $stil4m$elm_syntax$El
 												var r = _v0.a;
 												return r;
 											},
-											tipe.fV))),
+											tipe.gt))),
 								tipe);
 						},
 						A2(
@@ -11962,7 +12160,7 @@ var $stil4m$elm_syntax$Elm$Parser$File$fileDeclarations = $stil4m$elm_syntax$Com
 		$stil4m$elm_syntax$Elm$Parser$Declarations$declaration));
 var $stil4m$elm_syntax$Elm$Syntax$Import$Import = F3(
 	function (moduleName, moduleAlias, exposingList) {
-		return {dJ: exposingList, gi: moduleAlias, dn: moduleName};
+		return {ef: exposingList, gS: moduleAlias, dR: moduleName};
 	});
 var $stil4m$elm_syntax$Elm$Parser$Tokens$asToken = $stil4m$elm_syntax$Combine$fromCore(
 	$elm$parser$Parser$keyword('as'));
@@ -12000,7 +12198,7 @@ var $stil4m$elm_syntax$Elm$Parser$Expose$infixExpose = $stil4m$elm_syntax$Combin
 	});
 var $stil4m$elm_syntax$Elm$Syntax$Exposing$ExposedType = F2(
 	function (name, open) {
-		return {bT: name, gu: open};
+		return {b5: name, g2: open};
 	});
 var $stil4m$elm_syntax$Elm$Syntax$Exposing$TypeExpose = function (a) {
 	return {$: 3, a: a};
@@ -12070,8 +12268,8 @@ var $stil4m$elm_syntax$Elm$Parser$Ranges$withRange = function (p) {
 					function (end) {
 						return $stil4m$elm_syntax$Combine$succeed(
 							{
-								b6: $stil4m$elm_syntax$Elm$Parser$Ranges$asPointerLocation(end),
-								cm: $stil4m$elm_syntax$Elm$Parser$Ranges$asPointerLocation(start)
+								cp: $stil4m$elm_syntax$Elm$Parser$Ranges$asPointerLocation(end),
+								cN: $stil4m$elm_syntax$Elm$Parser$Ranges$asPointerLocation(start)
 							});
 					}),
 				p);
@@ -12117,9 +12315,9 @@ var $stil4m$elm_syntax$Elm$Parser$Imports$setupNode = F2(
 			[
 				$elm$core$Maybe$Just(start),
 				$elm$core$Maybe$Just(
-				$stil4m$elm_syntax$Elm$Syntax$Node$range(imp.dn)),
-				A2($elm$core$Maybe$map, $stil4m$elm_syntax$Elm$Syntax$Node$range, imp.dJ),
-				A2($elm$core$Maybe$map, $stil4m$elm_syntax$Elm$Syntax$Node$range, imp.gi)
+				$stil4m$elm_syntax$Elm$Syntax$Node$range(imp.dR)),
+				A2($elm$core$Maybe$map, $stil4m$elm_syntax$Elm$Syntax$Node$range, imp.ef),
+				A2($elm$core$Maybe$map, $stil4m$elm_syntax$Elm$Syntax$Node$range, imp.gS)
 			]);
 		return A2(
 			$stil4m$elm_syntax$Elm$Syntax$Node$Node,
@@ -12211,7 +12409,7 @@ var $stil4m$elm_syntax$Elm$Parser$Modules$whereBlock = A2(
 	$stil4m$elm_syntax$Combine$map,
 	function (pairs) {
 		return {
-			fT: A2(
+			gr: A2(
 				$elm$core$Maybe$map,
 				$elm$core$Tuple$second,
 				$elm$core$List$head(
@@ -12222,7 +12420,7 @@ var $stil4m$elm_syntax$Elm$Parser$Modules$whereBlock = A2(
 							$elm$core$Tuple$first,
 							$elm$core$Basics$eq('command')),
 						pairs))),
-			gO: A2(
+			hn: A2(
 				$elm$core$Maybe$map,
 				$elm$core$Tuple$second,
 				$elm$core$List$head(
@@ -12255,7 +12453,7 @@ var $stil4m$elm_syntax$Elm$Parser$Modules$effectModuleDefinition = function () {
 	var createEffectModule = F3(
 		function (name, whereClauses, exp) {
 			return $stil4m$elm_syntax$Elm$Syntax$Module$EffectModule(
-				{fT: whereClauses.fT, dJ: exp, dn: name, gO: whereClauses.gO});
+				{gr: whereClauses.gr, ef: exp, dR: name, hn: whereClauses.hn});
 		});
 	return A2(
 		$stil4m$elm_syntax$Combine$andMap,
@@ -12288,7 +12486,7 @@ var $stil4m$elm_syntax$Elm$Parser$Modules$effectModuleDefinition = function () {
 }();
 var $stil4m$elm_syntax$Elm$Syntax$Module$DefaultModuleData = F2(
 	function (moduleName, exposingList) {
-		return {dJ: exposingList, dn: moduleName};
+		return {ef: exposingList, dR: moduleName};
 	});
 var $stil4m$elm_syntax$Elm$Parser$Modules$normalModuleDefinition = A2(
 	$stil4m$elm_syntax$Combine$map,
@@ -12370,10 +12568,10 @@ var $stil4m$elm_syntax$Elm$Internal$RawFile$Raw = $elm$core$Basics$identity;
 var $stil4m$elm_syntax$Elm$Internal$RawFile$fromFile = $elm$core$Basics$identity;
 var $elm$parser$Parser$DeadEnd = F3(
 	function (row, col, problem) {
-		return {es: col, fb: problem, bs: row};
+		return {e_: col, fL: problem, bD: row};
 	});
 var $elm$parser$Parser$problemToDeadEnd = function (p) {
-	return A3($elm$parser$Parser$DeadEnd, p.bs, p.es, p.fb);
+	return A3($elm$parser$Parser$DeadEnd, p.bD, p.e_, p.fL);
 };
 var $elm$parser$Parser$Advanced$bagToList = F2(
 	function (bag, list) {
@@ -12405,7 +12603,7 @@ var $elm$parser$Parser$Advanced$run = F2(
 	function (_v0, src) {
 		var parse = _v0;
 		var _v1 = parse(
-			{es: 1, i: _List_Nil, m: 1, d: 0, bs: 1, c: src});
+			{e_: 1, i: _List_Nil, m: 1, d: 0, bD: 1, c: src});
 		if (!_v1.$) {
 			var value = _v1.b;
 			return $elm$core$Result$Ok(value);
@@ -12491,7 +12689,7 @@ var $stil4m$elm_syntax$Elm$Processing$findDocumentationForRange = F3(
 				var commentRange = comment.a;
 				var commentText = comment.b;
 				var restOfComments = comments.b;
-				var _v1 = A2($elm$core$Basics$compare, commentRange.b6.bs + 1, range.cm.bs);
+				var _v1 = A2($elm$core$Basics$compare, commentRange.cp.bD + 1, range.cN.bD);
 				switch (_v1) {
 					case 1:
 						return A2($elm$core$String$startsWith, '{-|', commentText) ? _Utils_Tuple3(
@@ -12523,7 +12721,7 @@ var $stil4m$elm_syntax$Elm$Processing$addDocumentation = F3(
 		var _v0 = A3(
 			$stil4m$elm_syntax$Elm$Processing$findDocumentationForRange,
 			$stil4m$elm_syntax$Elm$Syntax$Node$range(declaration),
-			file.am,
+			file.at,
 			_List_Nil);
 		var previous = _v0.a;
 		var maybeDoc = _v0.b;
@@ -12531,7 +12729,7 @@ var $stil4m$elm_syntax$Elm$Processing$addDocumentation = F3(
 		if (!maybeDoc.$) {
 			var doc = maybeDoc.a;
 			return {
-				ew: A2(
+				e2: A2(
 					$elm$core$List$cons,
 					A2(
 						$stil4m$elm_syntax$Elm$Syntax$Node$Node,
@@ -12542,15 +12740,15 @@ var $stil4m$elm_syntax$Elm$Processing$addDocumentation = F3(
 									$stil4m$elm_syntax$Elm$Syntax$Node$range(declaration)
 								])),
 						howToUpdate(doc)),
-					file.ew),
-				ag: A2($elm$core$List$cons, previous, file.ag),
-				am: remaining
+					file.e2),
+				ao: A2($elm$core$List$cons, previous, file.ao),
+				at: remaining
 			};
 		} else {
 			return {
-				ew: A2($elm$core$List$cons, declaration, file.ew),
-				ag: A2($elm$core$List$cons, previous, file.ag),
-				am: remaining
+				e2: A2($elm$core$List$cons, declaration, file.e2),
+				ao: A2($elm$core$List$cons, previous, file.ao),
+				at: remaining
 			};
 		}
 	});
@@ -12627,7 +12825,7 @@ var $stil4m$elm_syntax$Elm$Processing$findNextSplit = F2(
 							$elm$core$Basics$composeR,
 							$elm$core$Tuple$second,
 							function ($) {
-								return $.fY;
+								return $.gw;
 							}),
 						$elm$core$Dict$toList(dict)))));
 		var prefix = function () {
@@ -12725,7 +12923,7 @@ var $stil4m$elm_syntax$Elm$Processing$lowestPrecedence = function (input) {
 							A2(
 								$elm$core$Basics$composeR,
 								function ($) {
-									return $.gz;
+									return $.g7;
 								},
 								A2(
 									$elm$core$Basics$composeR,
@@ -12742,7 +12940,7 @@ var $stil4m$elm_syntax$Elm$Processing$lowestPrecedence = function (input) {
 							A2(
 								$elm$core$Basics$composeR,
 								function ($) {
-									return $.gz;
+									return $.g7;
 								},
 								$stil4m$elm_syntax$Elm$Syntax$Node$value)),
 						input)))));
@@ -12758,10 +12956,10 @@ var $stil4m$elm_syntax$Elm$Processing$fixApplication = F2(
 						A2(
 							$elm$core$Maybe$withDefault,
 							{
-								fY: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
-								f6: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'todo'),
-								gv: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, x),
-								gz: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 5)
+								gw: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 0),
+								gG: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 'todo'),
+								g3: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, x),
+								g7: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, 5)
 							},
 							A2($elm$core$Dict$get, x, operators)));
 				},
@@ -12787,8 +12985,8 @@ var $stil4m$elm_syntax$Elm$Processing$fixApplication = F2(
 						var s = _v0.c;
 						return A4(
 							$stil4m$elm_syntax$Elm$Syntax$Expression$OperatorApplication,
-							$stil4m$elm_syntax$Elm$Syntax$Node$value(infix_.gv),
-							$stil4m$elm_syntax$Elm$Syntax$Node$value(infix_.fY),
+							$stil4m$elm_syntax$Elm$Syntax$Node$value(infix_.g3),
+							$stil4m$elm_syntax$Elm$Syntax$Node$value(infix_.gw),
 							A2(
 								$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 								$stil4m$elm_syntax$Elm$Syntax$Range$combine(
@@ -12873,19 +13071,19 @@ var $stil4m$elm_syntax$Elm$Processing$visitExpressionInner = F2(
 						var letBlock = expression.a;
 						return $stil4m$elm_syntax$Elm$Syntax$Expression$LetExpression(
 							{
-								ew: A2($stil4m$elm_syntax$Elm$Processing$visitLetDeclarations, table, letBlock.ew),
-								da: A2($stil4m$elm_syntax$Elm$Processing$visitExpression, table, letBlock.da)
+								e2: A2($stil4m$elm_syntax$Elm$Processing$visitLetDeclarations, table, letBlock.e2),
+								dE: A2($stil4m$elm_syntax$Elm$Processing$visitExpression, table, letBlock.dE)
 							});
 					case 16:
 						var caseBlock = expression.a;
 						return $stil4m$elm_syntax$Elm$Syntax$Expression$CaseExpression(
 							{
-								fQ: A2(
+								go: A2(
 									$elm$core$List$map,
 									$elm$core$Tuple$mapSecond(
 										$stil4m$elm_syntax$Elm$Processing$visitExpression(table)),
-									caseBlock.fQ),
-								da: A2($stil4m$elm_syntax$Elm$Processing$visitExpression, table, caseBlock.da)
+									caseBlock.go),
+								dE: A2($stil4m$elm_syntax$Elm$Processing$visitExpression, table, caseBlock.dE)
 							});
 					case 17:
 						var lambda = expression.a;
@@ -12893,7 +13091,7 @@ var $stil4m$elm_syntax$Elm$Processing$visitExpressionInner = F2(
 							_Utils_update(
 								lambda,
 								{
-									da: A2($stil4m$elm_syntax$Elm$Processing$visitExpression, table, lambda.da)
+									dE: A2($stil4m$elm_syntax$Elm$Processing$visitExpression, table, lambda.dE)
 								}));
 					case 18:
 						var expressionStringList = expression.a;
@@ -12944,17 +13142,17 @@ var $stil4m$elm_syntax$Elm$Processing$visitFunctionDecl = F2(
 		var newFunctionDeclaration = A2(
 			$stil4m$elm_syntax$Elm$Syntax$Node$map,
 			$stil4m$elm_syntax$Elm$Processing$visitFunctionDeclaration(table),
-			_function.fX);
+			_function.gv);
 		return _Utils_update(
 			_function,
-			{fX: newFunctionDeclaration});
+			{gv: newFunctionDeclaration});
 	});
 var $stil4m$elm_syntax$Elm$Processing$visitFunctionDeclaration = F2(
 	function (table, functionDeclaration) {
-		var newExpression = A2($stil4m$elm_syntax$Elm$Processing$visitExpression, table, functionDeclaration.da);
+		var newExpression = A2($stil4m$elm_syntax$Elm$Processing$visitExpression, table, functionDeclaration.dE);
 		return _Utils_update(
 			functionDeclaration,
-			{da: newExpression});
+			{dE: newExpression});
 	});
 var $stil4m$elm_syntax$Elm$Processing$visitLetDeclaration = F2(
 	function (table, _v0) {
@@ -12999,7 +13197,7 @@ var $stil4m$elm_syntax$Elm$Processing$attachDocumentationAndFixOperators = F3(
 							_Utils_update(
 								_function,
 								{
-									dH: $elm$core$Maybe$Just(doc)
+									ed: $elm$core$Maybe$Just(doc)
 								}));
 					},
 					A2(
@@ -13016,7 +13214,7 @@ var $stil4m$elm_syntax$Elm$Processing$attachDocumentationAndFixOperators = F3(
 							_Utils_update(
 								typeAlias,
 								{
-									dH: $elm$core$Maybe$Just(doc)
+									ed: $elm$core$Maybe$Just(doc)
 								}));
 					},
 					declaration,
@@ -13030,28 +13228,28 @@ var $stil4m$elm_syntax$Elm$Processing$attachDocumentationAndFixOperators = F3(
 							_Utils_update(
 								typeDecl,
 								{
-									dH: $elm$core$Maybe$Just(doc)
+									ed: $elm$core$Maybe$Just(doc)
 								}));
 					},
 					declaration,
 					context);
 			case 3:
 				return {
-					ew: A2($elm$core$List$cons, declaration, context.ew),
-					ag: context.ag,
-					am: context.am
+					e2: A2($elm$core$List$cons, declaration, context.e2),
+					ao: context.ao,
+					at: context.at
 				};
 			case 4:
 				return {
-					ew: A2($elm$core$List$cons, declaration, context.ew),
-					ag: context.ag,
-					am: context.am
+					e2: A2($elm$core$List$cons, declaration, context.e2),
+					ao: context.ao,
+					at: context.at
 				};
 			default:
 				return {
-					ew: A2($elm$core$List$cons, declaration, context.ew),
-					ag: context.ag,
-					am: context.am
+					e2: A2($elm$core$List$cons, declaration, context.e2),
+					ao: context.ao,
+					at: context.at
 				};
 		}
 	});
@@ -13077,14 +13275,14 @@ var $stil4m$elm_syntax$Elm$Syntax$Exposing$operators = function (l) {
 };
 var $stil4m$elm_syntax$Elm$Processing$buildSingle = F2(
 	function (moduleIndex, imp) {
-		var _v0 = A2($elm$core$Maybe$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, imp.dJ);
+		var _v0 = A2($elm$core$Maybe$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, imp.ef);
 		if (_v0.$ === 1) {
 			return _List_Nil;
 		} else {
 			if (!_v0.a.$) {
 				var _v1 = A2(
 					$elm$core$Dict$get,
-					$stil4m$elm_syntax$Elm$Syntax$Node$value(imp.dn),
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(imp.dR),
 					moduleIndex);
 				if (!_v1.$) {
 					var module_ = _v1.a;
@@ -13096,7 +13294,7 @@ var $stil4m$elm_syntax$Elm$Processing$buildSingle = F2(
 				var l = _v0.a.a;
 				var _v2 = A2(
 					$elm$core$Dict$get,
-					$stil4m$elm_syntax$Elm$Syntax$Node$value(imp.dn),
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(imp.dR),
 					moduleIndex);
 				if (!_v2.$) {
 					var module_ = _v2.a;
@@ -13107,7 +13305,7 @@ var $stil4m$elm_syntax$Elm$Processing$buildSingle = F2(
 						function (elem) {
 							return A2(
 								$elm$core$List$member,
-								$stil4m$elm_syntax$Elm$Syntax$Node$value(elem.gv),
+								$stil4m$elm_syntax$Elm$Syntax$Node$value(elem.g3),
 								importedOperators);
 						},
 						$stil4m$elm_syntax$Elm$Interface$operators(module_));
@@ -13138,20 +13336,20 @@ var $elm$core$List$concatMap = F2(function (f, lists) {
 var $stil4m$elm_syntax$Elm$DefaultImports$defaults = _List_fromArray(
 	[
 		{
-		dJ: $elm$core$Maybe$Just(
+		ef: $elm$core$Maybe$Just(
 			A2(
 				$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 				$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 				$stil4m$elm_syntax$Elm$Syntax$Exposing$All($stil4m$elm_syntax$Elm$Syntax$Range$emptyRange))),
-		gi: $elm$core$Maybe$Nothing,
-		dn: A2(
+		gS: $elm$core$Maybe$Nothing,
+		dR: A2(
 			$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 			$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 			_List_fromArray(
 				['Basics']))
 	},
 		{
-		dJ: $elm$core$Maybe$Just(
+		ef: $elm$core$Maybe$Just(
 			A2(
 				$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 				$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
@@ -13168,15 +13366,15 @@ var $stil4m$elm_syntax$Elm$DefaultImports$defaults = _List_fromArray(
 							$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$InfixExpose('::'))
 						])))),
-		gi: $elm$core$Maybe$Nothing,
-		dn: A2(
+		gS: $elm$core$Maybe$Nothing,
+		dR: A2(
 			$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 			$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 			_List_fromArray(
 				['List']))
 	},
 		{
-		dJ: $elm$core$Maybe$Just(
+		ef: $elm$core$Maybe$Just(
 			A2(
 				$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 				$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
@@ -13192,15 +13390,15 @@ var $stil4m$elm_syntax$Elm$DefaultImports$defaults = _List_fromArray(
 									'Maybe',
 									$elm$core$Maybe$Just($stil4m$elm_syntax$Elm$Syntax$Range$emptyRange))))
 						])))),
-		gi: $elm$core$Maybe$Nothing,
-		dn: A2(
+		gS: $elm$core$Maybe$Nothing,
+		dR: A2(
 			$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 			$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 			_List_fromArray(
 				['Maybe']))
 	},
 		{
-		dJ: $elm$core$Maybe$Just(
+		ef: $elm$core$Maybe$Just(
 			A2(
 				$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 				$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
@@ -13216,42 +13414,42 @@ var $stil4m$elm_syntax$Elm$DefaultImports$defaults = _List_fromArray(
 									'Result',
 									$elm$core$Maybe$Just($stil4m$elm_syntax$Elm$Syntax$Range$emptyRange))))
 						])))),
-		gi: $elm$core$Maybe$Nothing,
-		dn: A2(
+		gS: $elm$core$Maybe$Nothing,
+		dR: A2(
 			$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 			$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 			_List_fromArray(
 				['Result']))
 	},
 		{
-		dJ: $elm$core$Maybe$Nothing,
-		gi: $elm$core$Maybe$Nothing,
-		dn: A2(
+		ef: $elm$core$Maybe$Nothing,
+		gS: $elm$core$Maybe$Nothing,
+		dR: A2(
 			$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 			$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 			_List_fromArray(
 				['String']))
 	},
 		{
-		dJ: $elm$core$Maybe$Nothing,
-		gi: $elm$core$Maybe$Nothing,
-		dn: A2(
+		ef: $elm$core$Maybe$Nothing,
+		gS: $elm$core$Maybe$Nothing,
+		dR: A2(
 			$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 			$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 			_List_fromArray(
 				['Tuple']))
 	},
 		{
-		dJ: $elm$core$Maybe$Nothing,
-		gi: $elm$core$Maybe$Nothing,
-		dn: A2(
+		ef: $elm$core$Maybe$Nothing,
+		gS: $elm$core$Maybe$Nothing,
+		dR: A2(
 			$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 			$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 			_List_fromArray(
 				['Debug']))
 	},
 		{
-		dJ: $elm$core$Maybe$Just(
+		ef: $elm$core$Maybe$Just(
 			A2(
 				$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 				$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
@@ -13264,15 +13462,15 @@ var $stil4m$elm_syntax$Elm$DefaultImports$defaults = _List_fromArray(
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$TypeExpose(
 								A2($stil4m$elm_syntax$Elm$Syntax$Exposing$ExposedType, 'Program', $elm$core$Maybe$Nothing)))
 						])))),
-		gi: $elm$core$Maybe$Nothing,
-		dn: A2(
+		gS: $elm$core$Maybe$Nothing,
+		dR: A2(
 			$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 			$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 			_List_fromArray(
 				['Platform']))
 	},
 		{
-		dJ: $elm$core$Maybe$Just(
+		ef: $elm$core$Maybe$Just(
 			A2(
 				$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 				$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
@@ -13289,15 +13487,15 @@ var $stil4m$elm_syntax$Elm$DefaultImports$defaults = _List_fromArray(
 							$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$InfixExpose('!'))
 						])))),
-		gi: $elm$core$Maybe$Nothing,
-		dn: A2(
+		gS: $elm$core$Maybe$Nothing,
+		dR: A2(
 			$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 			$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 			_List_fromArray(
 				['Platform', 'Cmd']))
 	},
 		{
-		dJ: $elm$core$Maybe$Just(
+		ef: $elm$core$Maybe$Just(
 			A2(
 				$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 				$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
@@ -13310,8 +13508,8 @@ var $stil4m$elm_syntax$Elm$DefaultImports$defaults = _List_fromArray(
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$TypeExpose(
 								A2($stil4m$elm_syntax$Elm$Syntax$Exposing$ExposedType, 'Sub', $elm$core$Maybe$Nothing)))
 						])))),
-		gi: $elm$core$Maybe$Nothing,
-		dn: A2(
+		gS: $elm$core$Maybe$Nothing,
+		dR: A2(
 			$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 			$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 			_List_fromArray(
@@ -13320,7 +13518,7 @@ var $stil4m$elm_syntax$Elm$DefaultImports$defaults = _List_fromArray(
 	]);
 var $stil4m$elm_syntax$Elm$RawFile$imports = function (_v0) {
 	var file = _v0;
-	return A2($elm$core$List$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, file.f9);
+	return A2($elm$core$List$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, file.gJ);
 };
 var $stil4m$elm_syntax$Elm$Processing$tableForFile = F2(
 	function (rawFile, _v0) {
@@ -13330,7 +13528,7 @@ var $stil4m$elm_syntax$Elm$Processing$tableForFile = F2(
 				$elm$core$List$map,
 				function (x) {
 					return _Utils_Tuple2(
-						$stil4m$elm_syntax$Elm$Syntax$Node$value(x.gv),
+						$stil4m$elm_syntax$Elm$Syntax$Node$value(x.g3),
 						x);
 				},
 				A2(
@@ -13347,15 +13545,15 @@ var $stil4m$elm_syntax$Elm$Processing$process = F2(
 		var changes = A3(
 			$elm$core$List$foldl,
 			$stil4m$elm_syntax$Elm$Processing$attachDocumentationAndFixOperators(table),
-			{ew: _List_Nil, ag: _List_Nil, am: file.fU},
-			file.ew);
+			{e2: _List_Nil, ao: _List_Nil, at: file.gs},
+			file.e2);
 		return {
-			fU: $elm$core$List$concat(
+			gs: $elm$core$List$concat(
 				$elm$core$List$reverse(
-					A2($elm$core$List$cons, changes.am, changes.ag))),
-			ew: $elm$core$List$reverse(changes.ew),
-			f9: file.f9,
-			gj: file.gj
+					A2($elm$core$List$cons, changes.at, changes.ao))),
+			e2: $elm$core$List$reverse(changes.e2),
+			gJ: file.gJ,
+			gT: file.gT
 		};
 	});
 var $jfmengels$elm_review$Review$FileParser$parse = function (source) {
@@ -13377,7 +13575,7 @@ var $jfmengels$elm_review$Review$Fix$Internal$fixModule = F2(
 			if (!_v1.$) {
 				var ast = _v1.a;
 				return $elm$core$Maybe$Just(
-					{fI: ast, gK: fixedSourceCode});
+					{gg: ast, hj: fixedSourceCode});
 			} else {
 				return $elm$core$Maybe$Nothing;
 			}
@@ -13392,21 +13590,21 @@ var $jfmengels$elm_review$Review$Fix$Internal$fixReadme = F2(
 var $jfmengels$elm_review$Review$Project$Valid$getModuleByPath = F2(
 	function (path, _v0) {
 		var project = _v0;
-		return A2($elm$core$Dict$get, path, project.bS);
+		return A2($elm$core$Dict$get, path, project.bb);
 	});
 var $jfmengels$elm_review$Review$Rule$isFixable = F2(
 	function (predicate, err) {
-		var _v0 = err.dP;
+		var _v0 = err.ek;
 		if (!_v0.$) {
 			return predicate(
-				{c2: err.c2, f3: err.f3, a2: err.a2, d6: err.d6, ea: err.ea}) ? err.dP : $elm$core$Maybe$Nothing;
+				{dx: err.dx, gD: err.gD, a8: err.a8, eD: err.eD, eH: err.eH}) ? err.ek : $elm$core$Maybe$Nothing;
 		} else {
 			return $elm$core$Maybe$Nothing;
 		}
 	});
 var $jfmengels$elm_review$Review$Project$Valid$readme = function (_v0) {
 	var project = _v0;
-	return project.d9;
+	return A2($elm$core$Maybe$map, $elm$core$Tuple$first, project.eG);
 };
 var $jfmengels$elm_review$Review$Rule$findFixHelp = F4(
 	function (project, fixablePredicate, errors, maybeModuleZipper) {
@@ -13430,10 +13628,10 @@ var $jfmengels$elm_review$Review$Rule$findFixHelp = F4(
 					continue findFixHelp;
 				} else {
 					var fixes = _v1.a;
-					var _v2 = headError.ft;
+					var _v2 = headError.f1;
 					switch (_v2) {
 						case 0:
-							var _v3 = A2($jfmengels$elm_review$Review$Project$Valid$getModuleByPath, headError.f3, project);
+							var _v3 = A2($jfmengels$elm_review$Review$Project$Valid$getModuleByPath, headError.gD, project);
 							if (_v3.$ === 1) {
 								var $temp$project = project,
 									$temp$fixablePredicate = fixablePredicate,
@@ -13455,18 +13653,18 @@ var $jfmengels$elm_review$Review$Rule$findFixHelp = F4(
 												var newProject = _v5.a;
 												var newModuleZipper = _v5.b;
 												return {
-													dI: $jfmengels$elm_review$Review$Rule$errorToReviewError(headError),
-													bE: A2($jfmengels$elm_review$Review$Rule$FixedElmModule, fixResult, newModuleZipper),
+													ee: $jfmengels$elm_review$Review$Rule$errorToReviewError(headError),
+													bQ: A2($jfmengels$elm_review$Review$Rule$FixedElmModule, fixResult, newModuleZipper),
 													e: newProject
 												};
 											},
 											A3(
 												$jfmengels$elm_review$Review$Project$Valid$addParsedModule,
-												{fI: fixResult.fI, gx: headError.f3, gK: fixResult.gK},
+												{gg: fixResult.gg, g5: headError.gD, hj: fixResult.hj},
 												maybeModuleZipper,
 												project));
 									},
-									A2($jfmengels$elm_review$Review$Fix$Internal$fixModule, fixes, file.gK));
+									A2($jfmengels$elm_review$Review$Fix$Internal$fixModule, fixes, file.hj));
 								if (_v4.$ === 1) {
 									var $temp$project = project,
 										$temp$fixablePredicate = fixablePredicate,
@@ -13501,10 +13699,10 @@ var $jfmengels$elm_review$Review$Rule$findFixHelp = F4(
 									function (fixResult) {
 										return A2(
 											$jfmengels$elm_review$Review$Project$Valid$addElmJson,
-											{gx: elmJson.gx, e: fixResult.e, ck: fixResult.ck},
+											{g5: elmJson.g5, e: fixResult.e, cL: fixResult.cL},
 											project);
 									},
-									A2($jfmengels$elm_review$Review$Fix$Internal$fixElmJson, fixes, elmJson.ck));
+									A2($jfmengels$elm_review$Review$Fix$Internal$fixElmJson, fixes, elmJson.cL));
 								if (_v7.$ === 1) {
 									var $temp$project = project,
 										$temp$fixablePredicate = fixablePredicate,
@@ -13519,8 +13717,8 @@ var $jfmengels$elm_review$Review$Rule$findFixHelp = F4(
 									var newProject = _v7.a;
 									return $elm$core$Maybe$Just(
 										{
-											dI: $jfmengels$elm_review$Review$Rule$errorToReviewError(headError),
-											bE: $jfmengels$elm_review$Review$Rule$FixedElmJson,
+											ee: $jfmengels$elm_review$Review$Rule$errorToReviewError(headError),
+											bQ: $jfmengels$elm_review$Review$Rule$FixedElmJson,
 											e: newProject
 										});
 								}
@@ -13539,7 +13737,7 @@ var $jfmengels$elm_review$Review$Rule$findFixHelp = F4(
 								continue findFixHelp;
 							} else {
 								var readme = _v8.a;
-								var _v9 = A2($jfmengels$elm_review$Review$Fix$Internal$fixReadme, fixes, readme.b1);
+								var _v9 = A2($jfmengels$elm_review$Review$Fix$Internal$fixReadme, fixes, readme.cj);
 								if (_v9.$ === 1) {
 									var $temp$project = project,
 										$temp$fixablePredicate = fixablePredicate,
@@ -13554,11 +13752,11 @@ var $jfmengels$elm_review$Review$Rule$findFixHelp = F4(
 									var content = _v9.a;
 									return $elm$core$Maybe$Just(
 										{
-											dI: $jfmengels$elm_review$Review$Rule$errorToReviewError(headError),
-											bE: $jfmengels$elm_review$Review$Rule$FixedReadme,
+											ee: $jfmengels$elm_review$Review$Rule$errorToReviewError(headError),
+											bQ: $jfmengels$elm_review$Review$Rule$FixedReadme,
 											e: A2(
 												$jfmengels$elm_review$Review$Project$Valid$addReadme,
-												{b1: content, gx: readme.gx},
+												{cj: content, g5: readme.g5},
 												project)
 										});
 								}
@@ -13592,10 +13790,10 @@ var $jfmengels$elm_review$Review$Rule$fixedError = F2(
 				$elm$json$Json$Encode$string('apply-fix')),
 				_Utils_Tuple2(
 				'ruleName',
-				$elm$json$Json$Encode$string(data.ea)),
+				$elm$json$Json$Encode$string(data.eH)),
 				_Utils_Tuple2(
 				'filePath',
-				$elm$json$Json$Encode$string(data.f3)),
+				$elm$json$Json$Encode$string(data.gD)),
 				_Utils_Tuple2(
 				'count',
 				$elm$json$Json$Encode$int(
@@ -13619,7 +13817,7 @@ var $elm$core$Dict$update = F3(
 	});
 var $jfmengels$elm_review$Review$Fix$FixedErrors$insert = F2(
 	function (error, _v0) {
-		var filePath = error.f3;
+		var filePath = error.gD;
 		var fixCount = _v0.a;
 		var fixedErrors = _v0.b;
 		return A2(
@@ -13647,7 +13845,7 @@ var $jfmengels$elm_review$Review$Logger$log = F3(
 	});
 var $jfmengels$elm_review$Review$Options$Internal$shouldAbort = F2(
 	function (reviewOptionsData, fixedErrors) {
-		var _v0 = reviewOptionsData.a0;
+		var _v0 = reviewOptionsData.aS;
 		if (_v0.$ === 1) {
 			if (!_v0.a.$) {
 				var fixLimit = _v0.a.a;
@@ -13664,17 +13862,17 @@ var $jfmengels$elm_review$Review$Options$Internal$shouldAbort = F2(
 	});
 var $jfmengels$elm_review$Review$Options$Internal$shouldApplyFix = F2(
 	function (projectVisitor, reviewOptionsData) {
-		var _v0 = reviewOptionsData.a0;
+		var _v0 = reviewOptionsData.aS;
 		if (_v0.$ === 1) {
-			return (!projectVisitor.gB) ? $elm$core$Maybe$Nothing : ($elm$core$Dict$isEmpty(reviewOptionsData.fr) ? $elm$core$Maybe$Just(
+			return (!projectVisitor.g9) ? $elm$core$Maybe$Nothing : ($elm$core$Dict$isEmpty(reviewOptionsData.f$) ? $elm$core$Maybe$Just(
 				function (err) {
-					return !reviewOptionsData.eU(err);
+					return !reviewOptionsData.fq(err);
 				}) : $elm$core$Maybe$Just(
 				function (err) {
 					return (!A2(
 						$elm$core$Dict$member,
-						_Utils_Tuple2(projectVisitor.bT, err.f3),
-						reviewOptionsData.fr)) && (!reviewOptionsData.eU(err));
+						_Utils_Tuple2(projectVisitor.b5, err.gD),
+						reviewOptionsData.f$)) && (!reviewOptionsData.fq(err));
 				}));
 		} else {
 			return $elm$core$Maybe$Nothing;
@@ -13685,18 +13883,18 @@ var $jfmengels$elm_review$Review$Rule$findFix = F6(
 		return A2(
 			$elm$core$Maybe$map,
 			function (fixResult) {
-				var newFixedErrors = A2($jfmengels$elm_review$Review$Fix$FixedErrors$insert, fixResult.dI, fixedErrors);
+				var newFixedErrors = A2($jfmengels$elm_review$Review$Fix$FixedErrors$insert, fixResult.ee, fixedErrors);
 				return A2($jfmengels$elm_review$Review$Options$Internal$shouldAbort, reviewOptions, newFixedErrors) ? _Utils_Tuple2(
 					$jfmengels$elm_review$Review$Rule$ShouldAbort(newFixedErrors),
 					fixResult) : A3(
 					$jfmengels$elm_review$Review$Logger$log,
-					reviewOptions.dZ,
+					reviewOptions.eu,
 					A2(
 						$jfmengels$elm_review$Review$Rule$fixedError,
 						newFixedErrors,
 						{
-							f3: $jfmengels$elm_review$Review$Rule$errorFilePath(fixResult.dI),
-							ea: projectVisitor.bT
+							gD: $jfmengels$elm_review$Review$Rule$errorFilePath(fixResult.ee),
+							eH: projectVisitor.b5
 						}),
 					_Utils_Tuple2(
 						$jfmengels$elm_review$Review$Rule$ShouldContinue(newFixedErrors),
@@ -13709,9 +13907,49 @@ var $jfmengels$elm_review$Review$Rule$findFix = F6(
 				},
 				A2($jfmengels$elm_review$Review$Options$Internal$shouldApplyFix, projectVisitor, reviewOptions)));
 	});
+var $jfmengels$elm_review$Review$Cache$ContextHash$areEqual = F2(
+	function (_v0, _v1) {
+		var a = _v0;
+		var b = _v1;
+		return _Utils_eq(a, b);
+	});
+var $jfmengels$elm_review$Review$Cache$ContentHash$areEqualForMaybe = F2(
+	function (a, b) {
+		var _v0 = _Utils_Tuple2(a, b);
+		_v0$2:
+		while (true) {
+			if (!_v0.a.$) {
+				if (!_v0.b.$) {
+					var a_ = _v0.a.a;
+					var b_ = _v0.b.a;
+					return _Utils_eq(a_, b_);
+				} else {
+					break _v0$2;
+				}
+			} else {
+				if (_v0.b.$ === 1) {
+					var _v1 = _v0.a;
+					var _v2 = _v0.b;
+					return true;
+				} else {
+					break _v0$2;
+				}
+			}
+		}
+		return false;
+	});
+var $jfmengels$elm_review$Review$Cache$matchMaybe = F3(
+	function (contentHash, context, _v0) {
+		var entry = _v0;
+		return A2($jfmengels$elm_review$Review$Cache$ContentHash$areEqualForMaybe, contentHash, entry.ck) && A2($jfmengels$elm_review$Review$Cache$ContextHash$areEqual, context, entry.cA);
+	});
 var $jfmengels$elm_review$Review$Project$Valid$moduleZipper = function (_v0) {
 	var project = _v0;
-	return $jfmengels$elm_review$Review$Project$Valid$unsafeCreateZipper(project.cT);
+	return $jfmengels$elm_review$Review$Project$Valid$unsafeCreateZipper(project.$7);
+};
+var $jfmengels$elm_review$Review$Cache$outputContextMaybe = function (_v0) {
+	var entry = _v0;
+	return entry.cJ;
 };
 var $jfmengels$elm_review$Review$Rule$reuseProjectRuleCache = F3(
 	function (predicate, getter, cache) {
@@ -13725,38 +13963,43 @@ var $jfmengels$elm_review$Review$Rule$reuseProjectRuleCache = F3(
 	});
 var $jfmengels$elm_review$Review$Rule$computeDependencies = F5(
 	function (_v0, project, contexts, cache, fixedErrors) {
-		var reviewOptions = _v0.X;
-		var projectVisitor = _v0.s;
-		var exceptions = _v0.q;
+		var reviewOptions = _v0.aa;
+		var projectVisitor = _v0.r;
+		var exceptions = _v0.p;
 		var modulesAsNextStep = function (projectContext) {
 			return A2(
 				$jfmengels$elm_review$Review$Rule$Modules,
-				{ez: projectContext, c5: contexts.c5, n: contexts.n, d9: contexts.d9},
+				{e5: projectContext, dz: contexts.dz, n: contexts.n, eG: contexts.eG},
 				$jfmengels$elm_review$Review$Project$Valid$moduleZipper(project));
 		};
-		var inputContext = contexts.d9;
-		var dependencies = $jfmengels$elm_review$Review$Project$Valid$dependencies(project);
-		var cachePredicate = function (deps) {
-			return _Utils_eq(deps.G, inputContext) && _Utils_eq(deps.b, dependencies);
+		var inputContext = contexts.eG;
+		var cachePredicate = function (entry) {
+			return A3(
+				$jfmengels$elm_review$Review$Cache$matchMaybe,
+				$jfmengels$elm_review$Review$Project$Valid$dependenciesHash(project),
+				$jfmengels$elm_review$Review$Cache$ContextHash$create(inputContext),
+				entry);
 		};
 		var _v1 = A3(
 			$jfmengels$elm_review$Review$Rule$reuseProjectRuleCache,
 			cachePredicate,
 			function ($) {
-				return $.aM;
+				return $.aR;
 			},
 			cache);
 		if (!_v1.$) {
 			var entry = _v1.a;
 			return {
-				fO: cache,
-				f4: fixedErrors,
+				gm: cache,
+				gE: fixedErrors,
 				e: project,
-				o: modulesAsNextStep(entry.az)
+				o: modulesAsNextStep(
+					$jfmengels$elm_review$Review$Cache$outputContextMaybe(entry))
 			};
 		} else {
+			var dependencies = $jfmengels$elm_review$Review$Project$Valid$dependencies(project);
 			var accumulateWithDirectDependencies = function () {
-				var _v9 = projectVisitor.L;
+				var _v9 = projectVisitor.O;
 				if (!_v9.b) {
 					return $elm$core$Basics$identity;
 				} else {
@@ -13769,25 +14012,31 @@ var $jfmengels$elm_review$Review$Rule$computeDependencies = F5(
 			}();
 			var _v2 = A3(
 				$jfmengels$elm_review$Review$Rule$accumulateWithListOfVisitors,
-				projectVisitor.K,
+				projectVisitor.N,
 				dependencies,
 				accumulateWithDirectDependencies(
 					_Utils_Tuple2(_List_Nil, inputContext)));
 			var errorsForVisitor = _v2.a;
 			var outputContext = _v2.b;
-			var errors = A3($jfmengels$elm_review$Review$Rule$filterExceptionsAndSetName, exceptions, projectVisitor.bT, errorsForVisitor);
+			var errors = A3($jfmengels$elm_review$Review$Rule$filterExceptionsAndSetName, exceptions, projectVisitor.b5, errorsForVisitor);
 			var updateCache = function (_v8) {
-				var dependenciesEntry = {bf: errors, G: inputContext, az: outputContext, b: dependencies};
+				var dependenciesEntry = $jfmengels$elm_review$Review$Cache$createEntryMaybe(
+					{
+						ck: $jfmengels$elm_review$Review$Project$Valid$dependenciesHash(project),
+						bo: errors,
+						cA: inputContext,
+						cJ: outputContext
+					});
 				return _Utils_update(
 					cache,
 					{
-						aM: $elm$core$Maybe$Just(dependenciesEntry)
+						aR: $elm$core$Maybe$Just(dependenciesEntry)
 					});
 			};
 			var resultWhenNoFix = function (_v7) {
 				return {
-					fO: updateCache(0),
-					f4: fixedErrors,
+					gm: updateCache(0),
+					gE: fixedErrors,
 					e: project,
 					o: modulesAsNextStep(outputContext)
 				};
@@ -13800,30 +14049,30 @@ var $jfmengels$elm_review$Review$Rule$computeDependencies = F5(
 				if (!postFixStatus.$) {
 					var newFixedErrors = postFixStatus.a;
 					return {
-						fO: updateCache(0),
-						f4: newFixedErrors,
+						gm: updateCache(0),
+						gE: newFixedErrors,
 						e: fixResult.e,
 						o: $jfmengels$elm_review$Review$Rule$Abort
 					};
 				} else {
 					var newFixedErrors = postFixStatus.a;
-					var _v6 = fixResult.bE;
+					var _v6 = fixResult.bQ;
 					switch (_v6.$) {
 						case 1:
 							return {
-								fO: updateCache(0),
-								f4: newFixedErrors,
+								gm: updateCache(0),
+								gE: newFixedErrors,
 								e: fixResult.e,
 								o: $jfmengels$elm_review$Review$Rule$ElmJson(
 									{n: contexts.n})
 							};
 						case 2:
 							return {
-								fO: updateCache(0),
-								f4: newFixedErrors,
+								gm: updateCache(0),
+								gE: newFixedErrors,
 								e: fixResult.e,
 								o: $jfmengels$elm_review$Review$Rule$Readme(
-									{c5: contexts.c5, n: contexts.n})
+									{dz: contexts.dz, n: contexts.n})
 							};
 						default:
 							return resultWhenNoFix(0);
@@ -13839,50 +14088,63 @@ var $jfmengels$elm_review$Review$Rule$computeElmJson = F5(
 	function (dataToComputeProject, project, inputContext, cache, fixedErrors) {
 		computeElmJson:
 		while (true) {
-			var reviewOptions = dataToComputeProject.X;
-			var projectVisitor = dataToComputeProject.s;
-			var exceptions = dataToComputeProject.q;
-			var projectElmJson = $jfmengels$elm_review$Review$Project$Valid$elmJson(project);
+			var reviewOptions = dataToComputeProject.aa;
+			var projectVisitor = dataToComputeProject.r;
+			var exceptions = dataToComputeProject.p;
 			var cachePredicate = function (elmJson) {
-				return _Utils_eq(elmJson.b, projectElmJson);
+				return A3(
+					$jfmengels$elm_review$Review$Cache$matchMaybe,
+					$jfmengels$elm_review$Review$Project$Valid$elmJsonHash(project),
+					$jfmengels$elm_review$Review$Cache$ContextHash$create(inputContext),
+					elmJson);
 			};
 			var _v0 = A3(
 				$jfmengels$elm_review$Review$Rule$reuseProjectRuleCache,
 				cachePredicate,
 				function ($) {
-					return $.c5;
+					return $.dz;
 				},
 				cache);
 			if (!_v0.$) {
 				var entry = _v0.a;
 				return {
-					fO: cache,
-					f4: fixedErrors,
+					gm: cache,
+					gE: fixedErrors,
 					e: project,
 					o: $jfmengels$elm_review$Review$Rule$Readme(
-						{c5: entry.az, n: inputContext})
+						{
+							dz: $jfmengels$elm_review$Review$Cache$outputContextMaybe(entry),
+							n: inputContext
+						})
 				};
 			} else {
+				var projectElmJson = $jfmengels$elm_review$Review$Project$Valid$elmJson(project);
 				var elmJsonData = A2(
 					$elm$core$Maybe$map,
 					function (elmJson) {
-						return {f_: elmJson, e: elmJson.e};
+						return {gy: elmJson, e: elmJson.e};
 					},
 					projectElmJson);
 				var _v1 = A3(
 					$jfmengels$elm_review$Review$Rule$accumulateWithListOfVisitors,
-					projectVisitor.M,
+					projectVisitor.P,
 					elmJsonData,
 					_Utils_Tuple2(_List_Nil, inputContext));
 				var errorsForVisitor = _v1.a;
 				var outputContext = _v1.b;
-				var errors = A3($jfmengels$elm_review$Review$Rule$filterExceptionsAndSetName, exceptions, projectVisitor.bT, errorsForVisitor);
+				var errors = A3($jfmengels$elm_review$Review$Rule$filterExceptionsAndSetName, exceptions, projectVisitor.b5, errorsForVisitor);
 				var updateCache = function (_v5) {
-					var elmJsonEntry = {bf: errors, G: inputContext, az: outputContext, b: projectElmJson};
+					var elmJsonEntry = $jfmengels$elm_review$Review$Cache$createEntryMaybe(
+						{
+							ck: $jfmengels$elm_review$Review$Project$Valid$elmJsonHash(project),
+							bo: errors,
+							cA: inputContext,
+							cJ: outputContext
+						});
 					return _Utils_update(
 						cache,
 						{
-							c5: $elm$core$Maybe$Just(elmJsonEntry)
+							dz: $elm$core$Maybe$Just(elmJsonEntry)
 						});
 				};
 				var _v2 = A6($jfmengels$elm_review$Review$Rule$findFix, reviewOptions, projectVisitor, project, errors, fixedErrors, $elm$core$Maybe$Nothing);
@@ -13906,19 +14168,19 @@ var $jfmengels$elm_review$Review$Rule$computeElmJson = F5(
 					} else {
 						var newFixedErrors = postFixStatus.a;
 						return {
-							fO: updateCache(0),
-							f4: newFixedErrors,
+							gm: updateCache(0),
+							gE: newFixedErrors,
 							e: fixResult.e,
 							o: $jfmengels$elm_review$Review$Rule$Abort
 						};
 					}
 				} else {
 					return {
-						fO: updateCache(0),
-						f4: fixedErrors,
+						gm: updateCache(0),
+						gE: fixedErrors,
 						e: project,
 						o: $jfmengels$elm_review$Review$Rule$Readme(
-							{c5: outputContext, n: inputContext})
+							{dz: outputContext, n: inputContext})
 					};
 				}
 			}
@@ -13933,53 +14195,62 @@ var $jfmengels$elm_review$Review$Rule$getFolderFromTraversal = function (travers
 		return $elm$core$Maybe$Just(folder);
 	}
 };
+var $jfmengels$elm_review$Review$Cache$outputContext = function (_v0) {
+	var entry = _v0;
+	return entry.cJ;
+};
 var $jfmengels$elm_review$Review$Rule$computeFinalContext = F3(
 	function (projectVisitor, cache, projectContext) {
-		var _v0 = $jfmengels$elm_review$Review$Rule$getFolderFromTraversal(projectVisitor.cn);
+		var _v0 = $jfmengels$elm_review$Review$Rule$getFolderFromTraversal(projectVisitor.cO);
 		if (!_v0.$) {
-			var foldProjectContexts = _v0.a.bG;
+			var foldProjectContexts = _v0.a.bS;
 			return A3(
 				$elm$core$Dict$foldl,
 				F3(
 					function (_v1, cacheEntry, acc) {
-						return A2(foldProjectContexts, cacheEntry.az, acc);
+						return A2(
+							foldProjectContexts,
+							$jfmengels$elm_review$Review$Cache$outputContext(cacheEntry),
+							acc);
 					}),
 				projectContext,
-				cache.H);
+				cache.z);
 		} else {
 			return projectContext;
 		}
 	});
 var $jfmengels$elm_review$Review$Error$doesPreventExtract = function (error_) {
-	return error_.$7;
+	return error_.dU;
 };
 var $jfmengels$elm_review$Review$Rule$doesPreventExtract = function (_v0) {
 	var err = _v0;
 	return $jfmengels$elm_review$Review$Error$doesPreventExtract(err);
 };
 var $jfmengels$elm_review$Review$Rule$computeExtract = F5(
-	function (reviewOptions, projectVisitor, projectContext, errors, cache) {
-		var _v0 = projectVisitor.aJ;
+	function (reviewOptions, projectVisitor, context, errors, cache) {
+		var _v0 = projectVisitor.aO;
 		if (!_v0.$) {
 			var dataExtractor = _v0.a;
-			if (reviewOptions.eJ && (!A2($elm$core$List$any, $jfmengels$elm_review$Review$Rule$doesPreventExtract, errors))) {
+			if (reviewOptions.ff && (!A2($elm$core$List$any, $jfmengels$elm_review$Review$Rule$doesPreventExtract, errors))) {
 				var inputContext = function () {
-					var _v2 = cache.bC;
-					if (!_v2.$) {
-						var finalEvaluation = _v2.a;
-						return finalEvaluation.G;
+					if (!context.$) {
+						var projectContext = context.a;
+						return projectContext;
 					} else {
+						var projectContext = context.a;
 						return A3($jfmengels$elm_review$Review$Rule$computeFinalContext, projectVisitor, cache, projectContext);
 					}
 				}();
 				var cachePredicate = function (extract) {
-					return _Utils_eq(extract.G, inputContext);
+					return _Utils_eq(
+						extract.cA,
+						$jfmengels$elm_review$Review$Cache$ContextHash$create(inputContext));
 				};
 				var _v1 = A3(
 					$jfmengels$elm_review$Review$Rule$reuseProjectRuleCache,
 					cachePredicate,
 					function ($) {
-						return $.eJ;
+						return $.ff;
 					},
 					cache);
 				if (!_v1.$) {
@@ -13988,10 +14259,10 @@ var $jfmengels$elm_review$Review$Rule$computeExtract = F5(
 					return _Utils_update(
 						cache,
 						{
-							eJ: $elm$core$Maybe$Just(
+							ff: $elm$core$Maybe$Just(
 								{
-									eJ: dataExtractor(inputContext),
-									G: inputContext
+									ff: dataExtractor(inputContext),
+									cA: $jfmengels$elm_review$Review$Cache$ContextHash$create(inputContext)
 								})
 						});
 				}
@@ -14002,41 +14273,63 @@ var $jfmengels$elm_review$Review$Rule$computeExtract = F5(
 			return cache;
 		}
 	});
+var $jfmengels$elm_review$Review$Rule$Combined = function (a) {
+	return {$: 0, a: a};
+};
 var $jfmengels$elm_review$Review$Rule$DataExtract = function (a) {
 	return {$: 5, a: a};
 };
+var $jfmengels$elm_review$Review$Rule$ToCombineStartingFrom = function (a) {
+	return {$: 1, a: a};
+};
+var $jfmengels$elm_review$Review$Cache$EntryNoOutputContext = $elm$core$Basics$identity;
+var $jfmengels$elm_review$Review$Cache$createNoOutput = F2(
+	function (inputContext, output) {
+		return {
+			i: $jfmengels$elm_review$Review$Cache$ContextHash$create(inputContext),
+			fK: output
+		};
+	});
+var $jfmengels$elm_review$Review$Cache$matchNoOutput = F2(
+	function (context, _v0) {
+		var entry = _v0;
+		return A2($jfmengels$elm_review$Review$Cache$ContextHash$areEqual, context, entry.i);
+	});
 var $jfmengels$elm_review$Review$Rule$computeFinalProjectEvaluation = F5(
 	function (_v0, project, projectContexts, cache, fixedErrors) {
-		var reviewOptions = _v0.X;
-		var projectVisitor = _v0.s;
-		var exceptions = _v0.q;
+		var reviewOptions = _v0.aa;
+		var projectVisitor = _v0.r;
+		var exceptions = _v0.p;
 		if ($elm$core$List$isEmpty(projectVisitor.u)) {
 			return {
-				fO: cache,
-				f4: fixedErrors,
+				gm: cache,
+				gE: fixedErrors,
 				e: project,
 				o: $jfmengels$elm_review$Review$Rule$DataExtract(
-					{dd: projectContexts.ez})
+					$jfmengels$elm_review$Review$Rule$ToCombineStartingFrom(projectContexts.e5))
 			};
 		} else {
-			var finalContext = A3($jfmengels$elm_review$Review$Rule$computeFinalContext, projectVisitor, cache, projectContexts.ez);
-			var cachePredicate = function (finalEvaluation) {
-				return _Utils_eq(finalEvaluation.G, finalContext);
+			var finalContext = A3($jfmengels$elm_review$Review$Rule$computeFinalContext, projectVisitor, cache, projectContexts.e5);
+			var cachePredicate = function (entry) {
+				return A2(
+					$jfmengels$elm_review$Review$Cache$matchNoOutput,
+					$jfmengels$elm_review$Review$Cache$ContextHash$create(finalContext),
+					entry);
 			};
 			var _v1 = A3(
 				$jfmengels$elm_review$Review$Rule$reuseProjectRuleCache,
 				cachePredicate,
 				function ($) {
-					return $.bC;
+					return $.cs;
 				},
 				cache);
 			if (!_v1.$) {
 				return {
-					fO: cache,
-					f4: fixedErrors,
+					gm: cache,
+					gE: fixedErrors,
 					e: project,
 					o: $jfmengels$elm_review$Review$Rule$DataExtract(
-						{dd: projectContexts.ez})
+						$jfmengels$elm_review$Review$Rule$Combined(finalContext))
 				};
 			} else {
 				var errors = A2(
@@ -14045,24 +14338,10 @@ var $jfmengels$elm_review$Review$Rule$computeFinalProjectEvaluation = F5(
 						return A3(
 							$jfmengels$elm_review$Review$Rule$filterExceptionsAndSetName,
 							exceptions,
-							projectVisitor.bT,
+							projectVisitor.b5,
 							finalEvaluationFn(finalContext));
 					},
 					projectVisitor.u);
-				var resultWhenNoFix = function (_v7) {
-					return {
-						fO: _Utils_update(
-							cache,
-							{
-								bC: $elm$core$Maybe$Just(
-									{bf: errors, G: finalContext})
-							}),
-						f4: fixedErrors,
-						e: project,
-						o: $jfmengels$elm_review$Review$Rule$DataExtract(
-							{dd: projectContexts.ez})
-					};
-				};
 				var _v2 = A6($jfmengels$elm_review$Review$Rule$findFix, reviewOptions, projectVisitor, project, errors, fixedErrors, $elm$core$Maybe$Nothing);
 				if (!_v2.$) {
 					var _v3 = _v2.a;
@@ -14077,7 +14356,7 @@ var $jfmengels$elm_review$Review$Rule$computeFinalProjectEvaluation = F5(
 							return _Utils_Tuple2(
 								newFixedErrors_,
 								function () {
-									var _v6 = fixResult.bE;
+									var _v6 = fixResult.bQ;
 									switch (_v6.$) {
 										case 0:
 											var moduleZipper = _v6.b;
@@ -14087,7 +14366,7 @@ var $jfmengels$elm_review$Review$Rule$computeFinalProjectEvaluation = F5(
 												{n: projectContexts.n});
 										default:
 											return $jfmengels$elm_review$Review$Rule$Readme(
-												{c5: projectContexts.c5, n: projectContexts.n});
+												{dz: projectContexts.dz, n: projectContexts.n});
 									}
 								}());
 						}
@@ -14095,18 +14374,29 @@ var $jfmengels$elm_review$Review$Rule$computeFinalProjectEvaluation = F5(
 					var newFixedErrors = _v4.a;
 					var step = _v4.b;
 					return {
-						fO: _Utils_update(
+						gm: _Utils_update(
 							cache,
 							{
-								bC: $elm$core$Maybe$Just(
-									{bf: errors, G: finalContext})
+								cs: $elm$core$Maybe$Just(
+									A2($jfmengels$elm_review$Review$Cache$createNoOutput, finalContext, errors))
 							}),
-						f4: newFixedErrors,
+						gE: newFixedErrors,
 						e: fixResult.e,
 						o: step
 					};
 				} else {
-					return resultWhenNoFix(0);
+					return {
+						gm: _Utils_update(
+							cache,
+							{
+								cs: $elm$core$Maybe$Just(
+									A2($jfmengels$elm_review$Review$Cache$createNoOutput, finalContext, errors))
+							}),
+						gE: fixedErrors,
+						e: project,
+						o: $jfmengels$elm_review$Review$Rule$DataExtract(
+							$jfmengels$elm_review$Review$Rule$Combined(finalContext))
+					};
 				}
 			}
 		}
@@ -14141,7 +14431,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerVariable 
 				return _Utils_update(
 					scope,
 					{
-						bU: A3($elm$core$Dict$insert, name, variableInfo, scope.bU)
+						b6: A3($elm$core$Dict$insert, name, variableInfo, scope.b6)
 					});
 			},
 			scopes);
@@ -14151,7 +14441,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$addToScope = F2(
 		var newScopes = A3(
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerVariable,
 			variableData,
-			$stil4m$elm_syntax$Elm$Syntax$Node$value(variableData.e8),
+			$stil4m$elm_syntax$Elm$Syntax$Node$value(variableData.fG),
 			innerContext.t);
 		return _Utils_update(
 			innerContext,
@@ -14162,23 +14452,23 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerExposedCu
 		return _Utils_update(
 			innerContext,
 			{
-				cC: A2(
+				c5: A2(
 					$elm$core$List$cons,
 					{
-						fG: _List_Nil,
-						b0: '',
-						bT: name,
-						gS: A2(
+						ge: _List_Nil,
+						ci: '',
+						b5: name,
+						hr: A2(
 							$elm$core$List$map,
 							function (constructor) {
 								return _Utils_Tuple2(
 									$stil4m$elm_syntax$Elm$Syntax$Node$value(
-										$stil4m$elm_syntax$Elm$Syntax$Node$value(constructor).bT),
+										$stil4m$elm_syntax$Elm$Syntax$Node$value(constructor).b5),
 									_List_Nil);
 							},
 							constructors)
 					},
-					innerContext.cC)
+					innerContext.c5)
 			});
 	});
 var $elm$project_metadata_utils$Elm$Type$Tuple = function (a) {
@@ -14189,15 +14479,15 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerExposedTy
 		return _Utils_update(
 			innerContext,
 			{
-				cy: A2(
+				c1: A2(
 					$elm$core$List$cons,
 					{
-						fG: _List_Nil,
-						b0: '',
-						bT: name,
-						eg: $elm$project_metadata_utils$Elm$Type$Tuple(_List_Nil)
+						ge: _List_Nil,
+						ci: '',
+						b5: name,
+						eO: $elm$project_metadata_utils$Elm$Type$Tuple(_List_Nil)
 					},
-					innerContext.cy)
+					innerContext.c1)
 			});
 	});
 var $elm$project_metadata_utils$Elm$Type$Lambda = F2(
@@ -14243,18 +14533,18 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$isTypeDeclaredInM
 			A2(
 				$elm$core$Basics$composeR,
 				function ($) {
-					return $.bT;
+					return $.b5;
 				},
 				$elm$core$Basics$eq(typeName)),
-			module_.ej) || A2(
+			module_.eR) || A2(
 			$elm$core$List$any,
 			A2(
 				$elm$core$Basics$composeR,
 				function ($) {
-					return $.bT;
+					return $.b5;
 				},
 				$elm$core$Basics$eq(typeName)),
-			module_.fA);
+			module_.f8);
 	});
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$joinModuleName = function (name) {
 	return A2($elm$core$String$join, '.', name);
@@ -14262,16 +14552,16 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$joinModuleName = 
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$moduleNameForType = F3(
 	function (context, typeName, moduleName) {
 		if (!moduleName.b) {
-			return A2($elm$core$Set$member, typeName, context.bR) ? _List_Nil : A2(
+			return A2($elm$core$Set$member, typeName, context.b3) ? _List_Nil : A2(
 				$elm$core$Maybe$withDefault,
 				_List_Nil,
-				A2($elm$core$Dict$get, typeName, context.bN));
+				A2($elm$core$Dict$get, typeName, context.bZ));
 		} else {
 			if (!moduleName.b.b) {
 				var _v1 = A2(
 					$elm$core$Dict$get,
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$joinModuleName(moduleName),
-					context.bi);
+					context.bq);
 				if (!_v1.$) {
 					if (_v1.a.b && (!_v1.a.b.b)) {
 						var _v2 = _v1.a;
@@ -14282,7 +14572,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$moduleNameForType
 						var _v3 = A2(
 							$jfmengels$elm_review$Vendor$ListExtra$find,
 							function (aliasedModuleName) {
-								var _v4 = A2($elm$core$Dict$get, aliasedModuleName, context.a3);
+								var _v4 = A2($elm$core$Dict$get, aliasedModuleName, context.ba);
 								if (!_v4.$) {
 									var module_ = _v4.a;
 									return A2($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$isTypeDeclaredInModule, typeName, module_);
@@ -14384,7 +14674,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$convertTypeSignat
 			return A2(
 				$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$syntaxTypeAnnotationToDocsType,
 				innerContext,
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(signature).fz);
+				$stil4m$elm_syntax$Elm$Syntax$Node$value(signature).f7);
 		} else {
 			return $elm$project_metadata_utils$Elm$Type$Tuple(_List_Nil);
 		}
@@ -14394,11 +14684,11 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerExposedVa
 		return _Utils_update(
 			innerContext,
 			{
-				cD: A2(
+				c6: A2(
 					$elm$core$List$cons,
 					{
-						b0: function () {
-							var _v0 = _function.dH;
+						ci: function () {
+							var _v0 = _function.ed;
 							if (!_v0.$) {
 								var strNode = _v0.a;
 								return $stil4m$elm_syntax$Elm$Syntax$Node$value(strNode);
@@ -14406,15 +14696,15 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerExposedVa
 								return '';
 							}
 						}(),
-						bT: name,
-						eg: A2($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$convertTypeSignatureToDocsType, innerContext, _function.gJ)
+						b5: name,
+						eO: A2($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$convertTypeSignatureToDocsType, innerContext, _function.hi)
 					},
-					innerContext.cD)
+					innerContext.c6)
 			});
 	});
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerIfExposed = F3(
 	function (registerFn, name, innerContext) {
-		return (innerContext.c8 || A2($elm$core$Set$member, name, innerContext.c7)) ? A2(registerFn, name, innerContext) : innerContext;
+		return (innerContext.dC || A2($elm$core$Set$member, name, innerContext.dB)) ? A2(registerFn, name, innerContext) : innerContext;
 	});
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerDeclaration = F2(
 	function (declaration, innerContext) {
@@ -14422,27 +14712,27 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerDeclarati
 		switch (_v0.$) {
 			case 0:
 				var _function = _v0.a;
-				var nameNode = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).bT;
+				var nameNode = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).b5;
 				return A3(
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerIfExposed,
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerExposedValue(_function),
 					$stil4m$elm_syntax$Elm$Syntax$Node$value(nameNode),
 					A2(
 						$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$addToScope,
-						{e8: nameNode, a9: 0},
+						{fG: nameNode, bf: 0},
 						innerContext));
 			case 1:
 				var alias = _v0.a;
 				return A3(
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerIfExposed,
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerExposedTypeAlias,
-					$stil4m$elm_syntax$Elm$Syntax$Node$value(alias.bT),
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(alias.b5),
 					function (ctx) {
-						var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(alias.fz);
+						var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(alias.f7);
 						if (_v1.$ === 4) {
 							return A2(
 								$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$addToScope,
-								{e8: alias.bT, a9: 0},
+								{fG: alias.b5, bf: 0},
 								ctx);
 						} else {
 							return ctx;
@@ -14451,14 +14741,14 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerDeclarati
 						_Utils_update(
 							innerContext,
 							{
-								bR: A2(
+								b3: A2(
 									$elm$core$Set$insert,
-									$stil4m$elm_syntax$Elm$Syntax$Node$value(alias.bT),
-									innerContext.bR)
+									$stil4m$elm_syntax$Elm$Syntax$Node$value(alias.b5),
+									innerContext.b3)
 							})));
 			case 2:
-				var name = _v0.a.bT;
-				var constructors = _v0.a.fV;
+				var name = _v0.a.b5;
+				var constructors = _v0.a.gt;
 				return A3(
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerIfExposed,
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerExposedCustomType(constructors),
@@ -14467,19 +14757,19 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerDeclarati
 						$elm$core$List$foldl,
 						F2(
 							function (constructor, innerContext_) {
-								var constructorName = $stil4m$elm_syntax$Elm$Syntax$Node$value(constructor).bT;
+								var constructorName = $stil4m$elm_syntax$Elm$Syntax$Node$value(constructor).b5;
 								return A2(
 									$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$addToScope,
-									{e8: constructorName, a9: 1},
+									{fG: constructorName, bf: 1},
 									innerContext_);
 							}),
 						_Utils_update(
 							innerContext,
 							{
-								bR: A2(
+								b3: A2(
 									$elm$core$Set$insert,
 									$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
-									innerContext.bR)
+									innerContext.b3)
 							}),
 						constructors));
 			case 3:
@@ -14488,17 +14778,17 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerDeclarati
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerIfExposed,
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerExposedValue(
 						{
-							dH: $elm$core$Maybe$Nothing,
-							gJ: $elm$core$Maybe$Just(
+							ed: $elm$core$Maybe$Nothing,
+							hi: $elm$core$Maybe$Just(
 								A2(
 									$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 									$stil4m$elm_syntax$Elm$Syntax$Node$range(declaration),
 									signature))
 						}),
-					$stil4m$elm_syntax$Elm$Syntax$Node$value(signature.bT),
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(signature.b5),
 					A2(
 						$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$addToScope,
-						{e8: signature.bT, a9: 5},
+						{fG: signature.b5, bf: 5},
 						innerContext));
 			case 4:
 				return innerContext;
@@ -14511,25 +14801,25 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$declarationListVi
 		return A3($elm$core$List$foldl, $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerDeclaration, innerContext, declarations);
 	});
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$createFakeImport = function (_v0) {
-	var moduleName = _v0.dn;
-	var moduleAlias = _v0.gi;
-	var exposingList = _v0.dJ;
+	var moduleName = _v0.dR;
+	var moduleAlias = _v0.gS;
+	var exposingList = _v0.ef;
 	return A2(
 		$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 		$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 		{
-			dJ: A2(
+			ef: A2(
 				$elm$core$Maybe$map,
 				$stil4m$elm_syntax$Elm$Syntax$Node$Node($stil4m$elm_syntax$Elm$Syntax$Range$emptyRange),
 				exposingList),
-			gi: A2(
+			gS: A2(
 				$elm$core$Maybe$map,
 				A2(
 					$elm$core$Basics$composeR,
 					$elm$core$List$singleton,
 					$stil4m$elm_syntax$Elm$Syntax$Node$Node($stil4m$elm_syntax$Elm$Syntax$Range$emptyRange)),
 				moduleAlias),
-			dn: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, moduleName)
+			dR: A2($stil4m$elm_syntax$Elm$Syntax$Node$Node, $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, moduleName)
 		});
 };
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$elmCorePrelude = function () {
@@ -14545,142 +14835,142 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$elmCorePrelude = 
 		[
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$createFakeImport(
 			{
-				dJ: $elm$core$Maybe$Just(
+				ef: $elm$core$Maybe$Just(
 					$stil4m$elm_syntax$Elm$Syntax$Exposing$All($stil4m$elm_syntax$Elm$Syntax$Range$emptyRange)),
-				gi: $elm$core$Maybe$Nothing,
-				dn: _List_fromArray(
+				gS: $elm$core$Maybe$Nothing,
+				dR: _List_fromArray(
 					['Basics'])
 			}),
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$createFakeImport(
 			{
-				dJ: explicit(
+				ef: explicit(
 					_List_fromArray(
 						[
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$TypeExpose(
-							{bT: 'List', gu: $elm$core$Maybe$Nothing}),
+							{b5: 'List', g2: $elm$core$Maybe$Nothing}),
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$InfixExpose('::')
 						])),
-				gi: $elm$core$Maybe$Nothing,
-				dn: _List_fromArray(
+				gS: $elm$core$Maybe$Nothing,
+				dR: _List_fromArray(
 					['List'])
 			}),
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$createFakeImport(
 			{
-				dJ: explicit(
+				ef: explicit(
 					_List_fromArray(
 						[
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$TypeExpose(
 							{
-								bT: 'Maybe',
-								gu: $elm$core$Maybe$Just($stil4m$elm_syntax$Elm$Syntax$Range$emptyRange)
+								b5: 'Maybe',
+								g2: $elm$core$Maybe$Just($stil4m$elm_syntax$Elm$Syntax$Range$emptyRange)
 							})
 						])),
-				gi: $elm$core$Maybe$Nothing,
-				dn: _List_fromArray(
+				gS: $elm$core$Maybe$Nothing,
+				dR: _List_fromArray(
 					['Maybe'])
 			}),
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$createFakeImport(
 			{
-				dJ: explicit(
+				ef: explicit(
 					_List_fromArray(
 						[
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$TypeExpose(
 							{
-								bT: 'Result',
-								gu: $elm$core$Maybe$Just($stil4m$elm_syntax$Elm$Syntax$Range$emptyRange)
+								b5: 'Result',
+								g2: $elm$core$Maybe$Just($stil4m$elm_syntax$Elm$Syntax$Range$emptyRange)
 							})
 						])),
-				gi: $elm$core$Maybe$Nothing,
-				dn: _List_fromArray(
+				gS: $elm$core$Maybe$Nothing,
+				dR: _List_fromArray(
 					['Result'])
 			}),
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$createFakeImport(
 			{
-				dJ: explicit(
+				ef: explicit(
 					_List_fromArray(
 						[
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$TypeExpose(
-							{bT: 'String', gu: $elm$core$Maybe$Nothing})
+							{b5: 'String', g2: $elm$core$Maybe$Nothing})
 						])),
-				gi: $elm$core$Maybe$Nothing,
-				dn: _List_fromArray(
+				gS: $elm$core$Maybe$Nothing,
+				dR: _List_fromArray(
 					['String'])
 			}),
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$createFakeImport(
 			{
-				dJ: explicit(
+				ef: explicit(
 					_List_fromArray(
 						[
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$TypeExpose(
-							{bT: 'Char', gu: $elm$core$Maybe$Nothing})
+							{b5: 'Char', g2: $elm$core$Maybe$Nothing})
 						])),
-				gi: $elm$core$Maybe$Nothing,
-				dn: _List_fromArray(
+				gS: $elm$core$Maybe$Nothing,
+				dR: _List_fromArray(
 					['Char'])
 			}),
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$createFakeImport(
 			{
-				dJ: $elm$core$Maybe$Nothing,
-				gi: $elm$core$Maybe$Nothing,
-				dn: _List_fromArray(
+				ef: $elm$core$Maybe$Nothing,
+				gS: $elm$core$Maybe$Nothing,
+				dR: _List_fromArray(
 					['Tuple'])
 			}),
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$createFakeImport(
 			{
-				dJ: $elm$core$Maybe$Nothing,
-				gi: $elm$core$Maybe$Nothing,
-				dn: _List_fromArray(
+				ef: $elm$core$Maybe$Nothing,
+				gS: $elm$core$Maybe$Nothing,
+				dR: _List_fromArray(
 					['Debug'])
 			}),
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$createFakeImport(
 			{
-				dJ: explicit(
+				ef: explicit(
 					_List_fromArray(
 						[
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$TypeExpose(
-							{bT: 'Program', gu: $elm$core$Maybe$Nothing})
+							{b5: 'Program', g2: $elm$core$Maybe$Nothing})
 						])),
-				gi: $elm$core$Maybe$Nothing,
-				dn: _List_fromArray(
+				gS: $elm$core$Maybe$Nothing,
+				dR: _List_fromArray(
 					['Platform'])
 			}),
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$createFakeImport(
 			{
-				dJ: explicit(
+				ef: explicit(
 					_List_fromArray(
 						[
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$TypeExpose(
-							{bT: 'Cmd', gu: $elm$core$Maybe$Nothing})
+							{b5: 'Cmd', g2: $elm$core$Maybe$Nothing})
 						])),
-				gi: $elm$core$Maybe$Just('Cmd'),
-				dn: _List_fromArray(
+				gS: $elm$core$Maybe$Just('Cmd'),
+				dR: _List_fromArray(
 					['Platform', 'Cmd'])
 			}),
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$createFakeImport(
 			{
-				dJ: explicit(
+				ef: explicit(
 					_List_fromArray(
 						[
 							$stil4m$elm_syntax$Elm$Syntax$Exposing$TypeExpose(
-							{bT: 'Sub', gu: $elm$core$Maybe$Nothing})
+							{b5: 'Sub', g2: $elm$core$Maybe$Nothing})
 						])),
-				gi: $elm$core$Maybe$Just('Sub'),
-				dn: _List_fromArray(
+				gS: $elm$core$Maybe$Just('Sub'),
+				dR: _List_fromArray(
 					['Platform', 'Sub'])
 			})
 		]);
 }();
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerImportAlias = F2(
 	function (import_, innerContext) {
-		var _v0 = import_.gi;
+		var _v0 = import_.gS;
 		if (_v0.$ === 1) {
-			var moduleName = $stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dn);
+			var moduleName = $stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dR);
 			if (moduleName.b && (!moduleName.b.b)) {
 				var singleSegmentModuleName = moduleName.a;
 				return _Utils_update(
 					innerContext,
 					{
-						bi: A3(
+						bq: A3(
 							$elm$core$Dict$update,
 							singleSegmentModuleName,
 							function (previousValue) {
@@ -14690,7 +14980,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerImportAli
 										moduleName,
 										A2($elm$core$Maybe$withDefault, _List_Nil, previousValue)));
 							},
-							innerContext.bi)
+							innerContext.bq)
 					});
 			} else {
 				return innerContext;
@@ -14700,7 +14990,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerImportAli
 			return _Utils_update(
 				innerContext,
 				{
-					bi: A3(
+					bq: A3(
 						$elm$core$Dict$update,
 						$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$joinModuleName(
 							$stil4m$elm_syntax$Elm$Syntax$Node$value(alias)),
@@ -14708,10 +14998,10 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerImportAli
 							return $elm$core$Maybe$Just(
 								A2(
 									$elm$core$List$cons,
-									$stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dn),
+									$stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dR),
 									A2($elm$core$Maybe$withDefault, _List_Nil, previousValue)));
 						},
-						innerContext.bi)
+						innerContext.bq)
 				});
 		}
 	});
@@ -14726,7 +15016,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$typesFromExposing
 			var name = _v0.a;
 			return $elm$core$Maybe$Just(name);
 		default:
-			var name = _v0.a.bT;
+			var name = _v0.a.b5;
 			return $elm$core$Maybe$Just(name);
 	}
 };
@@ -14768,9 +15058,9 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$valuesFromExposin
 						if (A2(
 							$elm$core$List$any,
 							function (alias) {
-								return _Utils_eq(alias.bT, name);
+								return _Utils_eq(alias.b5, name);
 							},
-							module_.ej)) {
+							module_.eR)) {
 							var $temp$moduleName = moduleName,
 								$temp$module_ = module_,
 								$temp$topLevelExposeList = rest,
@@ -14792,14 +15082,14 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$valuesFromExposin
 							continue valuesFromExposingList;
 						}
 					default:
-						var name = _v1.a.bT;
-						var open = _v1.a.gu;
+						var name = _v1.a.b5;
+						var open = _v1.a.g2;
 						if (!open.$) {
 							var newAcc = A3(
 								$elm$core$List$foldl,
 								F2(
 									function (union, subAcc) {
-										return _Utils_eq(union.bT, name) ? A3(
+										return _Utils_eq(union.b5, name) ? A3(
 											$elm$core$List$foldl,
 											F2(
 												function (_v3, subSubAcc) {
@@ -14807,10 +15097,10 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$valuesFromExposin
 													return A3($elm$core$Dict$insert, tag, moduleName, subSubAcc);
 												}),
 											subAcc,
-											union.gS) : subAcc;
+											union.hr) : subAcc;
 									}),
 								acc,
-								module_.fA);
+								module_.f8);
 							var $temp$moduleName = moduleName,
 								$temp$module_ = module_,
 								$temp$topLevelExposeList = rest,
@@ -14837,23 +15127,23 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$valuesFromExposin
 	});
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerImportExposed = F2(
 	function (import_, innerContext) {
-		var _v0 = A2($elm$core$Maybe$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, import_.dJ);
+		var _v0 = A2($elm$core$Maybe$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, import_.ef);
 		if (_v0.$ === 1) {
 			return innerContext;
 		} else {
 			var exposing_ = _v0.a;
-			var moduleName = $stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dn);
+			var moduleName = $stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dR);
 			var module_ = A2(
 				$elm$core$Maybe$withDefault,
 				{
-					ej: _List_Nil,
-					ep: _List_Nil,
-					b0: '',
-					bT: $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$joinModuleName(moduleName),
-					fA: _List_Nil,
-					fB: _List_Nil
+					eR: _List_Nil,
+					eX: _List_Nil,
+					ci: '',
+					b5: $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$joinModuleName(moduleName),
+					f8: _List_Nil,
+					f9: _List_Nil
 				},
-				A2($elm$core$Dict$get, moduleName, innerContext.a3));
+				A2($elm$core$Dict$get, moduleName, innerContext.ba));
 			if (!exposing_.$) {
 				var foldIntoDict = F2(
 					function (list, dict) {
@@ -14861,7 +15151,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerImportExp
 							$elm$core$List$foldl,
 							F2(
 								function (_v3, acc) {
-									var name = _v3.bT;
+									var name = _v3.b5;
 									return A3($elm$core$Dict$insert, name, moduleName, acc);
 								}),
 							dict,
@@ -14869,8 +15159,8 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerImportExp
 					});
 				var importedTypes = A2(
 					foldIntoDict,
-					module_.ej,
-					A2(foldIntoDict, module_.fA, innerContext.bN));
+					module_.eR,
+					A2(foldIntoDict, module_.f8, innerContext.bZ));
 				var foldCustomTypesIntoDict = F2(
 					function (unions, dict) {
 						return A3(
@@ -14885,24 +15175,24 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerImportExp
 												return A3($elm$core$Dict$insert, name, moduleName, subAcc);
 											}),
 										acc,
-										union.gS);
+										union.hr);
 								}),
 							dict,
 							unions);
 					});
 				var importedFunctions = A2(
 					foldCustomTypesIntoDict,
-					module_.fA,
+					module_.f8,
 					A2(
 						foldIntoDict,
-						module_.ej,
+						module_.eR,
 						A2(
 							foldIntoDict,
-							module_.ep,
-							A2(foldIntoDict, module_.fB, innerContext.bL))));
+							module_.eX,
+							A2(foldIntoDict, module_.f9, innerContext.bX))));
 				return _Utils_update(
 					innerContext,
-					{bL: importedFunctions, bN: importedTypes});
+					{bX: importedFunctions, bZ: importedTypes});
 			} else {
 				var topLevelExposeList = exposing_.a;
 				var importedTypes = A3(
@@ -14917,12 +15207,12 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerImportExp
 								return acc;
 							}
 						}),
-					innerContext.bN,
+					innerContext.bZ,
 					topLevelExposeList);
-				var importedFunctions = A4($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$valuesFromExposingList, moduleName, module_, topLevelExposeList, innerContext.bL);
+				var importedFunctions = A4($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$valuesFromExposingList, moduleName, module_, topLevelExposeList, innerContext.bX);
 				return _Utils_update(
 					innerContext,
-					{bL: importedFunctions, bN: importedTypes});
+					{bX: importedFunctions, bZ: importedTypes});
 			}
 		}
 	});
@@ -14948,7 +15238,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$exposedElements =
 						var name = _v0.a;
 						return A2($elm$core$Set$insert, name, acc);
 					case 3:
-						var name = _v0.a.bT;
+						var name = _v0.a.b5;
 						return A2($elm$core$Set$insert, name, acc);
 					default:
 						return acc;
@@ -14961,13 +15251,13 @@ var $stil4m$elm_syntax$Elm$Syntax$Module$exposingList = function (m) {
 	switch (m.$) {
 		case 0:
 			var x = m.a;
-			return $stil4m$elm_syntax$Elm$Syntax$Node$value(x.dJ);
+			return $stil4m$elm_syntax$Elm$Syntax$Node$value(x.ef);
 		case 1:
 			var x = m.a;
-			return $stil4m$elm_syntax$Elm$Syntax$Node$value(x.dJ);
+			return $stil4m$elm_syntax$Elm$Syntax$Node$value(x.ef);
 		default:
 			var x = m.a;
-			return $stil4m$elm_syntax$Elm$Syntax$Node$value(x.dJ);
+			return $stil4m$elm_syntax$Elm$Syntax$Node$value(x.ef);
 	}
 };
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$moduleDefinitionVisitor = F2(
@@ -14977,20 +15267,20 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$moduleDefinitionV
 		if (!_v0.$) {
 			return _Utils_update(
 				innerContext,
-				{c8: true});
+				{dC: true});
 		} else {
 			var list = _v0.a;
 			return _Utils_update(
 				innerContext,
 				{
-					c7: $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$exposedElements(list)
+					dB: $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$exposedElements(list)
 				});
 		}
 	});
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Internal$toRangeLike = function (_v0) {
-	var start = _v0.cm;
-	var end = _v0.b6;
-	return _Utils_Tuple2((start.bs << 16) + start.bb, (end.bs << 16) + end.bb);
+	var start = _v0.cN;
+	var end = _v0.cp;
+	return _Utils_Tuple2((start.bD << 16) + start.bh, (end.bD << 16) + end.bh);
 };
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Internal$add = F3(
 	function (range, moduleName, _v0) {
@@ -15018,7 +15308,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$isInScope = F2(
 			A2(
 				$elm$core$Basics$composeR,
 				function ($) {
-					return $.bU;
+					return $.b6;
 				},
 				$elm$core$Dict$member(name)),
 			scopes);
@@ -15030,18 +15320,18 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$isValueDeclaredIn
 			A2(
 				$elm$core$Basics$composeR,
 				function ($) {
-					return $.bT;
+					return $.b5;
 				},
 				$elm$core$Basics$eq(valueName)),
-			module_.fB) || (A2(
+			module_.f9) || (A2(
 			$elm$core$List$any,
 			A2(
 				$elm$core$Basics$composeR,
 				function ($) {
-					return $.bT;
+					return $.b5;
 				},
 				$elm$core$Basics$eq(valueName)),
-			module_.ej) || A2(
+			module_.eR) || A2(
 			$elm$core$List$any,
 			function (union) {
 				return A2(
@@ -15050,9 +15340,9 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$isValueDeclaredIn
 						$elm$core$Basics$composeR,
 						$elm$core$Tuple$first,
 						$elm$core$Basics$eq(valueName)),
-					union.gS);
+					union.hr);
 			},
-			module_.fA));
+			module_.f8));
 	});
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$moduleNameForValue = F3(
 	function (context, valueName, moduleName) {
@@ -15060,11 +15350,11 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$moduleNameForValu
 			return A2($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$isInScope, valueName, context.t) ? _List_Nil : A2(
 				$elm$core$Maybe$withDefault,
 				_List_Nil,
-				A2($elm$core$Dict$get, valueName, context.bL));
+				A2($elm$core$Dict$get, valueName, context.bX));
 		} else {
 			if (!moduleName.b.b) {
 				var moduleNameOrAlias = moduleName.a;
-				var _v1 = A2($elm$core$Dict$get, moduleNameOrAlias, context.bi);
+				var _v1 = A2($elm$core$Dict$get, moduleNameOrAlias, context.bq);
 				if (!_v1.$) {
 					if (_v1.a.b && (!_v1.a.b.b)) {
 						var _v2 = _v1.a;
@@ -15075,7 +15365,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$moduleNameForValu
 						var _v3 = A2(
 							$jfmengels$elm_review$Vendor$ListExtra$find,
 							function (aliasedModuleName) {
-								var _v4 = A2($elm$core$Dict$get, aliasedModuleName, context.a3);
+								var _v4 = A2($elm$core$Dict$get, aliasedModuleName, context.ba);
 								if (!_v4.$) {
 									var module_ = _v4.a;
 									return A2($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$isValueDeclaredInModule, valueName, module_);
@@ -15112,8 +15402,8 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$collectModuleName
 				var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(pattern);
 				switch (_v1.$) {
 					case 12:
-						var moduleName = _v1.a.dn;
-						var name = _v1.a.bT;
+						var moduleName = _v1.a.dR;
+						var name = _v1.a.b5;
 						var subPatterns = _v1.b;
 						var $temp$context = context,
 							$temp$patternsToVisit = A2($elm$core$List$append, subPatterns, restOfPatternsToVisit),
@@ -15306,12 +15596,12 @@ var $jfmengels$elm_review$NonEmpty$cons = F2(
 			A2($elm$core$List$cons, x, xs));
 	});
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$emptyScope = {
-	cY: A2(
+	dt: A2(
 		$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 		$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
 		$stil4m$elm_syntax$Elm$Syntax$Expression$Literal('root')),
-	fQ: _List_Nil,
-	bU: $elm$core$Dict$empty
+	go: _List_Nil,
+	b6: $elm$core$Dict$empty
 };
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$FunctionParameter = 2;
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$collectNamesFromPattern = F3(
@@ -15331,11 +15621,11 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$collectNamesFromP
 							$elm$core$Dict$insert,
 							name,
 							{
-								e8: A2(
+								fG: A2(
 									$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 									$stil4m$elm_syntax$Elm$Syntax$Node$range(pattern),
 									name),
-								a9: variableType
+								bf: variableType
 							},
 							acc);
 						variableType = $temp$variableType;
@@ -15362,7 +15652,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$collectNamesFromP
 									return A3(
 										$elm$core$Dict$insert,
 										$stil4m$elm_syntax$Elm$Syntax$Node$value(nameNode),
-										{e8: nameNode, a9: variableType},
+										{fG: nameNode, bf: variableType},
 										subAcc);
 								}),
 							acc,
@@ -15388,7 +15678,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$collectNamesFromP
 							$temp$acc = A3(
 							$elm$core$Dict$insert,
 							$stil4m$elm_syntax$Elm$Syntax$Node$value(alias),
-							{e8: alias, a9: variableType},
+							{fG: alias, bf: variableType},
 							acc);
 						variableType = $temp$variableType;
 						patternsToVisit = $temp$patternsToVisit;
@@ -15457,8 +15747,8 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$declarationEnterV
 				var newScope = _Utils_update(
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$emptyScope,
 					{
-						bU: $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$parameters(
-							$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).el)
+						b6: $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$parameters(
+							$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).eT)
 					});
 				var newContext = A2(
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$updateScope,
@@ -15467,10 +15757,10 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$declarationEnterV
 				var lookupTableAfterArguments = A3(
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$collectModuleNamesFromPattern,
 					newContext,
-					$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).el,
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).eT,
 					newContext.l);
 				var finalLookupTable = function () {
-					var _v1 = _function.gJ;
+					var _v1 = _function.hi;
 					if (!_v1.$) {
 						var signature = _v1.a;
 						return A3(
@@ -15478,7 +15768,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$declarationEnterV
 							context,
 							_List_fromArray(
 								[
-									$stil4m$elm_syntax$Elm$Syntax$Node$value(signature).fz
+									$stil4m$elm_syntax$Elm$Syntax$Node$value(signature).f7
 								]),
 							lookupTableAfterArguments);
 					} else {
@@ -15489,7 +15779,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$declarationEnterV
 					newContext,
 					{l: finalLookupTable});
 			case 2:
-				var constructors = _v0.a.fV;
+				var constructors = _v0.a.gt;
 				return _Utils_update(
 					context,
 					{
@@ -15498,13 +15788,13 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$declarationEnterV
 							F2(
 								function (_v2, acc) {
 									var constructor = _v2.b;
-									return A3($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$collectModuleNamesFromTypeAnnotation, context, constructor.el, acc);
+									return A3($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$collectModuleNamesFromTypeAnnotation, context, constructor.eT, acc);
 								}),
 							context.l,
 							constructors)
 					});
 			case 1:
-				var typeAnnotation = _v0.a.fz;
+				var typeAnnotation = _v0.a.f7;
 				return _Utils_update(
 					context,
 					{
@@ -15524,7 +15814,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$declarationEnterV
 							$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$collectModuleNamesFromTypeAnnotation,
 							context,
 							_List_fromArray(
-								[signature.fz]),
+								[signature.f7]),
 							context.l)
 					});
 			default:
@@ -15556,7 +15846,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$declarationExitVi
 		}
 	});
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$functionToExpression = function (_function) {
-	return $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).da;
+	return $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).dE;
 };
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$expressionChildren = function (node) {
 	var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
@@ -15617,8 +15907,8 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$expressionChildre
 			return _List_fromArray(
 				[cond, then_, else_]);
 		case 15:
-			var expression = _v0.a.da;
-			var declarations = _v0.a.ew;
+			var expression = _v0.a.dE;
+			var declarations = _v0.a.e2;
 			return A3(
 				$elm$core$List$foldr,
 				F2(
@@ -15639,8 +15929,8 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$expressionChildre
 					[expression]),
 				declarations);
 		case 16:
-			var expression = _v0.a.da;
-			var cases = _v0.a.fQ;
+			var expression = _v0.a.dE;
+			var cases = _v0.a.go;
 			return A2(
 				$elm$core$List$cons,
 				expression,
@@ -15652,7 +15942,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$expressionChildre
 					},
 					cases));
 		case 17:
-			var expression = _v0.a.da;
+			var expression = _v0.a.dE;
 			return _List_fromArray(
 				[expression]);
 		case 13:
@@ -15677,7 +15967,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$expressionEnterVi
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 		switch (_v0.$) {
 			case 15:
-				var declarations = _v0.a.ew;
+				var declarations = _v0.a.e2;
 				var newContext = A2(
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$updateScope,
 					context,
@@ -15688,10 +15978,10 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$expressionEnterVi
 								var _v3 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
 								if (!_v3.$) {
 									var _function = _v3.a;
-									var nameNode = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).bT;
+									var nameNode = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).b5;
 									return A3(
 										$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$registerVariable,
-										{e8: nameNode, a9: 3},
+										{fG: nameNode, bf: 3},
 										$stil4m$elm_syntax$Elm$Syntax$Node$value(nameNode),
 										scopes);
 								} else {
@@ -15710,9 +16000,9 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$expressionEnterVi
 								var withDeclarationModuleName = A3(
 									$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$collectModuleNamesFromPattern,
 									newContext,
-									$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).el,
+									$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).eT,
 									acc);
-								var _v2 = _function.gJ;
+								var _v2 = _function.hi;
 								if (!_v2.$) {
 									var signature = _v2.a;
 									return A3(
@@ -15720,7 +16010,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$expressionEnterVi
 										context,
 										_List_fromArray(
 											[
-												$stil4m$elm_syntax$Elm$Syntax$Node$value(signature).fz
+												$stil4m$elm_syntax$Elm$Syntax$Node$value(signature).f7
 											]),
 										withDeclarationModuleName);
 								} else {
@@ -15771,7 +16061,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$expressionEnterVi
 									lookupTableAcc));
 						}),
 					_Utils_Tuple2(_List_Nil, context.l),
-					caseBlock.fQ);
+					caseBlock.go);
 				var cases = _v4.a;
 				var lookupTable = _v4.b;
 				return _Utils_update(
@@ -15783,7 +16073,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$expressionEnterVi
 							function (scope) {
 								return _Utils_update(
 									scope,
-									{fQ: cases});
+									{go: cases});
 							},
 							context.t)
 					});
@@ -15813,7 +16103,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$expressionEnterVi
 							context.l)
 					});
 			case 17:
-				var args = _v0.a.fG;
+				var args = _v0.a.ge;
 				return _Utils_update(
 					context,
 					{
@@ -15864,7 +16154,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$expressionExitVis
 							function (scope) {
 								return _Utils_update(
 									scope,
-									{fQ: _List_Nil});
+									{go: _List_Nil});
 							},
 							context.t)
 					});
@@ -15885,7 +16175,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$popScopeEnter = F
 				var expressionNode = _v2.a;
 				return _Utils_eq(node, expressionNode);
 			},
-			currentScope.fQ);
+			currentScope.go);
 		if (caseExpression.$ === 1) {
 			return context;
 		} else {
@@ -15898,7 +16188,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$popScopeEnter = F
 						$jfmengels$elm_review$NonEmpty$cons,
 						_Utils_update(
 							$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$emptyScope,
-							{cY: node, bU: names}),
+							{dt: node, b6: names}),
 						context.t)
 				});
 		}
@@ -15906,7 +16196,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$popScopeEnter = F
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$popScopeExit = F2(
 	function (node, context) {
 		var currentScope = $jfmengels$elm_review$NonEmpty$head(context.t);
-		return _Utils_eq(node, currentScope.cY) ? _Utils_update(
+		return _Utils_eq(node, currentScope.dt) ? _Utils_update(
 			context,
 			{
 				t: $jfmengels$elm_review$NonEmpty$pop(context.t)
@@ -15946,7 +16236,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$visitDeclarations
 							declaration,
 							A2(
 								$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$visitExpressions,
-								$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).da,
+								$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).dE,
 								A2($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$declarationEnterVisitor, declaration, ctx)));
 					} else {
 						return A2($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$declarationEnterVisitor, declaration, ctx);
@@ -15959,18 +16249,18 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$collectLookupTabl
 	function (ast, context) {
 		return A2(
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$visitDeclarationsAndExpressions,
-			ast.ew,
+			ast.e2,
 			A2(
 				$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$declarationListVisitor,
-				ast.ew,
+				ast.e2,
 				A2(
 					$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$moduleDefinitionVisitor,
-					ast.gj,
+					ast.gT,
 					A3(
 						$elm$core$List$foldl,
 						$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$importVisitor,
 						context,
-						_Utils_ap($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$elmCorePrelude, ast.f9)))));
+						_Utils_ap($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$elmCorePrelude, ast.gJ)))));
 	});
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$computeDependencies = function (project) {
 	return A3(
@@ -15979,7 +16269,7 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$computeDependenci
 			function (dependencyModule, acc) {
 				return A3(
 					$elm$core$Dict$insert,
-					A2($elm$core$String$split, '.', dependencyModule.bT),
+					A2($elm$core$String$split, '.', dependencyModule.b5),
 					dependencyModule,
 					acc);
 			}),
@@ -16002,30 +16292,30 @@ var $jfmengels$elm_review$NonEmpty$fromElement = function (x) {
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$fromProjectToModule = F2(
 	function (moduleName, modules) {
 		return {
-			cy: _List_Nil,
-			c7: $elm$core$Set$empty,
-			cC: _List_Nil,
-			cD: _List_Nil,
-			c8: false,
-			bi: $elm$core$Dict$empty,
-			bL: $elm$core$Dict$empty,
-			bN: $elm$core$Dict$empty,
-			bR: $elm$core$Set$empty,
+			c1: _List_Nil,
+			dB: $elm$core$Set$empty,
+			c5: _List_Nil,
+			c6: _List_Nil,
+			dC: false,
+			bq: $elm$core$Dict$empty,
+			bX: $elm$core$Dict$empty,
+			bZ: $elm$core$Dict$empty,
+			b3: $elm$core$Set$empty,
 			l: $jfmengels$elm_review$Review$ModuleNameLookupTable$Internal$empty(moduleName),
-			a3: modules,
+			ba: modules,
 			t: $jfmengels$elm_review$NonEmpty$fromElement($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$emptyScope)
 		};
 	});
 var $jfmengels$elm_review$Review$Project$Valid$projectCache = function (_v0) {
 	var project = _v0;
-	return project.cR;
+	return project.dl;
 };
 var $jfmengels$elm_review$Review$Project$Valid$updateProjectCache = F2(
 	function (projectCache_, _v0) {
 		var project = _v0;
 		return _Utils_update(
 			project,
-			{cR: projectCache_});
+			{dl: projectCache_});
 	});
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$compute = F3(
 	function (moduleName, module_, project) {
@@ -16033,14 +16323,14 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$compute = F3(
 		var elmJsonRaw = A2(
 			$elm$core$Maybe$map,
 			function ($) {
-				return $.ck;
+				return $.cL;
 			},
 			$jfmengels$elm_review$Review$Project$Valid$elmJson(project));
 		var deps = function () {
-			var _v6 = projectCache.ey;
+			var _v6 = projectCache.e4;
 			if (!_v6.$) {
 				var cache = _v6.a;
-				return _Utils_eq(elmJsonRaw, cache.eE) ? cache.ez : $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$computeDependencies(project);
+				return _Utils_eq(elmJsonRaw, cache.fa) ? cache.e5 : $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$computeDependencies(project);
 			} else {
 				return $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$computeDependencies(project);
 			}
@@ -16050,9 +16340,9 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$compute = F3(
 			F2(
 				function (_v3, acc) {
 					var import_ = _v3.b;
-					var importedModuleName = $stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dn);
+					var importedModuleName = $stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dR);
 					var maybeImportedModule = function () {
-						var _v5 = A2($elm$core$Dict$get, importedModuleName, projectCache.a3);
+						var _v5 = A2($elm$core$Dict$get, importedModuleName, projectCache.ba);
 						if (!_v5.$) {
 							var importedModule = _v5.a;
 							return $elm$core$Maybe$Just(importedModule);
@@ -16068,11 +16358,11 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$compute = F3(
 					}
 				}),
 			$elm$core$Dict$empty,
-			_Utils_ap($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$elmCorePrelude, module_.fI.f9));
+			_Utils_ap($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$elmCorePrelude, module_.gg.gJ));
 		var computeLookupTableForModule = function (_v2) {
 			var moduleContext = A2(
 				$jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$collectLookupTable,
-				module_.fI,
+				module_.gg,
 				A2($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$fromProjectToModule, moduleName, imported));
 			return _Utils_Tuple2(
 				moduleContext.l,
@@ -16080,21 +16370,21 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$compute = F3(
 					$elm$core$Dict$insert,
 					moduleName,
 					{
-						ej: moduleContext.cy,
-						ep: _List_Nil,
-						b0: '',
-						bT: A2($elm$core$String$join, '.', moduleName),
-						fA: moduleContext.cC,
-						fB: moduleContext.cD
+						eR: moduleContext.c1,
+						eX: _List_Nil,
+						ci: '',
+						b5: A2($elm$core$String$join, '.', moduleName),
+						f8: moduleContext.c5,
+						f9: moduleContext.c6
 					},
-					projectCache.a3));
+					projectCache.ba));
 		};
-		var cacheKey = {f8: imported, gK: module_.gK};
+		var cacheKey = {gI: imported, hj: module_.hj};
 		var _v0 = function () {
-			var _v1 = A2($elm$core$Dict$get, moduleName, projectCache.d_);
+			var _v1 = A2($elm$core$Dict$get, moduleName, projectCache.ev);
 			if (!_v1.$) {
 				var cache = _v1.a;
-				return _Utils_eq(cache.cN, cacheKey) ? _Utils_Tuple2(cache.l, projectCache.a3) : computeLookupTableForModule(0);
+				return _Utils_eq(cache.dg, cacheKey) ? _Utils_Tuple2(cache.l, projectCache.ba) : computeLookupTableForModule(0);
 			} else {
 				return computeLookupTableForModule(0);
 			}
@@ -16102,19 +16392,29 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$compute = F3(
 		var lookupTable = _v0.a;
 		var modules = _v0.b;
 		var newProjectCache = {
-			ey: $elm$core$Maybe$Just(
-				{ez: deps, eE: elmJsonRaw}),
-			d_: A3(
+			e4: $elm$core$Maybe$Just(
+				{e5: deps, fa: elmJsonRaw}),
+			ev: A3(
 				$elm$core$Dict$insert,
 				moduleName,
-				{cN: cacheKey, l: lookupTable},
-				projectCache.d_),
-			a3: modules
+				{dg: cacheKey, l: lookupTable},
+				projectCache.ev),
+			ba: modules
 		};
 		return _Utils_Tuple2(
 			lookupTable,
 			A2($jfmengels$elm_review$Review$Project$Valid$updateProjectCache, newProjectCache, project));
 	});
+var $jfmengels$elm_review$Review$Cache$ModuleEntry = $elm$core$Basics$identity;
+var $jfmengels$elm_review$Review$Cache$createModuleEntry = function (entry) {
+	return {
+		ck: entry.ck,
+		bo: entry.bo,
+		cA: $jfmengels$elm_review$Review$Cache$ContextHash$create(entry.cA),
+		dJ: entry.dJ,
+		cJ: entry.cJ
+	};
+};
 var $jfmengels$elm_review$Review$Rule$mapLast = F2(
 	function (mapper, lines) {
 		var _v0 = $elm$core$List$reverse(lines);
@@ -16134,17 +16434,17 @@ var $jfmengels$elm_review$Review$Rule$extractSourceCode = F2(
 	function (lines, range) {
 		return A2(
 			$elm$core$String$dropLeft,
-			range.cm.bb - 1,
+			range.cN.bh - 1,
 			A2(
 				$elm$core$String$join,
 				'\n',
 				A2(
 					$jfmengels$elm_review$Review$Rule$mapLast,
-					A2($elm$core$String$slice, 0, range.b6.bb - 1),
+					A2($elm$core$String$slice, 0, range.cp.bh - 1),
 					A2(
 						$elm$core$List$take,
-						(range.b6.bs - range.cm.bs) + 1,
-						A2($elm$core$List$drop, range.cm.bs - 1, lines)))));
+						(range.cp.bD - range.cN.bD) + 1,
+						A2($elm$core$List$drop, range.cN.bD - 1, lines)))));
 	});
 var $jfmengels$elm_review$Vendor$Zipper$focusl = F2(
 	function (fc, zipper) {
@@ -16173,21 +16473,21 @@ var $jfmengels$elm_review$Review$Rule$moduleNameNode = function (node) {
 	switch (_v0.$) {
 		case 0:
 			var data = _v0.a;
-			return data.dn;
+			return data.dR;
 		case 1:
 			var data = _v0.a;
-			return data.dn;
+			return data.dR;
 		default:
 			var data = _v0.a;
-			return data.dn;
+			return data.dR;
 	}
 };
 var $jfmengels$elm_review$Review$Rule$setFilePathIfUnset = F2(
 	function (module_, rawError) {
 		var err = rawError;
-		return (err.f3 === '') ? _Utils_update(
+		return (err.gD === '') ? _Utils_update(
 			err,
-			{f3: module_.gx}) : rawError;
+			{gD: module_.g5}) : rawError;
 	});
 var $jfmengels$elm_review$Review$Rule$accumulateList = F3(
 	function (visitor, elements, errorAndContext) {
@@ -16208,7 +16508,7 @@ var $jfmengels$elm_review$Review$Rule$findModuleDocumentationBeforeCutOffLine = 
 				var range = comment.a;
 				var content = comment.b;
 				var restOfComments = comments.b;
-				if (_Utils_cmp(range.cm.bs, cutOffLine) > 0) {
+				if (_Utils_cmp(range.cN.bD, cutOffLine) > 0) {
 					return $elm$core$Maybe$Nothing;
 				} else {
 					if (A2($elm$core$String$startsWith, '{-|', content)) {
@@ -16226,21 +16526,21 @@ var $jfmengels$elm_review$Review$Rule$findModuleDocumentationBeforeCutOffLine = 
 	});
 var $jfmengels$elm_review$Review$Rule$findModuleDocumentation = function (ast) {
 	var cutOffLine = function () {
-		var _v0 = ast.f9;
+		var _v0 = ast.gJ;
 		if (_v0.b) {
 			var firstImport = _v0.a;
-			return $stil4m$elm_syntax$Elm$Syntax$Node$range(firstImport).cm.bs;
+			return $stil4m$elm_syntax$Elm$Syntax$Node$range(firstImport).cN.bD;
 		} else {
-			var _v1 = ast.ew;
+			var _v1 = ast.e2;
 			if (_v1.b) {
 				var firstDeclaration = _v1.a;
-				return $stil4m$elm_syntax$Elm$Syntax$Node$range(firstDeclaration).cm.bs;
+				return $stil4m$elm_syntax$Elm$Syntax$Node$range(firstDeclaration).cN.bD;
 			} else {
 				return 0;
 			}
 		}
 	}();
-	return A2($jfmengels$elm_review$Review$Rule$findModuleDocumentationBeforeCutOffLine, cutOffLine, ast.fU);
+	return A2($jfmengels$elm_review$Review$Rule$findModuleDocumentationBeforeCutOffLine, cutOffLine, ast.gs);
 };
 var $jfmengels$elm_review$Review$Rule$accumulateModuleDocumentationVisitor = F3(
 	function (visitors, ast, initialErrorsAndContext) {
@@ -16295,93 +16595,96 @@ var $jfmengels$elm_review$Review$Rule$visitModuleForProjectRule = F3(
 				moduleContext);
 		}(
 			A2(
-				schema.dF,
-				module_.fI.ew,
+				schema.ea,
+				module_.gg.e2,
 				A3(
 					$jfmengels$elm_review$Review$Rule$accumulateWithListOfVisitors,
-					schema.aK,
-					module_.fI.ew,
+					schema.aP,
+					module_.gg.e2,
 					A3(
 						$jfmengels$elm_review$Review$Rule$accumulateList,
-						schema.aN,
-						module_.fI.f9,
+						schema.aT,
+						module_.gg.gJ,
 						A3(
 							$jfmengels$elm_review$Review$Rule$accumulateWithListOfVisitors,
-							schema.aF,
-							module_.fI.fU,
+							schema.aK,
+							module_.gg.gs,
 							A3(
 								$jfmengels$elm_review$Review$Rule$accumulateModuleDocumentationVisitor,
-								schema.aP,
-								module_.fI,
+								schema.aV,
+								module_.gg,
 								A3(
 									$jfmengels$elm_review$Review$Rule$accumulateWithListOfVisitors,
-									schema.aO,
-									module_.fI.gj,
+									schema.aU,
+									module_.gg.gT,
 									_Utils_Tuple2(_List_Nil, initialContext))))))));
 	});
-var $jfmengels$elm_review$Review$Rule$computeModule = F6(
-	function (dataToComputeModules, module_, projectContext, project, moduleZipper, fixedErrors) {
+var $jfmengels$elm_review$Review$Rule$computeModule = F7(
+	function (dataToComputeModules, module_, isFileIgnored, projectContext, project, moduleZipper, fixedErrors) {
 		computeModule:
 		while (true) {
 			var moduleName = $stil4m$elm_syntax$Elm$Syntax$Node$value(
-				$jfmengels$elm_review$Review$Rule$moduleNameNode(module_.fI.gj));
-			var _v0 = dataToComputeModules.s.ah;
+				$jfmengels$elm_review$Review$Rule$moduleNameNode(module_.gg.gT));
+			var _v0 = dataToComputeModules.r.af;
 			var requestedData = _v0;
-			var _v1 = requestedData.aQ ? A3($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$compute, moduleName, module_, project) : _Utils_Tuple2(
+			var _v1 = requestedData.b4 ? A3($jfmengels$elm_review$Review$ModuleNameLookupTable$Compute$compute, moduleName, module_, project) : _Utils_Tuple2(
 				$jfmengels$elm_review$Review$ModuleNameLookupTable$Internal$empty(moduleName),
 				project);
 			var moduleNameLookupTable = _v1.a;
 			var newProject = _v1.b;
 			var availableData = {
-				fI: module_.fI,
-				db: requestedData.cl ? $jfmengels$elm_review$Review$Rule$extractSourceCode(
-					$elm$core$String$lines(module_.gK)) : $elm$core$Basics$always(''),
-				f3: module_.gx,
-				dX: module_.dX,
-				dm: module_.gx,
-				aQ: moduleNameLookupTable
+				gg: module_.gg,
+				dF: requestedData.eJ ? $jfmengels$elm_review$Review$Rule$extractSourceCode(
+					$elm$core$String$lines(module_.hj)) : $elm$core$Basics$always(''),
+				gD: module_.g5,
+				dJ: isFileIgnored,
+				es: module_.es,
+				dQ: module_.g5,
+				b4: moduleNameLookupTable
 			};
-			var initialModuleContext = A3($jfmengels$elm_review$Review$Rule$applyContextCreator, availableData, dataToComputeModules.P, projectContext);
-			var _v2 = A3($jfmengels$elm_review$Review$Rule$visitModuleForProjectRule, dataToComputeModules.ce, initialModuleContext, module_);
+			var initialModuleContext = A3($jfmengels$elm_review$Review$Rule$applyContextCreator, availableData, dataToComputeModules.S, projectContext);
+			var _v2 = A3($jfmengels$elm_review$Review$Rule$visitModuleForProjectRule, dataToComputeModules.cF, initialModuleContext, module_);
 			var moduleErrors = _v2.a;
 			var resultModuleContext = _v2.b;
 			var errors = A3(
 				$jfmengels$elm_review$Review$Rule$filterExceptionsAndSetName,
-				dataToComputeModules.q,
-				dataToComputeModules.s.bT,
+				dataToComputeModules.p,
+				dataToComputeModules.r.b5,
 				A2(
 					$elm$core$List$map,
 					$jfmengels$elm_review$Review$Rule$setFilePathIfUnset(module_),
 					moduleErrors));
 			var analysis = function (_v10) {
-				return {
-					bf: errors,
-					G: projectContext,
-					az: function () {
-						var _v9 = $jfmengels$elm_review$Review$Rule$getFolderFromTraversal(dataToComputeModules.s.cn);
-						if (!_v9.$) {
-							var fromModuleToProject = _v9.a.b9;
-							return A3($jfmengels$elm_review$Review$Rule$applyContextCreator, availableData, fromModuleToProject, resultModuleContext);
-						} else {
-							return projectContext;
-						}
-					}(),
-					gK: module_.gK
-				};
+				return $jfmengels$elm_review$Review$Cache$createModuleEntry(
+					{
+						ck: module_.ck,
+						bo: errors,
+						cA: projectContext,
+						dJ: isFileIgnored,
+						cJ: function () {
+							var _v9 = $jfmengels$elm_review$Review$Rule$getFolderFromTraversal(dataToComputeModules.r.cO);
+							if (!_v9.$) {
+								var fromModuleToProject = _v9.a.cu;
+								return A3($jfmengels$elm_review$Review$Rule$applyContextCreator, availableData, fromModuleToProject, resultModuleContext);
+							} else {
+								return projectContext;
+							}
+						}()
+					});
 			};
 			var resultWhenNoFix = function (_v8) {
 				return {
-					b_: analysis(0),
-					f4: fixedErrors,
-					a4: $jfmengels$elm_review$Review$Rule$ModuleVisitStep(
+					cf: analysis(0),
+					gE: fixedErrors,
+					bc: $jfmengels$elm_review$Review$Rule$ModuleVisitStep(
 						$jfmengels$elm_review$Vendor$Zipper$next(moduleZipper)),
 					e: newProject
 				};
 			};
 			var _v3 = A6(
 				$jfmengels$elm_review$Review$Rule$findFix,
-				dataToComputeModules.X,
-				dataToComputeModules.s,
+				dataToComputeModules.aa,
+				dataToComputeModules.r,
 				newProject,
 				errors,
 				fixedErrors,
@@ -16393,62 +16696,58 @@ var $jfmengels$elm_review$Review$Rule$computeModule = F6(
 				if (!postFixStatus.$) {
 					var newFixedErrors = postFixStatus.a;
 					return {
-						b_: analysis(0),
-						f4: newFixedErrors,
-						a4: $jfmengels$elm_review$Review$Rule$NextStepAbort,
+						cf: analysis(0),
+						gE: newFixedErrors,
+						bc: $jfmengels$elm_review$Review$Rule$NextStepAbort,
 						e: fixResult.e
 					};
 				} else {
 					var newFixedErrors = postFixStatus.a;
-					var _v6 = fixResult.bE;
+					var _v6 = fixResult.bQ;
 					switch (_v6.$) {
 						case 0:
-							var source = _v6.a.gK;
-							var ast = _v6.a.fI;
+							var source = _v6.a.hj;
+							var ast = _v6.a.gg;
 							var newModuleZipper_ = _v6.b;
-							if (_Utils_eq(
-								module_.gx,
-								$jfmengels$elm_review$Review$Rule$errorFilePath(fixResult.dI))) {
+							var filePath = $jfmengels$elm_review$Review$Rule$errorFilePath(fixResult.ee);
+							if (_Utils_eq(module_.g5, filePath)) {
 								var $temp$dataToComputeModules = dataToComputeModules,
 									$temp$module_ = _Utils_update(
 									module_,
-									{fI: ast, gK: source}),
+									{gg: ast, hj: source}),
+									$temp$isFileIgnored = isFileIgnored,
 									$temp$projectContext = projectContext,
 									$temp$project = fixResult.e,
 									$temp$moduleZipper = newModuleZipper_,
 									$temp$fixedErrors = newFixedErrors;
 								dataToComputeModules = $temp$dataToComputeModules;
 								module_ = $temp$module_;
+								isFileIgnored = $temp$isFileIgnored;
 								projectContext = $temp$projectContext;
 								project = $temp$project;
 								moduleZipper = $temp$moduleZipper;
 								fixedErrors = $temp$fixedErrors;
 								continue computeModule;
 							} else {
-								var fixedModuleName = $stil4m$elm_syntax$Elm$Syntax$Module$moduleName(
-									$stil4m$elm_syntax$Elm$Syntax$Node$value(ast.gj));
 								var _v7 = A2(
 									$jfmengels$elm_review$Vendor$Zipper$focusl,
 									function (mod) {
-										return _Utils_eq(mod.e8.cO, fixedModuleName);
+										return _Utils_eq(mod.fG.dh, filePath);
 									},
 									moduleZipper);
 								if (!_v7.$) {
 									var newModuleZipper = _v7.a;
 									return A3(
 										$jfmengels$elm_review$Review$Logger$log,
-										dataToComputeModules.X.dZ,
+										dataToComputeModules.aa.eu,
 										A2(
 											$jfmengels$elm_review$Review$Rule$fixedError,
 											newFixedErrors,
-											{
-												f3: $jfmengels$elm_review$Review$Rule$errorFilePath(fixResult.dI),
-												ea: dataToComputeModules.s.bT
-											}),
+											{gD: filePath, eH: dataToComputeModules.r.b5}),
 										{
-											b_: analysis(0),
-											f4: newFixedErrors,
-											a4: $jfmengels$elm_review$Review$Rule$ModuleVisitStep(
+											cf: analysis(0),
+											gE: newFixedErrors,
+											bc: $jfmengels$elm_review$Review$Rule$ModuleVisitStep(
 												$elm$core$Maybe$Just(newModuleZipper)),
 											e: fixResult.e
 										});
@@ -16458,16 +16757,16 @@ var $jfmengels$elm_review$Review$Rule$computeModule = F6(
 							}
 						case 1:
 							return {
-								b_: analysis(0),
-								f4: A2($jfmengels$elm_review$Review$Fix$FixedErrors$insert, fixResult.dI, fixedErrors),
-								a4: $jfmengels$elm_review$Review$Rule$BackToElmJson,
+								cf: analysis(0),
+								gE: A2($jfmengels$elm_review$Review$Fix$FixedErrors$insert, fixResult.ee, fixedErrors),
+								bc: $jfmengels$elm_review$Review$Rule$BackToElmJson,
 								e: fixResult.e
 							};
 						default:
 							return {
-								b_: analysis(0),
-								f4: A2($jfmengels$elm_review$Review$Fix$FixedErrors$insert, fixResult.dI, fixedErrors),
-								a4: $jfmengels$elm_review$Review$Rule$BackToReadme,
+								cf: analysis(0),
+								gE: A2($jfmengels$elm_review$Review$Fix$FixedErrors$insert, fixResult.ee, fixedErrors),
+								bc: $jfmengels$elm_review$Review$Rule$BackToReadme,
 								e: fixResult.e
 							};
 					}
@@ -16477,21 +16776,16 @@ var $jfmengels$elm_review$Review$Rule$computeModule = F6(
 			}
 		}
 	});
-var $jfmengels$elm_review$Review$Project$Valid$getModuleByModuleName = F2(
-	function (moduleName, _v0) {
-		var project = _v0;
-		return A2($elm$core$Dict$get, moduleName, project.cg);
-	});
 var $jfmengels$elm_review$Review$Project$Valid$moduleGraph = function (_v0) {
 	var project = _v0;
-	return project.e2;
+	return project.fA;
 };
 var $jfmengels$elm_review$Review$Rule$computeProjectContext = F5(
 	function (traversalAndFolder, project, cache, incoming, initial) {
 		if (!traversalAndFolder.$) {
 			return initial;
 		} else {
-			var foldProjectContexts = traversalAndFolder.a.bG;
+			var foldProjectContexts = traversalAndFolder.a.bS;
 			var graph = $jfmengels$elm_review$Review$Project$Valid$moduleGraph(project);
 			return A3(
 				$jfmengels$elm_review$Vendor$IntDict$foldl,
@@ -16499,18 +16793,16 @@ var $jfmengels$elm_review$Review$Rule$computeProjectContext = F5(
 					function (key, _v1, accContext) {
 						var _v2 = A2(
 							$elm$core$Maybe$andThen,
-							function (mod) {
-								return A2($elm$core$Dict$get, mod.gx, cache);
+							function (graphModule) {
+								return A2($elm$core$Dict$get, graphModule.fG.dh, cache);
 							},
-							A2(
-								$elm$core$Maybe$andThen,
-								function (graphModule) {
-									return A2($jfmengels$elm_review$Review$Project$Valid$getModuleByModuleName, graphModule.e8.cO, project);
-								},
-								A2($jfmengels$elm_review$Vendor$Graph$get, key, graph)));
+							A2($jfmengels$elm_review$Vendor$Graph$get, key, graph));
 						if (!_v2.$) {
 							var importedModuleCache = _v2.a;
-							return A2(foldProjectContexts, importedModuleCache.az, accContext);
+							return A2(
+								foldProjectContexts,
+								$jfmengels$elm_review$Review$Cache$outputContext(importedModuleCache),
+								accContext);
 						} else {
 							return accContext;
 						}
@@ -16518,6 +16810,19 @@ var $jfmengels$elm_review$Review$Rule$computeProjectContext = F5(
 				initial,
 				incoming);
 		}
+	});
+var $jfmengels$elm_review$Review$Cache$ContentHash$areEqual = F2(
+	function (_v0, _v1) {
+		var a = _v0;
+		var b = _v1;
+		return _Utils_eq(a, b);
+	});
+var $jfmengels$elm_review$Review$Cache$match = F4(
+	function (contentHash, context, _v0, _v1) {
+		var entry = _v0;
+		var isFileIgnored = _v1.dJ;
+		var rulesCareAboutIgnoredFiles = _v1.hh;
+		return A2($jfmengels$elm_review$Review$Cache$ContentHash$areEqual, contentHash, entry.ck) && (A2($jfmengels$elm_review$Review$Cache$ContextHash$areEqual, context, entry.cA) && ((!rulesCareAboutIgnoredFiles) || _Utils_eq(isFileIgnored, entry.dJ)));
 	});
 var $jfmengels$elm_review$Review$Rule$reuseCache = F2(
 	function (predicate, maybeCacheEntry) {
@@ -16530,11 +16835,11 @@ var $jfmengels$elm_review$Review$Rule$reuseCache = F2(
 	});
 var $jfmengels$elm_review$Review$Rule$shouldIgnoreModule = F2(
 	function (dataToComputeModules, path) {
-		var _v0 = dataToComputeModules.s.cn;
+		var _v0 = dataToComputeModules.r.cO;
 		if (!_v0.$) {
 			if (_v0.a.$ === 1) {
 				var _v1 = _v0.a;
-				return !A2($jfmengels$elm_review$Review$Exceptions$isFileWeWantReportsFor, dataToComputeModules.q, path);
+				return !A2($jfmengels$elm_review$Review$Exceptions$isFileWeWantReportsFor, dataToComputeModules.p, path);
 			} else {
 				return false;
 			}
@@ -16544,40 +16849,48 @@ var $jfmengels$elm_review$Review$Rule$shouldIgnoreModule = F2(
 	});
 var $jfmengels$elm_review$Review$Rule$computeModuleAndCacheResult = F6(
 	function (dataToComputeModules, inputProjectContext, moduleZipper, project, moduleContexts, fixedErrors) {
-		var ignoreModule = function (_v2) {
+		var ignoreModule = function (_v3) {
 			return {
-				f4: fixedErrors,
-				H: moduleContexts,
-				a4: $jfmengels$elm_review$Review$Rule$ModuleVisitStep(
+				gE: fixedErrors,
+				z: moduleContexts,
+				bc: $jfmengels$elm_review$Review$Rule$ModuleVisitStep(
 					$jfmengels$elm_review$Vendor$Zipper$next(moduleZipper)),
 				e: project
 			};
 		};
 		var _v0 = $jfmengels$elm_review$Vendor$Zipper$current(moduleZipper);
-		var node = _v0.e8;
-		var incoming = _v0.ga;
-		var _v1 = A2($jfmengels$elm_review$Review$Project$Valid$getModuleByModuleName, node.cO, project);
+		var node = _v0.fG;
+		var incoming = _v0.gK;
+		var _v1 = A2($jfmengels$elm_review$Review$Project$Valid$getModuleByPath, node.dh, project);
 		if (_v1.$ === 1) {
 			return ignoreModule(0);
 		} else {
 			var module_ = _v1.a;
-			if (A2($jfmengels$elm_review$Review$Rule$shouldIgnoreModule, dataToComputeModules, module_.gx)) {
+			if (A2($jfmengels$elm_review$Review$Rule$shouldIgnoreModule, dataToComputeModules, module_.g5)) {
 				return ignoreModule(0);
 			} else {
-				var projectContext = A5($jfmengels$elm_review$Review$Rule$computeProjectContext, dataToComputeModules.s.cn, project, moduleContexts, incoming, inputProjectContext);
+				var projectContext = A5($jfmengels$elm_review$Review$Rule$computeProjectContext, dataToComputeModules.r.cO, project, moduleContexts, incoming, inputProjectContext);
+				var isFileIgnored = !A2($jfmengels$elm_review$Review$Exceptions$isFileWeWantReportsFor, dataToComputeModules.p, module_.g5);
+				var _v2 = dataToComputeModules.r.af;
+				var requestedData = _v2;
 				if (A2(
 					$jfmengels$elm_review$Review$Rule$reuseCache,
 					function (cacheEntry) {
-						return _Utils_eq(cacheEntry.gK, module_.gK) && _Utils_eq(cacheEntry.G, projectContext);
+						return A4(
+							$jfmengels$elm_review$Review$Cache$match,
+							module_.ck,
+							$jfmengels$elm_review$Review$Cache$ContextHash$create(projectContext),
+							cacheEntry,
+							{dJ: isFileIgnored, hh: requestedData.eo});
 					},
-					A2($elm$core$Dict$get, module_.gx, moduleContexts))) {
+					A2($elm$core$Dict$get, module_.g5, moduleContexts))) {
 					return ignoreModule(0);
 				} else {
-					var result = A6($jfmengels$elm_review$Review$Rule$computeModule, dataToComputeModules, module_, projectContext, project, moduleZipper, fixedErrors);
+					var result = A7($jfmengels$elm_review$Review$Rule$computeModule, dataToComputeModules, module_, isFileIgnored, projectContext, project, moduleZipper, fixedErrors);
 					return {
-						f4: result.f4,
-						H: A3($elm$core$Dict$insert, module_.gx, result.b_, moduleContexts),
-						a4: result.a4,
+						gE: result.gE,
+						z: A3($elm$core$Dict$insert, module_.g5, result.cf, moduleContexts),
+						bc: result.bc,
 						e: result.e
 					};
 				}
@@ -16590,15 +16903,15 @@ var $jfmengels$elm_review$Review$Rule$computeModules = F6(
 		while (true) {
 			if (maybeModuleZipper.$ === 1) {
 				return {
-					f4: fixedErrors,
-					H: initialModuleContexts,
+					gE: fixedErrors,
+					z: initialModuleContexts,
 					e: initialProject,
 					o: $jfmengels$elm_review$Review$Rule$FinalProjectEvaluation(projectContexts)
 				};
 			} else {
 				var moduleZipper = maybeModuleZipper.a;
-				var result = A6($jfmengels$elm_review$Review$Rule$computeModuleAndCacheResult, dataToComputeModules, projectContexts.ez, moduleZipper, initialProject, initialModuleContexts, fixedErrors);
-				var _v1 = result.a4;
+				var result = A6($jfmengels$elm_review$Review$Rule$computeModuleAndCacheResult, dataToComputeModules, projectContexts.e5, moduleZipper, initialProject, initialModuleContexts, fixedErrors);
+				var _v1 = result.bc;
 				switch (_v1.$) {
 					case 0:
 						var newModuleZipper = _v1.a;
@@ -16606,8 +16919,8 @@ var $jfmengels$elm_review$Review$Rule$computeModules = F6(
 							$temp$projectContexts = projectContexts,
 							$temp$maybeModuleZipper = newModuleZipper,
 							$temp$initialProject = result.e,
-							$temp$initialModuleContexts = result.H,
-							$temp$fixedErrors = result.f4;
+							$temp$initialModuleContexts = result.z,
+							$temp$fixedErrors = result.gE;
 						dataToComputeModules = $temp$dataToComputeModules;
 						projectContexts = $temp$projectContexts;
 						maybeModuleZipper = $temp$maybeModuleZipper;
@@ -16617,22 +16930,22 @@ var $jfmengels$elm_review$Review$Rule$computeModules = F6(
 						continue computeModules;
 					case 1:
 						return {
-							f4: result.f4,
-							H: result.H,
+							gE: result.gE,
+							z: result.z,
 							e: result.e,
 							o: $jfmengels$elm_review$Review$Rule$ElmJson(
 								{n: projectContexts.n})
 						};
 					case 2:
 						return {
-							f4: result.f4,
-							H: result.H,
+							gE: result.gE,
+							z: result.z,
 							e: result.e,
 							o: $jfmengels$elm_review$Review$Rule$Readme(
-								{c5: projectContexts.c5, n: projectContexts.n})
+								{dz: projectContexts.dz, n: projectContexts.n})
 						};
 					default:
-						return {f4: result.f4, H: result.H, e: result.e, o: $jfmengels$elm_review$Review$Rule$Abort};
+						return {gE: result.gE, z: result.z, e: result.e, o: $jfmengels$elm_review$Review$Rule$Abort};
 				}
 			}
 		}
@@ -16641,67 +16954,85 @@ var $jfmengels$elm_review$Review$Rule$Dependencies = function (a) {
 	return {$: 2, a: a};
 };
 var $jfmengels$elm_review$Review$Rule$ReadmeKey = $elm$core$Basics$identity;
+var $jfmengels$elm_review$Review$Project$Valid$readmeHash = function (_v0) {
+	var project = _v0;
+	return A2($elm$core$Maybe$map, $elm$core$Tuple$second, project.eG);
+};
 var $jfmengels$elm_review$Review$Rule$computeReadme = F5(
 	function (dataToComputeProject, project, contexts, cache, fixedErrors) {
 		computeReadme:
 		while (true) {
-			var reviewOptions = dataToComputeProject.X;
-			var projectVisitor = dataToComputeProject.s;
-			var exceptions = dataToComputeProject.q;
-			var projectReadme = $jfmengels$elm_review$Review$Project$Valid$readme(project);
-			var inputContext = contexts.c5;
-			var cachePredicate = function (readme) {
-				return _Utils_eq(readme.G, inputContext) && _Utils_eq(readme.b, projectReadme);
+			var reviewOptions = dataToComputeProject.aa;
+			var projectVisitor = dataToComputeProject.r;
+			var exceptions = dataToComputeProject.p;
+			var inputContext = contexts.dz;
+			var cachePredicate = function (entry) {
+				return A3(
+					$jfmengels$elm_review$Review$Cache$matchMaybe,
+					$jfmengels$elm_review$Review$Project$Valid$readmeHash(project),
+					$jfmengels$elm_review$Review$Cache$ContextHash$create(inputContext),
+					entry);
 			};
 			var _v0 = A3(
 				$jfmengels$elm_review$Review$Rule$reuseProjectRuleCache,
 				cachePredicate,
 				function ($) {
-					return $.d9;
+					return $.eG;
 				},
 				cache);
 			if (!_v0.$) {
 				var entry = _v0.a;
 				return {
-					fO: cache,
-					f4: fixedErrors,
+					gm: cache,
+					gE: fixedErrors,
 					e: project,
 					o: $jfmengels$elm_review$Review$Rule$Dependencies(
-						{c5: contexts.c5, n: contexts.n, d9: entry.az})
+						{
+							dz: contexts.dz,
+							n: contexts.n,
+							eG: $jfmengels$elm_review$Review$Cache$outputContextMaybe(entry)
+						})
 				};
 			} else {
+				var projectReadme = $jfmengels$elm_review$Review$Project$Valid$readme(project);
 				var readmeData = A2(
 					$elm$core$Maybe$map,
 					function (readme) {
 						return {
-							b1: readme.b1,
-							gC: {b1: readme.b1, gx: readme.gx}
+							cj: readme.cj,
+							ha: {cj: readme.cj, g5: readme.g5}
 						};
 					},
 					projectReadme);
 				var _v1 = A3(
 					$jfmengels$elm_review$Review$Rule$accumulateWithListOfVisitors,
-					projectVisitor.R,
+					projectVisitor.U,
 					readmeData,
 					_Utils_Tuple2(_List_Nil, inputContext));
 				var errorsForVisitor = _v1.a;
 				var outputContext = _v1.b;
-				var errors = A3($jfmengels$elm_review$Review$Rule$filterExceptionsAndSetName, exceptions, projectVisitor.bT, errorsForVisitor);
+				var errors = A3($jfmengels$elm_review$Review$Rule$filterExceptionsAndSetName, exceptions, projectVisitor.b5, errorsForVisitor);
 				var updateCache = function (_v7) {
-					var readmeEntry = {bf: errors, G: inputContext, az: outputContext, b: projectReadme};
+					var readmeEntry = $jfmengels$elm_review$Review$Cache$createEntryMaybe(
+						{
+							ck: $jfmengels$elm_review$Review$Project$Valid$readmeHash(project),
+							bo: errors,
+							cA: inputContext,
+							cJ: outputContext
+						});
 					return _Utils_update(
 						cache,
 						{
-							d9: $elm$core$Maybe$Just(readmeEntry)
+							eG: $elm$core$Maybe$Just(readmeEntry)
 						});
 				};
 				var resultWhenNoFix = function (_v6) {
 					return {
-						fO: updateCache(0),
-						f4: fixedErrors,
+						gm: updateCache(0),
+						gE: fixedErrors,
 						e: project,
 						o: $jfmengels$elm_review$Review$Rule$Dependencies(
-							{c5: contexts.c5, n: contexts.n, d9: outputContext})
+							{dz: contexts.dz, n: contexts.n, eG: outputContext})
 					};
 				};
 				var _v2 = A6($jfmengels$elm_review$Review$Rule$findFix, reviewOptions, projectVisitor, project, errors, fixedErrors, $elm$core$Maybe$Nothing);
@@ -16712,19 +17043,19 @@ var $jfmengels$elm_review$Review$Rule$computeReadme = F5(
 					if (!postFixStatus.$) {
 						var newFixedErrors = postFixStatus.a;
 						return {
-							fO: updateCache(0),
-							f4: newFixedErrors,
+							gm: updateCache(0),
+							gE: newFixedErrors,
 							e: fixResult.e,
 							o: $jfmengels$elm_review$Review$Rule$Abort
 						};
 					} else {
 						var newFixedErrors = postFixStatus.a;
-						var _v5 = fixResult.bE;
+						var _v5 = fixResult.bQ;
 						switch (_v5.$) {
 							case 1:
 								return {
-									fO: updateCache(0),
-									f4: newFixedErrors,
+									gm: updateCache(0),
+									gE: newFixedErrors,
 									e: fixResult.e,
 									o: $jfmengels$elm_review$Review$Rule$ElmJson(
 										{n: contexts.n})
@@ -16751,6 +17082,22 @@ var $jfmengels$elm_review$Review$Rule$computeReadme = F5(
 			}
 		}
 	});
+var $jfmengels$elm_review$Review$Cache$errors = function (_v0) {
+	var entry = _v0;
+	return entry.bo;
+};
+var $jfmengels$elm_review$Review$Cache$errorsMaybe = function (maybeEntry) {
+	if (!maybeEntry.$) {
+		var entry = maybeEntry.a;
+		return entry.bo;
+	} else {
+		return _List_Nil;
+	}
+};
+var $jfmengels$elm_review$Review$Cache$outputForNoOutput = function (_v0) {
+	var entry = _v0;
+	return entry.fK;
+};
 var $jfmengels$elm_review$Review$Rule$errorsFromCache = function (cache) {
 	return $elm$core$List$concat(
 		_List_fromArray(
@@ -16759,46 +17106,20 @@ var $jfmengels$elm_review$Review$Rule$errorsFromCache = function (cache) {
 				$elm$core$Dict$foldl,
 				F3(
 					function (_v0, cacheEntry, acc) {
-						return A2($elm$core$List$append, cacheEntry.bf, acc);
+						return A2(
+							$elm$core$List$append,
+							$jfmengels$elm_review$Review$Cache$errors(cacheEntry),
+							acc);
 					}),
 				_List_Nil,
-				cache.H),
+				cache.z),
+				$jfmengels$elm_review$Review$Cache$errorsMaybe(cache.dz),
+				$jfmengels$elm_review$Review$Cache$errorsMaybe(cache.eG),
+				$jfmengels$elm_review$Review$Cache$errorsMaybe(cache.aR),
 				A2(
 				$elm$core$Maybe$withDefault,
 				_List_Nil,
-				A2(
-					$elm$core$Maybe$map,
-					function ($) {
-						return $.bf;
-					},
-					cache.c5)),
-				A2(
-				$elm$core$Maybe$withDefault,
-				_List_Nil,
-				A2(
-					$elm$core$Maybe$map,
-					function ($) {
-						return $.bf;
-					},
-					cache.d9)),
-				A2(
-				$elm$core$Maybe$withDefault,
-				_List_Nil,
-				A2(
-					$elm$core$Maybe$map,
-					function ($) {
-						return $.bf;
-					},
-					cache.aM)),
-				A2(
-				$elm$core$Maybe$withDefault,
-				_List_Nil,
-				A2(
-					$elm$core$Maybe$map,
-					function ($) {
-						return $.bf;
-					},
-					cache.bC))
+				A2($elm$core$Maybe$map, $jfmengels$elm_review$Review$Cache$outputForNoOutput, cache.cs))
 			]));
 };
 var $jfmengels$elm_review$Review$Rule$computeStepsForProject = F2(
@@ -16806,8 +17127,8 @@ var $jfmengels$elm_review$Review$Rule$computeStepsForProject = F2(
 		computeStepsForProject:
 		while (true) {
 			var project = acc.e;
-			var cache = acc.fO;
-			var fixedErrors = acc.f4;
+			var cache = acc.gm;
+			var fixedErrors = acc.gE;
 			var step = acc.o;
 			switch (step.$) {
 				case 0:
@@ -16834,12 +17155,12 @@ var $jfmengels$elm_review$Review$Rule$computeStepsForProject = F2(
 				case 3:
 					var contexts = step.a;
 					var moduleZipper = step.b;
-					var _v1 = dataToComputeProject.s.ce;
+					var _v1 = dataToComputeProject.r.cF;
 					if (_v1.$ === 1) {
 						var $temp$dataToComputeProject = dataToComputeProject,
 							$temp$acc = {
-							fO: acc.fO,
-							f4: acc.f4,
+							gm: acc.gm,
+							gE: acc.gE,
 							e: acc.e,
 							o: $jfmengels$elm_review$Review$Rule$FinalProjectEvaluation(contexts)
 						};
@@ -16852,18 +17173,18 @@ var $jfmengels$elm_review$Review$Rule$computeStepsForProject = F2(
 						var moduleContextCreator = _v2.b;
 						var result = A6(
 							$jfmengels$elm_review$Review$Rule$computeModules,
-							{q: dataToComputeProject.q, P: moduleContextCreator, ce: moduleVisitor, s: dataToComputeProject.s, X: dataToComputeProject.X},
+							{p: dataToComputeProject.p, S: moduleContextCreator, cF: moduleVisitor, r: dataToComputeProject.r, aa: dataToComputeProject.aa},
 							contexts,
 							$elm$core$Maybe$Just(moduleZipper),
 							project,
-							cache.H,
+							cache.z,
 							fixedErrors);
 						var $temp$dataToComputeProject = dataToComputeProject,
 							$temp$acc = {
-							fO: _Utils_update(
+							gm: _Utils_update(
 								cache,
-								{H: result.H}),
-							f4: result.f4,
+								{z: result.z}),
+							gE: result.gE,
 							e: result.e,
 							o: result.o
 						};
@@ -16879,12 +17200,12 @@ var $jfmengels$elm_review$Review$Rule$computeStepsForProject = F2(
 					acc = $temp$acc;
 					continue computeStepsForProject;
 				case 5:
-					var contexts = step.a;
+					var context = step.a;
 					var errors = $jfmengels$elm_review$Review$Rule$errorsFromCache(cache);
-					var cacheWithExtract = A5($jfmengels$elm_review$Review$Rule$computeExtract, dataToComputeProject.X, dataToComputeProject.s, contexts.dd, errors, cache);
-					return {fO: cacheWithExtract, bf: errors, f4: acc.f4, e: acc.e};
+					var cacheWithExtract = A5($jfmengels$elm_review$Review$Rule$computeExtract, dataToComputeProject.aa, dataToComputeProject.r, context, errors, cache);
+					return {gm: cacheWithExtract, bo: errors, gE: acc.gE, e: acc.e};
 				default:
-					return {fO: cache, bf: _List_Nil, f4: acc.f4, e: acc.e};
+					return {gm: cache, bo: _List_Nil, gE: acc.gE, e: acc.e};
 			}
 		}
 	});
@@ -16899,6 +17220,11 @@ var $jfmengels$elm_review$Review$Rule$endedRule = function (name) {
 			$elm$json$Json$Encode$string('Running ' + name))
 		]);
 };
+var $jfmengels$elm_review$Review$Rule$finalCacheMarker = F3(
+  function (ruleName, ruleId, cacheEntry) {
+    global.saveResultToCache(ruleName, ruleId, cacheEntry);
+    return cacheEntry;
+  });
 var $jfmengels$elm_review$Review$Rule$startedRule = function (name) {
 	return _List_fromArray(
 		[
@@ -16910,63 +17236,66 @@ var $jfmengels$elm_review$Review$Rule$startedRule = function (name) {
 			$elm$json$Json$Encode$string('Running ' + name))
 		]);
 };
-var $jfmengels$elm_review$Review$Rule$runProjectVisitor = F4(
-	function (dataToComputeProject, cache, fixedErrors, project) {
+var $jfmengels$elm_review$Review$Rule$runProjectVisitor = F5(
+	function (dataToComputeProject, ruleId, cache, fixedErrors, project) {
 		return A3(
 			$jfmengels$elm_review$Review$Logger$log,
-			dataToComputeProject.X.dZ,
-			$jfmengels$elm_review$Review$Rule$endedRule(dataToComputeProject.s.bT),
-			A4(
+			dataToComputeProject.aa.eu,
+			$jfmengels$elm_review$Review$Rule$endedRule(dataToComputeProject.r.b5),
+			A5(
 				$jfmengels$elm_review$Review$Rule$runProjectVisitorHelp,
 				dataToComputeProject,
+				ruleId,
 				cache,
 				fixedErrors,
 				A3(
 					$jfmengels$elm_review$Review$Logger$log,
-					dataToComputeProject.X.dZ,
-					$jfmengels$elm_review$Review$Rule$startedRule(dataToComputeProject.s.bT),
+					dataToComputeProject.aa.eu,
+					$jfmengels$elm_review$Review$Rule$startedRule(dataToComputeProject.r.b5),
 					project)));
 	});
-var $jfmengels$elm_review$Review$Rule$runProjectVisitorHelp = F4(
-	function (dataToComputeProject, initialCache, initialFixedErrors, initialProject) {
-		var projectVisitor = dataToComputeProject.s;
-		var exceptions = dataToComputeProject.q;
+var $jfmengels$elm_review$Review$Rule$runProjectVisitorHelp = F5(
+	function (dataToComputeProject, ruleId, initialCache, initialFixedErrors, initialProject) {
+		var projectVisitor = dataToComputeProject.r;
+		var exceptions = dataToComputeProject.p;
 		var _v0 = A2(
 			$jfmengels$elm_review$Review$Rule$computeStepsForProject,
 			dataToComputeProject,
 			{
-				fO: initialCache,
-				f4: initialFixedErrors,
+				gm: initialCache,
+				gE: initialFixedErrors,
 				e: initialProject,
 				o: $jfmengels$elm_review$Review$Rule$ElmJson(
-					{n: projectVisitor.bl})
+					{n: projectVisitor.bt})
 			});
 		var project = _v0.e;
-		var errors = _v0.bf;
-		var cache = _v0.fO;
-		var fixedErrors = _v0.f4;
+		var errors = _v0.bo;
+		var cache = _v0.gm;
+		var fixedErrors = _v0.gE;
 		return {
-			bf: errors,
-			eJ: A2(
+			bo: errors,
+			ff: A2(
 				$elm$core$Maybe$map,
 				function ($) {
-					return $.eJ;
+					return $.ff;
 				},
-				cache.eJ),
-			f4: fixedErrors,
+				A3($jfmengels$elm_review$Review$Rule$finalCacheMarker, projectVisitor.b5, ruleId, cache).ff),
+			gE: fixedErrors,
 			e: project,
-			cS: {
-				aH: $elm$core$Maybe$Nothing,
-				q: exceptions,
-				a$: !_Utils_eq(projectVisitor.aJ, $elm$core$Maybe$Nothing),
-				bT: projectVisitor.bT,
-				gB: projectVisitor.gB,
-				ah: projectVisitor.ah,
-				aV: F4(
-					function (newReviewOptions, newExceptions, newFixedErrors, newProjectArg) {
-						return A4(
+			dn: {
+				aM: $elm$core$Maybe$Nothing,
+				p: exceptions,
+				a6: !_Utils_eq(projectVisitor.aO, $elm$core$Maybe$Nothing),
+				dH: ruleId,
+				b5: projectVisitor.b5,
+				g9: projectVisitor.g9,
+				af: projectVisitor.af,
+				aZ: F5(
+					function (newReviewOptions, newRuleId, newExceptions, newFixedErrors, newProjectArg) {
+						return A5(
 							$jfmengels$elm_review$Review$Rule$runProjectVisitor,
-							{q: newExceptions, s: projectVisitor, X: newReviewOptions},
+							{p: newExceptions, r: projectVisitor, aa: newReviewOptions},
+							newRuleId,
 							cache,
 							newFixedErrors,
 							newProjectArg);
@@ -16977,31 +17306,36 @@ var $jfmengels$elm_review$Review$Rule$runProjectVisitorHelp = F4(
 var $jfmengels$elm_review$Review$Rule$fromProjectRuleSchema = function (projectRuleSchema) {
 	var schema = projectRuleSchema;
 	return {
-		aH: $elm$core$Maybe$Nothing,
-		q: $jfmengels$elm_review$Review$Exceptions$init,
-		a$: !_Utils_eq(schema.aJ, $elm$core$Maybe$Nothing),
-		bT: schema.bT,
-		gB: schema.gB,
-		ah: function () {
-			var _v0 = schema.P;
+		aM: $elm$core$Maybe$Nothing,
+		p: $jfmengels$elm_review$Review$Exceptions$init,
+		a6: !_Utils_eq(schema.aO, $elm$core$Maybe$Nothing),
+		dH: 0,
+		b5: schema.b5,
+		g9: schema.g9,
+		af: function () {
+			var _v0 = schema.S;
 			if (!_v0.$) {
 				var _v1 = _v0.a;
 				var requestedData = _v1.b;
 				return requestedData;
 			} else {
-				return {aQ: false, cl: false};
+				return $jfmengels$elm_review$Review$Rule$noRequestedData;
 			}
 		}(),
-		aV: F4(
-			function (reviewOptions, exceptions, fixedErrors, project) {
-				return A4(
+		aZ: F5(
+			function (reviewOptions, ruleId, exceptions, fixedErrors, project) {
+				return A5(
 					$jfmengels$elm_review$Review$Rule$runProjectVisitor,
 					{
-						q: exceptions,
-						s: $jfmengels$elm_review$Review$Rule$fromProjectRuleSchemaToRunnableProjectVisitor(projectRuleSchema),
-						X: reviewOptions
+						p: exceptions,
+						r: $jfmengels$elm_review$Review$Rule$fromProjectRuleSchemaToRunnableProjectVisitor(projectRuleSchema),
+						aa: reviewOptions
 					},
-					$jfmengels$elm_review$Review$Rule$emptyCache,
+					ruleId,
+					A2(
+						$jfmengels$elm_review$Review$Rule$removeUnknownModulesFromInitialCache,
+						project,
+						A3($jfmengels$elm_review$Review$Rule$initialCacheMarker, schema.b5, ruleId, $jfmengels$elm_review$Review$Rule$emptyCache)),
 					fixedErrors,
 					project);
 			})
@@ -17016,7 +17350,7 @@ var $sparksp$elm_review_ports$NoDuplicatePorts$rememberPortDeclaration = F2(
 	function (node, context) {
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 		if (_v0.$ === 3) {
-			var name = _v0.a.bT;
+			var name = _v0.a.b5;
 			return A3(
 				$elm$core$Dict$insert,
 				$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
@@ -17038,7 +17372,7 @@ var $jfmengels$elm_review$Review$Rule$withDeclarationListVisitor = F2(
 		return _Utils_update(
 			schema,
 			{
-				aK: A2($elm$core$List$cons, visitor, schema.aK)
+				aP: A2($elm$core$List$cons, visitor, schema.aP)
 			});
 	});
 var $sparksp$elm_review_ports$NoDuplicatePorts$moduleVisitor = function (schema) {
@@ -17048,7 +17382,7 @@ var $jfmengels$elm_review$Review$Rule$AllModulesInParallel = 0;
 var $jfmengels$elm_review$Review$Rule$ProjectRuleSchema = $elm$core$Basics$identity;
 var $jfmengels$elm_review$Review$Rule$newProjectRuleSchema = F2(
 	function (name, initialProjectContext) {
-		return {aJ: $elm$core$Maybe$Nothing, K: _List_Nil, L: _List_Nil, M: _List_Nil, u: _List_Nil, bH: $elm$core$Maybe$Nothing, bl: initialProjectContext, P: $elm$core$Maybe$Nothing, cf: _List_Nil, bT: name, gB: false, R: _List_Nil, cV: 0};
+		return {aO: $elm$core$Maybe$Nothing, N: _List_Nil, O: _List_Nil, P: _List_Nil, u: _List_Nil, bT: $elm$core$Maybe$Nothing, bt: initialProjectContext, S: $elm$core$Maybe$Nothing, cG: _List_Nil, b5: name, g9: false, U: _List_Nil, dq: 0};
 	});
 var $jfmengels$elm_review$Review$Rule$removeErrorPhantomType = function (_v0) {
 	var err = _v0;
@@ -17075,7 +17409,7 @@ var $jfmengels$elm_review$Review$Rule$withModuleKey = function (_v0) {
 	return A2(
 		$jfmengels$elm_review$Review$Rule$ContextCreator,
 		function (data) {
-			return A2(fn, data, data.dm);
+			return A2(fn, data, data.dQ);
 		},
 		requestedData);
 };
@@ -17088,7 +17422,7 @@ var $jfmengels$elm_review$Review$Rule$withModuleNameNode = function (_v0) {
 			return A2(
 				fn,
 				data,
-				$jfmengels$elm_review$Review$Rule$moduleNameNode(data.fI.gj));
+				$jfmengels$elm_review$Review$Rule$moduleNameNode(data.gg.gT));
 		},
 		requestedData);
 };
@@ -17100,23 +17434,23 @@ var $jfmengels$elm_review$Review$Rule$withModuleContext = F2(
 				$jfmengels$elm_review$Review$Rule$initContextCreator(
 					F3(
 						function (moduleKey, moduleNameNode_, projectContext) {
-							return A3(functions.eO, moduleKey, moduleNameNode_, projectContext);
+							return A3(functions.fk, moduleKey, moduleNameNode_, projectContext);
 						}))));
 		return _Utils_update(
 			schema,
 			{
-				bH: $elm$core$Maybe$Just(
+				bT: $elm$core$Maybe$Just(
 					{
-						bG: functions.bG,
-						b9: $jfmengels$elm_review$Review$Rule$withModuleNameNode(
+						bS: functions.bS,
+						cu: $jfmengels$elm_review$Review$Rule$withModuleNameNode(
 							$jfmengels$elm_review$Review$Rule$withModuleKey(
 								$jfmengels$elm_review$Review$Rule$initContextCreator(
 									F3(
 										function (moduleKey, moduleNameNode_, moduleContext) {
-											return A3(functions.b9, moduleKey, moduleNameNode_, moduleContext);
+											return A3(functions.cu, moduleKey, moduleNameNode_, moduleContext);
 										}))))
 					}),
-				P: $elm$core$Maybe$Just(moduleContextCreator)
+				S: $elm$core$Maybe$Just(moduleContextCreator)
 			});
 	});
 var $jfmengels$elm_review$Review$Rule$removeExtensibleRecordTypeVariable = function (_function) {
@@ -17134,10 +17468,10 @@ var $jfmengels$elm_review$Review$Rule$withModuleVisitor = F2(
 		return _Utils_update(
 			schema,
 			{
-				cf: A2(
+				cG: A2(
 					$elm$core$List$cons,
 					$jfmengels$elm_review$Review$Rule$removeExtensibleRecordTypeVariable(visitor),
-					schema.cf)
+					schema.cG)
 			});
 	});
 var $sparksp$elm_review_ports$NoDuplicatePorts$rule = $jfmengels$elm_review$Review$Rule$fromProjectRuleSchema(
@@ -17146,7 +17480,7 @@ var $sparksp$elm_review_ports$NoDuplicatePorts$rule = $jfmengels$elm_review$Revi
 		$sparksp$elm_review_ports$NoDuplicatePorts$finalProjectEvaluation,
 		A2(
 			$jfmengels$elm_review$Review$Rule$withModuleContext,
-			{bG: $sparksp$elm_review_ports$NoDuplicatePorts$foldProjectContexts, b9: $sparksp$elm_review_ports$NoDuplicatePorts$fromModuleToProject, eO: $sparksp$elm_review_ports$NoDuplicatePorts$fromProjectToModule},
+			{bS: $sparksp$elm_review_ports$NoDuplicatePorts$foldProjectContexts, cu: $sparksp$elm_review_ports$NoDuplicatePorts$fromModuleToProject, fk: $sparksp$elm_review_ports$NoDuplicatePorts$fromProjectToModule},
 			A2(
 				$jfmengels$elm_review$Review$Rule$withModuleVisitor,
 				$sparksp$elm_review_ports$NoDuplicatePorts$moduleVisitor,
@@ -17154,9 +17488,9 @@ var $sparksp$elm_review_ports$NoDuplicatePorts$rule = $jfmengels$elm_review$Revi
 var $jfmengels$elm_review_common$NoExposingEverything$ExposingOk = {$: 0};
 var $jfmengels$elm_review$Review$Rule$error = F2(
 	function (_v0, range) {
-		var message = _v0.a2;
-		var details = _v0.c2;
-		return {c2: details, f3: '', dP: $elm$core$Maybe$Nothing, a2: message, $7: false, d6: range, ea: '', ft: 0};
+		var message = _v0.a8;
+		var details = _v0.dx;
+		return {dx: details, gD: '', ek: $elm$core$Maybe$Nothing, a8: message, dU: false, eD: range, eH: '', f1: 0};
 	});
 var $jfmengels$elm_review$Review$Rule$withFixes = F2(
 	function (fixes, error_) {
@@ -17166,21 +17500,21 @@ var $jfmengels$elm_review$Review$Rule$withFixes = F2(
 				if ($elm$core$List$isEmpty(fixes)) {
 					return _Utils_update(
 						err,
-						{dP: $elm$core$Maybe$Nothing});
+						{ek: $elm$core$Maybe$Nothing});
 				} else {
-					var _v0 = err.ft;
+					var _v0 = err.f1;
 					switch (_v0) {
 						case 0:
 							return _Utils_update(
 								err,
 								{
-									dP: $elm$core$Maybe$Just(fixes)
+									ek: $elm$core$Maybe$Just(fixes)
 								});
 						case 2:
 							return _Utils_update(
 								err,
 								{
-									dP: $elm$core$Maybe$Just(fixes)
+									ek: $elm$core$Maybe$Just(fixes)
 								});
 						case 1:
 							return err;
@@ -17201,27 +17535,27 @@ var $jfmengels$elm_review$Review$Rule$errorWithFix = F3(
 			A2($jfmengels$elm_review$Review$Rule$error, info, range));
 	});
 var $jfmengels$elm_review_common$NoExposingEverything$functionDeclarationName = function (_v0) {
-	var declaration = _v0.fX;
+	var declaration = _v0.gv;
 	return $stil4m$elm_syntax$Elm$Syntax$Node$value(
-		$stil4m$elm_syntax$Elm$Syntax$Node$value(declaration).bT);
+		$stil4m$elm_syntax$Elm$Syntax$Node$value(declaration).b5);
 };
 var $jfmengels$elm_review_common$NoExposingEverything$exposingDeclarationName = function (_v0) {
 	var declaration = _v0.b;
 	switch (declaration.$) {
 		case 1:
-			var name = declaration.a.bT;
+			var name = declaration.a.b5;
 			return $stil4m$elm_syntax$Elm$Syntax$Node$value(name);
 		case 2:
-			var name = declaration.a.bT;
+			var name = declaration.a.b5;
 			return $stil4m$elm_syntax$Elm$Syntax$Node$value(name) + '(..)';
 		case 0:
 			var _function = declaration.a;
 			return $jfmengels$elm_review_common$NoExposingEverything$functionDeclarationName(_function);
 		case 4:
-			var operator = declaration.a.gv;
+			var operator = declaration.a.g3;
 			return '(' + ($stil4m$elm_syntax$Elm$Syntax$Node$value(operator) + ')');
 		case 3:
-			var name = declaration.a.bT;
+			var name = declaration.a.b5;
 			return $stil4m$elm_syntax$Elm$Syntax$Node$value(name);
 		default:
 			return '';
@@ -17245,13 +17579,13 @@ var $jfmengels$elm_review_common$NoExposingEverything$declarationListVisitor = F
 						A3(
 						$jfmengels$elm_review$Review$Rule$errorWithFix,
 						{
-							c2: _List_fromArray(
+							dx: _List_fromArray(
 								['Modules should have hidden implementation details with an explicit API so that the module is used in a proper and controlled way. The users of this module should not have to know about what is inside a module it is using, and they shouldn\'t need to access its internal details. Therefore, the API should be explicitly defined and ideally as small as possible.']),
-							a2: 'Module exposes everything implicitly \"(..)\"'
+							a8: 'Module exposes everything implicitly \"(..)\"'
 						},
 						{
-							b6: {bb: range.b6.bb + 1, bs: range.b6.bs},
-							cm: {bb: range.cm.bb - 1, bs: range.cm.bs}
+							cp: {bh: range.cp.bh + 1, bD: range.cp.bD},
+							cN: {bh: range.cN.bh - 1, bD: range.cN.bD}
 						},
 						_List_fromArray(
 							[
@@ -17291,62 +17625,62 @@ var $jfmengels$elm_review$Review$Rule$compactProjectDataVisitors = F2(
 	});
 var $jfmengels$elm_review$Review$Rule$fromModuleRuleSchema = function (moduleVisitor) {
 	var schema = moduleVisitor;
-	var _v0 = schema.cK;
+	var _v0 = schema.dd;
 	if (!_v0.$) {
 		var initialModuleContext = _v0.a;
 		return $jfmengels$elm_review$Review$Rule$fromProjectRuleSchema(
 			{
-				aJ: $elm$core$Maybe$Nothing,
-				K: A2($jfmengels$elm_review$Review$Rule$compactProjectDataVisitors, $elm$core$Basics$identity, schema.K),
-				L: A2($jfmengels$elm_review$Review$Rule$compactProjectDataVisitors, $elm$core$Basics$identity, schema.L),
-				M: A2(
+				aO: $elm$core$Maybe$Nothing,
+				N: A2($jfmengels$elm_review$Review$Rule$compactProjectDataVisitors, $elm$core$Basics$identity, schema.N),
+				O: A2($jfmengels$elm_review$Review$Rule$compactProjectDataVisitors, $elm$core$Basics$identity, schema.O),
+				P: A2(
 					$jfmengels$elm_review$Review$Rule$compactProjectDataVisitors,
 					$elm$core$Maybe$map(
 						function ($) {
 							return $.e;
 						}),
-					schema.M),
+					schema.P),
 				u: _List_Nil,
-				bH: $elm$core$Maybe$Nothing,
-				bl: initialModuleContext,
-				P: $elm$core$Maybe$Just(
+				bT: $elm$core$Maybe$Nothing,
+				bt: initialModuleContext,
+				S: $elm$core$Maybe$Just(
 					$jfmengels$elm_review$Review$Rule$initContextCreator($elm$core$Basics$identity)),
-				cf: _List_fromArray(
+				cG: _List_fromArray(
 					[
 						$jfmengels$elm_review$Review$Rule$removeExtensibleRecordTypeVariable(
 						$elm$core$Basics$always(moduleVisitor))
 					]),
-				bT: schema.bT,
-				gB: schema.gB,
-				R: A2(
+				b5: schema.b5,
+				g9: schema.g9,
+				U: A2(
 					$jfmengels$elm_review$Review$Rule$compactProjectDataVisitors,
 					$elm$core$Maybe$map(
 						function ($) {
-							return $.b1;
+							return $.cj;
 						}),
-					schema.R),
-				cV: 0
+					schema.U),
+				dq: 0
 			});
 	} else {
 		return $jfmengels$elm_review$Review$Rule$fromProjectRuleSchema(
 			{
-				aJ: $elm$core$Maybe$Nothing,
-				K: _List_Nil,
-				L: _List_Nil,
-				M: _List_Nil,
+				aO: $elm$core$Maybe$Nothing,
+				N: _List_Nil,
+				O: _List_Nil,
+				P: _List_Nil,
 				u: _List_Nil,
-				bH: $elm$core$Maybe$Nothing,
-				bl: 0,
-				P: $elm$core$Maybe$Just(schema.P),
-				cf: _List_fromArray(
+				bT: $elm$core$Maybe$Nothing,
+				bt: 0,
+				S: $elm$core$Maybe$Just(schema.S),
+				cG: _List_fromArray(
 					[
 						$jfmengels$elm_review$Review$Rule$removeExtensibleRecordTypeVariable(
 						$elm$core$Basics$always(moduleVisitor))
 					]),
-				bT: schema.bT,
-				gB: schema.gB,
-				R: _List_Nil,
-				cV: 0
+				b5: schema.b5,
+				g9: schema.g9,
+				U: _List_Nil,
+				dq: 0
 			});
 	}
 };
@@ -17369,48 +17703,55 @@ var $jfmengels$elm_review_common$NoExposingEverything$moduleDefinitionVisitor = 
 var $jfmengels$elm_review$Review$Rule$newModuleRuleSchema = F2(
 	function (name, initialModuleContext) {
 		return {
-			ao: _List_Nil,
-			ap: _List_Nil,
-			aF: _List_Nil,
-			aK: _List_Nil,
-			aL: _List_Nil,
-			aq: _List_Nil,
-			K: _List_Nil,
-			L: _List_Nil,
-			M: _List_Nil,
-			F: _List_Nil,
-			O: _List_Nil,
-			u: _List_Nil,
-			aN: _List_Nil,
-			cK: $elm$core$Maybe$Just(initialModuleContext),
+			av: _List_Nil,
 			aw: _List_Nil,
-			ax: _List_Nil,
-			P: $jfmengels$elm_review$Review$Rule$initContextCreator(
-				$elm$core$Basics$always(initialModuleContext)),
-			aO: _List_Nil,
+			aK: _List_Nil,
 			aP: _List_Nil,
-			bT: name,
-			gB: false,
-			R: _List_Nil
+			aQ: _List_Nil,
+			ax: _List_Nil,
+			N: _List_Nil,
+			O: _List_Nil,
+			P: _List_Nil,
+			K: _List_Nil,
+			R: _List_Nil,
+			u: _List_Nil,
+			aT: _List_Nil,
+			dd: $elm$core$Maybe$Just(initialModuleContext),
+			aC: _List_Nil,
+			aD: _List_Nil,
+			S: $jfmengels$elm_review$Review$Rule$initContextCreator(
+				$elm$core$Basics$always(initialModuleContext)),
+			aU: _List_Nil,
+			aV: _List_Nil,
+			b5: name,
+			g9: false,
+			U: _List_Nil
 		};
 	});
+var $jfmengels$elm_review$Review$Rule$providesFixesForModuleRule = function (_v0) {
+	var moduleRuleSchema = _v0;
+	return _Utils_update(
+		moduleRuleSchema,
+		{g9: true});
+};
 var $jfmengels$elm_review$Review$Rule$withModuleDefinitionVisitor = F2(
 	function (visitor, _v0) {
 		var schema = _v0;
 		return _Utils_update(
 			schema,
 			{
-				aO: A2($elm$core$List$cons, visitor, schema.aO)
+				aU: A2($elm$core$List$cons, visitor, schema.aU)
 			});
 	});
 var $jfmengels$elm_review_common$NoExposingEverything$rule = $jfmengels$elm_review$Review$Rule$fromModuleRuleSchema(
-	A2(
-		$jfmengels$elm_review$Review$Rule$withDeclarationListVisitor,
-		$jfmengels$elm_review_common$NoExposingEverything$declarationListVisitor,
+	$jfmengels$elm_review$Review$Rule$providesFixesForModuleRule(
 		A2(
-			$jfmengels$elm_review$Review$Rule$withModuleDefinitionVisitor,
-			$jfmengels$elm_review_common$NoExposingEverything$moduleDefinitionVisitor,
-			A2($jfmengels$elm_review$Review$Rule$newModuleRuleSchema, 'NoExposingEverything', $jfmengels$elm_review_common$NoExposingEverything$ExposingOk))));
+			$jfmengels$elm_review$Review$Rule$withDeclarationListVisitor,
+			$jfmengels$elm_review_common$NoExposingEverything$declarationListVisitor,
+			A2(
+				$jfmengels$elm_review$Review$Rule$withModuleDefinitionVisitor,
+				$jfmengels$elm_review_common$NoExposingEverything$moduleDefinitionVisitor,
+				A2($jfmengels$elm_review$Review$Rule$newModuleRuleSchema, 'NoExposingEverything', $jfmengels$elm_review_common$NoExposingEverything$ExposingOk)))));
 var $elm$core$Set$union = F2(
 	function (_v0, _v1) {
 		var dict1 = _v0;
@@ -17420,12 +17761,12 @@ var $elm$core$Set$union = F2(
 var $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$foldProjectContexts = F2(
 	function (newContext, previousContext) {
 		return {
-			ay: A2($elm$core$Set$union, newContext.ay, previousContext.ay)
+			aE: A2($elm$core$Set$union, newContext.aE, previousContext.aE)
 		};
 	});
 var $jfmengels$elm_review$Review$Rule$moduleNameFromMetadata = function (_v0) {
 	var metadata = _v0;
-	return $stil4m$elm_syntax$Elm$Syntax$Node$value(metadata.d0);
+	return $stil4m$elm_syntax$Elm$Syntax$Node$value(metadata.ex);
 };
 var $elm$core$Set$singleton = function (key) {
 	return A2($elm$core$Dict$singleton, key, 0);
@@ -17445,8 +17786,8 @@ var $jfmengels$elm_review$Review$Rule$withMetadata = function (_v0) {
 				data,
 				$jfmengels$elm_review$Review$Rule$createMetadata(
 					{
-						dX: data.dX,
-						d0: $jfmengels$elm_review$Review$Rule$moduleNameNode(data.fI.gj)
+						es: data.es,
+						ex: $jfmengels$elm_review$Review$Rule$moduleNameNode(data.gg.gT)
 					}));
 		},
 		requestedData);
@@ -17456,7 +17797,7 @@ var $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$fromMo
 		F2(
 			function (metadata, moduleContext) {
 				return {
-					ay: (moduleContext.c0 && moduleContext.c1) ? $elm$core$Set$singleton(
+					aE: (moduleContext.dv && moduleContext.dw) ? $elm$core$Set$singleton(
 						$jfmengels$elm_review$Review$Rule$moduleNameFromMetadata(metadata)) : $elm$core$Set$empty
 				};
 			})));
@@ -17466,39 +17807,39 @@ var $jfmengels$elm_review$Review$Rule$withModuleNameLookupTable = function (_v0)
 	return A2(
 		$jfmengels$elm_review$Review$Rule$ContextCreator,
 		function (data) {
-			return A2(fn, data, data.aQ);
+			return A2(fn, data, data.b4);
 		},
 		_Utils_update(
 			requested,
-			{aQ: true}));
+			{b4: true}));
 };
 var $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$fromProjectToModule = $jfmengels$elm_review$Review$Rule$withModuleNameLookupTable(
 	$jfmengels$elm_review$Review$Rule$initContextCreator(
 		F2(
 			function (lookupTable, projectContext) {
-				return {c0: false, c1: false, l: lookupTable, ay: projectContext.ay, cW: $elm$core$Set$empty, cX: $elm$core$Dict$empty};
+				return {dv: false, dw: false, l: lookupTable, aE: projectContext.aE, dr: $elm$core$Set$empty, ds: $elm$core$Dict$empty};
 			})));
-var $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$initialProjectContext = {ay: $elm$core$Set$empty};
+var $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$initialProjectContext = {aE: $elm$core$Set$empty};
 var $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$declarationVisitor = F2(
 	function (node, moduleContext) {
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 		if (!_v0.$) {
 			var _function = _v0.a;
 			var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).bT);
+				$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).b5);
 			switch (_v1) {
 				case 'update':
 					return _Utils_Tuple2(
 						_List_Nil,
 						_Utils_update(
 							moduleContext,
-							{c1: true}));
+							{dw: true}));
 				case 'subscriptions':
 					return _Utils_Tuple2(
 						_List_Nil,
 						_Utils_update(
 							moduleContext,
-							{c0: true}));
+							{dv: true}));
 				default:
 					return _Utils_Tuple2(_List_Nil, moduleContext);
 			}
@@ -17526,16 +17867,16 @@ var $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$expres
 						var _v1 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, moduleContext.l, node);
 						if (!_v1.$) {
 							var moduleName = _v1.a;
-							return A2($elm$core$Set$member, moduleName, moduleContext.ay) ? _Utils_Tuple2(
+							return A2($elm$core$Set$member, moduleName, moduleContext.aE) ? _Utils_Tuple2(
 								_List_Nil,
 								_Utils_update(
 									moduleContext,
 									{
-										cX: A3(
+										ds: A3(
 											$elm$core$Dict$insert,
 											moduleName,
 											$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
-											moduleContext.cX)
+											moduleContext.ds)
 									})) : _Utils_Tuple2(_List_Nil, moduleContext);
 						} else {
 							return _Utils_Tuple2(_List_Nil, moduleContext);
@@ -17544,12 +17885,12 @@ var $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$expres
 						var _v2 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, moduleContext.l, node);
 						if (!_v2.$) {
 							var moduleName = _v2.a;
-							return A2($elm$core$Set$member, moduleName, moduleContext.ay) ? _Utils_Tuple2(
+							return A2($elm$core$Set$member, moduleName, moduleContext.aE) ? _Utils_Tuple2(
 								_List_Nil,
 								_Utils_update(
 									moduleContext,
 									{
-										cW: A2($elm$core$Set$insert, moduleName, moduleContext.cW)
+										dr: A2($elm$core$Set$insert, moduleName, moduleContext.dr)
 									})) : _Utils_Tuple2(_List_Nil, moduleContext);
 						} else {
 							return _Utils_Tuple2(_List_Nil, moduleContext);
@@ -17572,11 +17913,11 @@ var $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$finalE
 			return A2(
 				$jfmengels$elm_review$Review$Rule$error,
 				{
-					c2: _List_fromArray(
+					dx: _List_fromArray(
 						[
 							'The ' + (A2($elm$core$String$join, '.', moduleName) + ' module defines a `subscriptions` function, which you are not using even though you are using its `update` function. This makes me think that you are not subscribing to all the things you should.')
 						]),
-					a2: 'Missing subscriptions call to ' + (A2($elm$core$String$join, '.', moduleName) + '.subscriptions')
+					a8: 'Missing subscriptions call to ' + (A2($elm$core$String$join, '.', moduleName) + '.subscriptions')
 				},
 				range);
 		},
@@ -17585,9 +17926,9 @@ var $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$finalE
 				$elm$core$Dict$filter,
 				F2(
 					function (moduleName, _v0) {
-						return !A2($elm$core$Set$member, moduleName, moduleContext.cW);
+						return !A2($elm$core$Set$member, moduleName, moduleContext.dr);
 					}),
-				moduleContext.cX)));
+				moduleContext.ds)));
 };
 var $jfmengels$elm_review$Review$Rule$withDeclarationEnterVisitor = F2(
 	function (visitor, _v0) {
@@ -17595,7 +17936,7 @@ var $jfmengels$elm_review$Review$Rule$withDeclarationEnterVisitor = F2(
 		return _Utils_update(
 			schema,
 			{
-				aL: A2($elm$core$List$cons, visitor, schema.aL)
+				aQ: A2($elm$core$List$cons, visitor, schema.aQ)
 			});
 	});
 var $jfmengels$elm_review$Review$Rule$withExpressionEnterVisitor = F2(
@@ -17604,7 +17945,7 @@ var $jfmengels$elm_review$Review$Rule$withExpressionEnterVisitor = F2(
 		return _Utils_update(
 			schema,
 			{
-				F: A2($elm$core$List$cons, visitor, schema.F)
+				K: A2($elm$core$List$cons, visitor, schema.K)
 			});
 	});
 var $jfmengels$elm_review$Review$Rule$withFinalModuleEvaluation = F2(
@@ -17630,7 +17971,7 @@ var $jfmengels$elm_review$Review$Rule$withContextFromImportedModules = function 
 	var schema = _v0;
 	return _Utils_update(
 		schema,
-		{cV: 1});
+		{dq: 1});
 };
 var $jfmengels$elm_review$Review$Rule$withModuleContextUsingContextCreator = F2(
 	function (functions, _v0) {
@@ -17638,16 +17979,16 @@ var $jfmengels$elm_review$Review$Rule$withModuleContextUsingContextCreator = F2(
 		return _Utils_update(
 			schema,
 			{
-				bH: $elm$core$Maybe$Just(
-					{bG: functions.bG, b9: functions.b9}),
-				P: $elm$core$Maybe$Just(functions.eO)
+				bT: $elm$core$Maybe$Just(
+					{bS: functions.bS, cu: functions.cu}),
+				S: $elm$core$Maybe$Just(functions.fk)
 			});
 	});
 var $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$rule = $jfmengels$elm_review$Review$Rule$fromProjectRuleSchema(
 	$jfmengels$elm_review$Review$Rule$withContextFromImportedModules(
 		A2(
 			$jfmengels$elm_review$Review$Rule$withModuleContextUsingContextCreator,
-			{bG: $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$foldProjectContexts, b9: $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$fromModuleToProject, eO: $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$fromProjectToModule},
+			{bS: $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$foldProjectContexts, cu: $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$fromModuleToProject, fk: $jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$fromProjectToModule},
 			A2(
 				$jfmengels$elm_review$Review$Rule$withModuleVisitor,
 				$jfmengels$elm_review_the_elm_architecture$NoMissingSubscriptionsCall$moduleVisitor,
@@ -17656,17 +17997,17 @@ var $jfmengels$elm_review_common$NoMissingTypeAnnotation$declarationVisitor = fu
 	var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
 	if (!_v0.$) {
 		var _function = _v0.a;
-		var _v1 = _function.gJ;
+		var _v1 = _function.hi;
 		if (_v1.$ === 1) {
-			var name = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).bT;
+			var name = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).b5;
 			return _List_fromArray(
 				[
 					A2(
 					$jfmengels$elm_review$Review$Rule$error,
 					{
-						c2: _List_fromArray(
+						dx: _List_fromArray(
 							['Type annotations help you understand what happens in the code, and it will help the compiler give better error messages.']),
-						a2: 'Missing type annotation for `' + ($stil4m$elm_syntax$Elm$Syntax$Node$value(name) + '`')
+						a8: 'Missing type annotation for `' + ($stil4m$elm_syntax$Elm$Syntax$Node$value(name) + '`')
 					},
 					$stil4m$elm_syntax$Elm$Syntax$Node$range(name))
 				]);
@@ -17702,18 +18043,18 @@ var $jfmengels$elm_review_the_elm_architecture$NoRecursiveUpdate$declarationVisi
 			return _Utils_Tuple2(
 				_List_Nil,
 				{
-					cL: $stil4m$elm_syntax$Elm$Syntax$Node$value(
-						$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).bT) === 'update'
+					de: $stil4m$elm_syntax$Elm$Syntax$Node$value(
+						$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).b5) === 'update'
 				});
 		} else {
 			return _Utils_Tuple2(
 				_List_Nil,
-				{cL: false});
+				{de: false});
 		}
 	});
 var $jfmengels$elm_review_the_elm_architecture$NoRecursiveUpdate$expressionVisitor = F2(
 	function (node, context) {
-		if (context.cL) {
+		if (context.de) {
 			var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 			if (((_v0.$ === 3) && (!_v0.a.b)) && (_v0.b === 'update')) {
 				return _Utils_Tuple2(
@@ -17722,9 +18063,9 @@ var $jfmengels$elm_review_the_elm_architecture$NoRecursiveUpdate$expressionVisit
 							A2(
 							$jfmengels$elm_review$Review$Rule$error,
 							{
-								c2: _List_fromArray(
+								dx: _List_fromArray(
 									['If you wish to have the same behavior for different messages, move that behavior into a new function and have it called in the handling of both messages.']),
-								a2: '`update` shouldn\'t call itself'
+								a8: '`update` shouldn\'t call itself'
 							},
 							$stil4m$elm_syntax$Elm$Syntax$Node$range(node))
 						]),
@@ -17746,7 +18087,7 @@ var $jfmengels$elm_review_the_elm_architecture$NoRecursiveUpdate$rule = $jfmenge
 			A2(
 				$jfmengels$elm_review$Review$Rule$newModuleRuleSchema,
 				'NoRecursiveUpdate',
-				{cL: false}))));
+				{de: false}))));
 var $sparksp$elm_review_ports$NoUnsafePorts$canCheck = F2(
 	function (check, portType) {
 		if (!check.$) {
@@ -17756,36 +18097,53 @@ var $sparksp$elm_review_ports$NoUnsafePorts$canCheck = F2(
 			return _Utils_eq(thisType, portType);
 		}
 	});
-var $sparksp$elm_review_ports$NoUnsafePorts$lookupFunctionModule = F2(
-	function (imports, _function) {
-		return A2(
-			$elm$core$Maybe$withDefault,
-			_List_Nil,
-			A2($elm$core$Dict$get, _function, imports));
+var $sparksp$elm_review_ports$NoUnsafePorts$expandFunctionCall = F3(
+	function (_v0, typeAnnotation, functionCall) {
+		var lookupTable = _v0.l;
+		return _Utils_Tuple2(
+			A2(
+				$elm$core$Maybe$withDefault,
+				_List_Nil,
+				A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, typeAnnotation)),
+			functionCall);
 	});
-var $sparksp$elm_review_ports$NoUnsafePorts$lookupModuleAlias = F2(
-	function (aliases, moduleName) {
-		return A2(
-			$elm$core$Maybe$withDefault,
-			moduleName,
-			A2($elm$core$Dict$get, moduleName, aliases));
-	});
-var $sparksp$elm_review_ports$NoUnsafePorts$expandFunctionCall = F2(
-	function (_v0, _v1) {
-		var aliases = _v0.ej;
-		var imports = _v0.f9;
-		var moduleCall = _v1.a;
-		var functionCall = _v1.b;
-		var expandedModule = function () {
-			if (!moduleCall.b) {
-				return A2($sparksp$elm_review_ports$NoUnsafePorts$lookupFunctionModule, imports, functionCall);
-			} else {
-				return A2($sparksp$elm_review_ports$NoUnsafePorts$lookupModuleAlias, aliases, moduleCall);
+var $sparksp$elm_review_ports$NoUnsafePorts$filterCoreType = function (type_) {
+	_v0$4:
+	while (true) {
+		if (type_.a.b && (!type_.a.b.b)) {
+			switch (type_.a.a) {
+				case 'Basics':
+					switch (type_.b) {
+						case 'Bool':
+							var _v1 = type_.a;
+							return _Utils_Tuple2(_List_Nil, 'Bool');
+						case 'Float':
+							var _v2 = type_.a;
+							return _Utils_Tuple2(_List_Nil, 'Float');
+						case 'Int':
+							var _v3 = type_.a;
+							return _Utils_Tuple2(_List_Nil, 'Int');
+						default:
+							break _v0$4;
+					}
+				case 'String':
+					if (type_.b === 'String') {
+						var _v4 = type_.a;
+						return _Utils_Tuple2(_List_Nil, 'String');
+					} else {
+						break _v0$4;
+					}
+				default:
+					break _v0$4;
 			}
-		}();
-		return _Utils_Tuple2(expandedModule, functionCall);
-	});
-var $sparksp$elm_review_ports$NoUnsafePorts$formatType = function (_v0) {
+		} else {
+			break _v0$4;
+		}
+	}
+	return type_;
+};
+var $sparksp$elm_review_ports$NoUnsafePorts$formatType = function (type_) {
+	var _v0 = $sparksp$elm_review_ports$NoUnsafePorts$filterCoreType(type_);
 	var moduleName = _v0.a;
 	var name = _v0.b;
 	return '`' + (A2(
@@ -17797,15 +18155,14 @@ var $sparksp$elm_review_ports$NoUnsafePorts$formatType = function (_v0) {
 				[name]))) + '`');
 };
 var $sparksp$elm_review_ports$NoUnsafePorts$checkPortArguments = F3(
-	function (context, makeError, portArguments) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(portArguments);
-		switch (_v0.$) {
+	function (context, makeError, portArgumentsNode) {
+		var range = portArgumentsNode.a;
+		var portArguments = portArgumentsNode.b;
+		switch (portArguments.$) {
 			case 1:
-				var portType = _v0.a;
-				var _v1 = A2(
-					$sparksp$elm_review_ports$NoUnsafePorts$expandFunctionCall,
-					context,
-					$stil4m$elm_syntax$Elm$Syntax$Node$value(portType));
+				var portType = portArguments.a;
+				var functionCall = $stil4m$elm_syntax$Elm$Syntax$Node$value(portType).b;
+				var _v1 = A3($sparksp$elm_review_ports$NoUnsafePorts$expandFunctionCall, context, portArgumentsNode, functionCall);
 				_v1$2:
 				while (true) {
 					if ((((_v1.a.b && (_v1.a.a === 'Json')) && _v1.a.b.b) && (!_v1.a.b.b.b)) && (_v1.b === 'Value')) {
@@ -17828,65 +18185,43 @@ var $sparksp$elm_review_ports$NoUnsafePorts$checkPortArguments = F3(
 				var expandedPortType = _v1;
 				return _List_fromArray(
 					[
-						makeError(
 						A2(
-							$stil4m$elm_syntax$Elm$Syntax$Node$map,
-							function (_v6) {
-								return $sparksp$elm_review_ports$NoUnsafePorts$formatType(expandedPortType);
-							},
-							portArguments))
+						makeError,
+						range,
+						$sparksp$elm_review_ports$NoUnsafePorts$formatType(expandedPortType))
 					]);
 			case 4:
 				return _List_fromArray(
 					[
-						makeError(
-						A2(
-							$stil4m$elm_syntax$Elm$Syntax$Node$map,
-							function (_v7) {
-								return 'record';
-							},
-							portArguments))
+						A2(makeError, range, 'record')
 					]);
 			case 3:
 				return _List_fromArray(
 					[
-						makeError(
-						A2(
-							$stil4m$elm_syntax$Elm$Syntax$Node$map,
-							function (_v8) {
-								return 'tuple';
-							},
-							portArguments))
+						A2(makeError, range, 'tuple')
 					]);
 			default:
 				return _List_fromArray(
 					[
-						makeError(
-						A2(
-							$stil4m$elm_syntax$Elm$Syntax$Node$map,
-							function (_v9) {
-								return 'type';
-							},
-							portArguments))
+						A2(makeError, range, 'type')
 					]);
 		}
 	});
-var $sparksp$elm_review_ports$NoUnsafePorts$unsafeIncomingPortError = F2(
-	function (name, portType) {
+var $sparksp$elm_review_ports$NoUnsafePorts$unsafeIncomingPortError = F3(
+	function (name, range, portType) {
 		return A2(
 			$jfmengels$elm_review$Review$Rule$error,
 			{
-				c2: _List_fromArray(
+				dx: _List_fromArray(
 					['When a port expecting a basic type receives data of another type it will cause a runtime error.', 'You should change this port to use `Json.Encode.Value` and write a `Decoder` handle the data.']),
-				a2: 'Port `' + (name + ('` expects unsafe ' + ($stil4m$elm_syntax$Elm$Syntax$Node$value(portType) + ' data.')))
+				a8: 'Port `' + (name + ('` expects unsafe ' + (portType + ' data.')))
 			},
-			$stil4m$elm_syntax$Elm$Syntax$Node$range(portType));
+			range);
 	});
 var $sparksp$elm_review_ports$NoUnsafePorts$checkIncomingPort = F3(
 	function (context, name, portArguments) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(portArguments);
-		if (_v0.$ === 6) {
-			var subMessageType = _v0.a;
+		if (portArguments.$ === 6) {
+			var subMessageType = portArguments.a;
 			return A3(
 				$sparksp$elm_review_ports$NoUnsafePorts$checkPortArguments,
 				context,
@@ -17896,16 +18231,16 @@ var $sparksp$elm_review_ports$NoUnsafePorts$checkIncomingPort = F3(
 			return _List_Nil;
 		}
 	});
-var $sparksp$elm_review_ports$NoUnsafePorts$unsafeOutgoingPortError = F2(
-	function (name, portType) {
+var $sparksp$elm_review_ports$NoUnsafePorts$unsafeOutgoingPortError = F3(
+	function (name, range, portType) {
 		return A2(
 			$jfmengels$elm_review$Review$Rule$error,
 			{
-				c2: _List_fromArray(
+				dx: _List_fromArray(
 					['When a port expecting an unsafe type receives data of another type it will cause a runtime error.', 'You should change this port to use `Json.Encode.Value` and use an `Encoder` to generate a safe value.']),
-				a2: 'Port `' + (name + ('` sends unsafe ' + ($stil4m$elm_syntax$Elm$Syntax$Node$value(portType) + ' data.')))
+				a8: 'Port `' + (name + ('` sends unsafe ' + (portType + ' data.')))
 			},
-			$stil4m$elm_syntax$Elm$Syntax$Node$range(portType));
+			range);
 	});
 var $sparksp$elm_review_ports$NoUnsafePorts$checkOutgoingPort = F3(
 	function (context, name, portArguments) {
@@ -17917,7 +18252,7 @@ var $sparksp$elm_review_ports$NoUnsafePorts$checkOutgoingPort = F3(
 	});
 var $sparksp$elm_review_ports$NoUnsafePorts$checkPort = F4(
 	function (context, name, portArguments, maybePortType) {
-		var check = context.er;
+		var check = context.eZ;
 		var _v0 = A2(
 			$elm$core$Maybe$map,
 			function (portType) {
@@ -17931,7 +18266,11 @@ var $sparksp$elm_review_ports$NoUnsafePorts$checkPort = F4(
 				if (!_v0.a.a) {
 					var _v1 = _v0.a;
 					var _v2 = _v1.a;
-					return A3($sparksp$elm_review_ports$NoUnsafePorts$checkIncomingPort, context, name, portArguments);
+					return A3(
+						$sparksp$elm_review_ports$NoUnsafePorts$checkIncomingPort,
+						context,
+						name,
+						$stil4m$elm_syntax$Elm$Syntax$Node$value(portArguments));
 				} else {
 					var _v3 = _v0.a;
 					var _v4 = _v3.a;
@@ -17948,23 +18287,22 @@ var $sparksp$elm_review_ports$NoUnsafePorts$checkPort = F4(
 var $sparksp$elm_review_ports$NoUnsafePorts$IncomingPort = 0;
 var $sparksp$elm_review_ports$NoUnsafePorts$OutgoingPort = 1;
 var $sparksp$elm_review_ports$NoUnsafePorts$getPortType = function (portReturnType) {
-	var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(portReturnType);
-	if (_v0.$ === 1) {
-		var node = _v0.a;
-		var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-		_v1$2:
+	if (portReturnType.$ === 1) {
+		var _v1 = portReturnType.a;
+		var typed = _v1.b;
+		_v2$2:
 		while (true) {
-			if (!_v1.a.b) {
-				switch (_v1.b) {
+			if (!typed.a.b) {
+				switch (typed.b) {
 					case 'Sub':
 						return $elm$core$Maybe$Just(0);
 					case 'Cmd':
 						return $elm$core$Maybe$Just(1);
 					default:
-						break _v1$2;
+						break _v2$2;
 				}
 			} else {
-				break _v1$2;
+				break _v2$2;
 			}
 		}
 		return $elm$core$Maybe$Nothing;
@@ -17973,15 +18311,16 @@ var $sparksp$elm_review_ports$NoUnsafePorts$getPortType = function (portReturnTy
 	}
 };
 var $sparksp$elm_review_ports$NoUnsafePorts$checkDeclaration = F2(
-	function (context, node) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-		if (_v0.$ === 3) {
-			var name = _v0.a.bT;
-			var typeAnnotation = _v0.a.fz;
-			var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(typeAnnotation);
-			if (_v1.$ === 6) {
-				var portArguments = _v1.a;
-				var portReturnType = _v1.b;
+	function (context, _v0) {
+		var declaration = _v0.b;
+		if (declaration.$ === 3) {
+			var name = declaration.a.b5;
+			var typeAnnotation = declaration.a.f7;
+			var _v2 = $stil4m$elm_syntax$Elm$Syntax$Node$value(typeAnnotation);
+			if (_v2.$ === 6) {
+				var portArguments = _v2.a;
+				var _v3 = _v2.b;
+				var portReturnType = _v3.b;
 				return A4(
 					$sparksp$elm_review_ports$NoUnsafePorts$checkPort,
 					context,
@@ -18013,139 +18352,17 @@ var $sparksp$elm_review_ports$NoUnsafePorts$declarationListVisitor = F2(
 			context);
 	});
 var $sparksp$elm_review_ports$NoUnsafePorts$Context = $elm$core$Basics$identity;
-var $sparksp$elm_review_ports$NoUnsafePorts$rememberImportedAlias = F3(
-	function (moduleName, maybeModuleAlias, _v0) {
-		var context = _v0;
-		var _v1 = A2($elm$core$Maybe$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, maybeModuleAlias);
-		if (!_v1.$) {
-			var moduleAlias = _v1.a;
-			return _Utils_update(
-				context,
-				{
-					ej: A3($elm$core$Dict$insert, moduleAlias, moduleName, context.ej)
-				});
-		} else {
-			return context;
-		}
-	});
-var $sparksp$elm_review_ports$NoUnsafePorts$rememberImport = F2(
-	function (_v0, _v1) {
-		var moduleName = _v0.a;
-		var name = _v0.b;
-		var context = _v1;
-		return _Utils_update(
-			context,
-			{
-				f9: A3($elm$core$Dict$insert, name, moduleName, context.f9)
-			});
-	});
-var $sparksp$elm_review_ports$NoUnsafePorts$rememberImportedAllModule = F2(
-	function (moduleName, context) {
-		_v0$2:
-		while (true) {
-			if (((moduleName.b && (moduleName.a === 'Json')) && moduleName.b.b) && (!moduleName.b.b.b)) {
-				switch (moduleName.b.a) {
-					case 'Decode':
-						var _v1 = moduleName.b;
-						return A2(
-							$sparksp$elm_review_ports$NoUnsafePorts$rememberImport,
-							_Utils_Tuple2(moduleName, 'Value'),
-							context);
-					case 'Encode':
-						var _v2 = moduleName.b;
-						return A2(
-							$sparksp$elm_review_ports$NoUnsafePorts$rememberImport,
-							_Utils_Tuple2(moduleName, 'Value'),
-							context);
-					default:
-						break _v0$2;
-				}
-			} else {
-				break _v0$2;
-			}
-		}
-		return context;
-	});
-var $sparksp$elm_review_ports$NoUnsafePorts$rememberImportedItem = F3(
-	function (moduleName, item, context) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(item);
-		switch (_v0.$) {
-			case 1:
-				return context;
-			case 0:
-				return context;
-			case 2:
-				var name = _v0.a;
-				return A2(
-					$sparksp$elm_review_ports$NoUnsafePorts$rememberImport,
-					_Utils_Tuple2(moduleName, name),
-					context);
-			default:
-				var name = _v0.a.bT;
-				return A2(
-					$sparksp$elm_review_ports$NoUnsafePorts$rememberImport,
-					_Utils_Tuple2(moduleName, name),
-					context);
-		}
-	});
-var $sparksp$elm_review_ports$NoUnsafePorts$rememberImportedExplicitList = F3(
-	function (moduleName, list, context) {
-		return A3(
-			$elm$core$List$foldl,
-			$sparksp$elm_review_ports$NoUnsafePorts$rememberImportedItem(moduleName),
-			context,
-			list);
-	});
-var $sparksp$elm_review_ports$NoUnsafePorts$rememberImportedList = F3(
-	function (moduleName, exposingList, context) {
-		var _v0 = A2($elm$core$Maybe$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, exposingList);
-		if (!_v0.$) {
-			if (!_v0.a.$) {
-				return A2($sparksp$elm_review_ports$NoUnsafePorts$rememberImportedAllModule, moduleName, context);
-			} else {
-				var list = _v0.a.a;
-				return A3($sparksp$elm_review_ports$NoUnsafePorts$rememberImportedExplicitList, moduleName, list, context);
-			}
-		} else {
-			return context;
-		}
-	});
-var $sparksp$elm_review_ports$NoUnsafePorts$rememberImportedModule = F2(
-	function (_v0, context) {
-		var moduleName = _v0.dn;
-		var moduleAlias = _v0.gi;
-		var exposingList = _v0.dJ;
-		var moduleNameValue = $stil4m$elm_syntax$Elm$Syntax$Node$value(moduleName);
-		if (moduleNameValue.b && (moduleNameValue.a === 'Json')) {
-			return A3(
-				$sparksp$elm_review_ports$NoUnsafePorts$rememberImportedList,
-				moduleNameValue,
-				exposingList,
-				A3($sparksp$elm_review_ports$NoUnsafePorts$rememberImportedAlias, moduleNameValue, moduleAlias, context));
-		} else {
-			return context;
-		}
-	});
-var $sparksp$elm_review_ports$NoUnsafePorts$importVisitor = F2(
-	function (node, context) {
-		return _Utils_Tuple2(
-			_List_Nil,
-			A2(
-				$sparksp$elm_review_ports$NoUnsafePorts$rememberImportedModule,
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(node),
-				context));
-	});
 var $sparksp$elm_review_ports$NoUnsafePorts$initialModuleContext = function (check) {
-	return {ej: $elm$core$Dict$empty, er: check, f9: $elm$core$Dict$empty};
+	return $jfmengels$elm_review$Review$Rule$withModuleNameLookupTable(
+		$jfmengels$elm_review$Review$Rule$initContextCreator(
+			F2(
+				function (lookupTable, _v0) {
+					return {eZ: check, l: lookupTable};
+				})));
 };
-var $jfmengels$elm_review$Review$Rule$withImportVisitor = F2(
-	function (visitor, _v0) {
-		var schema = _v0;
-		return _Utils_update(
-			schema,
-			{
-				aN: A2($elm$core$List$cons, visitor, schema.aN)
-			});
+var $jfmengels$elm_review$Review$Rule$newModuleRuleSchemaUsingContextCreator = F2(
+	function (name, moduleContextCreator) {
+		return {av: _List_Nil, aw: _List_Nil, aK: _List_Nil, aP: _List_Nil, aQ: _List_Nil, ax: _List_Nil, N: _List_Nil, O: _List_Nil, P: _List_Nil, K: _List_Nil, R: _List_Nil, u: _List_Nil, aT: _List_Nil, dd: $elm$core$Maybe$Nothing, aC: _List_Nil, aD: _List_Nil, S: moduleContextCreator, aU: _List_Nil, aV: _List_Nil, b5: name, g9: false, U: _List_Nil};
 	});
 var $sparksp$elm_review_ports$NoUnsafePorts$rule = function (check) {
 	return $jfmengels$elm_review$Review$Rule$fromModuleRuleSchema(
@@ -18153,12 +18370,9 @@ var $sparksp$elm_review_ports$NoUnsafePorts$rule = function (check) {
 			$jfmengels$elm_review$Review$Rule$withDeclarationListVisitor,
 			$sparksp$elm_review_ports$NoUnsafePorts$declarationListVisitor,
 			A2(
-				$jfmengels$elm_review$Review$Rule$withImportVisitor,
-				$sparksp$elm_review_ports$NoUnsafePorts$importVisitor,
-				A2(
-					$jfmengels$elm_review$Review$Rule$newModuleRuleSchema,
-					'NoUnsafePorts',
-					$sparksp$elm_review_ports$NoUnsafePorts$initialModuleContext(check)))));
+				$jfmengels$elm_review$Review$Rule$newModuleRuleSchemaUsingContextCreator,
+				'NoUnsafePorts',
+				$sparksp$elm_review_ports$NoUnsafePorts$initialModuleContext(check))));
 };
 var $elm$project_metadata_utils$Elm$Module$toString = function (_v0) {
 	var name = _v0;
@@ -18175,7 +18389,7 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$elmJsonVisit
 		if ((!_v0.$) && (_v0.a.$ === 1)) {
 			var _package = _v0.a.a;
 			var exposedModules = function () {
-				var _v1 = _package.eG;
+				var _v1 = _package.fc;
 				if (!_v1.$) {
 					var list = _v1.a;
 					return list;
@@ -18196,7 +18410,7 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$elmJsonVisit
 				_List_Nil,
 				_Utils_update(
 					projectContext,
-					{Z: exposedNames}));
+					{ac: exposedNames}));
 		} else {
 			return _Utils_Tuple2(_List_Nil, projectContext);
 		}
@@ -18207,83 +18421,115 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$error = F2(
 			$jfmengels$elm_review$Review$Rule$errorForModule,
 			moduleKey,
 			{
-				c2: _List_fromArray(
+				dx: _List_fromArray(
 					['This argument is never used. You should either use it somewhere, or remove it at the location I pointed at.']),
-				a2: 'Argument is never extracted and therefore never used.'
+				a8: 'Argument is never extracted and therefore never used.'
 			},
 			range);
 	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$finalEvaluation = function (context) {
-	return A2(
-		$elm$core$List$concatMap,
-		function (_v0) {
-			var moduleName = _v0.a;
-			var moduleKey = _v0.b.dm;
-			var args = _v0.b.fG;
-			return A2(
-				$elm$core$List$concatMap,
-				function (_v1) {
-					var name = _v1.a;
-					var ranges = _v1.b;
-					if (A2(
-						$elm$core$Set$member,
-						_Utils_Tuple2(moduleName, name),
-						context.Y)) {
-						return _List_Nil;
+var $jfmengels$elm_review_unused$List$Extra$indexedFilterMap = F4(
+	function (predicate, index, list, acc) {
+		indexedFilterMap:
+		while (true) {
+			if (!list.b) {
+				return acc;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				var $temp$predicate = predicate,
+					$temp$index = index + 1,
+					$temp$list = xs,
+					$temp$acc = function () {
+					var _v1 = A2(predicate, index, x);
+					if (!_v1.$) {
+						var b = _v1.a;
+						return A2($elm$core$List$cons, b, acc);
 					} else {
-						var _v2 = A2(
-							$elm$core$Dict$get,
-							_Utils_Tuple2(moduleName, name),
-							context.E);
-						if (!_v2.$) {
-							var usedArgumentPositions = _v2.a;
-							return A2(
-								$elm$core$List$filterMap,
-								function (_v3) {
-									var index = _v3.a;
-									var range = _v3.b;
-									return A2($elm$core$Set$member, index, usedArgumentPositions) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
-										A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$error, moduleKey, range));
-								},
-								A2($elm$core$List$indexedMap, $elm$core$Tuple$pair, ranges));
-						} else {
-							return A2(
-								$elm$core$List$map,
-								$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$error(moduleKey),
-								ranges);
-						}
+						return acc;
 					}
-				},
-				$elm$core$Dict$toList(args));
-		},
-		$elm$core$Dict$toList(context.ak));
+				}();
+				predicate = $temp$predicate;
+				index = $temp$index;
+				list = $temp$list;
+				acc = $temp$acc;
+				continue indexedFilterMap;
+			}
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$errorsForUnusedArguments = F5(
+	function (usedArguments, moduleKey, constructor, ranges, acc) {
+		var _v0 = A2($elm$core$Dict$get, constructor, usedArguments);
+		if (!_v0.$) {
+			var usedArgumentPositions = _v0.a;
+			return A4(
+				$jfmengels$elm_review_unused$List$Extra$indexedFilterMap,
+				F2(
+					function (index, range) {
+						return A2($elm$core$Set$member, index, usedArgumentPositions) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$error, moduleKey, range));
+					}),
+				0,
+				ranges,
+				acc);
+		} else {
+			return _Utils_ap(
+				A2(
+					$elm$core$List$map,
+					$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$error(moduleKey),
+					ranges),
+				acc);
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$finalEvaluationForSingleModule = F4(
+	function (context, moduleName, _v0, previousErrors) {
+		var moduleKey = _v0.dQ;
+		var args = _v0.ge;
+		return A3(
+			$elm$core$Dict$foldl,
+			F3(
+				function (name, ranges, acc) {
+					var constructor = _Utils_Tuple2(moduleName, name);
+					return A2($elm$core$Set$member, constructor, context.ab) ? acc : A5($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$errorsForUnusedArguments, context.H, moduleKey, constructor, ranges, acc);
+				}),
+			previousErrors,
+			args);
+	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$finalEvaluation = function (context) {
+	return A3(
+		$elm$core$Dict$foldl,
+		$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$finalEvaluationForSingleModule(context),
+		_List_Nil,
+		context.ah);
 };
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$foldProjectContexts = F2(
 	function (newContext, previousContext) {
 		return {
-			ak: A2($elm$core$Dict$union, newContext.ak, previousContext.ak),
-			Y: A2($elm$core$Set$union, newContext.Y, previousContext.Y),
-			Z: previousContext.Z,
-			E: A6(
-				$elm$core$Dict$merge,
-				$elm$core$Dict$insert,
-				F4(
-					function (key, newSet, prevSet, dict) {
-						return A3(
-							$elm$core$Dict$insert,
-							key,
-							A2($elm$core$Set$union, newSet, prevSet),
-							dict);
+			ah: A2($elm$core$Dict$union, newContext.ah, previousContext.ah),
+			ab: A2($elm$core$Set$union, newContext.ab, previousContext.ab),
+			ac: previousContext.ac,
+			H: A3(
+				$elm$core$Dict$foldl,
+				F3(
+					function (key, newSet, acc) {
+						var _v0 = A2($elm$core$Dict$get, key, acc);
+						if (!_v0.$) {
+							var existingSet = _v0.a;
+							return A3(
+								$elm$core$Dict$insert,
+								key,
+								A2($elm$core$Set$union, newSet, existingSet),
+								acc);
+						} else {
+							return A3($elm$core$Dict$insert, key, newSet, acc);
+						}
 					}),
-				$elm$core$Dict$insert,
-				newContext.E,
-				previousContext.E,
-				$elm$core$Dict$empty)
+				previousContext.H,
+				newContext.H)
 		};
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$getNonExposedCustomTypes = function (moduleContext) {
-	if (moduleContext.dY) {
-		var _v0 = moduleContext.eG;
+	if (moduleContext.et) {
+		var _v0 = moduleContext.fc;
 		if (!_v0.$) {
 			return $elm$core$Dict$empty;
 		} else {
@@ -18294,8 +18540,8 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$getNonExpose
 					function (exposed) {
 						var _v2 = $stil4m$elm_syntax$Elm$Syntax$Node$value(exposed);
 						if (_v2.$ === 3) {
-							var name = _v2.a.bT;
-							var open = _v2.a.gu;
+							var name = _v2.a.b5;
+							var open = _v2.a.g2;
 							if (!open.$) {
 								return $elm$core$Maybe$Just(name);
 							} else {
@@ -18308,23 +18554,25 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$getNonExpose
 					list));
 			return A3(
 				$elm$core$List$foldl,
-				$elm$core$Dict$union,
+				F2(
+					function (_v1, acc) {
+						var typeName = _v1.a;
+						var args = _v1.b;
+						return A2($elm$core$Set$member, typeName, exposedCustomTypes) ? acc : A2($elm$core$Dict$union, args, acc);
+					}),
 				$elm$core$Dict$empty,
-				$elm$core$Dict$values(
-					A2(
-						$elm$core$Dict$filter,
-						F2(
-							function (typeName, _v1) {
-								return !A2($elm$core$Set$member, typeName, exposedCustomTypes);
-							}),
-						moduleContext.ak)));
+				moduleContext.ah);
 		}
 	} else {
 		return A3(
 			$elm$core$List$foldl,
-			$elm$core$Dict$union,
+			F2(
+				function (_v4, acc) {
+					var args = _v4.b;
+					return A2($elm$core$Dict$union, args, acc);
+				}),
 			$elm$core$Dict$empty,
-			$elm$core$Dict$values(moduleContext.ak));
+			moduleContext.ah);
 	}
 };
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$replaceLocalModuleNameForDict = F2(
@@ -18393,109 +18641,53 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$replaceLocal
 			},
 			set);
 	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$fromModuleToProject = $jfmengels$elm_review$Review$Rule$withMetadata(
+var $jfmengels$elm_review$Review$Rule$withModuleName = function (_v0) {
+	var fn = _v0.a;
+	var requestedData = _v0.b;
+	return A2(
+		$jfmengels$elm_review$Review$Rule$ContextCreator,
+		function (data) {
+			return A2(
+				fn,
+				data,
+				$stil4m$elm_syntax$Elm$Syntax$Node$value(
+					$jfmengels$elm_review$Review$Rule$moduleNameNode(data.gg.gT)));
+		},
+		requestedData);
+};
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$fromModuleToProject = $jfmengels$elm_review$Review$Rule$withModuleName(
 	$jfmengels$elm_review$Review$Rule$withModuleKey(
 		$jfmengels$elm_review$Review$Rule$initContextCreator(
 			F3(
-				function (moduleKey, metadata, moduleContext) {
+				function (moduleKey, moduleName, moduleContext) {
 					return {
-						ak: A2(
+						ah: A2(
 							$elm$core$Dict$singleton,
-							$jfmengels$elm_review$Review$Rule$moduleNameFromMetadata(metadata),
+							moduleName,
 							{
-								fG: $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$getNonExposedCustomTypes(moduleContext),
-								dm: moduleKey
+								ge: $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$getNonExposedCustomTypes(moduleContext),
+								dQ: moduleKey
 							}),
-						Y: A2(
-							$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$replaceLocalModuleNameForSet,
-							$jfmengels$elm_review$Review$Rule$moduleNameFromMetadata(metadata),
-							moduleContext.Y),
-						Z: $elm$core$Set$empty,
-						E: A2(
-							$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$replaceLocalModuleNameForDict,
-							$jfmengels$elm_review$Review$Rule$moduleNameFromMetadata(metadata),
-							moduleContext.E)
+						ab: A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$replaceLocalModuleNameForSet, moduleName, moduleContext.ab),
+						ac: $elm$core$Set$empty,
+						H: A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$replaceLocalModuleNameForDict, moduleName, moduleContext.H)
 					};
 				}))));
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$fromProjectToModule = $jfmengels$elm_review$Review$Rule$withMetadata(
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$fromProjectToModule = $jfmengels$elm_review$Review$Rule$withModuleName(
 	$jfmengels$elm_review$Review$Rule$withModuleNameLookupTable(
 		$jfmengels$elm_review$Review$Rule$initContextCreator(
 			F3(
-				function (lookupTable, metadata, projectContext) {
+				function (lookupTable, moduleName, projectContext) {
 					return {
-						ak: $elm$core$Dict$empty,
-						Y: $elm$core$Set$empty,
-						eG: $stil4m$elm_syntax$Elm$Syntax$Exposing$Explicit(_List_Nil),
-						dY: A2(
-							$elm$core$Set$member,
-							$jfmengels$elm_review$Review$Rule$moduleNameFromMetadata(metadata),
-							projectContext.Z),
+						ah: _List_Nil,
+						ab: $elm$core$Set$empty,
+						fc: $stil4m$elm_syntax$Elm$Syntax$Exposing$Explicit(_List_Nil),
+						et: A2($elm$core$Set$member, moduleName, projectContext.ac),
 						l: lookupTable,
-						E: $elm$core$Dict$empty
+						H: $elm$core$Dict$empty
 					};
 				}))));
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$initialProjectContext = {ak: $elm$core$Dict$empty, Y: $elm$core$Set$empty, Z: $elm$core$Set$empty, E: $elm$core$Dict$empty};
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectCustomType = F2(
-	function (lookupTable, node) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-		if (_v0.$ === 2) {
-			var typeDeclaration = _v0.a;
-			var customTypeConstructors = A2(
-				$elm$core$List$map,
-				A2(
-					$elm$core$Basics$composeR,
-					$stil4m$elm_syntax$Elm$Syntax$Node$value,
-					function (_v1) {
-						var name = _v1.bT;
-						var _arguments = _v1.el;
-						return _Utils_Tuple2(
-							$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
-							A2(
-								$elm$core$List$map,
-								$stil4m$elm_syntax$Elm$Syntax$Node$range,
-								A2(
-									$elm$core$List$filter,
-									function (arg) {
-										var _v2 = $stil4m$elm_syntax$Elm$Syntax$Node$value(arg);
-										if (((_v2.$ === 1) && (_v2.a.b.b === 'Never')) && (!_v2.b.b)) {
-											var _v3 = _v2.a;
-											var _v4 = _v3.b;
-											var _v5 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, arg);
-											if ((((!_v5.$) && _v5.a.b) && (_v5.a.a === 'Basics')) && (!_v5.a.b.b)) {
-												var _v6 = _v5.a;
-												return false;
-											} else {
-												return true;
-											}
-										} else {
-											return true;
-										}
-									},
-									_arguments)));
-					}),
-				typeDeclaration.fV);
-			return $elm$core$Maybe$Just(
-				_Utils_Tuple2(
-					$stil4m$elm_syntax$Elm$Syntax$Node$value(typeDeclaration.bT),
-					$elm$core$Dict$fromList(customTypeConstructors)));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$declarationListVisitor = F2(
-	function (nodes, context) {
-		var customTypeArgs = A2(
-			$elm$core$List$filterMap,
-			$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectCustomType(context.l),
-			nodes);
-		return _Utils_Tuple2(
-			_List_Nil,
-			_Utils_update(
-				context,
-				{
-					ak: $elm$core$Dict$fromList(customTypeArgs)
-				}));
-	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$initialProjectContext = {ah: $elm$core$Dict$empty, ab: $elm$core$Set$empty, ac: $elm$core$Set$empty, H: $elm$core$Dict$empty};
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$isWildcard = function (node) {
 	isWildcard:
 	while (true) {
@@ -18513,6 +18705,26 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$isWildcard =
 		}
 	}
 };
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$computeUsedPositions = F3(
+	function (index, _arguments, acc) {
+		computeUsedPositions:
+		while (true) {
+			if (!_arguments.b) {
+				return acc;
+			} else {
+				var arg = _arguments.a;
+				var restOfArgs = _arguments.b;
+				var newAcc = $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$isWildcard(arg) ? acc : A2($elm$core$Set$insert, index, acc);
+				var $temp$index = index + 1,
+					$temp$arguments = restOfArgs,
+					$temp$acc = newAcc;
+				index = $temp$index;
+				_arguments = $temp$arguments;
+				acc = $temp$acc;
+				continue computeUsedPositions;
+			}
+		}
+	});
 var $jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt = F2(
 	function (_v0, range) {
 		var dict = _v0.b;
@@ -18521,89 +18733,144 @@ var $jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt = F2(
 			$jfmengels$elm_review$Review$ModuleNameLookupTable$Internal$toRangeLike(range),
 			dict);
 	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs = F2(
-	function (lookupTable, _v0) {
-		collectUsedCustomTypeArgs:
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgsHelp = F3(
+	function (lookupTable, nodes, acc) {
+		collectUsedCustomTypeArgsHelp:
 		while (true) {
-			var range = _v0.a;
-			var pattern = _v0.b;
-			switch (pattern.$) {
-				case 12:
-					var name = pattern.a.bT;
-					var args = pattern.b;
-					var usedPositions = $elm$core$Set$fromList(
-						A2(
-							$elm$core$List$map,
-							$elm$core$Tuple$first,
-							A2(
-								$elm$core$List$filter,
-								function (_v3) {
-									var subPattern = _v3.b;
-									return !$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$isWildcard(subPattern);
-								},
-								A2($elm$core$List$indexedMap, $elm$core$Tuple$pair, args))));
-					var subList = A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs(lookupTable),
-						args);
-					var _v2 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, lookupTable, range);
-					if (!_v2.$) {
-						var moduleName = _v2.a;
-						return A2(
+			if (!nodes.b) {
+				return acc;
+			} else {
+				var _v1 = nodes.a;
+				var range = _v1.a;
+				var pattern = _v1.b;
+				var restOfNodes = nodes.b;
+				switch (pattern.$) {
+					case 12:
+						var name = pattern.a.b5;
+						var args = pattern.b;
+						var newAcc = function () {
+							var _v3 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, lookupTable, range);
+							if (!_v3.$) {
+								var moduleName = _v3.a;
+								return A2(
+									$elm$core$List$cons,
+									_Utils_Tuple2(
+										_Utils_Tuple2(moduleName, name),
+										A3($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$computeUsedPositions, 0, args, $elm$core$Set$empty)),
+									acc);
+							} else {
+								return acc;
+							}
+						}();
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = _Utils_ap(args, restOfNodes),
+							$temp$acc = newAcc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectUsedCustomTypeArgsHelp;
+					case 7:
+						var patterns = pattern.a;
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = _Utils_ap(patterns, restOfNodes),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectUsedCustomTypeArgsHelp;
+					case 10:
+						var patterns = pattern.a;
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = _Utils_ap(patterns, restOfNodes),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectUsedCustomTypeArgsHelp;
+					case 9:
+						var left = pattern.a;
+						var right = pattern.b;
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = A2(
 							$elm$core$List$cons,
-							_Utils_Tuple2(
-								_Utils_Tuple2(moduleName, name),
-								usedPositions),
-							subList);
-					} else {
-						return subList;
-					}
-				case 7:
-					var patterns = pattern.a;
-					return A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs(lookupTable),
-						patterns);
-				case 10:
-					var patterns = pattern.a;
-					return A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs(lookupTable),
-						patterns);
-				case 9:
-					var left = pattern.a;
-					var right = pattern.b;
-					return A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs(lookupTable),
-						_List_fromArray(
-							[left, right]));
-				case 14:
-					var subPattern = pattern.a;
-					var $temp$lookupTable = lookupTable,
-						$temp$_v0 = subPattern;
-					lookupTable = $temp$lookupTable;
-					_v0 = $temp$_v0;
-					continue collectUsedCustomTypeArgs;
-				case 13:
-					var subPattern = pattern.a;
-					var $temp$lookupTable = lookupTable,
-						$temp$_v0 = subPattern;
-					lookupTable = $temp$lookupTable;
-					_v0 = $temp$_v0;
-					continue collectUsedCustomTypeArgs;
-				default:
-					return _List_Nil;
+							left,
+							A2($elm$core$List$cons, right, restOfNodes)),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectUsedCustomTypeArgsHelp;
+					case 14:
+						var subPattern = pattern.a;
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = A2($elm$core$List$cons, subPattern, restOfNodes),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectUsedCustomTypeArgsHelp;
+					case 13:
+						var subPattern = pattern.a;
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = A2($elm$core$List$cons, subPattern, restOfNodes),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectUsedCustomTypeArgsHelp;
+					default:
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = restOfNodes,
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectUsedCustomTypeArgsHelp;
+				}
 			}
 		}
 	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs = F2(
+	function (lookupTable, nodes) {
+		return A3($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgsHelp, lookupTable, nodes, _List_Nil);
+	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedPatternsFromFunctionDeclaration = F2(
 	function (context, _v0) {
-		var declaration = _v0.fX;
+		var declaration = _v0.gv;
 		return A2(
-			$elm$core$List$concatMap,
-			$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs(context.l),
-			$stil4m$elm_syntax$Elm$Syntax$Node$value(declaration).el);
+			$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs,
+			context.l,
+			$stil4m$elm_syntax$Elm$Syntax$Node$value(declaration).eT);
+	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$isNotNever = F2(
+	function (lookupTable, node) {
+		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+		if (((_v0.$ === 1) && (_v0.a.b.b === 'Never')) && (!_v0.b.b)) {
+			var _v1 = _v0.a;
+			var neverRange = _v1.a;
+			var _v2 = _v1.b;
+			return !_Utils_eq(
+				A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, lookupTable, neverRange),
+				$elm$core$Maybe$Just(
+					_List_fromArray(
+						['Basics'])));
+		} else {
+			return true;
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$createArguments = F2(
+	function (lookupTable, _arguments) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (argument, acc) {
+					return A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$isNotNever, lookupTable, argument) ? A2(
+						$elm$core$List$cons,
+						$stil4m$elm_syntax$Elm$Syntax$Node$range(argument),
+						acc) : acc;
+				}),
+			_List_Nil,
+			_arguments);
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$registerUsedPatterns = F2(
 	function (newUsedArguments, previouslyUsedArguments) {
@@ -18629,124 +18896,205 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$registerUsed
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$declarationVisitor = F2(
 	function (node, context) {
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-		if (!_v0.$) {
-			var _function = _v0.a;
-			return _Utils_Tuple2(
-				_List_Nil,
-				_Utils_update(
+		switch (_v0.$) {
+			case 0:
+				var _function = _v0.a;
+				return _Utils_update(
 					context,
 					{
-						E: A2(
+						H: A2(
 							$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$registerUsedPatterns,
 							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedPatternsFromFunctionDeclaration, context, _function),
-							context.E)
-					}));
-		} else {
-			return _Utils_Tuple2(_List_Nil, context);
+							context.H)
+					});
+			case 2:
+				var typeDeclaration = _v0.a;
+				if ($elm$core$List$isEmpty(typeDeclaration.gt)) {
+					return context;
+				} else {
+					var customTypeConstructors = A3(
+						$elm$core$List$foldl,
+						F2(
+							function (_v1, acc) {
+								var name = _v1.b.b5;
+								var _arguments = _v1.b.eT;
+								return A3(
+									$elm$core$Dict$insert,
+									$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
+									A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$createArguments, context.l, _arguments),
+									acc);
+							}),
+						$elm$core$Dict$empty,
+						typeDeclaration.gt);
+					return _Utils_update(
+						context,
+						{
+							ah: A2(
+								$elm$core$List$cons,
+								_Utils_Tuple2(
+									$stil4m$elm_syntax$Elm$Syntax$Node$value(typeDeclaration.b5),
+									customTypeConstructors),
+								context.ah)
+						});
+				}
+			default:
+				return context;
 		}
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$isCustomTypeConstructor = function (functionName) {
 	return A2(
-		$elm$core$List$all,
+		$elm$core$String$all,
 		$elm$core$Char$isUpper,
-		A2(
-			$elm$core$List$take,
-			1,
-			$elm$core$String$toList(functionName)));
+		A3($elm$core$String$slice, 0, 1, functionName));
 };
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypes = F2(
-	function (lookupTable, node) {
-		findCustomTypes:
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypesHelp = F3(
+	function (lookupTable, nodes, acc) {
+		findCustomTypesHelp:
 		while (true) {
-			var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-			_v0$8:
-			while (true) {
-				switch (_v0.$) {
-					case 3:
-						var rawModuleName = _v0.a;
-						var functionName = _v0.b;
-						if ($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$isCustomTypeConstructor(functionName)) {
-							var _v1 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, node);
-							if (!_v1.$) {
-								var moduleName = _v1.a;
-								return $elm$core$Set$singleton(
-									_Utils_Tuple2(moduleName, functionName));
+			if (!nodes.b) {
+				return acc;
+			} else {
+				var node = nodes.a;
+				var restOfNodes = nodes.b;
+				var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+				_v1$7:
+				while (true) {
+					switch (_v1.$) {
+						case 3:
+							var rawModuleName = _v1.a;
+							var functionName = _v1.b;
+							if ($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$isCustomTypeConstructor(functionName)) {
+								var _v2 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, node);
+								if (!_v2.$) {
+									var moduleName = _v2.a;
+									var $temp$lookupTable = lookupTable,
+										$temp$nodes = restOfNodes,
+										$temp$acc = A2(
+										$elm$core$List$cons,
+										_Utils_Tuple2(moduleName, functionName),
+										acc);
+									lookupTable = $temp$lookupTable;
+									nodes = $temp$nodes;
+									acc = $temp$acc;
+									continue findCustomTypesHelp;
+								} else {
+									var $temp$lookupTable = lookupTable,
+										$temp$nodes = restOfNodes,
+										$temp$acc = A2(
+										$elm$core$List$cons,
+										_Utils_Tuple2(rawModuleName, functionName),
+										acc);
+									lookupTable = $temp$lookupTable;
+									nodes = $temp$nodes;
+									acc = $temp$acc;
+									continue findCustomTypesHelp;
+								}
 							} else {
-								return $elm$core$Set$singleton(
-									_Utils_Tuple2(rawModuleName, functionName));
+								var $temp$lookupTable = lookupTable,
+									$temp$nodes = restOfNodes,
+									$temp$acc = acc;
+								lookupTable = $temp$lookupTable;
+								nodes = $temp$nodes;
+								acc = $temp$acc;
+								continue findCustomTypesHelp;
 							}
-						} else {
-							return $elm$core$Set$empty;
-						}
-					case 13:
-						var expressions = _v0.a;
-						return A3(
-							$elm$core$List$foldl,
-							A2(
-								$elm$core$Basics$composeR,
-								$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypes(lookupTable),
-								$elm$core$Set$union),
-							$elm$core$Set$empty,
-							expressions);
-					case 14:
-						var expression = _v0.a;
-						var $temp$lookupTable = lookupTable,
-							$temp$node = expression;
-						lookupTable = $temp$lookupTable;
-						node = $temp$node;
-						continue findCustomTypes;
-					case 1:
-						if (!_v0.a.b) {
-							return $elm$core$Set$empty;
-						} else {
-							if (_v0.a.a.b.$ === 3) {
-								var _v2 = _v0.a;
-								var first = _v2.a;
-								var _v3 = first.b;
-								var functionName = _v3.b;
-								var expressions = _v2.b;
-								return $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$isCustomTypeConstructor(functionName) ? A3(
-									$elm$core$List$foldl,
-									A2(
-										$elm$core$Basics$composeR,
-										$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypes(lookupTable),
-										$elm$core$Set$union),
-									$elm$core$Set$empty,
-									A2($elm$core$List$cons, first, expressions)) : $elm$core$Set$empty;
+						case 13:
+							var expressions = _v1.a;
+							var $temp$lookupTable = lookupTable,
+								$temp$nodes = _Utils_ap(expressions, restOfNodes),
+								$temp$acc = acc;
+							lookupTable = $temp$lookupTable;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue findCustomTypesHelp;
+						case 14:
+							var expression = _v1.a;
+							var $temp$lookupTable = lookupTable,
+								$temp$nodes = A2($elm$core$List$cons, expression, restOfNodes),
+								$temp$acc = acc;
+							lookupTable = $temp$lookupTable;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue findCustomTypesHelp;
+						case 1:
+							if (_v1.a.b && (_v1.a.a.b.$ === 3)) {
+								var _v3 = _v1.a;
+								var first = _v3.a;
+								var _v4 = first.b;
+								var functionName = _v4.b;
+								var expressions = _v3.b;
+								if ($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$isCustomTypeConstructor(functionName)) {
+									var $temp$lookupTable = lookupTable,
+										$temp$nodes = A2(
+										$elm$core$List$cons,
+										first,
+										_Utils_ap(expressions, restOfNodes)),
+										$temp$acc = acc;
+									lookupTable = $temp$lookupTable;
+									nodes = $temp$nodes;
+									acc = $temp$acc;
+									continue findCustomTypesHelp;
+								} else {
+									var $temp$lookupTable = lookupTable,
+										$temp$nodes = restOfNodes,
+										$temp$acc = acc;
+									lookupTable = $temp$lookupTable;
+									nodes = $temp$nodes;
+									acc = $temp$acc;
+									continue findCustomTypesHelp;
+								}
 							} else {
-								break _v0$8;
+								break _v1$7;
 							}
-						}
-					case 2:
-						var left = _v0.c;
-						var right = _v0.d;
-						return A2(
-							$elm$core$Set$union,
-							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypes, lookupTable, left),
-							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypes, lookupTable, right));
-					case 10:
-						var expression = _v0.a;
-						var $temp$lookupTable = lookupTable,
-							$temp$node = expression;
-						lookupTable = $temp$lookupTable;
-						node = $temp$node;
-						continue findCustomTypes;
-					case 19:
-						var expressions = _v0.a;
-						return A3(
-							$elm$core$List$foldl,
-							A2(
-								$elm$core$Basics$composeR,
-								$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypes(lookupTable),
-								$elm$core$Set$union),
-							$elm$core$Set$empty,
-							expressions);
-					default:
-						break _v0$8;
+						case 2:
+							var left = _v1.c;
+							var right = _v1.d;
+							var $temp$lookupTable = lookupTable,
+								$temp$nodes = A2(
+								$elm$core$List$cons,
+								left,
+								A2($elm$core$List$cons, right, restOfNodes)),
+								$temp$acc = acc;
+							lookupTable = $temp$lookupTable;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue findCustomTypesHelp;
+						case 10:
+							var expression = _v1.a;
+							var $temp$lookupTable = lookupTable,
+								$temp$nodes = A2($elm$core$List$cons, expression, restOfNodes),
+								$temp$acc = acc;
+							lookupTable = $temp$lookupTable;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue findCustomTypesHelp;
+						case 19:
+							var expressions = _v1.a;
+							var $temp$lookupTable = lookupTable,
+								$temp$nodes = _Utils_ap(expressions, restOfNodes),
+								$temp$acc = acc;
+							lookupTable = $temp$lookupTable;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue findCustomTypesHelp;
+						default:
+							break _v1$7;
+					}
 				}
+				var $temp$lookupTable = lookupTable,
+					$temp$nodes = restOfNodes,
+					$temp$acc = acc;
+				lookupTable = $temp$lookupTable;
+				nodes = $temp$nodes;
+				acc = $temp$acc;
+				continue findCustomTypesHelp;
 			}
-			return $elm$core$Set$empty;
 		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypes = F2(
+	function (lookupTable, nodes) {
+		return $elm$core$Set$fromList(
+			A3($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypesHelp, lookupTable, nodes, _List_Nil));
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$expressionVisitor = F2(
 	function (node, context) {
@@ -18755,76 +19103,67 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$expressionVi
 		while (true) {
 			switch (_v0.$) {
 				case 16:
-					var cases = _v0.a.fQ;
+					var cases = _v0.a.go;
 					var usedArguments = A2(
-						$elm$core$List$concatMap,
-						A2(
-							$elm$core$Basics$composeR,
-							$elm$core$Tuple$first,
-							$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs(context.l)),
-						cases);
-					return _Utils_Tuple2(
-						_List_Nil,
-						_Utils_update(
-							context,
-							{
-								E: A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$registerUsedPatterns, usedArguments, context.E)
-							}));
+						$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs,
+						context.l,
+						A2($elm$core$List$map, $elm$core$Tuple$first, cases));
+					return _Utils_update(
+						context,
+						{
+							H: A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$registerUsedPatterns, usedArguments, context.H)
+						});
 				case 15:
-					var declarations = _v0.a.ew;
+					var declarations = _v0.a.e2;
 					var usedArguments = A2(
 						$elm$core$List$concatMap,
 						function (declaration) {
 							var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
 							if (_v1.$ === 1) {
 								var pattern = _v1.a;
-								return A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs, context.l, pattern);
+								return A2(
+									$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs,
+									context.l,
+									_List_fromArray(
+										[pattern]));
 							} else {
 								var _function = _v1.a;
 								return A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedPatternsFromFunctionDeclaration, context, _function);
 							}
 						},
 						declarations);
-					return _Utils_Tuple2(
-						_List_Nil,
-						_Utils_update(
-							context,
-							{
-								E: A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$registerUsedPatterns, usedArguments, context.E)
-							}));
+					return _Utils_update(
+						context,
+						{
+							H: A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$registerUsedPatterns, usedArguments, context.H)
+						});
 				case 17:
-					var args = _v0.a.fG;
-					return _Utils_Tuple2(
-						_List_Nil,
-						_Utils_update(
-							context,
-							{
-								E: A2(
-									$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$registerUsedPatterns,
-									A2(
-										$elm$core$List$concatMap,
-										$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs(context.l),
-										args),
-									context.E)
-							}));
+					var args = _v0.a.ge;
+					return _Utils_update(
+						context,
+						{
+							H: A2(
+								$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$registerUsedPatterns,
+								A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$collectUsedCustomTypeArgs, context.l, args),
+								context.H)
+						});
 				case 2:
 					var operator = _v0.a;
 					var left = _v0.c;
 					var right = _v0.d;
 					if ((operator === '==') || (operator === '/=')) {
 						var customTypesNotToReport = A2(
-							$elm$core$Set$union,
-							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypes, context.l, left),
-							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypes, context.l, right));
-						return _Utils_Tuple2(
-							_List_Nil,
-							_Utils_update(
-								context,
-								{
-									Y: A2($elm$core$Set$union, customTypesNotToReport, context.Y)
-								}));
+							$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypes,
+							context.l,
+							_List_fromArray(
+								[left, right]));
+						return _Utils_update(
+							context,
+							{
+								ab: A2($elm$core$Set$union, customTypesNotToReport, context.ab)
+							});
 					} else {
-						return _Utils_Tuple2(_List_Nil, context);
+						return context;
 					}
 				case 1:
 					if (_v0.a.b && (_v0.a.a.b.$ === 5)) {
@@ -18833,23 +19172,14 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$expressionVi
 						var operator = _v3.b.a;
 						var restOfArgs = _v2.b;
 						if ((operator === '==') || (operator === '/=')) {
-							var customTypesNotToReport = A3(
-								$elm$core$List$foldl,
-								A2(
-									$elm$core$Basics$composeR,
-									$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypes(context.l),
-									$elm$core$Set$union),
-								$elm$core$Set$empty,
-								restOfArgs);
-							return _Utils_Tuple2(
-								_List_Nil,
-								_Utils_update(
-									context,
-									{
-										Y: A2($elm$core$Set$union, customTypesNotToReport, context.Y)
-									}));
+							var customTypesNotToReport = A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$findCustomTypes, context.l, restOfArgs);
+							return _Utils_update(
+								context,
+								{
+									ab: A2($elm$core$Set$union, customTypesNotToReport, context.ab)
+								});
 						} else {
-							return _Utils_Tuple2(_List_Nil, context);
+							return context;
 						}
 					} else {
 						break _v0$5;
@@ -18858,30 +19188,43 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$expressionVi
 					break _v0$5;
 			}
 		}
-		return _Utils_Tuple2(_List_Nil, context);
+		return context;
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$moduleDefinitionVisitor = F2(
 	function (node, moduleContext) {
-		return _Utils_Tuple2(
-			_List_Nil,
-			_Utils_update(
-				moduleContext,
-				{
-					eG: $stil4m$elm_syntax$Elm$Syntax$Module$exposingList(
-						$stil4m$elm_syntax$Elm$Syntax$Node$value(node))
-				}));
+		return _Utils_update(
+			moduleContext,
+			{
+				fc: $stil4m$elm_syntax$Elm$Syntax$Module$exposingList(
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(node))
+			});
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$moduleVisitor = function (schema) {
 	return A2(
 		$jfmengels$elm_review$Review$Rule$withExpressionEnterVisitor,
-		$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$expressionVisitor,
+		F2(
+			function (node, context) {
+				return _Utils_Tuple2(
+					_List_Nil,
+					A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$expressionVisitor, node, context));
+			}),
 		A2(
 			$jfmengels$elm_review$Review$Rule$withDeclarationEnterVisitor,
-			$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$declarationVisitor,
+			F2(
+				function (node, context) {
+					return _Utils_Tuple2(
+						_List_Nil,
+						A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$declarationVisitor, node, context));
+				}),
 			A2(
-				$jfmengels$elm_review$Review$Rule$withDeclarationListVisitor,
-				$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$declarationListVisitor,
-				A2($jfmengels$elm_review$Review$Rule$withModuleDefinitionVisitor, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$moduleDefinitionVisitor, schema))));
+				$jfmengels$elm_review$Review$Rule$withModuleDefinitionVisitor,
+				F2(
+					function (node, context) {
+						return _Utils_Tuple2(
+							_List_Nil,
+							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$moduleDefinitionVisitor, node, context));
+					}),
+				schema)));
 };
 var $elm$core$Tuple$mapFirst = F2(
 	function (func, _v0) {
@@ -18904,10 +19247,10 @@ var $jfmengels$elm_review$Review$Rule$withElmJsonProjectVisitor = F2(
 		return _Utils_update(
 			schema,
 			{
-				M: A2(
+				P: A2(
 					$elm$core$List$cons,
 					$jfmengels$elm_review$Review$Rule$removeErrorPhantomTypeFromVisitor(visitor),
-					schema.M)
+					schema.P)
 			});
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$rule = $jfmengels$elm_review$Review$Rule$fromProjectRuleSchema(
@@ -18916,7 +19259,7 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$rule = $jfme
 		$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$finalEvaluation,
 		A2(
 			$jfmengels$elm_review$Review$Rule$withModuleContextUsingContextCreator,
-			{bG: $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$foldProjectContexts, b9: $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$fromModuleToProject, eO: $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$fromProjectToModule},
+			{bS: $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$foldProjectContexts, cu: $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$fromModuleToProject, fk: $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$fromProjectToModule},
 			A2(
 				$jfmengels$elm_review$Review$Rule$withModuleVisitor,
 				$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructorArgs$moduleVisitor,
@@ -18936,7 +19279,7 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$elmJsonVisitor 
 			if (_v0.a.$ === 1) {
 				var _package = _v0.a.a;
 				var exposedModules = function () {
-					var _v1 = _package.eG;
+					var _v1 = _package.fc;
 					if (!_v1.$) {
 						var list = _v1.a;
 						return list;
@@ -18951,7 +19294,7 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$elmJsonVisitor 
 					_List_Nil,
 					_Utils_update(
 						projectContext,
-						{Z: exposedNames}));
+						{ac: exposedNames}));
 			} else {
 				return _Utils_Tuple2(_List_Nil, projectContext);
 			}
@@ -18969,10 +19312,10 @@ var $jfmengels$elm_review$Review$Rule$errorForModuleWithFix = F4(
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$defaultDetails = 'This type constructor is never used. It might be handled everywhere it might appear, but there is no location where this value actually gets created.';
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$errorInformation = F2(
 	function (_v0, name) {
-		var wasUsedInLocationThatNeedsItself = _v0.T;
-		var wasUsedInComparisons = _v0.S;
+		var wasUsedInLocationThatNeedsItself = _v0.W;
+		var wasUsedInComparisons = _v0.V;
 		return {
-			c2: A2(
+			dx: A2(
 				$elm$core$List$map,
 				$elm$core$Tuple$first,
 				A2(
@@ -18984,7 +19327,7 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$errorInformatio
 							_Utils_Tuple2('I found it used in comparisons, but since it is never created anywhere, all of those can be evaluated to False (for (==), True for (/=)).', wasUsedInComparisons),
 							_Utils_Tuple2('The only locations where I found it being created require already having one.', wasUsedInLocationThatNeedsItself)
 						]))),
-			a2: 'Type constructor `' + (name + '` is not used.')
+			a8: 'Type constructor `' + (name + '` is not used.')
 		};
 	});
 var $jfmengels$elm_review$Review$Fix$Internal$Removal = function (a) {
@@ -18998,127 +19341,132 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$errorForModule 
 			moduleKey,
 			A2(
 				$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$errorInformation,
-				{S: params.S, T: params.T},
-				constructorInformation.bT),
-			constructorInformation.d8,
+				{V: params.V, W: params.W},
+				constructorInformation.b5),
+			constructorInformation.eF,
 			function () {
-				var _v0 = constructorInformation.d7;
+				var _v0 = constructorInformation.eE;
 				if (!_v0.$) {
 					var rangeToRemove = _v0.a;
-					return params.eZ ? _List_Nil : A2(
+					return params.fv ? _List_Nil : A2(
 						$elm$core$List$cons,
 						$jfmengels$elm_review$Review$Fix$removeRange(rangeToRemove),
-						params.z);
+						params.B);
 				} else {
 					return _List_Nil;
 				}
 			}());
 	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$finalProjectEvaluation = function (projectContext) {
-	return A2(
-		$elm$core$List$concatMap,
-		function (_v0) {
-			var moduleName = _v0.a;
-			var moduleKey = _v0.b.dm;
-			var customTypes = _v0.b.dE;
-			var usedConstructors = A2(
-				$elm$core$Maybe$withDefault,
-				$elm$core$Set$empty,
-				A2($elm$core$Dict$get, moduleName, projectContext.bZ));
-			return A2(
-				$elm$core$List$concatMap,
-				function (constructors) {
-					return A2(
-						$elm$core$List$map,
-						function (constructorInformation) {
-							return A3(
-								$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$errorForModule,
-								moduleKey,
-								{
-									z: A2(
-										$elm$core$Maybe$withDefault,
-										_List_Nil,
-										A2(
-											$elm$core$Dict$get,
-											_Utils_Tuple2(moduleName, constructorInformation.bT),
-											projectContext.z)),
-									eZ: A2(
-										$elm$core$Set$member,
-										_Utils_Tuple2(moduleName, constructorInformation.bT),
-										projectContext.U),
-									S: A2(
-										$elm$core$Set$member,
-										_Utils_Tuple2(moduleName, constructorInformation.bT),
-										projectContext.S),
-									T: A2(
-										$elm$core$Set$member,
-										_Utils_Tuple2(moduleName, constructorInformation.bT),
-										projectContext.T)
-								},
-								constructorInformation);
-						},
-						$elm$core$Dict$values(
-							A2(
-								$elm$core$Dict$filter,
-								F2(
-									function (constructorName, _v1) {
-										return !A2($elm$core$Set$member, constructorName, usedConstructors);
-									}),
-								constructors)));
-				},
-				$elm$core$Dict$values(customTypes));
-		},
-		$elm$core$Dict$toList(projectContext.bd));
-};
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$mergeDictsWithLists = F2(
-	function (left, right) {
-		return A6(
-			$elm$core$Dict$merge,
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$errorsForConstructors = F6(
+	function (projectContext, usedConstructors, moduleName, moduleKey, constructors, acc) {
+		return A3(
+			$elm$core$Dict$foldl,
 			F3(
-				function (key, a, dict) {
-					return A3($elm$core$Dict$insert, key, a, dict);
+				function (constructorName, constructorInformation, subAcc) {
+					return A2($elm$core$Set$member, constructorName, usedConstructors) ? subAcc : A2(
+						$elm$core$List$cons,
+						A3(
+							$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$errorForModule,
+							moduleKey,
+							{
+								B: A2(
+									$elm$core$Maybe$withDefault,
+									_List_Nil,
+									A2(
+										$elm$core$Dict$get,
+										_Utils_Tuple2(moduleName, constructorInformation.b5),
+										projectContext.B)),
+								fv: A2(
+									$elm$core$Set$member,
+									_Utils_Tuple2(moduleName, constructorInformation.b5),
+									projectContext.X),
+								V: A2(
+									$elm$core$Set$member,
+									_Utils_Tuple2(moduleName, constructorInformation.b5),
+									projectContext.V),
+								W: A2(
+									$elm$core$Set$member,
+									_Utils_Tuple2(moduleName, constructorInformation.b5),
+									projectContext.W)
+							},
+							constructorInformation),
+						subAcc);
 				}),
-			F4(
-				function (key, a, b, dict) {
-					return A3(
-						$elm$core$Dict$insert,
-						key,
-						_Utils_ap(a, b),
-						dict);
-				}),
-			F3(
-				function (key, b, dict) {
-					return A3($elm$core$Dict$insert, key, b, dict);
-				}),
-			left,
-			right,
-			$elm$core$Dict$empty);
+			acc,
+			constructors);
 	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$errorsForCustomTypes = F6(
+	function (projectContext, usedConstructors, moduleName, moduleKey, customTypes, acc) {
+		return A3(
+			$elm$core$Dict$foldl,
+			F3(
+				function (_v0, constructors, subAcc) {
+					return A6($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$errorsForConstructors, projectContext, usedConstructors, moduleName, moduleKey, constructors, subAcc);
+				}),
+			acc,
+			customTypes);
+	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$finalProjectEvaluation = function (projectContext) {
+	return A3(
+		$elm$core$Dict$foldl,
+		F3(
+			function (moduleName, _v0, acc) {
+				var moduleKey = _v0.dQ;
+				var customTypes = _v0.d9;
+				var usedConstructors = A2(
+					$elm$core$Maybe$withDefault,
+					$elm$core$Set$empty,
+					A2($elm$core$Dict$get, moduleName, projectContext.cc));
+				return A6($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$errorsForCustomTypes, projectContext, usedConstructors, moduleName, moduleKey, customTypes, acc);
+			}),
+		_List_Nil,
+		projectContext.bj);
+};
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$foldProjectContexts = F2(
 	function (newContext, previousContext) {
 		return {
-			bd: A2($elm$core$Dict$union, newContext.bd, previousContext.bd),
-			Z: previousContext.Z,
-			z: A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$mergeDictsWithLists, newContext.z, previousContext.z),
-			af: A2($elm$core$Dict$union, newContext.af, previousContext.af),
-			bZ: A6(
-				$elm$core$Dict$merge,
-				$elm$core$Dict$insert,
-				F4(
-					function (key, newUsed, previousUsed, dict) {
-						return A3(
-							$elm$core$Dict$insert,
-							key,
-							A2($elm$core$Set$union, newUsed, previousUsed),
-							dict);
+			bj: A2($elm$core$Dict$union, newContext.bj, previousContext.bj),
+			ac: previousContext.ac,
+			B: A3(
+				$elm$core$Dict$foldl,
+				F3(
+					function (key, newFixes, acc) {
+						var _v0 = A2($elm$core$Dict$get, key, acc);
+						if (!_v0.$) {
+							var existingFixes = _v0.a;
+							return A3(
+								$elm$core$Dict$insert,
+								key,
+								A3($elm$core$List$foldl, $elm$core$List$cons, existingFixes, newFixes),
+								acc);
+						} else {
+							return A3($elm$core$Dict$insert, key, newFixes, acc);
+						}
 					}),
-				$elm$core$Dict$insert,
-				newContext.bZ,
-				previousContext.bZ,
-				$elm$core$Dict$empty),
-			S: A2($elm$core$Set$union, newContext.S, previousContext.S),
-			T: A2($elm$core$Set$union, newContext.T, previousContext.T),
-			U: A2($elm$core$Set$union, newContext.U, previousContext.U)
+				previousContext.B,
+				newContext.B),
+			an: A2($elm$core$Dict$union, newContext.an, previousContext.an),
+			cc: A3(
+				$elm$core$Dict$foldl,
+				F3(
+					function (key, newSet, acc) {
+						var _v1 = A2($elm$core$Dict$get, key, acc);
+						if (!_v1.$) {
+							var existingSet = _v1.a;
+							return A3(
+								$elm$core$Dict$insert,
+								key,
+								A2($elm$core$Set$union, newSet, existingSet),
+								acc);
+						} else {
+							return A3($elm$core$Dict$insert, key, newSet, acc);
+						}
+					}),
+				previousContext.cc,
+				newContext.cc),
+			V: A2($elm$core$Set$union, newContext.V, previousContext.V),
+			W: A2($elm$core$Set$union, newContext.W, previousContext.W),
+			X: A2($elm$core$Set$union, newContext.X, previousContext.X)
 		};
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$ExposedConstructors = $elm$core$Basics$identity;
@@ -19137,246 +19485,491 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$mapDictKeys = F
 			$elm$core$Dict$empty,
 			dict);
 	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$fromModuleToProject = F3(
-	function (moduleKey, metadata, moduleContext) {
-		var moduleName = $jfmengels$elm_review$Review$Rule$moduleNameFromMetadata(metadata);
-		var moduleNameAsString = A2($elm$core$String$join, '.', moduleName);
-		var localUsed = A2(
-			$elm$core$Maybe$withDefault,
-			$elm$core$Set$empty,
-			A2($elm$core$Dict$get, '', moduleContext.a7));
-		var localPhantomTypes = A2(
-			$elm$core$Maybe$withDefault,
-			_List_Nil,
-			A2($elm$core$Dict$get, _List_Nil, moduleContext.af));
-		return {
-			bd: moduleContext.dW ? (moduleContext.c8 ? $elm$core$Dict$empty : A2(
-				$elm$core$Dict$singleton,
-				moduleNameAsString,
-				{
-					dE: A2(
-						$elm$core$Dict$filter,
-						F2(
-							function (typeName, _v0) {
-								return !A2($elm$core$Set$member, typeName, moduleContext.cz);
-							}),
-						moduleContext.b3),
-					dm: moduleKey
-				})) : A2(
-				$elm$core$Dict$singleton,
-				moduleNameAsString,
-				{dE: moduleContext.b3, dm: moduleKey}),
-			Z: $elm$core$Set$empty,
-			z: A2(
-				$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$mapDictKeys,
-				function (constructorName) {
-					return _Utils_Tuple2(moduleNameAsString, constructorName);
-				},
-				moduleContext.z),
-			af: A2($elm$core$Dict$singleton, moduleName, localPhantomTypes),
-			bZ: A3(
-				$elm$core$Dict$insert,
-				moduleNameAsString,
-				localUsed,
-				A2($elm$core$Dict$remove, '', moduleContext.a7)),
-			S: A2(
-				$elm$core$Set$map,
-				function (untouched) {
-					var moduleName_ = untouched.a;
-					var constructorName = untouched.b;
-					return (moduleName_ === '') ? _Utils_Tuple2(moduleNameAsString, constructorName) : untouched;
-				},
-				moduleContext.S),
-			T: A2(
-				$elm$core$Set$map,
-				function (untouched) {
-					var moduleName_ = untouched.a;
-					var constructorName = untouched.b;
-					return (moduleName_ === '') ? _Utils_Tuple2(moduleNameAsString, constructorName) : untouched;
-				},
-				moduleContext.T),
-			U: A3(
-				$elm$core$List$foldl,
-				F2(
-					function (_v1, acc) {
-						var moduleName_ = _v1.a;
-						var constructors = _v1.b;
-						return A2(
-							$elm$core$Set$union,
-							A2(
-								$elm$core$Set$map,
-								$elm$core$Tuple$pair(moduleName_),
-								constructors),
-							acc);
-					}),
-				moduleContext.U,
-				$elm$core$Dict$toList(
-					A2($elm$core$Dict$remove, '', moduleContext.a7)))
-		};
-	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$fromProjectToModule = F3(
-	function (lookupTable, metadata, projectContext) {
-		return {
-			bx: _List_Nil,
-			b3: $elm$core$Dict$empty,
-			eH: projectContext.bd,
-			cz: $elm$core$Set$empty,
-			c8: false,
-			z: $elm$core$Dict$empty,
-			bg: _List_Nil,
-			bh: _List_Nil,
-			dW: A2(
-				$elm$core$Set$member,
-				A2(
-					$elm$core$String$join,
-					'.',
-					$jfmengels$elm_review$Review$Rule$moduleNameFromMetadata(metadata)),
-				projectContext.Z),
-			l: lookupTable,
-			af: projectContext.af,
-			a7: $elm$core$Dict$empty,
-			S: $elm$core$Set$empty,
-			T: $elm$core$Set$empty,
-			U: $elm$core$Set$empty
-		};
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$fromModuleToProject = $jfmengels$elm_review$Review$Rule$withModuleName(
+	$jfmengels$elm_review$Review$Rule$withModuleKey(
+		$jfmengels$elm_review$Review$Rule$initContextCreator(
+			F3(
+				function (moduleKey, moduleName, moduleContext) {
+					var moduleNameAsString = A2($elm$core$String$join, '.', moduleName);
+					var localUsed = A2(
+						$elm$core$Maybe$withDefault,
+						$elm$core$Set$empty,
+						A2($elm$core$Dict$get, '', moduleContext.be));
+					var localPhantomTypes = A2(
+						$elm$core$Maybe$withDefault,
+						_List_Nil,
+						A2($elm$core$Dict$get, _List_Nil, moduleContext.an));
+					return {
+						bj: moduleContext.er ? (moduleContext.dC ? $elm$core$Dict$empty : A2(
+							$elm$core$Dict$singleton,
+							moduleNameAsString,
+							{
+								d9: A2(
+									$elm$core$Dict$filter,
+									F2(
+										function (typeName, _v0) {
+											return !A2($elm$core$Set$member, typeName, moduleContext.c2);
+										}),
+									moduleContext.cm),
+								dQ: moduleKey
+							})) : A2(
+							$elm$core$Dict$singleton,
+							moduleNameAsString,
+							{d9: moduleContext.cm, dQ: moduleKey}),
+						ac: $elm$core$Set$empty,
+						B: A2(
+							$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$mapDictKeys,
+							function (constructorName) {
+								return _Utils_Tuple2(moduleNameAsString, constructorName);
+							},
+							moduleContext.B),
+						an: A2($elm$core$Dict$singleton, moduleName, localPhantomTypes),
+						cc: A3(
+							$elm$core$Dict$insert,
+							moduleNameAsString,
+							localUsed,
+							A2($elm$core$Dict$remove, '', moduleContext.be)),
+						V: A2(
+							$elm$core$Set$map,
+							function (untouched) {
+								var moduleName_ = untouched.a;
+								var constructorName = untouched.b;
+								return (moduleName_ === '') ? _Utils_Tuple2(moduleNameAsString, constructorName) : untouched;
+							},
+							moduleContext.V),
+						W: A2(
+							$elm$core$Set$map,
+							function (untouched) {
+								var moduleName_ = untouched.a;
+								var constructorName = untouched.b;
+								return (moduleName_ === '') ? _Utils_Tuple2(moduleNameAsString, constructorName) : untouched;
+							},
+							moduleContext.W),
+						X: A3(
+							$elm$core$List$foldl,
+							F2(
+								function (_v1, acc) {
+									var moduleName_ = _v1.a;
+									var constructors = _v1.b;
+									return A2(
+										$elm$core$Set$union,
+										A2(
+											$elm$core$Set$map,
+											$elm$core$Tuple$pair(moduleName_),
+											constructors),
+										acc);
+								}),
+							moduleContext.X,
+							$elm$core$Dict$toList(
+								A2($elm$core$Dict$remove, '', moduleContext.be)))
+					};
+				}))));
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$fromProjectToModule = $jfmengels$elm_review$Review$Rule$withModuleName(
+	$jfmengels$elm_review$Review$Rule$withModuleNameLookupTable(
+		$jfmengels$elm_review$Review$Rule$initContextCreator(
+			F3(
+				function (lookupTable, moduleName, projectContext) {
+					return {
+						bI: _List_Nil,
+						cm: $elm$core$Dict$empty,
+						fd: projectContext.bj,
+						c2: $elm$core$Set$empty,
+						dC: false,
+						B: $elm$core$Dict$empty,
+						bp: _List_Nil,
+						er: A2(
+							$elm$core$Set$member,
+							A2($elm$core$String$join, '.', moduleName),
+							projectContext.ac),
+						l: lookupTable,
+						an: projectContext.an,
+						be: $elm$core$Dict$empty,
+						V: $elm$core$Set$empty,
+						W: $elm$core$Set$empty,
+						X: $elm$core$Set$empty
+					};
+				}))));
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$updateToAdd = F3(
+	function (key, value, dict) {
+		return A3(
+			$elm$core$Dict$update,
+			key,
+			function (existingValues) {
+				if (!existingValues.$) {
+					var values = existingValues.a;
+					return $elm$core$Maybe$Just(
+						A2($elm$core$List$cons, value, values));
+				} else {
+					return $elm$core$Maybe$Just(
+						_List_fromArray(
+							[value]));
+				}
+			},
+			dict);
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$initialProjectContext = function (phantomTypes) {
 	return {
-		bd: $elm$core$Dict$empty,
-		Z: $elm$core$Set$empty,
-		z: $elm$core$Dict$empty,
-		af: A3(
+		bj: $elm$core$Dict$empty,
+		ac: $elm$core$Set$empty,
+		B: $elm$core$Dict$empty,
+		an: A3(
 			$elm$core$List$foldl,
 			F2(
 				function (_v0, dict) {
-					var moduleName = _v0.dn;
-					var typeName = _v0.gU;
-					var index = _v0.gb;
+					var moduleName = _v0.dR;
+					var typeName = _v0.ht;
+					var index = _v0.gL;
 					return A3(
-						$elm$core$Dict$update,
+						$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$updateToAdd,
 						A2($elm$core$String$split, '.', moduleName),
-						A2(
-							$elm$core$Basics$composeR,
-							$elm$core$Maybe$withDefault(_List_Nil),
-							A2(
-								$elm$core$Basics$composeR,
-								$elm$core$List$cons(
-									_Utils_Tuple2(typeName, index)),
-								$elm$core$Maybe$Just)),
+						_Utils_Tuple2(typeName, index),
 						dict);
 				}),
 			$elm$core$Dict$empty,
 			phantomTypes),
-		bZ: $elm$core$Dict$empty,
-		S: $elm$core$Set$empty,
-		T: $elm$core$Set$empty,
-		U: $elm$core$Set$empty
+		cc: $elm$core$Dict$empty,
+		V: $elm$core$Set$empty,
+		W: $elm$core$Set$empty,
+		X: $elm$core$Set$empty
 	};
 };
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectGenericsFromTypeAnnotation = function (node) {
-	var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-	switch (_v0.$) {
-		case 6:
-			var a = _v0.a;
-			var b = _v0.b;
-			return _Utils_ap(
-				$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectGenericsFromTypeAnnotation(a),
-				$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectGenericsFromTypeAnnotation(b));
-		case 1:
-			var params = _v0.b;
-			return A2($elm$core$List$concatMap, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectGenericsFromTypeAnnotation, params);
-		case 4:
-			var list = _v0.a;
-			return A2(
-				$elm$core$List$concatMap,
-				A2(
-					$elm$core$Basics$composeR,
-					$stil4m$elm_syntax$Elm$Syntax$Node$value,
-					A2($elm$core$Basics$composeR, $elm$core$Tuple$second, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectGenericsFromTypeAnnotation)),
-				list);
-		case 5:
-			var list = _v0.b;
-			return A2(
-				$elm$core$List$concatMap,
-				A2(
-					$elm$core$Basics$composeR,
-					$stil4m$elm_syntax$Elm$Syntax$Node$value,
-					A2($elm$core$Basics$composeR, $elm$core$Tuple$second, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectGenericsFromTypeAnnotation)),
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(list));
-		case 3:
-			var list = _v0.a;
-			return A2($elm$core$List$concatMap, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectGenericsFromTypeAnnotation, list);
-		case 0:
-			var _var = _v0.a;
-			return _List_fromArray(
-				[_var]);
-		default:
-			return _List_Nil;
-	}
-};
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$constructorsInPattern = F3(
+	function (lookupTable, nodes, acc) {
+		constructorsInPattern:
+		while (true) {
+			if (!nodes.b) {
+				return acc;
+			} else {
+				var node = nodes.a;
+				var restOfNodes = nodes.b;
+				var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+				switch (_v1.$) {
+					case 12:
+						var qualifiedNameRef = _v1.a;
+						var patterns = _v1.b;
+						var newAcc = function () {
+							var _v2 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, node);
+							if (!_v2.$) {
+								if (!_v2.a.b) {
+									return {
+										ad: acc.ad,
+										Z: A2($elm$core$Set$insert, qualifiedNameRef.b5, acc.Z)
+									};
+								} else {
+									var realModuleName = _v2.a;
+									return {
+										ad: A2(
+											$elm$core$Set$insert,
+											_Utils_Tuple2(
+												A2($elm$core$String$join, '.', realModuleName),
+												qualifiedNameRef.b5),
+											acc.ad),
+										Z: acc.Z
+									};
+								}
+							} else {
+								return acc;
+							}
+						}();
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = _Utils_ap(patterns, restOfNodes),
+							$temp$acc = newAcc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue constructorsInPattern;
+					case 7:
+						var patterns = _v1.a;
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = _Utils_ap(patterns, restOfNodes),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue constructorsInPattern;
+					case 9:
+						var left = _v1.a;
+						var right = _v1.b;
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = A2(
+							$elm$core$List$cons,
+							left,
+							A2($elm$core$List$cons, right, restOfNodes)),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue constructorsInPattern;
+					case 10:
+						var patterns = _v1.a;
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = _Utils_ap(patterns, restOfNodes),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue constructorsInPattern;
+					case 13:
+						var pattern = _v1.a;
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = A2($elm$core$List$cons, pattern, restOfNodes),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue constructorsInPattern;
+					case 14:
+						var pattern = _v1.a;
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = A2($elm$core$List$cons, pattern, restOfNodes),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue constructorsInPattern;
+					default:
+						var $temp$lookupTable = lookupTable,
+							$temp$nodes = restOfNodes,
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue constructorsInPattern;
+				}
+			}
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findEndLocationOfPreviousElement = F3(
+	function (nodes, nodeRange, previousRangeEnd) {
+		findEndLocationOfPreviousElement:
+		while (true) {
+			if (nodes.b) {
+				var _v1 = nodes.a;
+				var _v2 = _v1.a;
+				var patternRange = _v2.a;
+				var _v3 = _v1.b;
+				var bodyRange = _v3.a;
+				var tail = nodes.b;
+				if (_Utils_eq(patternRange, nodeRange)) {
+					return previousRangeEnd;
+				} else {
+					var $temp$nodes = tail,
+						$temp$nodeRange = nodeRange,
+						$temp$previousRangeEnd = $elm$core$Maybe$Just(bodyRange.cp);
+					nodes = $temp$nodes;
+					nodeRange = $temp$nodeRange;
+					previousRangeEnd = $temp$previousRangeEnd;
+					continue findEndLocationOfPreviousElement;
+				}
+			} else {
+				return $elm$core$Maybe$Nothing;
+			}
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$caseBranchEnterVisitor = F3(
+	function (caseExpression, _v0, moduleContext) {
+		var casePattern = _v0.a;
+		var body = _v0.b;
+		var previousLocation = A3(
+			$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findEndLocationOfPreviousElement,
+			$stil4m$elm_syntax$Elm$Syntax$Node$value(caseExpression).go,
+			$stil4m$elm_syntax$Elm$Syntax$Node$range(casePattern),
+			$elm$core$Maybe$Nothing);
+		var constructors = A3(
+			$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$constructorsInPattern,
+			moduleContext.l,
+			_List_fromArray(
+				[casePattern]),
+			{ad: $elm$core$Set$empty, Z: $elm$core$Set$empty});
+		var constructorsToIgnore = A2(
+			$elm$core$Set$union,
+			A2(
+				$elm$core$Set$map,
+				function (_v1) {
+					var moduleName = _v1.a;
+					var constructorName = _v1.b;
+					return _Utils_Tuple2(
+						A2($elm$core$String$split, '.', moduleName),
+						constructorName);
+				},
+				constructors.ad),
+			A2(
+				$elm$core$Set$map,
+				function (constructorName) {
+					return _Utils_Tuple2(_List_Nil, constructorName);
+				},
+				constructors.Z));
+		var fixes = A3(
+			$elm$core$List$foldl,
+			F2(
+				function (constructorName, acc) {
+					var fix = $jfmengels$elm_review$Review$Fix$removeRange(
+						{
+							cp: $stil4m$elm_syntax$Elm$Syntax$Node$range(body).cp,
+							cN: A2(
+								$elm$core$Maybe$withDefault,
+								$stil4m$elm_syntax$Elm$Syntax$Node$range(casePattern).cN,
+								previousLocation)
+						});
+					return A3($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$updateToAdd, constructorName, fix, acc);
+				}),
+			moduleContext.B,
+			$elm$core$Set$toList(constructors.Z));
+		return _Utils_update(
+			moduleContext,
+			{
+				bI: A2($elm$core$List$cons, constructorsToIgnore, moduleContext.bI),
+				B: fixes,
+				X: A2($elm$core$Set$union, constructors.ad, moduleContext.X)
+			});
+	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$caseBranchExitVisitor = F3(
+	function (_v0, _v1, moduleContext) {
+		return _Utils_update(
+			moduleContext,
+			{
+				bI: A2($elm$core$List$drop, 1, moduleContext.bI)
+			});
+	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectGenericsFromTypeAnnotation = F2(
+	function (nodes, acc) {
+		collectGenericsFromTypeAnnotation:
+		while (true) {
+			if (!nodes.b) {
+				return acc;
+			} else {
+				var _v1 = nodes.a;
+				var node = _v1.b;
+				var restOfNodes = nodes.b;
+				switch (node.$) {
+					case 6:
+						var a = node.a;
+						var b = node.b;
+						var $temp$nodes = A2(
+							$elm$core$List$cons,
+							a,
+							A2($elm$core$List$cons, b, restOfNodes)),
+							$temp$acc = acc;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectGenericsFromTypeAnnotation;
+					case 1:
+						var params = node.b;
+						var $temp$nodes = _Utils_ap(params, restOfNodes),
+							$temp$acc = acc;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectGenericsFromTypeAnnotation;
+					case 4:
+						var fields = node.a;
+						var subNodes = A2(
+							$elm$core$List$map,
+							function (_v3) {
+								var _v4 = _v3.b;
+								var value = _v4.b;
+								return value;
+							},
+							fields);
+						var $temp$nodes = _Utils_ap(subNodes, restOfNodes),
+							$temp$acc = acc;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectGenericsFromTypeAnnotation;
+					case 5:
+						var _v5 = node.a;
+						var _var = _v5.b;
+						var _v6 = node.b;
+						var fields = _v6.b;
+						var subNodes = A2(
+							$elm$core$List$map,
+							function (_v7) {
+								var _v8 = _v7.b;
+								var value = _v8.b;
+								return value;
+							},
+							fields);
+						var $temp$nodes = _Utils_ap(subNodes, restOfNodes),
+							$temp$acc = A2($elm$core$Set$insert, _var, acc);
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectGenericsFromTypeAnnotation;
+					case 3:
+						var list = node.a;
+						var $temp$nodes = _Utils_ap(list, restOfNodes),
+							$temp$acc = acc;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectGenericsFromTypeAnnotation;
+					case 0:
+						var _var = node.a;
+						var $temp$nodes = restOfNodes,
+							$temp$acc = A2($elm$core$Set$insert, _var, acc);
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectGenericsFromTypeAnnotation;
+					default:
+						var $temp$nodes = restOfNodes,
+							$temp$acc = acc;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectGenericsFromTypeAnnotation;
+				}
+			}
+		}
+	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$register = F2(
 	function (node, context) {
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 		if (_v0.$ === 2) {
-			var name = _v0.a.bT;
-			var generics = _v0.a.eP;
-			var constructors = _v0.a.fV;
-			var nonPhantomVariables = $elm$core$Set$fromList(
-				A2(
-					$elm$core$List$concatMap,
-					$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectGenericsFromTypeAnnotation,
-					A2(
-						$elm$core$List$concatMap,
-						A2(
-							$elm$core$Basics$composeR,
-							$stil4m$elm_syntax$Elm$Syntax$Node$value,
-							function ($) {
-								return $.el;
-							}),
-						constructors)));
-			var phantomVariables = A2(
-				$elm$core$List$map,
+			var name = _v0.a.b5;
+			var generics = _v0.a.fl;
+			var constructors = _v0.a.gt;
+			var _arguments = A2(
+				$elm$core$List$concatMap,
 				function (_v3) {
-					var indexOfPhantomVariable = _v3.a;
-					return _Utils_Tuple2(
-						$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
-						indexOfPhantomVariable);
+					var value = _v3.b;
+					return value.eT;
 				},
-				A2(
-					$elm$core$List$filter,
-					function (_v2) {
-						var genericName = _v2.b;
-						return !A2($elm$core$Set$member, genericName, nonPhantomVariables);
-					},
-					A2(
-						$elm$core$List$indexedMap,
-						$elm$core$Tuple$pair,
-						A2($elm$core$List$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, generics))));
+				constructors);
+			var nonPhantomVariables = A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectGenericsFromTypeAnnotation, _arguments, $elm$core$Set$empty);
 			var newPhantomVariables = A3(
 				$elm$core$Dict$update,
 				_List_Nil,
 				function (maybeSet) {
-					if (!maybeSet.$) {
-						var old = maybeSet.a;
-						return $elm$core$Maybe$Just(
-							_Utils_ap(phantomVariables, old));
-					} else {
-						return $elm$core$Maybe$Just(phantomVariables);
-					}
+					var previousPhantomVariables = function () {
+						if (!maybeSet.$) {
+							var old = maybeSet.a;
+							return old;
+						} else {
+							return _List_Nil;
+						}
+					}();
+					return $elm$core$Maybe$Just(
+						A4(
+							$jfmengels$elm_review_unused$List$Extra$indexedFilterMap,
+							F2(
+								function (indexOfPhantomVariable, _v1) {
+									var genericName = _v1.b;
+									return A2($elm$core$Set$member, genericName, nonPhantomVariables) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+										_Utils_Tuple2(
+											$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
+											indexOfPhantomVariable));
+								}),
+							0,
+							generics,
+							previousPhantomVariables));
 				},
-				context.af);
+				context.an);
 			return _Utils_update(
 				context,
-				{af: newPhantomVariables});
+				{an: newPhantomVariables});
 		} else {
 			return context;
 		}
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$declarationListVisitor = F2(
 	function (nodes, context) {
-		return _Utils_Tuple2(
-			_List_Nil,
-			A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$register, context, nodes));
+		return A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$register, context, nodes);
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findRangeToRemove = F3(
 	function (previousConstructor, constructor, nextConstructor) {
@@ -19384,62 +19977,97 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findRangeToRemo
 			var prev = previousConstructor.a;
 			return $elm$core$Maybe$Just(
 				{
-					b6: $stil4m$elm_syntax$Elm$Syntax$Node$range(constructor).b6,
-					cm: $stil4m$elm_syntax$Elm$Syntax$Node$range(prev).b6
+					cp: $stil4m$elm_syntax$Elm$Syntax$Node$range(constructor).cp,
+					cN: $stil4m$elm_syntax$Elm$Syntax$Node$range(prev).cp
 				});
 		} else {
 			if (!nextConstructor.$) {
 				var next = nextConstructor.a;
 				return $elm$core$Maybe$Just(
 					{
-						b6: $stil4m$elm_syntax$Elm$Syntax$Node$range(next).cm,
-						cm: $stil4m$elm_syntax$Elm$Syntax$Node$range(
-							$stil4m$elm_syntax$Elm$Syntax$Node$value(constructor).bT).cm
+						cp: $stil4m$elm_syntax$Elm$Syntax$Node$range(next).cN,
+						cN: $stil4m$elm_syntax$Elm$Syntax$Node$range(
+							$stil4m$elm_syntax$Elm$Syntax$Node$value(constructor).b5).cN
 					});
 			} else {
 				return $elm$core$Maybe$Nothing;
 			}
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isPhantomCustomType = F2(
-	function (name, constructors) {
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$constructorsForCustomType = function (constructors) {
+	var constructorsAndNext = A3(
+		$elm$core$List$map2,
+		$elm$core$Tuple$pair,
+		_Utils_ap(
+			A2(
+				$elm$core$List$map,
+				$elm$core$Maybe$Just,
+				A2($elm$core$List$drop, 1, constructors)),
+			_List_fromArray(
+				[$elm$core$Maybe$Nothing])),
+		constructors);
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (_v0, _v1) {
+				var next = _v0.a;
+				var constructor = _v0.b;
+				var prev = _v1.a;
+				var dict = _v1.b;
+				var nameNode = $stil4m$elm_syntax$Elm$Syntax$Node$value(constructor).b5;
+				var constructorName = $stil4m$elm_syntax$Elm$Syntax$Node$value(nameNode);
+				var constructorInformation = {
+					b5: constructorName,
+					eE: A3($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findRangeToRemove, prev, constructor, next),
+					eF: $stil4m$elm_syntax$Elm$Syntax$Node$range(nameNode)
+				};
+				return _Utils_Tuple2(
+					$elm$core$Maybe$Just(constructor),
+					A3($elm$core$Dict$insert, constructorName, constructorInformation, dict));
+			}),
+		_Utils_Tuple2($elm$core$Maybe$Nothing, $elm$core$Dict$empty),
+		constructorsAndNext).b;
+};
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isNeverOrItself = F3(
+	function (lookupTable, typeName, node) {
+		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+		_v0$2:
+		while (true) {
+			if ((_v0.$ === 1) && (!_v0.b.b)) {
+				if (_v0.a.b.b === 'Never') {
+					var _v1 = _v0.a;
+					var neverRange = _v1.a;
+					var _v2 = _v1.b;
+					return _Utils_eq(
+						A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, lookupTable, neverRange),
+						$elm$core$Maybe$Just(
+							_List_fromArray(
+								['Basics'])));
+				} else {
+					if (!_v0.a.b.a.b) {
+						var _v3 = _v0.a;
+						var _v4 = _v3.b;
+						var argName = _v4.b;
+						return _Utils_eq(typeName, argName);
+					} else {
+						break _v0$2;
+					}
+				}
+			} else {
+				break _v0$2;
+			}
+		}
+		return false;
+	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isPhantomCustomType = F3(
+	function (lookupTable, typeName, constructors) {
 		if (constructors.b && (!constructors.b.b)) {
 			var _v1 = constructors.a;
 			var constructor = _v1.b;
-			if (_Utils_eq(
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(constructor.bT))) {
-				var _v2 = constructor.el;
-				_v2$2:
-				while (true) {
-					if (_v2.b && (_v2.a.b.$ === 1)) {
-						if (!_v2.a.b.a.b.a.b) {
-							if (((_v2.a.b.a.b.b === 'Never') && (!_v2.a.b.b.b)) && (!_v2.b.b)) {
-								var _v3 = _v2.a;
-								var _v4 = _v3.b;
-								var _v5 = _v4.a;
-								var _v6 = _v5.b;
-								return true;
-							} else {
-								break _v2$2;
-							}
-						} else {
-							if (((((_v2.a.b.a.b.a.a === 'Basics') && (!_v2.a.b.a.b.a.b.b)) && (_v2.a.b.a.b.b === 'Never')) && (!_v2.a.b.b.b)) && (!_v2.b.b)) {
-								var _v7 = _v2.a;
-								var _v8 = _v7.b;
-								var _v9 = _v8.a;
-								var _v10 = _v9.b;
-								var _v11 = _v10.a;
-								return true;
-							} else {
-								break _v2$2;
-							}
-						}
-					} else {
-						break _v2$2;
-					}
-				}
-				return false;
+			var _v2 = constructor.eT;
+			if (_v2.b && (!_v2.b.b)) {
+				var arg = _v2.a;
+				return A3($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isNeverOrItself, lookupTable, typeName, arg);
 			} else {
 				return false;
 			}
@@ -19472,266 +20100,272 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$listAtIndex = F
 			}
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectTypesUsedAsPhantomVariables = F3(
-	function (moduleContext, phantomVariables, node) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-		switch (_v0.$) {
-			case 6:
-				var a = _v0.a;
-				var b = _v0.b;
-				return _Utils_ap(
-					A3($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectTypesUsedAsPhantomVariables, moduleContext, phantomVariables, a),
-					A3($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectTypesUsedAsPhantomVariables, moduleContext, phantomVariables, b));
-			case 1:
-				var _v1 = _v0.a;
-				var typeRange = _v1.a;
-				var _v2 = _v1.b;
-				var name = _v2.b;
-				var params = _v0.b;
-				var moduleNameOfPhantomContainer = A2(
-					$elm$core$Maybe$withDefault,
-					_List_Nil,
-					A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, moduleContext.l, typeRange));
-				var typesUsedInThePhantomVariablePosition = A2(
-					$elm$core$List$filterMap,
-					function (_v4) {
-						var index = _v4.b;
-						var _v5 = A2(
-							$elm$core$Maybe$map,
-							$stil4m$elm_syntax$Elm$Syntax$Node$value,
-							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$listAtIndex, index, params));
-						if ((!_v5.$) && (_v5.a.$ === 1)) {
-							var _v6 = _v5.a;
-							var _v7 = _v6.a;
-							var subTypeRange = _v7.a;
-							var _v8 = _v7.b;
-							var typeName = _v8.b;
-							return A2(
-								$elm$core$Maybe$map,
-								function (moduleNameOfPhantomVariable) {
-									return _Utils_Tuple2(moduleNameOfPhantomVariable, typeName);
-								},
-								A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, moduleContext.l, subTypeRange));
-						} else {
-							return $elm$core$Maybe$Nothing;
-						}
-					},
-					A2(
-						$elm$core$List$filter,
-						function (_v3) {
-							var type_ = _v3.a;
-							return _Utils_eq(type_, name);
-						},
-						A2(
-							$elm$core$Maybe$withDefault,
-							_List_Nil,
-							A2($elm$core$Dict$get, moduleNameOfPhantomContainer, phantomVariables))));
-				return $elm$core$List$concat(
-					_List_fromArray(
-						[
-							typesUsedInThePhantomVariablePosition,
-							A2(
-							$elm$core$List$concatMap,
-							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectTypesUsedAsPhantomVariables, moduleContext, phantomVariables),
-							params)
-						]));
-			case 4:
-				var list = _v0.a;
-				return A2(
-					$elm$core$List$concatMap,
-					A2(
-						$elm$core$Basics$composeR,
-						$stil4m$elm_syntax$Elm$Syntax$Node$value,
-						A2(
-							$elm$core$Basics$composeR,
-							$elm$core$Tuple$second,
-							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectTypesUsedAsPhantomVariables, moduleContext, phantomVariables))),
-					list);
-			case 5:
-				var list = _v0.b;
-				return A2(
-					$elm$core$List$concatMap,
-					A2(
-						$elm$core$Basics$composeR,
-						$stil4m$elm_syntax$Elm$Syntax$Node$value,
-						A2(
-							$elm$core$Basics$composeR,
-							$elm$core$Tuple$second,
-							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectTypesUsedAsPhantomVariables, moduleContext, phantomVariables))),
-					$stil4m$elm_syntax$Elm$Syntax$Node$value(list));
-			case 3:
-				var list = _v0.a;
-				return A2(
-					$elm$core$List$concatMap,
-					A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectTypesUsedAsPhantomVariables, moduleContext, phantomVariables),
-					list);
-			case 0:
-				return _List_Nil;
-			default:
-				return _List_Nil;
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$insertIntoUsedFunctionsOrValues = F2(
-	function (_v0, dict) {
-		var moduleName = _v0.a;
-		var constructorName = _v0.b;
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$updateToInsert = F3(
+	function (key, value, dict) {
 		return A3(
 			$elm$core$Dict$update,
-			A2($elm$core$String$join, '.', moduleName),
-			function (maybeSet) {
-				if (!maybeSet.$) {
-					var set = maybeSet.a;
+			key,
+			function (existingValues) {
+				if (!existingValues.$) {
+					var values = existingValues.a;
 					return $elm$core$Maybe$Just(
-						A2($elm$core$Set$insert, constructorName, set));
+						A2($elm$core$Set$insert, value, values));
 				} else {
 					return $elm$core$Maybe$Just(
-						$elm$core$Set$singleton(constructorName));
+						$elm$core$Set$singleton(value));
 				}
 			},
 			dict);
 	});
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectTypesUsedAsPhantomVariables = F4(
+	function (moduleContext, phantomVariables, nodes, used) {
+		collectTypesUsedAsPhantomVariables:
+		while (true) {
+			if (!nodes.b) {
+				return used;
+			} else {
+				var node = nodes.a;
+				var restOfNodes = nodes.b;
+				var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+				switch (_v1.$) {
+					case 6:
+						var a = _v1.a;
+						var b = _v1.b;
+						var $temp$moduleContext = moduleContext,
+							$temp$phantomVariables = phantomVariables,
+							$temp$nodes = A2(
+							$elm$core$List$cons,
+							a,
+							A2($elm$core$List$cons, b, restOfNodes)),
+							$temp$used = used;
+						moduleContext = $temp$moduleContext;
+						phantomVariables = $temp$phantomVariables;
+						nodes = $temp$nodes;
+						used = $temp$used;
+						continue collectTypesUsedAsPhantomVariables;
+					case 1:
+						var _v2 = _v1.a;
+						var typeRange = _v2.a;
+						var _v3 = _v2.b;
+						var name = _v3.b;
+						var params = _v1.b;
+						var _v4 = A2(
+							$elm$core$Maybe$andThen,
+							function (moduleNameOfPhantomContainer) {
+								return A2($elm$core$Dict$get, moduleNameOfPhantomContainer, phantomVariables);
+							},
+							A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, moduleContext.l, typeRange));
+						if (!_v4.$) {
+							var things = _v4.a;
+							var newUsed = A3(
+								$elm$core$List$foldl,
+								F2(
+									function (_v5, acc) {
+										var type_ = _v5.a;
+										var index = _v5.b;
+										if (!_Utils_eq(type_, name)) {
+											return acc;
+										} else {
+											var _v6 = A2(
+												$elm$core$Maybe$map,
+												$stil4m$elm_syntax$Elm$Syntax$Node$value,
+												A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$listAtIndex, index, params));
+											if ((!_v6.$) && (_v6.a.$ === 1)) {
+												var _v7 = _v6.a;
+												var _v8 = _v7.a;
+												var subTypeRange = _v8.a;
+												var _v9 = _v8.b;
+												var typeName = _v9.b;
+												var _v10 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, moduleContext.l, subTypeRange);
+												if (!_v10.$) {
+													var moduleNameOfPhantomVariable = _v10.a;
+													return A3(
+														$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$updateToInsert,
+														A2($elm$core$String$join, '.', moduleNameOfPhantomVariable),
+														typeName,
+														acc);
+												} else {
+													return acc;
+												}
+											} else {
+												return acc;
+											}
+										}
+									}),
+								used,
+								things);
+							var $temp$moduleContext = moduleContext,
+								$temp$phantomVariables = phantomVariables,
+								$temp$nodes = _Utils_ap(params, restOfNodes),
+								$temp$used = newUsed;
+							moduleContext = $temp$moduleContext;
+							phantomVariables = $temp$phantomVariables;
+							nodes = $temp$nodes;
+							used = $temp$used;
+							continue collectTypesUsedAsPhantomVariables;
+						} else {
+							var $temp$moduleContext = moduleContext,
+								$temp$phantomVariables = phantomVariables,
+								$temp$nodes = _Utils_ap(params, restOfNodes),
+								$temp$used = used;
+							moduleContext = $temp$moduleContext;
+							phantomVariables = $temp$phantomVariables;
+							nodes = $temp$nodes;
+							used = $temp$used;
+							continue collectTypesUsedAsPhantomVariables;
+						}
+					case 4:
+						var fields = _v1.a;
+						var subNodes = A2(
+							$elm$core$List$map,
+							function (_v11) {
+								var _v12 = _v11.b;
+								var value = _v12.b;
+								return value;
+							},
+							fields);
+						var $temp$moduleContext = moduleContext,
+							$temp$phantomVariables = phantomVariables,
+							$temp$nodes = _Utils_ap(subNodes, restOfNodes),
+							$temp$used = used;
+						moduleContext = $temp$moduleContext;
+						phantomVariables = $temp$phantomVariables;
+						nodes = $temp$nodes;
+						used = $temp$used;
+						continue collectTypesUsedAsPhantomVariables;
+					case 5:
+						var _v13 = _v1.b;
+						var fields = _v13.b;
+						var subNodes = A2(
+							$elm$core$List$map,
+							function (_v14) {
+								var _v15 = _v14.b;
+								var value = _v15.b;
+								return value;
+							},
+							fields);
+						var $temp$moduleContext = moduleContext,
+							$temp$phantomVariables = phantomVariables,
+							$temp$nodes = _Utils_ap(subNodes, restOfNodes),
+							$temp$used = used;
+						moduleContext = $temp$moduleContext;
+						phantomVariables = $temp$phantomVariables;
+						nodes = $temp$nodes;
+						used = $temp$used;
+						continue collectTypesUsedAsPhantomVariables;
+					case 3:
+						var list = _v1.a;
+						var $temp$moduleContext = moduleContext,
+							$temp$phantomVariables = phantomVariables,
+							$temp$nodes = _Utils_ap(list, restOfNodes),
+							$temp$used = used;
+						moduleContext = $temp$moduleContext;
+						phantomVariables = $temp$phantomVariables;
+						nodes = $temp$nodes;
+						used = $temp$used;
+						continue collectTypesUsedAsPhantomVariables;
+					case 0:
+						var $temp$moduleContext = moduleContext,
+							$temp$phantomVariables = phantomVariables,
+							$temp$nodes = restOfNodes,
+							$temp$used = used;
+						moduleContext = $temp$moduleContext;
+						phantomVariables = $temp$phantomVariables;
+						nodes = $temp$nodes;
+						used = $temp$used;
+						continue collectTypesUsedAsPhantomVariables;
+					default:
+						var $temp$moduleContext = moduleContext,
+							$temp$phantomVariables = phantomVariables,
+							$temp$nodes = restOfNodes,
+							$temp$used = used;
+						moduleContext = $temp$moduleContext;
+						phantomVariables = $temp$phantomVariables;
+						nodes = $temp$nodes;
+						used = $temp$used;
+						continue collectTypesUsedAsPhantomVariables;
+				}
+			}
+		}
+	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$markPhantomTypesFromTypeAnnotationAsUsed = F2(
 	function (maybeTypeAnnotation, moduleContext) {
-		var used = function () {
-			if (!maybeTypeAnnotation.$) {
-				var typeAnnotation = maybeTypeAnnotation.a;
-				return A3($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectTypesUsedAsPhantomVariables, moduleContext, moduleContext.af, typeAnnotation);
-			} else {
-				return _List_Nil;
-			}
-		}();
-		var usedFunctionsOrValues = A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$insertIntoUsedFunctionsOrValues, moduleContext.a7, used);
-		return _Utils_update(
-			moduleContext,
-			{a7: usedFunctionsOrValues});
+		if (!maybeTypeAnnotation.$) {
+			var typeAnnotation = maybeTypeAnnotation.a;
+			var usedFunctionsOrValues = A4(
+				$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$collectTypesUsedAsPhantomVariables,
+				moduleContext,
+				moduleContext.an,
+				_List_fromArray(
+					[typeAnnotation]),
+				moduleContext.be);
+			return _Utils_update(
+				moduleContext,
+				{be: usedFunctionsOrValues});
+		} else {
+			return moduleContext;
+		}
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$declarationVisitor = F2(
 	function (node, context) {
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 		switch (_v0.$) {
 			case 2:
-				var name = _v0.a.bT;
-				var constructors = _v0.a.fV;
-				if (A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isPhantomCustomType, name, constructors)) {
-					return _Utils_Tuple2(_List_Nil, context);
-				} else {
-					var constructorsAndNext = A3(
-						$elm$core$List$map2,
-						$elm$core$Tuple$pair,
-						_Utils_ap(
-							A2(
-								$elm$core$List$map,
-								$elm$core$Maybe$Just,
-								A2($elm$core$List$drop, 1, constructors)),
-							_List_fromArray(
-								[$elm$core$Maybe$Nothing])),
-						constructors);
-					var constructorsForCustomType = A3(
-						$elm$core$List$foldl,
-						F2(
-							function (_v1, _v2) {
-								var next = _v1.a;
-								var constructor = _v1.b;
-								var prev = _v2.a;
-								var dict = _v2.b;
-								var nameNode = $stil4m$elm_syntax$Elm$Syntax$Node$value(constructor).bT;
-								var constructorName = $stil4m$elm_syntax$Elm$Syntax$Node$value(nameNode);
-								var constructorInformation = {
-									bT: constructorName,
-									d7: A3($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findRangeToRemove, prev, constructor, next),
-									d8: $stil4m$elm_syntax$Elm$Syntax$Node$range(nameNode)
-								};
-								return _Utils_Tuple2(
-									$elm$core$Maybe$Just(constructor),
-									A3($elm$core$Dict$insert, constructorName, constructorInformation, dict));
-							}),
-						_Utils_Tuple2($elm$core$Maybe$Nothing, $elm$core$Dict$empty),
-						constructorsAndNext).b;
-					return _Utils_Tuple2(
-						_List_Nil,
-						_Utils_update(
-							context,
-							{
-								b3: A3(
-									$elm$core$Dict$insert,
-									$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
-									constructorsForCustomType,
-									context.b3)
-							}));
-				}
+				var name = _v0.a.b5;
+				var constructors = _v0.a.gt;
+				return A3(
+					$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isPhantomCustomType,
+					context.l,
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
+					constructors) ? context : _Utils_update(
+					context,
+					{
+						cm: A3(
+							$elm$core$Dict$insert,
+							$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
+							$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$constructorsForCustomType(constructors),
+							context.cm)
+					});
 			case 0:
 				var _function = _v0.a;
-				return _Utils_Tuple2(
-					_List_Nil,
+				return A2(
+					$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$markPhantomTypesFromTypeAnnotationAsUsed,
 					A2(
-						$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$markPhantomTypesFromTypeAnnotationAsUsed,
-						A2(
-							$elm$core$Maybe$map,
-							A2(
-								$elm$core$Basics$composeR,
-								$stil4m$elm_syntax$Elm$Syntax$Node$value,
-								function ($) {
-									return $.fz;
-								}),
-							_function.gJ),
-						_Utils_update(
-							context,
-							{bh: _List_Nil})));
+						$elm$core$Maybe$map,
+						function (_v1) {
+							var value = _v1.b;
+							return value.f7;
+						},
+						_function.hi),
+					_Utils_update(
+						context,
+						{bp: _List_Nil}));
 			case 1:
-				var typeAnnotation = _v0.a.fz;
-				return _Utils_Tuple2(
-					_List_Nil,
-					A2(
-						$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$markPhantomTypesFromTypeAnnotationAsUsed,
-						$elm$core$Maybe$Just(typeAnnotation),
-						context));
+				var typeAnnotation = _v0.a.f7;
+				return A2(
+					$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$markPhantomTypesFromTypeAnnotationAsUsed,
+					$elm$core$Maybe$Just(typeAnnotation),
+					context);
 			default:
-				return _Utils_Tuple2(_List_Nil, context);
+				return context;
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$RangeDict$rangeAsString = function (range) {
-	return A2(
-		$elm$core$String$join,
-		'_',
-		A2(
-			$elm$core$List$map,
-			$elm$core$String$fromInt,
-			_List_fromArray(
-				[range.cm.bs, range.cm.bb, range.b6.bs, range.b6.bb])));
-};
-var $jfmengels$elm_review_unused$NoUnused$RangeDict$member = function (range) {
-	return $elm$core$Dict$member(
-		$jfmengels$elm_review_unused$NoUnused$RangeDict$rangeAsString(range));
-};
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$expressionExitVisitor = F2(
-	function (node, moduleContext) {
-		var newModuleContext = function () {
-			var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-			if (_v1.$ === 16) {
-				return _Utils_update(
-					moduleContext,
-					{
-						bg: A2($elm$core$List$drop, 1, moduleContext.bg)
-					});
-			} else {
-				return moduleContext;
-			}
-		}();
-		var _v0 = $elm$core$List$head(newModuleContext.bg);
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$addElementToUniqueList = F4(
+	function (lookupTable, node, name, acc) {
+		var _v0 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, node);
 		if (!_v0.$) {
-			var rangesWhereToIgnoreConstructors = _v0.a;
-			return A2(
-				$jfmengels$elm_review_unused$NoUnused$RangeDict$member,
-				$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
-				rangesWhereToIgnoreConstructors) ? _Utils_Tuple2(
-				_List_Nil,
-				_Utils_update(
-					newModuleContext,
-					{
-						bx: A2($elm$core$List$drop, 1, newModuleContext.bx)
-					})) : _Utils_Tuple2(_List_Nil, newModuleContext);
+			var realModuleName = _v0.a;
+			var moduleName = A2($elm$core$String$join, '.', realModuleName);
+			var key = _Utils_Tuple2(moduleName, name);
+			return (moduleName === '') ? (A2($elm$core$List$member, key, acc.Z) ? acc : {
+				ad: acc.ad,
+				Z: A2($elm$core$List$cons, key, acc.Z)
+			}) : {
+				ad: A2($elm$core$Set$insert, key, acc.ad),
+				Z: acc.Z
+			};
 		} else {
-			return _Utils_Tuple2(_List_Nil, newModuleContext);
+			return acc;
 		}
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isCapitalized = function (name) {
@@ -19744,450 +20378,392 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isCapitalized =
 		return false;
 	}
 };
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructors = F2(
-	function (lookupTable, node) {
-		findConstructors:
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructorsHelp = F3(
+	function (lookupTable, nodes, acc) {
+		findConstructorsHelp:
 		while (true) {
-			var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-			_v0$9:
-			while (true) {
-				switch (_v0.$) {
-					case 3:
-						var name = _v0.b;
-						if ($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isCapitalized(name)) {
-							var _v1 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, node);
-							if (!_v1.$) {
-								var realModuleName = _v1.a;
-								return $elm$core$Set$singleton(
-									_Utils_Tuple2(
-										A2($elm$core$String$join, '.', realModuleName),
-										name));
+			if (!nodes.b) {
+				return acc;
+			} else {
+				var node = nodes.a;
+				var restOfNodes = nodes.b;
+				var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+				_v1$9:
+				while (true) {
+					switch (_v1.$) {
+						case 3:
+							var name = _v1.b;
+							if ($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isCapitalized(name)) {
+								var $temp$lookupTable = lookupTable,
+									$temp$nodes = restOfNodes,
+									$temp$acc = A4($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$addElementToUniqueList, lookupTable, node, name, acc);
+								lookupTable = $temp$lookupTable;
+								nodes = $temp$nodes;
+								acc = $temp$acc;
+								continue findConstructorsHelp;
 							} else {
-								return $elm$core$Set$empty;
+								var $temp$lookupTable = lookupTable,
+									$temp$nodes = restOfNodes,
+									$temp$acc = acc;
+								lookupTable = $temp$lookupTable;
+								nodes = $temp$nodes;
+								acc = $temp$acc;
+								continue findConstructorsHelp;
 							}
-						} else {
-							return $elm$core$Set$empty;
-						}
-					case 1:
-						if (_v0.a.b && (_v0.a.a.b.$ === 3)) {
-							var _v2 = _v0.a;
-							var _v3 = _v2.a;
-							var _v4 = _v3.b;
-							var name = _v4.b;
-							var restOfArgs = _v2.b;
-							return $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isCapitalized(name) ? A3(
-								$elm$core$List$foldl,
-								A2(
-									$elm$core$Basics$composeR,
-									$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructors(lookupTable),
-									$elm$core$Set$union),
-								function () {
-									var _v5 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, node);
-									if (!_v5.$) {
-										var realModuleName = _v5.a;
-										return $elm$core$Set$singleton(
-											_Utils_Tuple2(
-												A2($elm$core$String$join, '.', realModuleName),
-												name));
-									} else {
-										return $elm$core$Set$empty;
-									}
-								}(),
-								restOfArgs) : $elm$core$Set$empty;
-						} else {
-							break _v0$9;
-						}
-					case 2:
-						var operator = _v0.a;
-						var left = _v0.c;
-						var right = _v0.d;
-						return A2(
-							$elm$core$List$member,
-							operator,
-							_List_fromArray(
-								['+', '-'])) ? A3(
-							$elm$core$List$foldl,
-							A2(
-								$elm$core$Basics$composeR,
-								$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructors(lookupTable),
-								$elm$core$Set$union),
-							$elm$core$Set$empty,
-							_List_fromArray(
-								[left, right])) : $elm$core$Set$empty;
-					case 19:
-						var nodes = _v0.a;
-						return A3(
-							$elm$core$List$foldl,
-							A2(
-								$elm$core$Basics$composeR,
-								$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructors(lookupTable),
-								$elm$core$Set$union),
-							$elm$core$Set$empty,
-							nodes);
-					case 13:
-						var nodes = _v0.a;
-						return A3(
-							$elm$core$List$foldl,
-							A2(
-								$elm$core$Basics$composeR,
-								$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructors(lookupTable),
-								$elm$core$Set$union),
-							$elm$core$Set$empty,
-							nodes);
-					case 14:
-						var expr = _v0.a;
-						var $temp$lookupTable = lookupTable,
-							$temp$node = expr;
-						lookupTable = $temp$lookupTable;
-						node = $temp$node;
-						continue findConstructors;
-					case 18:
-						var fields = _v0.a;
-						return A3(
-							$elm$core$List$foldl,
-							A2(
-								$elm$core$Basics$composeR,
-								$stil4m$elm_syntax$Elm$Syntax$Node$value,
-								A2(
-									$elm$core$Basics$composeR,
-									$elm$core$Tuple$second,
-									A2(
-										$elm$core$Basics$composeR,
-										$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructors(lookupTable),
-										$elm$core$Set$union))),
-							$elm$core$Set$empty,
-							fields);
-					case 22:
-						var fields = _v0.b;
-						return A3(
-							$elm$core$List$foldl,
-							A2(
-								$elm$core$Basics$composeR,
-								$stil4m$elm_syntax$Elm$Syntax$Node$value,
-								A2(
-									$elm$core$Basics$composeR,
-									$elm$core$Tuple$second,
-									A2(
-										$elm$core$Basics$composeR,
-										$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructors(lookupTable),
-										$elm$core$Set$union))),
-							$elm$core$Set$empty,
-							fields);
-					case 20:
-						var expr = _v0.a;
-						var $temp$lookupTable = lookupTable,
-							$temp$node = expr;
-						lookupTable = $temp$lookupTable;
-						node = $temp$node;
-						continue findConstructors;
-					default:
-						break _v0$9;
-				}
-			}
-			return $elm$core$Set$empty;
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$constructorsInPattern = F2(
-	function (lookupTable, node) {
-		constructorsInPattern:
-		while (true) {
-			var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-			switch (_v0.$) {
-				case 12:
-					var qualifiedNameRef = _v0.a;
-					var patterns = _v0.b;
-					var initialSet = function () {
-						var _v1 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, node);
-						if (!_v1.$) {
-							var realModuleName = _v1.a;
-							return $elm$core$Set$fromList(
+						case 1:
+							if (_v1.a.b && (_v1.a.a.b.$ === 3)) {
+								var _v2 = _v1.a;
+								var _v3 = _v2.a;
+								var _v4 = _v3.b;
+								var name = _v4.b;
+								var restOfArgs = _v2.b;
+								if ($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isCapitalized(name)) {
+									var $temp$lookupTable = lookupTable,
+										$temp$nodes = _Utils_ap(restOfArgs, restOfNodes),
+										$temp$acc = A4($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$addElementToUniqueList, lookupTable, node, name, acc);
+									lookupTable = $temp$lookupTable;
+									nodes = $temp$nodes;
+									acc = $temp$acc;
+									continue findConstructorsHelp;
+								} else {
+									var $temp$lookupTable = lookupTable,
+										$temp$nodes = restOfNodes,
+										$temp$acc = acc;
+									lookupTable = $temp$lookupTable;
+									nodes = $temp$nodes;
+									acc = $temp$acc;
+									continue findConstructorsHelp;
+								}
+							} else {
+								break _v1$9;
+							}
+						case 2:
+							var operator = _v1.a;
+							var left = _v1.c;
+							var right = _v1.d;
+							if (A2(
+								$elm$core$List$member,
+								operator,
 								_List_fromArray(
-									[
-										_Utils_Tuple2(realModuleName, qualifiedNameRef.bT)
-									]));
-						} else {
-							return $elm$core$Set$empty;
-						}
-					}();
-					return A3(
-						$elm$core$List$foldl,
-						F2(
-							function (pattern, acc) {
-								return A2(
-									$elm$core$Set$union,
-									A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$constructorsInPattern, lookupTable, pattern),
-									acc);
-							}),
-						initialSet,
-						patterns);
-				case 7:
-					var patterns = _v0.a;
-					return A3(
-						$elm$core$List$foldl,
-						F2(
-							function (pattern, acc) {
-								return A2(
-									$elm$core$Set$union,
-									A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$constructorsInPattern, lookupTable, pattern),
-									acc);
-							}),
-						$elm$core$Set$empty,
-						patterns);
-				case 9:
-					var left = _v0.a;
-					var right = _v0.b;
-					return A2(
-						$elm$core$Set$union,
-						A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$constructorsInPattern, lookupTable, left),
-						A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$constructorsInPattern, lookupTable, right));
-				case 10:
-					var patterns = _v0.a;
-					return A3(
-						$elm$core$List$foldl,
-						F2(
-							function (pattern, acc) {
-								return A2(
-									$elm$core$Set$union,
-									A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$constructorsInPattern, lookupTable, pattern),
-									acc);
-							}),
-						$elm$core$Set$empty,
-						patterns);
-				case 13:
-					var pattern = _v0.a;
-					var $temp$lookupTable = lookupTable,
-						$temp$node = pattern;
-					lookupTable = $temp$lookupTable;
-					node = $temp$node;
-					continue constructorsInPattern;
-				case 14:
-					var pattern = _v0.a;
-					var $temp$lookupTable = lookupTable,
-						$temp$node = pattern;
-					lookupTable = $temp$lookupTable;
-					node = $temp$node;
-					continue constructorsInPattern;
-				default:
-					return $elm$core$Set$empty;
+									['+', '-']))) {
+								var $temp$lookupTable = lookupTable,
+									$temp$nodes = A2(
+									$elm$core$List$cons,
+									left,
+									A2($elm$core$List$cons, right, restOfNodes)),
+									$temp$acc = acc;
+								lookupTable = $temp$lookupTable;
+								nodes = $temp$nodes;
+								acc = $temp$acc;
+								continue findConstructorsHelp;
+							} else {
+								var $temp$lookupTable = lookupTable,
+									$temp$nodes = restOfNodes,
+									$temp$acc = acc;
+								lookupTable = $temp$lookupTable;
+								nodes = $temp$nodes;
+								acc = $temp$acc;
+								continue findConstructorsHelp;
+							}
+						case 19:
+							var subNodes = _v1.a;
+							var $temp$lookupTable = lookupTable,
+								$temp$nodes = _Utils_ap(subNodes, restOfNodes),
+								$temp$acc = acc;
+							lookupTable = $temp$lookupTable;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue findConstructorsHelp;
+						case 13:
+							var subNodes = _v1.a;
+							var $temp$lookupTable = lookupTable,
+								$temp$nodes = _Utils_ap(subNodes, restOfNodes),
+								$temp$acc = acc;
+							lookupTable = $temp$lookupTable;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue findConstructorsHelp;
+						case 14:
+							var expr = _v1.a;
+							var $temp$lookupTable = lookupTable,
+								$temp$nodes = A2($elm$core$List$cons, expr, restOfNodes),
+								$temp$acc = acc;
+							lookupTable = $temp$lookupTable;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue findConstructorsHelp;
+						case 18:
+							var fields = _v1.a;
+							var expressions = A2(
+								$elm$core$List$map,
+								function (_v5) {
+									var _v6 = _v5.b;
+									var value = _v6.b;
+									return value;
+								},
+								fields);
+							var $temp$lookupTable = lookupTable,
+								$temp$nodes = _Utils_ap(expressions, restOfNodes),
+								$temp$acc = acc;
+							lookupTable = $temp$lookupTable;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue findConstructorsHelp;
+						case 22:
+							var fields = _v1.b;
+							var expressions = A2(
+								$elm$core$List$map,
+								function (_v7) {
+									var _v8 = _v7.b;
+									var value = _v8.b;
+									return value;
+								},
+								fields);
+							var $temp$lookupTable = lookupTable,
+								$temp$nodes = _Utils_ap(expressions, restOfNodes),
+								$temp$acc = acc;
+							lookupTable = $temp$lookupTable;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue findConstructorsHelp;
+						case 20:
+							var expr = _v1.a;
+							var $temp$lookupTable = lookupTable,
+								$temp$nodes = A2($elm$core$List$cons, expr, restOfNodes),
+								$temp$acc = acc;
+							lookupTable = $temp$lookupTable;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue findConstructorsHelp;
+						default:
+							break _v1$9;
+					}
+				}
+				var $temp$lookupTable = lookupTable,
+					$temp$nodes = restOfNodes,
+					$temp$acc = acc;
+				lookupTable = $temp$lookupTable;
+				nodes = $temp$nodes;
+				acc = $temp$acc;
+				continue findConstructorsHelp;
 			}
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$forOne = F3(
-	function (lookupTable, previousLocation, _v0) {
-		var pattern = _v0.a;
-		var body = _v0.b;
-		var constructors = A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$constructorsInPattern, lookupTable, pattern);
-		var fixes = A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v1, acc) {
-					var moduleName = _v1.a;
-					var constructorName = _v1.b;
-					return _Utils_eq(moduleName, _List_Nil) ? A3(
-						$elm$core$Dict$insert,
-						constructorName,
-						_List_fromArray(
-							[
-								$jfmengels$elm_review$Review$Fix$removeRange(
-								{
-									b6: $stil4m$elm_syntax$Elm$Syntax$Node$range(body).b6,
-									cm: A2(
-										$elm$core$Maybe$withDefault,
-										$stil4m$elm_syntax$Elm$Syntax$Node$range(pattern).cm,
-										previousLocation)
-								})
-							]),
-						acc) : acc;
-				}),
-			$elm$core$Dict$empty,
-			$elm$core$Set$toList(constructors));
-		return {
-			dP: fixes,
-			dR: _Utils_Tuple2(
-				$stil4m$elm_syntax$Elm$Syntax$Node$range(body),
-				constructors)
-		};
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructors = F3(
+	function (lookupTable, nodes, fromOtherModulesBase) {
+		return A3(
+			$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructorsHelp,
+			lookupTable,
+			nodes,
+			{ad: fromOtherModulesBase, Z: _List_Nil});
 	});
-var $jfmengels$elm_review_unused$NoUnused$RangeDict$fromList = function (values) {
-	return $elm$core$Dict$fromList(
-		A2(
-			$elm$core$List$map,
-			$elm$core$Tuple$mapFirst($jfmengels$elm_review_unused$NoUnused$RangeDict$rangeAsString),
-			values));
-};
-var $elm$core$List$partition = F2(function (f, xs) {
-  var truesHead = _List_Cons(undefined, _List_Nil);
-  var falsesHead = _List_Cons(undefined, _List_Nil);
-  var truesEnd = truesHead;
-  var falsesEnd = falsesHead;
-  for (; xs.b; xs = xs.b) {
-    var next = _List_Cons(xs.a, _List_Nil);
-    if (f(xs.a)) {
-      truesEnd.b = next;
-      truesEnd = next;
-    } else {
-      falsesEnd.b = next;
-      falsesEnd = next;
-    }
-  }
-  return _Utils_Tuple2(truesHead.b, falsesHead.b);
-});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$registerUsedFunctionOrValue = F4(
 	function (range, moduleName, name, moduleContext) {
-		return (!$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isCapitalized(name)) ? moduleContext : (A2($elm$core$List$member, range, moduleContext.bh) ? _Utils_update(
+		return (!$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isCapitalized(name)) ? moduleContext : (A2($elm$core$List$member, range, moduleContext.bp) ? _Utils_update(
 			moduleContext,
 			{
-				S: A2(
+				V: A2(
 					$elm$core$Set$insert,
 					_Utils_Tuple2(
 						A2($elm$core$String$join, '.', moduleName),
 						name),
-					moduleContext.S)
+					moduleContext.V)
 			}) : (A2(
 			$elm$core$List$any,
 			$elm$core$Set$member(
 				_Utils_Tuple2(moduleName, name)),
-			moduleContext.bx) ? _Utils_update(
+			moduleContext.bI) ? _Utils_update(
 			moduleContext,
 			{
-				T: A2(
+				W: A2(
 					$elm$core$Set$insert,
 					_Utils_Tuple2(
 						A2($elm$core$String$join, '.', moduleName),
 						name),
-					moduleContext.T)
+					moduleContext.W)
 			}) : _Utils_update(
 			moduleContext,
 			{
-				a7: A2(
-					$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$insertIntoUsedFunctionsOrValues,
-					_Utils_Tuple2(moduleName, name),
-					moduleContext.a7)
+				be: A3(
+					$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$updateToInsert,
+					A2($elm$core$String$join, '.', moduleName),
+					name,
+					moduleContext.be)
 			})));
 	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$staticRanges = function (node) {
-	staticRanges:
-	while (true) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-		_v0$10:
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$staticRanges = F2(
+	function (nodes, acc) {
+		staticRanges:
 		while (true) {
-			switch (_v0.$) {
-				case 3:
-					return _List_fromArray(
-						[
-							$stil4m$elm_syntax$Elm$Syntax$Node$range(node)
-						]);
-				case 1:
-					if (_v0.a.b) {
-						switch (_v0.a.a.b.$) {
-							case 3:
-								var _v1 = _v0.a;
-								var _v2 = _v1.a;
-								var _v3 = _v2.b;
-								var name = _v3.b;
-								var restOfArgs = _v1.b;
-								return $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isCapitalized(name) ? A2(
+			if (!nodes.b) {
+				return acc;
+			} else {
+				var node = nodes.a;
+				var restOfNodes = nodes.b;
+				var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+				_v1$10:
+				while (true) {
+					switch (_v1.$) {
+						case 3:
+							var $temp$nodes = restOfNodes,
+								$temp$acc = A2(
+								$elm$core$List$cons,
+								$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+								acc);
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue staticRanges;
+						case 1:
+							if (_v1.a.b) {
+								switch (_v1.a.a.b.$) {
+									case 3:
+										var _v2 = _v1.a;
+										var _v3 = _v2.a;
+										var _v4 = _v3.b;
+										var name = _v4.b;
+										var restOfArgs = _v2.b;
+										if ($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$isCapitalized(name)) {
+											var $temp$nodes = _Utils_ap(restOfArgs, restOfNodes),
+												$temp$acc = A2(
+												$elm$core$List$cons,
+												$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+												acc);
+											nodes = $temp$nodes;
+											acc = $temp$acc;
+											continue staticRanges;
+										} else {
+											var $temp$nodes = restOfNodes,
+												$temp$acc = acc;
+											nodes = $temp$nodes;
+											acc = $temp$acc;
+											continue staticRanges;
+										}
+									case 5:
+										var _v5 = _v1.a;
+										var _v6 = _v5.a;
+										var operator = _v6.b.a;
+										var restOfArgs = _v5.b;
+										if (A2(
+											$elm$core$List$member,
+											operator,
+											_List_fromArray(
+												['+', '-', '==', '/=']))) {
+											var $temp$nodes = _Utils_ap(restOfArgs, restOfNodes),
+												$temp$acc = acc;
+											nodes = $temp$nodes;
+											acc = $temp$acc;
+											continue staticRanges;
+										} else {
+											var $temp$nodes = restOfNodes,
+												$temp$acc = acc;
+											nodes = $temp$nodes;
+											acc = $temp$acc;
+											continue staticRanges;
+										}
+									default:
+										break _v1$10;
+								}
+							} else {
+								break _v1$10;
+							}
+						case 2:
+							var operator = _v1.a;
+							var left = _v1.c;
+							var right = _v1.d;
+							if (A2(
+								$elm$core$List$member,
+								operator,
+								_List_fromArray(
+									['+', '-', '==', '/=']))) {
+								var $temp$nodes = A2(
 									$elm$core$List$cons,
-									$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
-									A2($elm$core$List$concatMap, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$staticRanges, restOfArgs)) : _List_Nil;
-							case 5:
-								var _v4 = _v0.a;
-								var _v5 = _v4.a;
-								var operator = _v5.b.a;
-								var restOfArgs = _v4.b;
-								return A2(
-									$elm$core$List$member,
-									operator,
-									_List_fromArray(
-										['+', '-', '==', '/='])) ? A2($elm$core$List$concatMap, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$staticRanges, restOfArgs) : _List_Nil;
-							default:
-								break _v0$10;
-						}
-					} else {
-						break _v0$10;
+									left,
+									A2($elm$core$List$cons, right, restOfNodes)),
+									$temp$acc = acc;
+								nodes = $temp$nodes;
+								acc = $temp$acc;
+								continue staticRanges;
+							} else {
+								var $temp$nodes = restOfNodes,
+									$temp$acc = acc;
+								nodes = $temp$nodes;
+								acc = $temp$acc;
+								continue staticRanges;
+							}
+						case 19:
+							var subNodes = _v1.a;
+							var $temp$nodes = _Utils_ap(subNodes, restOfNodes),
+								$temp$acc = acc;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue staticRanges;
+						case 13:
+							var subNodes = _v1.a;
+							var $temp$nodes = _Utils_ap(subNodes, restOfNodes),
+								$temp$acc = acc;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue staticRanges;
+						case 14:
+							var expr = _v1.a;
+							var $temp$nodes = A2($elm$core$List$cons, expr, restOfNodes),
+								$temp$acc = acc;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue staticRanges;
+						case 18:
+							var fields = _v1.a;
+							var newNodes = A2(
+								$elm$core$List$map,
+								function (_v7) {
+									var _v8 = _v7.b;
+									var value = _v8.b;
+									return value;
+								},
+								fields);
+							var $temp$nodes = _Utils_ap(newNodes, restOfNodes),
+								$temp$acc = acc;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue staticRanges;
+						case 22:
+							var fields = _v1.b;
+							var newNodes = A2(
+								$elm$core$List$map,
+								function (_v9) {
+									var _v10 = _v9.b;
+									var value = _v10.b;
+									return value;
+								},
+								fields);
+							var $temp$nodes = _Utils_ap(newNodes, restOfNodes),
+								$temp$acc = acc;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue staticRanges;
+						case 20:
+							var expr = _v1.a;
+							var $temp$nodes = A2($elm$core$List$cons, expr, restOfNodes),
+								$temp$acc = acc;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue staticRanges;
+						default:
+							break _v1$10;
 					}
-				case 2:
-					var operator = _v0.a;
-					var left = _v0.c;
-					var right = _v0.d;
-					return A2(
-						$elm$core$List$member,
-						operator,
-						_List_fromArray(
-							['+', '-', '==', '/='])) ? A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$staticRanges,
-						_List_fromArray(
-							[left, right])) : _List_Nil;
-				case 19:
-					var nodes = _v0.a;
-					return A2($elm$core$List$concatMap, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$staticRanges, nodes);
-				case 13:
-					var nodes = _v0.a;
-					return A2($elm$core$List$concatMap, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$staticRanges, nodes);
-				case 14:
-					var expr = _v0.a;
-					var $temp$node = expr;
-					node = $temp$node;
-					continue staticRanges;
-				case 18:
-					var fields = _v0.a;
-					return A2(
-						$elm$core$List$concatMap,
-						A2(
-							$elm$core$Basics$composeR,
-							$stil4m$elm_syntax$Elm$Syntax$Node$value,
-							A2($elm$core$Basics$composeR, $elm$core$Tuple$second, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$staticRanges)),
-						fields);
-				case 22:
-					var fields = _v0.b;
-					return A2(
-						$elm$core$List$concatMap,
-						A2(
-							$elm$core$Basics$composeR,
-							$stil4m$elm_syntax$Elm$Syntax$Node$value,
-							A2($elm$core$Basics$composeR, $elm$core$Tuple$second, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$staticRanges)),
-						fields);
-				case 20:
-					var expr = _v0.a;
-					var $temp$node = expr;
-					node = $temp$node;
-					continue staticRanges;
-				default:
-					break _v0$10;
+				}
+				var $temp$nodes = restOfNodes,
+					$temp$acc = acc;
+				nodes = $temp$nodes;
+				acc = $temp$acc;
+				continue staticRanges;
 			}
 		}
-		return _List_Nil;
-	}
-};
-var $elm$core$Set$filter = F2(
-	function (isGood, _v0) {
-		var dict = _v0;
-		return A2(
-			$elm$core$Dict$filter,
-			F2(
-				function (key, _v1) {
-					return isGood(key);
-				}),
-			dict);
 	});
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$toSetOfModuleNameAsString = function (set) {
-	return A2(
-		$elm$core$Set$filter,
-		function (_v0) {
-			var moduleName = _v0.a;
-			return moduleName !== '';
-		},
-		A2(
-			$elm$core$Set$map,
-			$elm$core$Tuple$mapFirst(
-				$elm$core$String$join('.')),
-			set));
-};
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$expressionVisitorHelp = F2(
+var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$expressionVisitor = F2(
 	function (node, moduleContext) {
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-		_v0$5:
+		_v0$4:
 		while (true) {
 			switch (_v0.$) {
 				case 3:
@@ -20195,16 +20771,14 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$expressionVisit
 					var _v1 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, moduleContext.l, node);
 					if (!_v1.$) {
 						var moduleName = _v1.a;
-						return _Utils_Tuple2(
-							_List_Nil,
-							A4(
-								$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$registerUsedFunctionOrValue,
-								$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
-								moduleName,
-								name,
-								moduleContext));
+						return A4(
+							$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$registerUsedFunctionOrValue,
+							$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+							moduleName,
+							name,
+							moduleContext);
 					} else {
-						return _Utils_Tuple2(_List_Nil, moduleContext);
+						return moduleContext;
 					}
 				case 2:
 					var operator = _v0.a;
@@ -20212,394 +20786,335 @@ var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$expressionVisit
 					var right = _v0.d;
 					if ((operator === '==') || (operator === '/=')) {
 						var replacement = (operator === '==') ? 'False' : 'True';
-						var constructors = A2(
-							$elm$core$Set$union,
-							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructors, moduleContext.l, left),
-							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructors, moduleContext.l, right));
-						var _v2 = A2(
-							$elm$core$List$partition,
-							function (_v3) {
-								var moduleName = _v3.a;
-								return moduleName === '';
-							},
-							$elm$core$Set$toList(constructors));
-						var fromThisModule = _v2.a;
-						var fromOtherModules = _v2.b;
+						var _v2 = A3(
+							$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructors,
+							moduleContext.l,
+							_List_fromArray(
+								[left, right]),
+							moduleContext.X);
+						var fromThisModule = _v2.Z;
+						var fromOtherModules = _v2.ad;
 						var fixes = A3(
 							$elm$core$List$foldl,
-							$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$mergeDictsWithLists,
-							$elm$core$Dict$empty,
-							A2(
-								$elm$core$List$map,
-								function (_v4) {
-									var constructor = _v4.b;
-									return A2(
-										$elm$core$Dict$singleton,
+							F2(
+								function (_v3, dict) {
+									var constructor = _v3.b;
+									return A3(
+										$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$updateToAdd,
 										constructor,
-										_List_fromArray(
-											[
-												A2(
-												$jfmengels$elm_review$Review$Fix$replaceRangeBy,
-												$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
-												replacement)
-											]));
-								},
-								fromThisModule));
-						return _Utils_Tuple2(
-							_List_Nil,
-							_Utils_update(
-								moduleContext,
-								{
-									z: A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$mergeDictsWithLists, fixes, moduleContext.z),
-									bh: _Utils_ap(
-										$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$staticRanges(node),
-										moduleContext.bh),
-									U: A2(
-										$elm$core$Set$union,
-										$elm$core$Set$fromList(fromOtherModules),
-										moduleContext.U)
-								}));
+										A2(
+											$jfmengels$elm_review$Review$Fix$replaceRangeBy,
+											$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+											replacement),
+										dict);
+								}),
+							moduleContext.B,
+							fromThisModule);
+						return _Utils_update(
+							moduleContext,
+							{
+								B: fixes,
+								bp: A2(
+									$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$staticRanges,
+									_List_fromArray(
+										[node]),
+									moduleContext.bp),
+								X: fromOtherModules
+							});
 					} else {
-						return _Utils_Tuple2(_List_Nil, moduleContext);
+						return moduleContext;
 					}
 				case 1:
 					if (_v0.a.b && (_v0.a.a.b.$ === 5)) {
-						var _v5 = _v0.a;
-						var _v6 = _v5.a;
-						var operator = _v6.b.a;
-						var _arguments = _v5.b;
+						var _v4 = _v0.a;
+						var _v5 = _v4.a;
+						var operator = _v5.b.a;
+						var _arguments = _v4.b;
 						if ((operator === '==') || (operator === '/=')) {
 							var replacementBoolean = (operator === '==') ? 'False' : 'True';
 							var replacement = ($elm$core$List$length(_arguments) === 2) ? replacementBoolean : ('always ' + replacementBoolean);
-							var constructors = A3(
-								$elm$core$List$foldl,
-								A2(
-									$elm$core$Basics$composeR,
-									$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructors(moduleContext.l),
-									$elm$core$Set$union),
-								$elm$core$Set$empty,
-								_arguments);
-							var _v7 = A2(
-								$elm$core$List$partition,
-								function (_v8) {
-									var moduleName = _v8.a;
-									return moduleName === '';
-								},
-								$elm$core$Set$toList(constructors));
-							var fromThisModule = _v7.a;
-							var fromOtherModules = _v7.b;
+							var _v6 = A3($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$findConstructors, moduleContext.l, _arguments, moduleContext.X);
+							var fromThisModule = _v6.Z;
+							var fromOtherModules = _v6.ad;
 							var fixes = A3(
 								$elm$core$List$foldl,
-								$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$mergeDictsWithLists,
-								$elm$core$Dict$empty,
-								A2(
-									$elm$core$List$map,
-									function (_v9) {
-										var constructor = _v9.b;
-										return A2(
-											$elm$core$Dict$singleton,
+								F2(
+									function (_v7, dict) {
+										var constructor = _v7.b;
+										return A3(
+											$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$updateToAdd,
 											constructor,
-											_List_fromArray(
-												[
-													A2(
-													$jfmengels$elm_review$Review$Fix$replaceRangeBy,
-													$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
-													replacement)
-												]));
-									},
-									fromThisModule));
-							return _Utils_Tuple2(
-								_List_Nil,
-								_Utils_update(
-									moduleContext,
-									{
-										z: A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$mergeDictsWithLists, fixes, moduleContext.z),
-										bh: _Utils_ap(
-											$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$staticRanges(node),
-											moduleContext.bh),
-										U: A2(
-											$elm$core$Set$union,
-											$elm$core$Set$fromList(fromOtherModules),
-											moduleContext.U)
-									}));
+											A2(
+												$jfmengels$elm_review$Review$Fix$replaceRangeBy,
+												$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+												replacement),
+											dict);
+									}),
+								moduleContext.B,
+								fromThisModule);
+							return _Utils_update(
+								moduleContext,
+								{
+									B: fixes,
+									bp: A2(
+										$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$staticRanges,
+										_List_fromArray(
+											[node]),
+										moduleContext.bp),
+									X: fromOtherModules
+								});
 						} else {
-							return _Utils_Tuple2(_List_Nil, moduleContext);
+							return moduleContext;
 						}
 					} else {
-						break _v0$5;
+						break _v0$4;
 					}
 				case 15:
-					var declarations = _v0.a.ew;
-					return _Utils_Tuple2(
-						_List_Nil,
-						A3(
-							$elm$core$List$foldl,
-							$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$markPhantomTypesFromTypeAnnotationAsUsed,
-							moduleContext,
-							A2(
-								$elm$core$List$filterMap,
-								function (declaration) {
-									var _v10 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
-									if (!_v10.$) {
-										var _function = _v10.a;
-										return $elm$core$Maybe$Just(
-											A2(
-												$elm$core$Maybe$map,
-												A2(
-													$elm$core$Basics$composeR,
-													$stil4m$elm_syntax$Elm$Syntax$Node$value,
-													function ($) {
-														return $.fz;
-													}),
-												_function.gJ));
-									} else {
-										return $elm$core$Maybe$Nothing;
-									}
-								},
-								declarations)));
-				case 16:
-					var cases = _v0.a.fQ;
-					var found = A3(
-						$elm$core$List$map2,
-						$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$forOne(moduleContext.l),
-						A2(
-							$elm$core$List$cons,
-							$elm$core$Maybe$Nothing,
-							A2(
-								$elm$core$List$map,
-								A2(
-									$elm$core$Basics$composeR,
-									$elm$core$Tuple$second,
-									A2(
-										$elm$core$Basics$composeR,
-										$stil4m$elm_syntax$Elm$Syntax$Node$range,
-										A2(
-											$elm$core$Basics$composeR,
-											function ($) {
-												return $.b6;
-											},
-											$elm$core$Maybe$Just))),
-								cases)),
-						cases);
-					var ignoredBlocks = $jfmengels$elm_review_unused$NoUnused$RangeDict$fromList(
-						A2(
-							$elm$core$List$map,
-							function ($) {
-								return $.dR;
-							},
-							found));
-					var wasUsedInOtherModules = A3(
+					var declarations = _v0.a.e2;
+					return A3(
 						$elm$core$List$foldl,
-						$elm$core$Set$union,
-						moduleContext.U,
-						A2(
-							$elm$core$List$map,
-							A2(
-								$elm$core$Basics$composeR,
-								function ($) {
-									return $.dR;
-								},
-								A2($elm$core$Basics$composeR, $elm$core$Tuple$second, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$toSetOfModuleNameAsString)),
-							found));
-					return _Utils_Tuple2(
-						_List_Nil,
-						_Utils_update(
-							moduleContext,
-							{
-								z: A3(
-									$elm$core$List$foldl,
-									$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$mergeDictsWithLists,
-									moduleContext.z,
-									A2(
-										$elm$core$List$map,
-										function ($) {
-											return $.dP;
-										},
-										found)),
-								bg: A2($elm$core$List$cons, ignoredBlocks, moduleContext.bg),
-								U: wasUsedInOtherModules
-							}));
+						F2(
+							function (declaration, ctx) {
+								var _v8 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
+								if (!_v8.$) {
+									var _function = _v8.a;
+									return A2(
+										$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$markPhantomTypesFromTypeAnnotationAsUsed,
+										A2(
+											$elm$core$Maybe$map,
+											function (_v9) {
+												var value = _v9.b;
+												return value.f7;
+											},
+											_function.hi),
+										ctx);
+								} else {
+									return ctx;
+								}
+							}),
+						moduleContext,
+						declarations);
 				default:
-					break _v0$5;
+					break _v0$4;
 			}
 		}
-		return _Utils_Tuple2(_List_Nil, moduleContext);
-	});
-var $jfmengels$elm_review_unused$NoUnused$RangeDict$get = function (range) {
-	return $elm$core$Dict$get(
-		$jfmengels$elm_review_unused$NoUnused$RangeDict$rangeAsString(range));
-};
-var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$expressionVisitor = F2(
-	function (node, moduleContext) {
-		var newModuleContext = function () {
-			var _v0 = $elm$core$List$head(moduleContext.bg);
-			if (!_v0.$) {
-				var expressionsWhereToIgnoreCases = _v0.a;
-				var _v1 = A2(
-					$jfmengels$elm_review_unused$NoUnused$RangeDict$get,
-					$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
-					expressionsWhereToIgnoreCases);
-				if (!_v1.$) {
-					var constructorsToIgnore = _v1.a;
-					return _Utils_update(
-						moduleContext,
-						{
-							bx: A2($elm$core$List$cons, constructorsToIgnore, moduleContext.bx)
-						});
-				} else {
-					return moduleContext;
-				}
-			} else {
-				return moduleContext;
-			}
-		}();
-		return A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$expressionVisitorHelp, node, newModuleContext);
+		return moduleContext;
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$moduleDefinitionVisitor = F2(
 	function (moduleNode, context) {
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Module$exposingList(
 			$stil4m$elm_syntax$Elm$Syntax$Node$value(moduleNode));
 		if (!_v0.$) {
-			return _Utils_Tuple2(
-				_List_Nil,
-				_Utils_update(
-					context,
-					{c8: true}));
+			return _Utils_update(
+				context,
+				{dC: true});
 		} else {
 			var list = _v0.a;
-			var names = A2(
-				$elm$core$List$filterMap,
-				function (node) {
-					var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-					if (_v1.$ === 3) {
-						var name = _v1.a.bT;
-						return $elm$core$Maybe$Just(name);
-					} else {
-						return $elm$core$Maybe$Nothing;
-					}
-				},
+			var exposedCustomTypesWithConstructors = A3(
+				$elm$core$List$foldl,
+				F2(
+					function (node, acc) {
+						var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+						if (_v1.$ === 3) {
+							var name = _v1.a.b5;
+							return A2($elm$core$Set$insert, name, acc);
+						} else {
+							return acc;
+						}
+					}),
+				context.c2,
 				list);
-			return _Utils_Tuple2(
-				_List_Nil,
-				_Utils_update(
-					context,
-					{
-						cz: A2(
-							$elm$core$Set$union,
-							$elm$core$Set$fromList(names),
-							context.cz)
-					}));
+			return _Utils_update(
+				context,
+				{c2: exposedCustomTypesWithConstructors});
 		}
 	});
-var $jfmengels$elm_review$Review$Rule$withExpressionExitVisitor = F2(
+var $jfmengels$elm_review$Review$Rule$withCaseBranchEnterVisitor = F2(
 	function (visitor, _v0) {
 		var schema = _v0;
 		return _Utils_update(
 			schema,
 			{
-				O: A2($elm$core$List$cons, visitor, schema.O)
+				av: A2($elm$core$List$cons, visitor, schema.av)
+			});
+	});
+var $jfmengels$elm_review$Review$Rule$withCaseBranchExitVisitor = F2(
+	function (visitor, _v0) {
+		var schema = _v0;
+		return _Utils_update(
+			schema,
+			{
+				aw: A2($elm$core$List$cons, visitor, schema.aw)
 			});
 	});
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$moduleVisitor = function (schema) {
 	return A2(
-		$jfmengels$elm_review$Review$Rule$withExpressionExitVisitor,
-		$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$expressionExitVisitor,
+		$jfmengels$elm_review$Review$Rule$withCaseBranchExitVisitor,
+		F3(
+			function (caseBlock, casePattern, context) {
+				return _Utils_Tuple2(
+					_List_Nil,
+					A3($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$caseBranchExitVisitor, caseBlock, casePattern, context));
+			}),
 		A2(
-			$jfmengels$elm_review$Review$Rule$withExpressionEnterVisitor,
-			$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$expressionVisitor,
+			$jfmengels$elm_review$Review$Rule$withCaseBranchEnterVisitor,
+			F3(
+				function (caseBlock, casePattern, context) {
+					return _Utils_Tuple2(
+						_List_Nil,
+						A3($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$caseBranchEnterVisitor, caseBlock, casePattern, context));
+				}),
 			A2(
-				$jfmengels$elm_review$Review$Rule$withDeclarationEnterVisitor,
-				$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$declarationVisitor,
+				$jfmengels$elm_review$Review$Rule$withExpressionEnterVisitor,
+				F2(
+					function (node, context) {
+						return _Utils_Tuple2(
+							_List_Nil,
+							A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$expressionVisitor, node, context));
+					}),
 				A2(
-					$jfmengels$elm_review$Review$Rule$withDeclarationListVisitor,
-					$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$declarationListVisitor,
-					A2($jfmengels$elm_review$Review$Rule$withModuleDefinitionVisitor, $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$moduleDefinitionVisitor, schema)))));
+					$jfmengels$elm_review$Review$Rule$withDeclarationEnterVisitor,
+					F2(
+						function (node, context) {
+							return _Utils_Tuple2(
+								_List_Nil,
+								A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$declarationVisitor, node, context));
+						}),
+					A2(
+						$jfmengels$elm_review$Review$Rule$withDeclarationListVisitor,
+						F2(
+							function (node, context) {
+								return _Utils_Tuple2(
+									_List_Nil,
+									A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$declarationListVisitor, node, context));
+							}),
+						A2(
+							$jfmengels$elm_review$Review$Rule$withModuleDefinitionVisitor,
+							F2(
+								function (node, context) {
+									return _Utils_Tuple2(
+										_List_Nil,
+										A2($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$moduleDefinitionVisitor, node, context));
+								}),
+							schema))))));
+};
+var $jfmengels$elm_review$Review$Rule$providesFixesForProjectRule = function (_v0) {
+	var projectRuleSchema = _v0;
+	return _Utils_update(
+		projectRuleSchema,
+		{g9: true});
 };
 var $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$rule = function (phantomTypes) {
 	return $jfmengels$elm_review$Review$Rule$fromProjectRuleSchema(
 		A2(
 			$jfmengels$elm_review$Review$Rule$withFinalProjectEvaluation,
 			$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$finalProjectEvaluation,
-			A2(
-				$jfmengels$elm_review$Review$Rule$withElmJsonProjectVisitor,
-				$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$elmJsonVisitor,
-				A2(
-					$jfmengels$elm_review$Review$Rule$withModuleContextUsingContextCreator,
-					{
-						bG: $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$foldProjectContexts,
-						b9: $jfmengels$elm_review$Review$Rule$withMetadata(
-							$jfmengels$elm_review$Review$Rule$withModuleKey(
-								$jfmengels$elm_review$Review$Rule$initContextCreator($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$fromModuleToProject))),
-						eO: $jfmengels$elm_review$Review$Rule$withMetadata(
-							$jfmengels$elm_review$Review$Rule$withModuleNameLookupTable(
-								$jfmengels$elm_review$Review$Rule$initContextCreator($jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$fromProjectToModule)))
-					},
+			$jfmengels$elm_review$Review$Rule$withContextFromImportedModules(
+				$jfmengels$elm_review$Review$Rule$providesFixesForProjectRule(
 					A2(
-						$jfmengels$elm_review$Review$Rule$withModuleVisitor,
-						$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$moduleVisitor,
-						$jfmengels$elm_review$Review$Rule$withContextFromImportedModules(
+						$jfmengels$elm_review$Review$Rule$withModuleContextUsingContextCreator,
+						{bS: $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$foldProjectContexts, cu: $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$fromModuleToProject, fk: $jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$fromProjectToModule},
+						A2(
+							$jfmengels$elm_review$Review$Rule$withModuleVisitor,
+							$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$moduleVisitor,
 							A2(
-								$jfmengels$elm_review$Review$Rule$newProjectRuleSchema,
-								'NoUnused.CustomTypeConstructors',
-								$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$initialProjectContext(phantomTypes))))))));
+								$jfmengels$elm_review$Review$Rule$withElmJsonProjectVisitor,
+								$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$elmJsonVisitor,
+								A2(
+									$jfmengels$elm_review$Review$Rule$newProjectRuleSchema,
+									'NoUnused.CustomTypeConstructors',
+									$jfmengels$elm_review_unused$NoUnused$CustomTypeConstructors$initialProjectContext(phantomTypes)))))))));
+};
+var $jfmengels$elm_review$Review$Project$Dependency$elmJson = function (_v0) {
+	var dependency = _v0;
+	return dependency.dz;
+};
+var $jfmengels$elm_review_unused$NoUnused$Dependencies$getDependencyList = function (dependency) {
+	var _v0 = $jfmengels$elm_review$Review$Project$Dependency$elmJson(dependency);
+	if (!_v0.$) {
+		return _List_Nil;
+	} else {
+		var _package = _v0.a;
+		return A2(
+			$elm$core$List$map,
+			function (_v1) {
+				var depName = _v1.a;
+				return depName;
+			},
+			_package.e5);
+	}
 };
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$dependenciesVisitor = F2(
 	function (dependencies, projectContext) {
 		var moduleNameToDependency = $elm$core$Dict$fromList(
 			A2(
 				$elm$core$List$concatMap,
-				function (_v0) {
-					var packageName = _v0.a;
-					var dependency = _v0.b;
+				function (_v2) {
+					var packageName = _v2.a;
+					var dependency = _v2.b;
 					return A2(
 						$elm$core$List$map,
-						function (_v1) {
-							var name = _v1.bT;
+						function (_v3) {
+							var name = _v3.b5;
 							return _Utils_Tuple2(name, packageName);
 						},
 						$jfmengels$elm_review$Review$Project$Dependency$modules(dependency));
 				},
-				$elm$core$Dict$toList(dependencies)));
+				$elm$core$Dict$toList(
+					A2(
+						$elm$core$Dict$filter,
+						F2(
+							function (packageName, _v1) {
+								return A2($elm$core$Set$member, packageName, projectContext.bl) || A2($elm$core$Set$member, packageName, projectContext.bm);
+							}),
+						dependencies))));
 		return _Utils_Tuple2(
 			_List_Nil,
 			_Utils_update(
 				projectContext,
-				{aM: dependencies, aR: moduleNameToDependency}));
+				{
+					aR: A2(
+						$elm$core$Dict$map,
+						F2(
+							function (_v0, dep) {
+								return $jfmengels$elm_review_unused$NoUnused$Dependencies$getDependencyList(dep);
+							}),
+						dependencies),
+					aW: moduleNameToDependency
+				}));
 	});
+var $jfmengels$elm_review_unused$NoUnused$Dependencies$listDependencies = function (deps) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (_v0, acc) {
+				var name = _v0.a;
+				return A2(
+					$elm$core$Set$insert,
+					$elm$project_metadata_utils$Elm$Package$toString(name),
+					acc);
+			}),
+		$elm$core$Set$empty,
+		deps);
+};
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$elmJsonVisitor = F2(
 	function (maybeProject, projectContext) {
 		if (!maybeProject.$) {
-			var elmJsonKey = maybeProject.a.f_;
+			var elmJsonKey = maybeProject.a.gy;
 			var project = maybeProject.a.e;
 			var _v1 = function () {
 				if (project.$ === 1) {
-					var deps = project.a.ez;
-					var testDeps = project.a.fu;
+					var deps = project.a.e5;
+					var testDeps = project.a.f2;
 					return _Utils_Tuple2(
-						$elm$core$Set$fromList(
-							A2(
-								$elm$core$List$map,
-								A2($elm$core$Basics$composeR, $elm$core$Tuple$first, $elm$project_metadata_utils$Elm$Package$toString),
-								deps)),
-						$elm$core$Set$fromList(
-							A2(
-								$elm$core$List$map,
-								A2($elm$core$Basics$composeR, $elm$core$Tuple$first, $elm$project_metadata_utils$Elm$Package$toString),
-								testDeps)));
+						$jfmengels$elm_review_unused$NoUnused$Dependencies$listDependencies(deps),
+						$jfmengels$elm_review_unused$NoUnused$Dependencies$listDependencies(testDeps));
 				} else {
-					var depsDirect = project.a.eA;
-					var testDepsDirect = project.a.fv;
+					var depsDirect = project.a.e6;
+					var testDepsDirect = project.a.f3;
 					return _Utils_Tuple2(
-						$elm$core$Set$fromList(
-							A2(
-								$elm$core$List$map,
-								A2($elm$core$Basics$composeR, $elm$core$Tuple$first, $elm$project_metadata_utils$Elm$Package$toString),
-								depsDirect)),
-						$elm$core$Set$fromList(
-							A2(
-								$elm$core$List$map,
-								A2($elm$core$Basics$composeR, $elm$core$Tuple$first, $elm$project_metadata_utils$Elm$Package$toString),
-								testDepsDirect)));
+						$jfmengels$elm_review_unused$NoUnused$Dependencies$listDependencies(depsDirect),
+						$jfmengels$elm_review_unused$NoUnused$Dependencies$listDependencies(testDepsDirect));
 				}
 			}();
 			var directProjectDependencies = _v1.a;
@@ -20609,9 +21124,9 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$elmJsonVisitor = F2(
 				_Utils_update(
 					projectContext,
 					{
-						by: directProjectDependencies,
-						bz: directTestDependencies,
-						f_: $elm$core$Maybe$Just(elmJsonKey)
+						bl: directProjectDependencies,
+						bm: directTestDependencies,
+						gy: $elm$core$Maybe$Just(elmJsonKey)
 					}));
 		} else {
 			return _Utils_Tuple2(_List_Nil, projectContext);
@@ -20687,41 +21202,41 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$listIndirectDependencies 
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$addTestDependency = function (projectAndDependencyIdentifier) {
 	if (!projectAndDependencyIdentifier.$) {
 		var project = projectAndDependencyIdentifier.a;
-		var application = project.ba;
+		var application = project.bg;
 		var testDepsDirect = A2(
 			$elm$core$List$cons,
-			_Utils_Tuple2(project.bT, project.fC),
-			application.fv);
+			_Utils_Tuple2(project.b5, project.ga),
+			application.f3);
 		return $jfmengels$elm_review_unused$NoUnused$Dependencies$ApplicationProject(
 			_Utils_update(
 				project,
 				{
-					ba: _Utils_update(
+					bg: _Utils_update(
 						application,
 						{
-							fv: testDepsDirect,
-							fw: A2(
+							f3: testDepsDirect,
+							f4: A2(
 								$elm$core$List$filter,
 								function (dep) {
-									return !(A2($elm$core$List$member, dep, application.eA) || A2($elm$core$List$member, dep, application.eB));
+									return !(A2($elm$core$List$member, dep, application.e6) || A2($elm$core$List$member, dep, application.e7));
 								},
-								A2($jfmengels$elm_review_unused$NoUnused$Dependencies$listIndirectDependencies, project.cG, testDepsDirect))
+								A2($jfmengels$elm_review_unused$NoUnused$Dependencies$listIndirectDependencies, project.c9, testDepsDirect))
 						})
 				}));
 	} else {
 		var project = projectAndDependencyIdentifier.a;
-		var _package = project.bq;
+		var _package = project.bA;
 		return $jfmengels$elm_review_unused$NoUnused$Dependencies$PackageProject(
 			_Utils_update(
 				project,
 				{
-					bq: _Utils_update(
+					bA: _Utils_update(
 						_package,
 						{
-							fu: A2(
+							f2: A2(
 								$elm$core$List$cons,
-								_Utils_Tuple2(project.bT, project.et),
-								_package.fu)
+								_Utils_Tuple2(project.b5, project.e$),
+								_package.f2)
 						})
 				}));
 	}
@@ -20821,12 +21336,12 @@ var $jfmengels$elm_review$Review$ElmProjectEncoder$encodeExposed = function (exp
 };
 var $jfmengels$elm_review$Review$ElmProjectEncoder$encode = function (project) {
 	if (!project.$) {
-		var elm = project.a.c4;
-		var dirs = project.a.eC;
-		var depsDirect = project.a.eA;
-		var depsIndirect = project.a.eB;
-		var testDepsDirect = project.a.fv;
-		var testDepsIndirect = project.a.fw;
+		var elm = project.a.dy;
+		var dirs = project.a.e8;
+		var depsDirect = project.a.e6;
+		var depsIndirect = project.a.e7;
+		var testDepsDirect = project.a.f3;
+		var testDepsIndirect = project.a.f4;
 		return $elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -20865,14 +21380,14 @@ var $jfmengels$elm_review$Review$ElmProjectEncoder$encode = function (project) {
 							])))
 				]));
 	} else {
-		var name = project.a.bT;
-		var summary = project.a.fp;
-		var license = project.a.e1;
-		var version = project.a.fC;
-		var exposed = project.a.eG;
-		var deps = project.a.ez;
-		var testDeps = project.a.fu;
-		var elm = project.a.c4;
+		var name = project.a.b5;
+		var summary = project.a.fZ;
+		var license = project.a.fz;
+		var version = project.a.ga;
+		var exposed = project.a.fc;
+		var deps = project.a.e5;
+		var testDeps = project.a.f2;
+		var elm = project.a.dy;
 		return $elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
@@ -20909,11 +21424,11 @@ var $jfmengels$elm_review$Review$ElmProjectEncoder$encode = function (project) {
 var $jfmengels$elm_review$Review$Rule$errorForElmJsonWithFix = F3(
 	function (_v0, getErrorInfo, getFix) {
 		var elmJson = _v0;
-		var errorInfo = getErrorInfo(elmJson.ck);
+		var errorInfo = getErrorInfo(elmJson.cL);
 		return {
-			c2: errorInfo.c2,
-			f3: elmJson.gx,
-			dP: A2(
+			dx: errorInfo.dx,
+			gD: elmJson.g5,
+			ek: A2(
 				$elm$core$Maybe$map,
 				function (updatedProject) {
 					var encoded = A2(
@@ -20925,18 +21440,18 @@ var $jfmengels$elm_review$Review$Rule$errorForElmJsonWithFix = F3(
 							A2(
 							$jfmengels$elm_review$Review$Fix$replaceRangeBy,
 							{
-								b6: {bb: 1, bs: 100000000},
-								cm: {bb: 1, bs: 1}
+								cp: {bh: 1, bD: 100000000},
+								cN: {bh: 1, bD: 1}
 							},
 							encoded + '\n')
 						]);
 				},
 				getFix(elmJson.e)),
-			a2: errorInfo.a2,
-			$7: false,
-			d6: errorInfo.d6,
-			ea: '',
-			ft: 1
+			a8: errorInfo.a8,
+			dU: false,
+			eD: errorInfo.eD,
+			eH: '',
+			f1: 1
 		};
 	});
 var $elm$core$String$indexes = _String_indexes;
@@ -20945,8 +21460,8 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$findPackageNameInElmJson 
 		return A2(
 			$elm$core$Maybe$withDefault,
 			{
-				b6: {bb: 1, bs: 10000},
-				cm: {bb: 1, bs: 1}
+				cp: {bh: 1, bD: 10000},
+				cN: {bh: 1, bD: 1}
 			},
 			$elm$core$List$head(
 				A2(
@@ -20961,11 +21476,11 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$findPackageNameInElmJson 
 							var column = _v1.a;
 							return $elm$core$Maybe$Just(
 								{
-									b6: {
-										bb: (column + $elm$core$String$length(packageName)) + 2,
-										bs: row + 1
+									cp: {
+										bh: (column + $elm$core$String$length(packageName)) + 2,
+										bD: row + 1
 									},
-									cm: {bb: column + 2, bs: row + 1}
+									cN: {bh: column + 2, bD: row + 1}
 								});
 						}
 					},
@@ -20974,11 +21489,7 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$findPackageNameInElmJson 
 						$elm$core$Tuple$pair,
 						$elm$core$String$lines(elmJson)))));
 	});
-var $jfmengels$elm_review$Review$Project$Dependency$elmJson = function (_v0) {
-	var dependency = _v0;
-	return dependency.c5;
-};
-var $jfmengels$elm_review_unused$NoUnused$Dependencies$find = F2(
+var $jfmengels$elm_review_unused$List$Extra$find = F2(
 	function (predicate, list) {
 		find:
 		while (true) {
@@ -21006,96 +21517,95 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$isPackageWithName = F2(
 			packageName,
 			$elm$project_metadata_utils$Elm$Package$toString(packageName_));
 	});
-var $jfmengels$elm_review_unused$NoUnused$Dependencies$packageDependencies = function (project) {
-	if (!project.$) {
-		return _List_Nil;
-	} else {
-		var _package = project.a;
-		return A2($elm$core$List$map, $elm$core$Tuple$first, _package.ez);
-	}
-};
+var $jfmengels$elm_review_unused$NoUnused$Dependencies$packageDependencies = F2(
+	function (dependencyVersionDict, dependencies) {
+		return A2(
+			$elm$core$List$filterMap,
+			function (name) {
+				return A2(
+					$elm$core$Maybe$map,
+					$elm$core$Tuple$pair(name),
+					A2(
+						$elm$core$Dict$get,
+						$elm$project_metadata_utils$Elm$Package$toString(name),
+						dependencyVersionDict));
+			},
+			dependencies);
+	});
+var $jfmengels$elm_review_unused$NoUnused$Dependencies$fromApplication = F4(
+	function (dependenciesDict, dependencyLocation, packageNameStr, application) {
+		var dependencyVersionDict = $elm$core$Dict$fromList(
+			A2(
+				$elm$core$List$map,
+				function (_v4) {
+					var name = _v4.a;
+					var version = _v4.b;
+					return _Utils_Tuple2(
+						$elm$project_metadata_utils$Elm$Package$toString(name),
+						version);
+				},
+				$elm$core$List$concat(
+					_List_fromArray(
+						[application.e6, application.e7, application.f3, application.f4]))));
+		var getDependenciesAndVersion = function (name) {
+			var _v3 = A2(
+				$elm$core$Dict$get,
+				$elm$project_metadata_utils$Elm$Package$toString(name),
+				dependenciesDict);
+			if (!_v3.$) {
+				var deps = _v3.a;
+				return A2($jfmengels$elm_review_unused$NoUnused$Dependencies$packageDependencies, dependencyVersionDict, deps);
+			} else {
+				return _List_Nil;
+			}
+		};
+		var dependencies = function () {
+			if (!dependencyLocation) {
+				return application.e6;
+			} else {
+				return application.f3;
+			}
+		}();
+		var _v0 = A2(
+			$jfmengels$elm_review_unused$List$Extra$find,
+			$jfmengels$elm_review_unused$NoUnused$Dependencies$isPackageWithName(packageNameStr),
+			dependencies);
+		if (!_v0.$) {
+			var _v1 = _v0.a;
+			var packageName = _v1.a;
+			var version = _v1.b;
+			return $elm$core$Maybe$Just(
+				$jfmengels$elm_review_unused$NoUnused$Dependencies$ApplicationProject(
+					{bg: application, c9: getDependenciesAndVersion, b5: packageName, ga: version}));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$fromProject = F4(
 	function (dependenciesDict, dependencyLocation, packageNameStr, project) {
 		if (!project.$) {
 			var application = project.a;
-			var dependencyVersionDict = $elm$core$Dict$fromList(
-				A2(
-					$elm$core$List$map,
-					function (_v5) {
-						var name = _v5.a;
-						var version = _v5.b;
-						return _Utils_Tuple2(
-							$elm$project_metadata_utils$Elm$Package$toString(name),
-							version);
-					},
-					$elm$core$List$concat(
-						_List_fromArray(
-							[application.eA, application.eB, application.fv, application.fw]))));
-			var getDependenciesAndVersion = function (name) {
-				var _v4 = A2(
-					$elm$core$Dict$get,
-					$elm$project_metadata_utils$Elm$Package$toString(name),
-					dependenciesDict);
-				if (!_v4.$) {
-					var deps = _v4.a;
-					return A2(
-						$elm$core$List$filterMap,
-						function (depName) {
-							return A2(
-								$elm$core$Maybe$map,
-								$elm$core$Tuple$pair(depName),
-								A2(
-									$elm$core$Dict$get,
-									$elm$project_metadata_utils$Elm$Package$toString(depName),
-									dependencyVersionDict));
-						},
-						$jfmengels$elm_review_unused$NoUnused$Dependencies$packageDependencies(
-							$jfmengels$elm_review$Review$Project$Dependency$elmJson(deps)));
-				} else {
-					return _List_Nil;
-				}
-			};
+			return A4($jfmengels$elm_review_unused$NoUnused$Dependencies$fromApplication, dependenciesDict, dependencyLocation, packageNameStr, application);
+		} else {
+			var packageInfo = project.a;
 			var dependencies = function () {
 				if (!dependencyLocation) {
-					return application.eA;
+					return packageInfo.e5;
 				} else {
-					return application.fv;
+					return packageInfo.f2;
 				}
 			}();
 			var _v1 = A2(
-				$jfmengels$elm_review_unused$NoUnused$Dependencies$find,
+				$jfmengels$elm_review_unused$List$Extra$find,
 				$jfmengels$elm_review_unused$NoUnused$Dependencies$isPackageWithName(packageNameStr),
 				dependencies);
 			if (!_v1.$) {
 				var _v2 = _v1.a;
 				var packageName = _v2.a;
-				var version = _v2.b;
-				return $elm$core$Maybe$Just(
-					$jfmengels$elm_review_unused$NoUnused$Dependencies$ApplicationProject(
-						{ba: application, cG: getDependenciesAndVersion, bT: packageName, fC: version}));
-			} else {
-				return $elm$core$Maybe$Nothing;
-			}
-		} else {
-			var packageInfo = project.a;
-			var dependencies = function () {
-				if (!dependencyLocation) {
-					return packageInfo.ez;
-				} else {
-					return packageInfo.fu;
-				}
-			}();
-			var _v6 = A2(
-				$jfmengels$elm_review_unused$NoUnused$Dependencies$find,
-				$jfmengels$elm_review_unused$NoUnused$Dependencies$isPackageWithName(packageNameStr),
-				dependencies);
-			if (!_v6.$) {
-				var _v7 = _v6.a;
-				var packageName = _v7.a;
-				var constraint = _v7.b;
+				var constraint = _v2.b;
 				return $elm$core$Maybe$Just(
 					$jfmengels$elm_review_unused$NoUnused$Dependencies$PackageProject(
-						{et: constraint, bT: packageName, bq: packageInfo}));
+						{e$: constraint, b5: packageName, bA: packageInfo}));
 			} else {
 				return $elm$core$Maybe$Nothing;
 			}
@@ -21104,61 +21614,63 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$fromProject = F4(
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$removeProjectDependency = function (projectAndDependencyIdentifier) {
 	if (!projectAndDependencyIdentifier.$) {
 		var project = projectAndDependencyIdentifier.a;
-		var application = project.ba;
-		var directDependencies = A2(
+		var application = project.bg;
+		var depsDirect = A2(
 			$elm$core$List$filter,
-			A2(
-				$elm$core$Basics$composeR,
-				$jfmengels$elm_review_unused$NoUnused$Dependencies$isPackageWithName(
-					$elm$project_metadata_utils$Elm$Package$toString(project.bT)),
-				$elm$core$Basics$not),
-			application.eA);
-		var depsIndirect = A2($jfmengels$elm_review_unused$NoUnused$Dependencies$listIndirectDependencies, project.cG, directDependencies);
+			function (pkg) {
+				return !A2(
+					$jfmengels$elm_review_unused$NoUnused$Dependencies$isPackageWithName,
+					$elm$project_metadata_utils$Elm$Package$toString(project.b5),
+					pkg);
+			},
+			application.e6);
+		var depsIndirect = A2($jfmengels$elm_review_unused$NoUnused$Dependencies$listIndirectDependencies, project.c9, depsDirect);
 		return $jfmengels$elm_review_unused$NoUnused$Dependencies$ApplicationProject(
 			_Utils_update(
 				project,
 				{
-					ba: _Utils_update(
+					bg: _Utils_update(
 						application,
 						{
-							eA: directDependencies,
-							eB: depsIndirect,
-							fw: A2(
+							e6: depsDirect,
+							e7: depsIndirect,
+							f4: A2(
 								$elm$core$List$filter,
 								function (dep) {
-									return !(A2($elm$core$List$member, dep, application.eA) || A2($elm$core$List$member, dep, depsIndirect));
+									return !(A2($elm$core$List$member, dep, depsDirect) || A2($elm$core$List$member, dep, depsIndirect));
 								},
-								A2($jfmengels$elm_review_unused$NoUnused$Dependencies$listIndirectDependencies, project.cG, application.fv))
+								A2($jfmengels$elm_review_unused$NoUnused$Dependencies$listIndirectDependencies, project.c9, application.f3))
 						})
 				}));
 	} else {
 		var project = projectAndDependencyIdentifier.a;
-		var _package = project.bq;
+		var _package = project.bA;
 		return $jfmengels$elm_review_unused$NoUnused$Dependencies$PackageProject(
 			_Utils_update(
 				project,
 				{
-					bq: _Utils_update(
+					bA: _Utils_update(
 						_package,
 						{
-							ez: A2(
+							e5: A2(
 								$elm$core$List$filter,
-								A2(
-									$elm$core$Basics$composeR,
-									$jfmengels$elm_review_unused$NoUnused$Dependencies$isPackageWithName(
-										$elm$project_metadata_utils$Elm$Package$toString(project.bT)),
-									$elm$core$Basics$not),
-								_package.ez)
+								function (pkg) {
+									return !A2(
+										$jfmengels$elm_review_unused$NoUnused$Dependencies$isPackageWithName,
+										$elm$project_metadata_utils$Elm$Package$toString(project.b5),
+										pkg);
+								},
+								_package.e5)
 						})
 				}));
 	}
 };
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$toProject = function (projectAndDependencyIdentifier) {
 	if (!projectAndDependencyIdentifier.$) {
-		var application = projectAndDependencyIdentifier.a.ba;
+		var application = projectAndDependencyIdentifier.a.bg;
 		return $elm$project_metadata_utils$Elm$Project$Application(application);
 	} else {
-		var _package = projectAndDependencyIdentifier.a.bq;
+		var _package = projectAndDependencyIdentifier.a.bA;
 		return $elm$project_metadata_utils$Elm$Project$Package(_package);
 	}
 };
@@ -21169,10 +21681,10 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$moveDependencyToTestError
 			elmJsonKey,
 			function (elmJson) {
 				return {
-					c2: _List_fromArray(
+					dx: _List_fromArray(
 						['This package is not used in the source code, but it is used in tests, and should therefore be moved to the test dependencies. To do so, I recommend running the following commands:', '    elm-json uninstall ' + (packageName + ('\n' + ('    elm-json install --test ' + packageName)))]),
-					a2: '`' + (packageName + '` should be moved to test-dependencies'),
-					d6: A2($jfmengels$elm_review_unused$NoUnused$Dependencies$findPackageNameInElmJson, packageName, elmJson)
+					a8: '`' + (packageName + '` should be moved to test-dependencies'),
+					eD: A2($jfmengels$elm_review_unused$NoUnused$Dependencies$findPackageNameInElmJson, packageName, elmJson)
 				};
 			},
 			A2(
@@ -21184,11 +21696,9 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$moveDependencyToTestError
 						$jfmengels$elm_review_unused$NoUnused$Dependencies$removeProjectDependency,
 						A2($elm$core$Basics$composeR, $jfmengels$elm_review_unused$NoUnused$Dependencies$addTestDependency, $jfmengels$elm_review_unused$NoUnused$Dependencies$toProject)))));
 	});
-var $elm$core$Set$remove = F2(
-	function (key, _v0) {
-		var dict = _v0;
-		return A2($elm$core$Dict$remove, key, dict);
-	});
+var $jfmengels$elm_review_unused$NoUnused$Dependencies$packagesNotToReport = $elm$core$Set$fromList(
+	_List_fromArray(
+		['elm/core', 'lamdera/core', 'lamdera/codecs']));
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$unusedProjectDependencyError = F3(
 	function (elmJsonKey, dependencies, packageName) {
 		return A3(
@@ -21196,10 +21706,10 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$unusedProjectDependencyEr
 			elmJsonKey,
 			function (elmJson) {
 				return {
-					c2: _List_fromArray(
+					dx: _List_fromArray(
 						['To remove it, I recommend running the following command:', '    elm-json uninstall ' + packageName]),
-					a2: 'Unused dependency `' + (packageName + '`'),
-					d6: A2($jfmengels$elm_review_unused$NoUnused$Dependencies$findPackageNameInElmJson, packageName, elmJson)
+					a8: 'Unused dependency `' + (packageName + '`'),
+					eD: A2($jfmengels$elm_review_unused$NoUnused$Dependencies$findPackageNameInElmJson, packageName, elmJson)
 				};
 			},
 			A2(
@@ -21212,49 +21722,51 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$InTestDeps = 1;
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$removeTestDependency = function (projectAndDependencyIdentifier) {
 	if (!projectAndDependencyIdentifier.$) {
 		var project = projectAndDependencyIdentifier.a;
-		var application = project.ba;
+		var application = project.bg;
 		var testDepsDirect = A2(
 			$elm$core$List$filter,
-			A2(
-				$elm$core$Basics$composeR,
-				$jfmengels$elm_review_unused$NoUnused$Dependencies$isPackageWithName(
-					$elm$project_metadata_utils$Elm$Package$toString(project.bT)),
-				$elm$core$Basics$not),
-			application.fv);
+			function (pkg) {
+				return !A2(
+					$jfmengels$elm_review_unused$NoUnused$Dependencies$isPackageWithName,
+					$elm$project_metadata_utils$Elm$Package$toString(project.b5),
+					pkg);
+			},
+			application.f3);
 		return $jfmengels$elm_review_unused$NoUnused$Dependencies$ApplicationProject(
 			_Utils_update(
 				project,
 				{
-					ba: _Utils_update(
+					bg: _Utils_update(
 						application,
 						{
-							fv: testDepsDirect,
-							fw: A2(
+							f3: testDepsDirect,
+							f4: A2(
 								$elm$core$List$filter,
 								function (dep) {
-									return !(A2($elm$core$List$member, dep, application.eA) || A2($elm$core$List$member, dep, application.eB));
+									return !(A2($elm$core$List$member, dep, application.e6) || A2($elm$core$List$member, dep, application.e7));
 								},
-								A2($jfmengels$elm_review_unused$NoUnused$Dependencies$listIndirectDependencies, project.cG, testDepsDirect))
+								A2($jfmengels$elm_review_unused$NoUnused$Dependencies$listIndirectDependencies, project.c9, testDepsDirect))
 						})
 				}));
 	} else {
 		var project = projectAndDependencyIdentifier.a;
-		var _package = project.bq;
+		var _package = project.bA;
 		return $jfmengels$elm_review_unused$NoUnused$Dependencies$PackageProject(
 			_Utils_update(
 				project,
 				{
-					bq: _Utils_update(
+					bA: _Utils_update(
 						_package,
 						{
-							fu: A2(
+							f2: A2(
 								$elm$core$List$filter,
-								A2(
-									$elm$core$Basics$composeR,
-									$jfmengels$elm_review_unused$NoUnused$Dependencies$isPackageWithName(
-										$elm$project_metadata_utils$Elm$Package$toString(project.bT)),
-									$elm$core$Basics$not),
-								_package.fu)
+								function (pkg) {
+									return !A2(
+										$jfmengels$elm_review_unused$NoUnused$Dependencies$isPackageWithName,
+										$elm$project_metadata_utils$Elm$Package$toString(project.b5),
+										pkg);
+								},
+								_package.f2)
 						})
 				}));
 	}
@@ -21266,53 +21778,53 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$unusedTestDependencyError
 			elmJsonKey,
 			function (elmJson) {
 				return {
-					c2: _List_fromArray(
+					dx: _List_fromArray(
 						['To remove it, I recommend running the following command:', '    elm-json uninstall ' + packageName]),
-					a2: 'Unused test dependency `' + (packageName + '`'),
-					d6: A2($jfmengels$elm_review_unused$NoUnused$Dependencies$findPackageNameInElmJson, packageName, elmJson)
+					a8: 'Unused test dependency `' + (packageName + '`'),
+					eD: A2($jfmengels$elm_review_unused$NoUnused$Dependencies$findPackageNameInElmJson, packageName, elmJson)
 				};
 			},
-			A2(
-				$elm$core$Basics$composeR,
-				A3($jfmengels$elm_review_unused$NoUnused$Dependencies$fromProject, dependencies, 1, packageName),
-				$elm$core$Maybe$map(
-					A2($elm$core$Basics$composeR, $jfmengels$elm_review_unused$NoUnused$Dependencies$removeTestDependency, $jfmengels$elm_review_unused$NoUnused$Dependencies$toProject))));
+			function (project) {
+				var _v0 = A4($jfmengels$elm_review_unused$NoUnused$Dependencies$fromProject, dependencies, 1, packageName, project);
+				if (!_v0.$) {
+					var projectAndDependencyIdentifier = _v0.a;
+					return $elm$core$Maybe$Just(
+						$jfmengels$elm_review_unused$NoUnused$Dependencies$toProject(
+							$jfmengels$elm_review_unused$NoUnused$Dependencies$removeTestDependency(projectAndDependencyIdentifier)));
+				} else {
+					return $elm$core$Maybe$Nothing;
+				}
+			});
 	});
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$finalEvaluationForProject = function (projectContext) {
-	var _v0 = projectContext.f_;
+	var _v0 = projectContext.gy;
 	if (!_v0.$) {
 		var elmJsonKey = _v0.a;
 		var testDepsNotUsed = $elm$core$Set$toList(
 			A2(
-				$elm$core$Set$remove,
-				'elm/core',
-				A2(
-					$elm$core$Set$diff,
-					projectContext.bz,
-					A2($elm$core$Set$union, projectContext.bv, projectContext.aj))));
-		var depsNotUsedInSrc = A2($elm$core$Set$diff, projectContext.by, projectContext.aj);
-		var depsNotUsedInSrcButUsedInTests = A2(
-			$elm$core$Set$remove,
-			'elm/core',
-			A2($elm$core$Set$intersect, depsNotUsedInSrc, projectContext.bv));
+				$elm$core$Set$diff,
+				projectContext.bm,
+				A2($elm$core$Set$union, projectContext.bG, projectContext.aq)));
+		var depsNotUsedInSrc = A2($elm$core$Set$diff, projectContext.bl, projectContext.aq);
+		var depsNotUsedInSrcButUsedInTests = A2($elm$core$Set$intersect, depsNotUsedInSrc, projectContext.bG);
 		var depsNotUsedInSrcErrors = $elm$core$Set$toList(
 			A2(
-				$elm$core$Set$remove,
-				'elm/core',
-				A2($elm$core$Set$diff, depsNotUsedInSrc, depsNotUsedInSrcButUsedInTests)));
+				$elm$core$Set$diff,
+				depsNotUsedInSrc,
+				A2($elm$core$Set$union, $jfmengels$elm_review_unused$NoUnused$Dependencies$packagesNotToReport, depsNotUsedInSrcButUsedInTests)));
 		return _Utils_ap(
 			A2(
 				$elm$core$List$map,
-				A2($jfmengels$elm_review_unused$NoUnused$Dependencies$unusedProjectDependencyError, elmJsonKey, projectContext.aM),
+				A2($jfmengels$elm_review_unused$NoUnused$Dependencies$unusedProjectDependencyError, elmJsonKey, projectContext.aR),
 				depsNotUsedInSrcErrors),
 			_Utils_ap(
 				A2(
 					$elm$core$List$map,
-					A2($jfmengels$elm_review_unused$NoUnused$Dependencies$unusedTestDependencyError, elmJsonKey, projectContext.aM),
+					A2($jfmengels$elm_review_unused$NoUnused$Dependencies$unusedTestDependencyError, elmJsonKey, projectContext.aR),
 					testDepsNotUsed),
 				A2(
 					$elm$core$List$map,
-					A2($jfmengels$elm_review_unused$NoUnused$Dependencies$moveDependencyToTestError, elmJsonKey, projectContext.aM),
+					A2($jfmengels$elm_review_unused$NoUnused$Dependencies$moveDependencyToTestError, elmJsonKey, projectContext.aR),
 					$elm$core$Set$toList(depsNotUsedInSrcButUsedInTests))));
 	} else {
 		return _List_Nil;
@@ -21321,46 +21833,51 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$finalEvaluationForProject
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$foldProjectContexts = F2(
 	function (newContext, previousContext) {
 		return {
-			aM: previousContext.aM,
-			by: previousContext.by,
-			bz: previousContext.bz,
-			f_: previousContext.f_,
 			aR: previousContext.aR,
-			aj: A2($elm$core$Set$union, newContext.aj, previousContext.aj),
-			bv: A2($elm$core$Set$union, newContext.bv, previousContext.bv)
+			bl: previousContext.bl,
+			bm: previousContext.bm,
+			gy: previousContext.gy,
+			aW: previousContext.aW,
+			aq: A2($elm$core$Set$union, newContext.aq, previousContext.aq),
+			bG: A2($elm$core$Set$union, newContext.bG, previousContext.bG)
 		};
 	});
-var $jfmengels$elm_review$Review$Rule$isInSourceDirectories = function (_v0) {
-	var metadata = _v0;
-	return metadata.dX;
+var $jfmengels$elm_review$Review$Rule$withIsInSourceDirectories = function (_v0) {
+	var fn = _v0.a;
+	var requestedData = _v0.b;
+	return A2(
+		$jfmengels$elm_review$Review$Rule$ContextCreator,
+		function (data) {
+			return A2(fn, data, data.es);
+		},
+		requestedData);
 };
-var $jfmengels$elm_review_unused$NoUnused$Dependencies$fromModuleToProject = $jfmengels$elm_review$Review$Rule$withMetadata(
+var $jfmengels$elm_review_unused$NoUnused$Dependencies$fromModuleToProject = $jfmengels$elm_review$Review$Rule$withIsInSourceDirectories(
 	$jfmengels$elm_review$Review$Rule$initContextCreator(
 		F2(
-			function (metadata, _v0) {
-				var usedDependencies = _v0.aj;
-				var isSourceDir = $jfmengels$elm_review$Review$Rule$isInSourceDirectories(metadata);
+			function (isInSourceDirectories, _v0) {
+				var usedDependencies = _v0.aq;
 				return {
-					aM: $elm$core$Dict$empty,
-					by: $elm$core$Set$empty,
-					bz: $elm$core$Set$empty,
-					f_: $elm$core$Maybe$Nothing,
 					aR: $elm$core$Dict$empty,
-					aj: isSourceDir ? usedDependencies : $elm$core$Set$empty,
-					bv: isSourceDir ? $elm$core$Set$empty : usedDependencies
+					bl: $elm$core$Set$empty,
+					bm: $elm$core$Set$empty,
+					gy: $elm$core$Maybe$Nothing,
+					aW: $elm$core$Dict$empty,
+					aq: isInSourceDirectories ? usedDependencies : $elm$core$Set$empty,
+					bG: isInSourceDirectories ? $elm$core$Set$empty : usedDependencies
 				};
 			})));
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$fromProjectToModule = $jfmengels$elm_review$Review$Rule$initContextCreator(
 	function (projectContext) {
-		return {aR: projectContext.aR, aj: $elm$core$Set$empty};
+		return {aW: projectContext.aW, aq: $elm$core$Set$empty};
 	});
-var $jfmengels$elm_review_unused$NoUnused$Dependencies$initialProjectContext = {aM: $elm$core$Dict$empty, by: $elm$core$Set$empty, bz: $elm$core$Set$empty, f_: $elm$core$Maybe$Nothing, aR: $elm$core$Dict$empty, aj: $elm$core$Set$empty, bv: $elm$core$Set$empty};
+var $jfmengels$elm_review_unused$NoUnused$Dependencies$initialProjectContext = {aR: $elm$core$Dict$empty, bl: $elm$core$Set$empty, bm: $elm$core$Set$empty, gy: $elm$core$Maybe$Nothing, aW: $elm$core$Dict$empty, aq: $elm$core$Set$empty, bG: $elm$core$Set$empty};
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$moduleNameForImport = function (node) {
 	return A2(
 		$elm$core$String$join,
 		'.',
 		$stil4m$elm_syntax$Elm$Syntax$Node$value(
-			$stil4m$elm_syntax$Elm$Syntax$Node$value(node).dn));
+			$stil4m$elm_syntax$Elm$Syntax$Node$value(node).dR));
 };
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$importVisitor = F2(
 	function (node, context) {
@@ -21370,18 +21887,27 @@ var $jfmengels$elm_review_unused$NoUnused$Dependencies$importVisitor = F2(
 				var _v0 = A2(
 					$elm$core$Dict$get,
 					$jfmengels$elm_review_unused$NoUnused$Dependencies$moduleNameForImport(node),
-					context.aR);
+					context.aW);
 				if (!_v0.$) {
 					var dependency = _v0.a;
 					return _Utils_update(
 						context,
 						{
-							aj: A2($elm$core$Set$insert, dependency, context.aj)
+							aq: A2($elm$core$Set$insert, dependency, context.aq)
 						});
 				} else {
 					return context;
 				}
 			}());
+	});
+var $jfmengels$elm_review$Review$Rule$withImportVisitor = F2(
+	function (visitor, _v0) {
+		var schema = _v0;
+		return _Utils_update(
+			schema,
+			{
+				aT: A2($elm$core$List$cons, visitor, schema.aT)
+			});
 	});
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$moduleVisitor = function (schema) {
 	return A2($jfmengels$elm_review$Review$Rule$withImportVisitor, $jfmengels$elm_review_unused$NoUnused$Dependencies$importVisitor, schema);
@@ -21392,32 +21918,46 @@ var $jfmengels$elm_review$Review$Rule$withDependenciesProjectVisitor = F2(
 		return _Utils_update(
 			schema,
 			{
-				K: A2(
+				N: A2(
 					$elm$core$List$cons,
 					$jfmengels$elm_review$Review$Rule$removeErrorPhantomTypeFromVisitor(visitor),
-					schema.K)
+					schema.N)
 			});
 	});
 var $jfmengels$elm_review_unused$NoUnused$Dependencies$rule = $jfmengels$elm_review$Review$Rule$fromProjectRuleSchema(
-	A2(
-		$jfmengels$elm_review$Review$Rule$withFinalProjectEvaluation,
-		$jfmengels$elm_review_unused$NoUnused$Dependencies$finalEvaluationForProject,
+	$jfmengels$elm_review$Review$Rule$providesFixesForProjectRule(
 		A2(
-			$jfmengels$elm_review$Review$Rule$withModuleContextUsingContextCreator,
-			{bG: $jfmengels$elm_review_unused$NoUnused$Dependencies$foldProjectContexts, b9: $jfmengels$elm_review_unused$NoUnused$Dependencies$fromModuleToProject, eO: $jfmengels$elm_review_unused$NoUnused$Dependencies$fromProjectToModule},
+			$jfmengels$elm_review$Review$Rule$withFinalProjectEvaluation,
+			$jfmengels$elm_review_unused$NoUnused$Dependencies$finalEvaluationForProject,
 			A2(
-				$jfmengels$elm_review$Review$Rule$withModuleVisitor,
-				$jfmengels$elm_review_unused$NoUnused$Dependencies$moduleVisitor,
+				$jfmengels$elm_review$Review$Rule$withModuleContextUsingContextCreator,
+				{bS: $jfmengels$elm_review_unused$NoUnused$Dependencies$foldProjectContexts, cu: $jfmengels$elm_review_unused$NoUnused$Dependencies$fromModuleToProject, fk: $jfmengels$elm_review_unused$NoUnused$Dependencies$fromProjectToModule},
 				A2(
-					$jfmengels$elm_review$Review$Rule$withDependenciesProjectVisitor,
-					$jfmengels$elm_review_unused$NoUnused$Dependencies$dependenciesVisitor,
+					$jfmengels$elm_review$Review$Rule$withModuleVisitor,
+					$jfmengels$elm_review_unused$NoUnused$Dependencies$moduleVisitor,
 					A2(
-						$jfmengels$elm_review$Review$Rule$withElmJsonProjectVisitor,
-						$jfmengels$elm_review_unused$NoUnused$Dependencies$elmJsonVisitor,
-						A2($jfmengels$elm_review$Review$Rule$newProjectRuleSchema, 'NoUnused.Dependencies', $jfmengels$elm_review_unused$NoUnused$Dependencies$initialProjectContext)))))));
-var $jfmengels$elm_review_unused$NoUnused$Exports$IsApplication = {$: 0};
+						$jfmengels$elm_review$Review$Rule$withDependenciesProjectVisitor,
+						$jfmengels$elm_review_unused$NoUnused$Dependencies$dependenciesVisitor,
+						A2(
+							$jfmengels$elm_review$Review$Rule$withElmJsonProjectVisitor,
+							$jfmengels$elm_review_unused$NoUnused$Dependencies$elmJsonVisitor,
+							A2($jfmengels$elm_review$Review$Rule$newProjectRuleSchema, 'NoUnused.Dependencies', $jfmengels$elm_review_unused$NoUnused$Dependencies$initialProjectContext))))))));
+var $jfmengels$elm_review_unused$NoUnused$Exports$ElmApplication = 0;
+var $jfmengels$elm_review_unused$NoUnused$Exports$IsApplication = function (a) {
+	return {$: 0, a: a};
+};
 var $jfmengels$elm_review_unused$NoUnused$Exports$IsPackage = function (a) {
 	return {$: 1, a: a};
+};
+var $jfmengels$elm_review_unused$NoUnused$Exports$LamderaApplication = 1;
+var $jfmengels$elm_review_unused$NoUnused$LamderaSupport$isLamderaApplication = function (depsDirect) {
+	return A2(
+		$elm$core$List$any,
+		function (_v0) {
+			var name = _v0.a;
+			return $elm$project_metadata_utils$Elm$Package$toString(name) === 'lamdera/core';
+		},
+		depsDirect);
 };
 var $jfmengels$elm_review_unused$NoUnused$Exports$elmJsonVisitor = F2(
 	function (maybeProject, projectContext) {
@@ -21427,52 +21967,150 @@ var $jfmengels$elm_review_unused$NoUnused$Exports$elmJsonVisitor = F2(
 				return $.e;
 			},
 			maybeProject);
-		if ((!_v0.$) && (_v0.a.$ === 1)) {
-			var exposed = _v0.a.a.eG;
-			var exposedModuleNames = function () {
-				if (!exposed.$) {
-					var names = exposed.a;
-					return names;
-				} else {
-					var fakeDict = exposed.a;
-					return A2($elm$core$List$concatMap, $elm$core$Tuple$second, fakeDict);
-				}
-			}();
-			return _Utils_Tuple2(
-				_List_Nil,
-				_Utils_update(
+		if (!_v0.$) {
+			if (_v0.a.$ === 1) {
+				var exposed = _v0.a.a.fc;
+				var exposedModuleNames = function () {
+					if (!exposed.$) {
+						var names = exposed.a;
+						return names;
+					} else {
+						var fakeDict = exposed.a;
+						return A2($elm$core$List$concatMap, $elm$core$Tuple$second, fakeDict);
+					}
+				}();
+				return _Utils_update(
 					projectContext,
 					{
-						a5: $jfmengels$elm_review_unused$NoUnused$Exports$IsPackage(
-							$elm$core$Set$fromList(
-								A2(
-									$elm$core$List$map,
-									A2(
-										$elm$core$Basics$composeR,
-										$elm$project_metadata_utils$Elm$Module$toString,
-										$elm$core$String$split('.')),
-									exposedModuleNames)))
-					}));
-		} else {
-			return _Utils_Tuple2(
-				_List_Nil,
-				_Utils_update(
+						ae: $jfmengels$elm_review_unused$NoUnused$Exports$IsPackage(
+							A3(
+								$elm$core$List$foldr,
+								F2(
+									function (moduleName, acc) {
+										return A2(
+											$elm$core$Set$insert,
+											A2(
+												$elm$core$String$split,
+												'.',
+												$elm$project_metadata_utils$Elm$Module$toString(moduleName)),
+											acc);
+									}),
+								$elm$core$Set$empty,
+								exposedModuleNames))
+					});
+			} else {
+				var depsDirect = _v0.a.a.e6;
+				var elmApplicationType = $jfmengels$elm_review_unused$NoUnused$LamderaSupport$isLamderaApplication(depsDirect) ? 1 : 0;
+				return _Utils_update(
 					projectContext,
-					{a5: $jfmengels$elm_review_unused$NoUnused$Exports$IsApplication}));
+					{
+						ae: $jfmengels$elm_review_unused$NoUnused$Exports$IsApplication(elmApplicationType)
+					});
+			}
+		} else {
+			return _Utils_update(
+				projectContext,
+				{
+					ae: $jfmengels$elm_review_unused$NoUnused$Exports$IsApplication(0)
+				});
 		}
 	});
 var $jfmengels$elm_review_unused$NoUnused$Exports$removeApplicationExceptions = F2(
 	function (projectContext, dict) {
-		var _v0 = projectContext.a5;
-		if (!_v0.$) {
-			return A2($elm$core$Dict$remove, 'main', dict);
-		} else {
+		var _v0 = projectContext.ae;
+		if (_v0.$ === 1) {
 			return dict;
+		} else {
+			if (!_v0.a) {
+				var _v1 = _v0.a;
+				return A2($elm$core$Dict$remove, 'main', dict);
+			} else {
+				var _v2 = _v0.a;
+				return A2(
+					$elm$core$Dict$remove,
+					'app',
+					A2($elm$core$Dict$remove, 'main', dict));
+			}
 		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Exports$removeReviewConfig = F2(
+	function (moduleName, dict) {
+		return _Utils_eq(
+			moduleName,
+			_List_fromArray(
+				['ReviewConfig'])) ? A2($elm$core$Dict$remove, 'config', dict) : dict;
+	});
+var $jfmengels$elm_review_unused$NoUnused$Exports$errorsForModule = F3(
+	function (projectContext, used, _v0) {
+		var moduleName = _v0.a;
+		var moduleKey = _v0.b.dQ;
+		var exposed = _v0.b.fc;
+		return A2(
+			$elm$core$List$concatMap,
+			function (_v2) {
+				var name = _v2.a;
+				var element = _v2.b;
+				var what = function () {
+					var _v3 = element.bL;
+					switch (_v3.$) {
+						case 0:
+							return 'Exposed function or value';
+						case 1:
+							return 'Exposed type or type alias';
+						default:
+							return 'Exposed type';
+					}
+				}();
+				return _List_fromArray(
+					[
+						A4(
+						$jfmengels$elm_review$Review$Rule$errorForModuleWithFix,
+						moduleKey,
+						{
+							dx: _List_fromArray(
+								['This exposed element is never used. You may want to remove it to keep your project clean, and maybe detect some unused code in your project.']),
+							a8: what + (' `' + (name + '` is never used outside this module.'))
+						},
+						element.eD,
+						A2($elm$core$List$map, $jfmengels$elm_review$Review$Fix$removeRange, element.dm))
+					]);
+			},
+			$elm$core$Dict$toList(
+				A2(
+					$elm$core$Dict$filter,
+					F2(
+						function (name, _v1) {
+							return !A2(
+								$elm$core$Set$member,
+								_Utils_Tuple2(moduleName, name),
+								used);
+						}),
+					A2(
+						$jfmengels$elm_review_unused$NoUnused$Exports$removeReviewConfig,
+						moduleName,
+						A2($jfmengels$elm_review_unused$NoUnused$Exports$removeApplicationExceptions, projectContext, exposed)))));
+	});
+var $elm$core$Dict$partition = F2(
+	function (isGood, dict) {
+		var add = F3(
+			function (key, value, _v0) {
+				var t1 = _v0.a;
+				var t2 = _v0.b;
+				return A2(isGood, key, value) ? _Utils_Tuple2(
+					A3($elm$core$Dict$insert, key, value, t1),
+					t2) : _Utils_Tuple2(
+					t1,
+					A3($elm$core$Dict$insert, key, value, t2));
+			});
+		return A3(
+			$elm$core$Dict$foldl,
+			add,
+			_Utils_Tuple2($elm$core$Dict$empty, $elm$core$Dict$empty),
+			dict);
 	});
 var $jfmengels$elm_review_unused$NoUnused$Exports$removeExposedPackages = F2(
 	function (projectContext, dict) {
-		var _v0 = projectContext.a5;
+		var _v0 = projectContext.ae;
 		if (!_v0.$) {
 			return dict;
 		} else {
@@ -21486,158 +22124,521 @@ var $jfmengels$elm_review_unused$NoUnused$Exports$removeExposedPackages = F2(
 				dict);
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Exports$removeReviewConfig = F2(
-	function (moduleName, dict) {
-		return _Utils_eq(
-			moduleName,
-			_List_fromArray(
-				['ReviewConfig'])) ? A2($elm$core$Dict$remove, 'config', dict) : dict;
-	});
-var $jfmengels$elm_review_unused$NoUnused$Exports$finalEvaluationForProject = function (projectContext) {
-	return A2(
-		$elm$core$List$concatMap,
-		function (_v0) {
-			var moduleName = _v0.a;
-			var moduleKey = _v0.b.dm;
-			var exposed = _v0.b.eG;
-			return A2(
-				$elm$core$List$concatMap,
-				function (_v2) {
-					var name = _v2.a;
-					var element = _v2.b;
-					var what = function () {
-						var _v4 = element.b4;
-						switch (_v4) {
-							case 0:
-								return 'Exposed function or value';
-							case 1:
-								return 'Exposed type or type alias';
-							default:
-								return 'Exposed type';
-						}
-					}();
-					var fixes = function () {
-						var _v3 = element.d7;
-						if (!_v3.$) {
-							var rangeToRemove = _v3.a;
-							return _List_fromArray(
-								[
-									$jfmengels$elm_review$Review$Fix$removeRange(rangeToRemove)
-								]);
-						} else {
-							return _List_Nil;
-						}
-					}();
-					return _List_fromArray(
-						[
-							A4(
-							$jfmengels$elm_review$Review$Rule$errorForModuleWithFix,
-							moduleKey,
-							{
-								c2: _List_fromArray(
-									['This exposed element is never used. You may want to remove it to keep your project clean, and maybe detect some unused code in your project.']),
-								a2: what + (' `' + (name + '` is never used outside this module.'))
-							},
-							element.d6,
-							fixes)
-						]);
-				},
-				$elm$core$Dict$toList(
-					A2(
-						$elm$core$Dict$filter,
-						F2(
-							function (name, _v1) {
-								return !A2(
-									$elm$core$Set$member,
-									_Utils_Tuple2(moduleName, name),
-									projectContext._);
-							}),
-						A2(
-							$jfmengels$elm_review_unused$NoUnused$Exports$removeReviewConfig,
-							moduleName,
-							A2($jfmengels$elm_review_unused$NoUnused$Exports$removeApplicationExceptions, projectContext, exposed)))));
+var $jfmengels$elm_review_unused$NoUnused$Exports$unusedModuleError = function (_v0) {
+	var moduleName = _v0.a;
+	var moduleKey = _v0.b.dQ;
+	var moduleNameLocation = _v0.b.fB;
+	return A3(
+		$jfmengels$elm_review$Review$Rule$errorForModule,
+		moduleKey,
+		{
+			dx: _List_fromArray(
+				['This module is never used. You may want to remove it to keep your project clean, and maybe detect some unused code in your project.']),
+			a8: 'Module `' + (A2($elm$core$String$join, '.', moduleName) + '` is never used.')
 		},
-		$elm$core$Dict$toList(
-			A2($jfmengels$elm_review_unused$NoUnused$Exports$removeExposedPackages, projectContext, projectContext.a3)));
+		moduleNameLocation);
+};
+var $jfmengels$elm_review_unused$NoUnused$Exports$finalEvaluationForProject = function (projectContext) {
+	var used = A3(
+		$elm$core$Set$foldl,
+		F2(
+			function (key, acc) {
+				var moduleName = key.a;
+				var _v2 = A2($elm$core$Dict$get, key, projectContext.gt);
+				if (!_v2.$) {
+					var typeName = _v2.a;
+					return A2(
+						$elm$core$Set$insert,
+						_Utils_Tuple2(moduleName, typeName),
+						acc);
+				} else {
+					return acc;
+				}
+			}),
+		projectContext.a1,
+		projectContext.a1);
+	var _v0 = A2(
+		$elm$core$Dict$partition,
+		F2(
+			function (moduleName, _v1) {
+				return A2($elm$core$Set$member, moduleName, projectContext.cd);
+			}),
+		A2($jfmengels$elm_review_unused$NoUnused$Exports$removeExposedPackages, projectContext, projectContext.ba));
+	var usedModules = _v0.a;
+	var unusedModules = _v0.b;
+	return $elm$core$List$concat(
+		_List_fromArray(
+			[
+				A2(
+				$elm$core$List$concatMap,
+				A2($jfmengels$elm_review_unused$NoUnused$Exports$errorsForModule, projectContext, used),
+				$elm$core$Dict$toList(usedModules)),
+				A2(
+				$elm$core$List$map,
+				$jfmengels$elm_review_unused$NoUnused$Exports$unusedModuleError,
+				$elm$core$Dict$toList(unusedModules))
+			]));
 };
 var $jfmengels$elm_review_unused$NoUnused$Exports$foldProjectContexts = F2(
 	function (newContext, previousContext) {
 		return {
-			a3: A2($elm$core$Dict$union, previousContext.a3, newContext.a3),
-			a5: previousContext.a5,
-			_: A2($elm$core$Set$union, newContext._, previousContext._)
+			gt: A2($elm$core$Dict$union, newContext.gt, previousContext.gt),
+			ba: A2($elm$core$Dict$union, newContext.ba, previousContext.ba),
+			ae: previousContext.ae,
+			a1: A2($elm$core$Set$union, newContext.a1, previousContext.a1),
+			cd: A2($elm$core$Set$union, newContext.cd, previousContext.cd)
 		};
 	});
-var $jfmengels$elm_review_unused$NoUnused$Exports$fromModuleToProject = F3(
-	function (moduleKey, metadata, moduleContext) {
-		return {
-			a3: A2(
-				$elm$core$Dict$singleton,
-				$jfmengels$elm_review$Review$Rule$moduleNameFromMetadata(metadata),
-				{eG: moduleContext.eG, dm: moduleKey}),
-			a5: $jfmengels$elm_review_unused$NoUnused$Exports$IsApplication,
-			_: A2(
-				$elm$core$Set$union,
-				moduleContext._,
-				A2(
-					$elm$core$Set$map,
-					$elm$core$Tuple$pair(
-						$jfmengels$elm_review$Review$Rule$moduleNameFromMetadata(metadata)),
-					moduleContext.c3))
-		};
+var $jfmengels$elm_review_unused$NoUnused$Exports$fromModuleToProject = $jfmengels$elm_review$Review$Rule$withModuleNameNode(
+	$jfmengels$elm_review$Review$Rule$withModuleKey(
+		$jfmengels$elm_review$Review$Rule$initContextCreator(
+			F3(
+				function (moduleKey, _v0, moduleContext) {
+					var moduleNameRange = _v0.a;
+					var moduleName = _v0.b;
+					return {
+						gt: A3(
+							$elm$core$Dict$foldl,
+							F3(
+								function (name, element, acc) {
+									var _v1 = element.bL;
+									if (_v1.$ === 2) {
+										var constructorNames = _v1.a;
+										return A3(
+											$elm$core$List$foldl,
+											F2(
+												function (constructorName, listAcc) {
+													return A3(
+														$elm$core$Dict$insert,
+														_Utils_Tuple2(moduleName, constructorName),
+														name,
+														listAcc);
+												}),
+											acc,
+											constructorNames);
+									} else {
+										return acc;
+									}
+								}),
+							$elm$core$Dict$empty,
+							moduleContext.fc),
+						ba: A2(
+							$elm$core$Dict$singleton,
+							moduleName,
+							{fc: moduleContext.fc, dQ: moduleKey, fB: moduleNameRange}),
+						ae: $jfmengels$elm_review_unused$NoUnused$Exports$IsApplication(0),
+						a1: A3(
+							$elm$core$Set$foldl,
+							F2(
+								function (element, acc) {
+									return A2(
+										$elm$core$Set$insert,
+										_Utils_Tuple2(moduleName, element),
+										acc);
+								}),
+							moduleContext.a1,
+							moduleContext.cn),
+						cd: (A2(
+							$elm$core$Set$member,
+							_List_fromArray(
+								['Test']),
+							moduleContext.bY) || moduleContext.cU) ? A2($elm$core$Set$insert, moduleName, moduleContext.bY) : moduleContext.bY
+					};
+				}))));
+var $jfmengels$elm_review_unused$NoUnused$Exports$collectDocsReferences = function (maybeModuleDocumentation) {
+	if (!maybeModuleDocumentation.$) {
+		var _v1 = maybeModuleDocumentation.a;
+		var range = _v1.a;
+		var moduleDocumentation = _v1.b;
+		var lines = A2(
+			$elm$core$List$drop,
+			1,
+			$elm$core$String$lines(moduleDocumentation));
+		return A4(
+			$jfmengels$elm_review_unused$List$Extra$indexedFilterMap,
+			F2(
+				function (lineNumber, line) {
+					return A2($elm$core$String$startsWith, '@docs ', line) ? $elm$core$Maybe$Just(
+						_Utils_Tuple2(lineNumber, line)) : $elm$core$Maybe$Nothing;
+				}),
+			range.cN.bD + 1,
+			lines,
+			_List_Nil);
+	} else {
+		return _List_Nil;
+	}
+};
+var $jfmengels$elm_review_unused$NoUnused$Exports$ExposedType = function (a) {
+	return {$: 2, a: a};
+};
+var $jfmengels$elm_review_unused$NoUnused$Exports$Function = {$: 0};
+var $jfmengels$elm_review_unused$NoUnused$Exports$TypeOrTypeAlias = {$: 1};
+var $jfmengels$elm_review_unused$NoUnused$Exports$findMap = F2(
+	function (mapper, list) {
+		findMap:
+		while (true) {
+			if (!list.b) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var first = list.a;
+				var rest = list.b;
+				var _v1 = mapper(first);
+				if (!_v1.$) {
+					var value = _v1.a;
+					return $elm$core$Maybe$Just(value);
+				} else {
+					var $temp$mapper = mapper,
+						$temp$list = rest;
+					mapper = $temp$mapper;
+					list = $temp$list;
+					continue findMap;
+				}
+			}
+		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Exports$fromProjectToModule = F2(
-	function (lookupTable, _v0) {
-		return {c3: $elm$core$Set$empty, eG: $elm$core$Dict$empty, c8: false, l: lookupTable, _: $elm$core$Set$empty};
+var $jfmengels$elm_review_unused$NoUnused$Exports$findConstructorsForExposedCustomType = F2(
+	function (typeName, declarations) {
+		return A2(
+			$elm$core$Maybe$withDefault,
+			_List_Nil,
+			A2(
+				$jfmengels$elm_review_unused$NoUnused$Exports$findMap,
+				function (node) {
+					var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+					if (_v0.$ === 2) {
+						var type_ = _v0.a;
+						return (!_Utils_eq(
+							$stil4m$elm_syntax$Elm$Syntax$Node$value(type_.b5),
+							typeName)) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+							A2(
+								$elm$core$List$map,
+								function (c) {
+									return $stil4m$elm_syntax$Elm$Syntax$Node$value(
+										$stil4m$elm_syntax$Elm$Syntax$Node$value(c).b5);
+								},
+								type_.gt));
+					} else {
+						return $elm$core$Maybe$Nothing;
+					}
+				},
+				declarations));
 	});
-var $jfmengels$elm_review_unused$NoUnused$Exports$initialProjectContext = {a3: $elm$core$Dict$empty, a5: $jfmengels$elm_review_unused$NoUnused$Exports$IsApplication, _: $elm$core$Set$empty};
+var $jfmengels$elm_review_unused$NoUnused$Exports$findCommentAtEnd = F2(
+	function (name, _v0) {
+		var row = _v0.a;
+		var comment = _v0.b;
+		return _Utils_eq(comment, '@docs ' + name) ? $elm$core$Maybe$Just(
+			{
+				cp: {bh: 1, bD: row + 1},
+				cN: {bh: 1, bD: row}
+			}) : A2(
+			$elm$core$Maybe$map,
+			function (index) {
+				return {
+					cp: {
+						bh: (index + $elm$core$String$length(name)) + 3,
+						bD: row
+					},
+					cN: {bh: index + 1, bD: row}
+				};
+			},
+			$elm$core$List$head(
+				A2($elm$core$String$indexes, ', ' + name, comment)));
+	});
+var $jfmengels$elm_review_unused$NoUnused$Exports$findCommentInMiddle = F2(
+	function (name, _v0) {
+		var row = _v0.a;
+		var comment = _v0.b;
+		return A2(
+			$elm$core$Maybe$map,
+			function (index) {
+				return {
+					cp: {
+						bh: (index + $elm$core$String$length(name)) + 4,
+						bD: row
+					},
+					cN: {bh: index + 2, bD: row}
+				};
+			},
+			$elm$core$List$head(
+				A2($elm$core$String$indexes, ' ' + (name + ', '), comment)));
+	});
+var $jfmengels$elm_review_unused$NoUnused$Exports$findDocsRangeToRemove = F2(
+	function (name, fullComment) {
+		var _v0 = A2($jfmengels$elm_review_unused$NoUnused$Exports$findCommentInMiddle, name, fullComment);
+		if (!_v0.$) {
+			var range = _v0.a;
+			return $elm$core$Maybe$Just(range);
+		} else {
+			return A2($jfmengels$elm_review_unused$NoUnused$Exports$findCommentAtEnd, name, fullComment);
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Exports$getRangesToRemove = F7(
+	function (comments, canRemoveExposed, name, index, maybePreviousRange, range, nextRange) {
+		if (canRemoveExposed) {
+			var exposeRemoval = function () {
+				if (!index) {
+					return _Utils_update(
+						range,
+						{cp: nextRange.cN});
+				} else {
+					if (maybePreviousRange.$ === 1) {
+						return range;
+					} else {
+						var previousRange = maybePreviousRange.a;
+						return _Utils_update(
+							range,
+							{cN: previousRange.cp});
+					}
+				}
+			}();
+			return A2(
+				$elm$core$List$filterMap,
+				$elm$core$Basics$identity,
+				_List_fromArray(
+					[
+						$elm$core$Maybe$Just(exposeRemoval),
+						A2(
+						$jfmengels$elm_review_unused$NoUnused$Exports$findMap,
+						$jfmengels$elm_review_unused$NoUnused$Exports$findDocsRangeToRemove(name),
+						comments)
+					]));
+		} else {
+			return _List_Nil;
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Exports$untilEndOfVariable = F2(
+	function (name, range) {
+		return _Utils_eq(range.cN.bD, range.cp.bD) ? range : _Utils_update(
+			range,
+			{
+				cp: {
+					bh: range.cN.bh + $elm$core$String$length(name),
+					bD: range.cN.bD
+				}
+			});
+	});
+var $jfmengels$elm_review_unused$NoUnused$Exports$collectExposedElementsHelp = F8(
+	function (docsReferences, declarations, declaredNames, canRemoveExposed, maybePreviousRange, exposingNodes, index, acc) {
+		collectExposedElementsHelp:
+		while (true) {
+			if (!exposingNodes.b) {
+				return acc;
+			} else {
+				var _v1 = exposingNodes.a;
+				var range = _v1.a;
+				var value = _v1.b;
+				var rest = exposingNodes.b;
+				var nextRange = function () {
+					var _v3 = $elm$core$List$head(rest);
+					if (!_v3.$) {
+						var nextNode = _v3.a;
+						return $stil4m$elm_syntax$Elm$Syntax$Node$range(nextNode);
+					} else {
+						return $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange;
+					}
+				}();
+				var newAcc = function () {
+					switch (value.$) {
+						case 1:
+							var name = value.a;
+							return A2($elm$core$Set$member, name, declaredNames) ? A3(
+								$elm$core$Dict$insert,
+								name,
+								{
+									bL: $jfmengels$elm_review_unused$NoUnused$Exports$Function,
+									eD: A2($jfmengels$elm_review_unused$NoUnused$Exports$untilEndOfVariable, name, range),
+									dm: A7($jfmengels$elm_review_unused$NoUnused$Exports$getRangesToRemove, docsReferences, canRemoveExposed, name, index, maybePreviousRange, range, nextRange)
+								},
+								acc) : acc;
+						case 2:
+							var name = value.a;
+							return A2($elm$core$Set$member, name, declaredNames) ? A3(
+								$elm$core$Dict$insert,
+								name,
+								{
+									bL: $jfmengels$elm_review_unused$NoUnused$Exports$TypeOrTypeAlias,
+									eD: A2($jfmengels$elm_review_unused$NoUnused$Exports$untilEndOfVariable, name, range),
+									dm: A7($jfmengels$elm_review_unused$NoUnused$Exports$getRangesToRemove, docsReferences, canRemoveExposed, name, index, maybePreviousRange, range, nextRange)
+								},
+								acc) : acc;
+						case 3:
+							var name = value.a.b5;
+							return A2($elm$core$Set$member, name, declaredNames) ? A3(
+								$elm$core$Dict$insert,
+								name,
+								{
+									bL: $jfmengels$elm_review_unused$NoUnused$Exports$ExposedType(
+										A2($jfmengels$elm_review_unused$NoUnused$Exports$findConstructorsForExposedCustomType, name, declarations)),
+									eD: A2($jfmengels$elm_review_unused$NoUnused$Exports$untilEndOfVariable, name, range),
+									dm: _List_Nil
+								},
+								acc) : acc;
+						default:
+							return acc;
+					}
+				}();
+				var $temp$docsReferences = docsReferences,
+					$temp$declarations = declarations,
+					$temp$declaredNames = declaredNames,
+					$temp$canRemoveExposed = canRemoveExposed,
+					$temp$maybePreviousRange = $elm$core$Maybe$Just(range),
+					$temp$exposingNodes = rest,
+					$temp$index = index + 1,
+					$temp$acc = newAcc;
+				docsReferences = $temp$docsReferences;
+				declarations = $temp$declarations;
+				declaredNames = $temp$declaredNames;
+				canRemoveExposed = $temp$canRemoveExposed;
+				maybePreviousRange = $temp$maybePreviousRange;
+				exposingNodes = $temp$exposingNodes;
+				index = $temp$index;
+				acc = $temp$acc;
+				continue collectExposedElementsHelp;
+			}
+		}
+	});
 var $jfmengels$elm_review_unused$NoUnused$Exports$declarationName = function (declaration) {
 	switch (declaration.$) {
 		case 0:
 			var _function = declaration.a;
 			return $elm$core$Maybe$Just(
 				$stil4m$elm_syntax$Elm$Syntax$Node$value(
-					$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).bT));
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).b5));
 		case 2:
 			var type_ = declaration.a;
 			return $elm$core$Maybe$Just(
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(type_.bT));
+				$stil4m$elm_syntax$Elm$Syntax$Node$value(type_.b5));
 		case 1:
 			var alias_ = declaration.a;
 			return $elm$core$Maybe$Just(
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(alias_.bT));
+				$stil4m$elm_syntax$Elm$Syntax$Node$value(alias_.b5));
 		case 3:
 			var port_ = declaration.a;
 			return $elm$core$Maybe$Just(
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(port_.bT));
+				$stil4m$elm_syntax$Elm$Syntax$Node$value(port_.b5));
 		case 4:
-			var operator = declaration.a.gv;
+			var operator = declaration.a.g3;
 			return $elm$core$Maybe$Just(
 				$stil4m$elm_syntax$Elm$Syntax$Node$value(operator));
 		default:
 			return $elm$core$Maybe$Nothing;
 	}
 };
-var $jfmengels$elm_review_unused$NoUnused$Exports$isType = function (string) {
-	var _v0 = $elm$core$String$uncons(string);
-	if (_v0.$ === 1) {
-		return false;
-	} else {
-		var _v1 = _v0.a;
-		var _char = _v1.a;
-		return $elm$core$Char$isUpper(_char);
-	}
+var $jfmengels$elm_review_unused$NoUnused$Exports$collectExposedElements = F3(
+	function (moduleDocumentation, exposingNodes, declarations) {
+		var docsReferences = $jfmengels$elm_review_unused$NoUnused$Exports$collectDocsReferences(moduleDocumentation);
+		var declaredNames = A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, acc) {
+					var declaration = _v0.b;
+					var _v1 = $jfmengels$elm_review_unused$NoUnused$Exports$declarationName(declaration);
+					if (!_v1.$) {
+						var name = _v1.a;
+						return A2($elm$core$Set$insert, name, acc);
+					} else {
+						return acc;
+					}
+				}),
+			$elm$core$Set$empty,
+			declarations);
+		return A8(
+			$jfmengels$elm_review_unused$NoUnused$Exports$collectExposedElementsHelp,
+			docsReferences,
+			declarations,
+			declaredNames,
+			$elm$core$List$length(exposingNodes) !== 1,
+			$elm$core$Maybe$Nothing,
+			exposingNodes,
+			0,
+			$elm$core$Dict$empty);
+	});
+var $jfmengels$elm_review$Review$Rule$withFullAst = function (_v0) {
+	var fn = _v0.a;
+	var requested = _v0.b;
+	return A2(
+		$jfmengels$elm_review$Review$Rule$ContextCreator,
+		function (data) {
+			return A2(fn, data, data.gg);
+		},
+		requested);
 };
-var $jfmengels$elm_review_unused$NoUnused$Exports$registerMultipleAsUsed = F2(
-	function (usedElements, moduleContext) {
-		return _Utils_update(
-			moduleContext,
-			{
-				_: A2(
-					$elm$core$Set$union,
-					$elm$core$Set$fromList(usedElements),
-					moduleContext._)
-			});
+var $jfmengels$elm_review$Review$Rule$withModuleDocumentation = function (_v0) {
+	var fn = _v0.a;
+	var requested = _v0.b;
+	return A2(
+		$jfmengels$elm_review$Review$Rule$ContextCreator,
+		function (data) {
+			return A2(
+				fn,
+				data,
+				$jfmengels$elm_review$Review$Rule$findModuleDocumentation(data.gg));
+		},
+		requested);
+};
+var $jfmengels$elm_review_unused$NoUnused$Exports$fromProjectToModule = $jfmengels$elm_review$Review$Rule$withModuleDocumentation(
+	$jfmengels$elm_review$Review$Rule$withFullAst(
+		$jfmengels$elm_review$Review$Rule$withModuleNameLookupTable(
+			$jfmengels$elm_review$Review$Rule$initContextCreator(
+				F4(
+					function (lookupTable, ast, moduleDocumentation, projectContext) {
+						var exposed = function () {
+							var _v0 = $stil4m$elm_syntax$Elm$Syntax$Module$exposingList(
+								$stil4m$elm_syntax$Elm$Syntax$Node$value(ast.gT));
+							if (!_v0.$) {
+								return $elm$core$Dict$empty;
+							} else {
+								var explicitlyExposed = _v0.a;
+								return A3($jfmengels$elm_review_unused$NoUnused$Exports$collectExposedElements, moduleDocumentation, explicitlyExposed, ast.e2);
+							}
+						}();
+						return {cU: false, cn: $elm$core$Set$empty, fc: exposed, bY: $elm$core$Set$empty, l: lookupTable, ae: projectContext.ae, a1: $elm$core$Set$empty};
+					})))));
+var $jfmengels$elm_review_unused$NoUnused$Exports$initialProjectContext = {
+	gt: $elm$core$Dict$empty,
+	ba: $elm$core$Dict$empty,
+	ae: $jfmengels$elm_review_unused$NoUnused$Exports$IsApplication(0),
+	a1: $elm$core$Set$empty,
+	cd: $elm$core$Set$singleton(
+		_List_fromArray(
+			['ReviewConfig']))
+};
+var $jfmengels$elm_review_unused$NoUnused$Exports$isMainFunction = F2(
+	function (elmApplicationType, name) {
+		if (!elmApplicationType) {
+			return name === 'main';
+		} else {
+			return (name === 'main') || (name === 'app');
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Exports$doesModuleContainMainFunction = F2(
+	function (projectType, declaration) {
+		if (projectType.$ === 1) {
+			return false;
+		} else {
+			var elmApplicationType = projectType.a;
+			var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
+			if (!_v1.$) {
+				var _function = _v1.a;
+				return A2(
+					$jfmengels$elm_review_unused$NoUnused$Exports$isMainFunction,
+					elmApplicationType,
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(
+						$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).b5));
+			} else {
+				return false;
+			}
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Exports$maybeSetInsert = F2(
+	function (maybeValue, set) {
+		if (!maybeValue.$) {
+			var value = maybeValue.a;
+			return A2($elm$core$Set$insert, value, set);
+		} else {
+			return set;
+		}
 	});
 var $jfmengels$elm_review_unused$NoUnused$Exports$testFunctionName = F2(
 	function (moduleContext, node) {
@@ -21646,26 +22647,21 @@ var $jfmengels$elm_review_unused$NoUnused$Exports$testFunctionName = F2(
 			var _function = _v0.a;
 			var _v1 = A2(
 				$elm$core$Maybe$map,
-				A2(
-					$elm$core$Basics$composeR,
-					$stil4m$elm_syntax$Elm$Syntax$Node$value,
-					A2(
-						$elm$core$Basics$composeR,
-						function ($) {
-							return $.fz;
-						},
-						$stil4m$elm_syntax$Elm$Syntax$Node$value)),
-				_function.gJ);
+				function (_v2) {
+					var value = _v2.b;
+					return $stil4m$elm_syntax$Elm$Syntax$Node$value(value.f7);
+				},
+				_function.hi);
 			if ((!_v1.$) && (_v1.a.$ === 1)) {
-				var _v2 = _v1.a;
-				var typeNode = _v2.a;
+				var _v3 = _v1.a;
+				var typeNode = _v3.a;
 				return (($stil4m$elm_syntax$Elm$Syntax$Node$value(typeNode).b === 'Test') && _Utils_eq(
 					A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, moduleContext.l, typeNode),
 					$elm$core$Maybe$Just(
 						_List_fromArray(
 							['Test'])))) ? $elm$core$Maybe$Just(
 					$stil4m$elm_syntax$Elm$Syntax$Node$value(
-						$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).bT)) : $elm$core$Maybe$Nothing;
+						$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).b5)) : $elm$core$Maybe$Nothing;
 			} else {
 				return $elm$core$Maybe$Nothing;
 			}
@@ -21673,66 +22669,206 @@ var $jfmengels$elm_review_unused$NoUnused$Exports$testFunctionName = F2(
 			return $elm$core$Maybe$Nothing;
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation = F2(
-	function (moduleContext, node) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-		switch (_v0.$) {
-			case 6:
-				var a = _v0.a;
-				var b = _v0.b;
-				return _Utils_ap(
-					A2($jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation, moduleContext, a),
-					A2($jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation, moduleContext, b));
-			case 1:
-				var _v1 = _v0.a;
-				var range = _v1.a;
-				var _v2 = _v1.b;
-				var name = _v2.b;
-				var params = _v0.b;
-				var _v3 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, moduleContext.l, range);
-				if (!_v3.$) {
-					var moduleName = _v3.a;
-					return A2(
-						$elm$core$List$cons,
-						_Utils_Tuple2(moduleName, name),
-						A2(
-							$elm$core$List$concatMap,
-							$jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation(moduleContext),
-							params));
-				} else {
-					return A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation(moduleContext),
-						params);
+var $jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation = F3(
+	function (moduleContext, nodes, acc) {
+		collectTypesFromTypeAnnotation:
+		while (true) {
+			if (!nodes.b) {
+				return acc;
+			} else {
+				var node = nodes.a;
+				var restOfNodes = nodes.b;
+				var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+				switch (_v1.$) {
+					case 6:
+						var left = _v1.a;
+						var right = _v1.b;
+						var $temp$moduleContext = moduleContext,
+							$temp$nodes = A2(
+							$elm$core$List$cons,
+							left,
+							A2($elm$core$List$cons, right, restOfNodes)),
+							$temp$acc = acc;
+						moduleContext = $temp$moduleContext;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectTypesFromTypeAnnotation;
+					case 1:
+						var _v2 = _v1.a;
+						var range = _v2.a;
+						var _v3 = _v2.b;
+						var name = _v3.b;
+						var params = _v1.b;
+						var _v4 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, moduleContext.l, range);
+						if (!_v4.$) {
+							var moduleName = _v4.a;
+							var $temp$moduleContext = moduleContext,
+								$temp$nodes = _Utils_ap(params, restOfNodes),
+								$temp$acc = A2(
+								$elm$core$List$cons,
+								_Utils_Tuple2(moduleName, name),
+								acc);
+							moduleContext = $temp$moduleContext;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue collectTypesFromTypeAnnotation;
+						} else {
+							var $temp$moduleContext = moduleContext,
+								$temp$nodes = _Utils_ap(params, restOfNodes),
+								$temp$acc = acc;
+							moduleContext = $temp$moduleContext;
+							nodes = $temp$nodes;
+							acc = $temp$acc;
+							continue collectTypesFromTypeAnnotation;
+						}
+					case 4:
+						var fields = _v1.a;
+						var subNodes = A2(
+							$elm$core$List$map,
+							function (_v5) {
+								var _v6 = _v5.b;
+								var value = _v6.b;
+								return value;
+							},
+							fields);
+						var $temp$moduleContext = moduleContext,
+							$temp$nodes = _Utils_ap(subNodes, restOfNodes),
+							$temp$acc = acc;
+						moduleContext = $temp$moduleContext;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectTypesFromTypeAnnotation;
+					case 5:
+						var _v7 = _v1.b;
+						var fields = _v7.b;
+						var subNodes = A2(
+							$elm$core$List$map,
+							function (_v8) {
+								var _v9 = _v8.b;
+								var value = _v9.b;
+								return value;
+							},
+							fields);
+						var $temp$moduleContext = moduleContext,
+							$temp$nodes = _Utils_ap(subNodes, restOfNodes),
+							$temp$acc = acc;
+						moduleContext = $temp$moduleContext;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectTypesFromTypeAnnotation;
+					case 3:
+						var list = _v1.a;
+						var $temp$moduleContext = moduleContext,
+							$temp$nodes = _Utils_ap(list, restOfNodes),
+							$temp$acc = acc;
+						moduleContext = $temp$moduleContext;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectTypesFromTypeAnnotation;
+					default:
+						var $temp$moduleContext = moduleContext,
+							$temp$nodes = restOfNodes,
+							$temp$acc = acc;
+						moduleContext = $temp$moduleContext;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue collectTypesFromTypeAnnotation;
 				}
-			case 4:
-				var list = _v0.a;
-				return A2(
-					$elm$core$List$concatMap,
-					$jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation(moduleContext),
-					A2(
-						$elm$core$List$map,
-						A2($elm$core$Basics$composeR, $stil4m$elm_syntax$Elm$Syntax$Node$value, $elm$core$Tuple$second),
-						list));
-			case 5:
-				var list = _v0.b;
-				return A2(
-					$elm$core$List$concatMap,
-					$jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation(moduleContext),
-					A2(
-						$elm$core$List$map,
-						A2($elm$core$Basics$composeR, $stil4m$elm_syntax$Elm$Syntax$Node$value, $elm$core$Tuple$second),
-						$stil4m$elm_syntax$Elm$Syntax$Node$value(list)));
-			case 3:
-				var list = _v0.a;
-				return A2(
-					$elm$core$List$concatMap,
-					$jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation(moduleContext),
-					list);
-			case 0:
-				return _List_Nil;
-			default:
-				return _List_Nil;
+			}
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Exports$findUsedConstructors = F3(
+	function (lookupTable, patterns, acc) {
+		findUsedConstructors:
+		while (true) {
+			if (!patterns.b) {
+				return acc;
+			} else {
+				var pattern = patterns.a;
+				var restOfPatterns = patterns.b;
+				var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(pattern);
+				switch (_v1.$) {
+					case 12:
+						var qualifiedNameRef = _v1.a;
+						var newPatterns = _v1.b;
+						var newAcc = function () {
+							var _v2 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, pattern);
+							if (!_v2.$) {
+								var moduleName = _v2.a;
+								return A2(
+									$elm$core$List$cons,
+									_Utils_Tuple2(moduleName, qualifiedNameRef.b5),
+									acc);
+							} else {
+								return acc;
+							}
+						}();
+						var $temp$lookupTable = lookupTable,
+							$temp$patterns = _Utils_ap(newPatterns, restOfPatterns),
+							$temp$acc = newAcc;
+						lookupTable = $temp$lookupTable;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findUsedConstructors;
+					case 7:
+						var newPatterns = _v1.a;
+						var $temp$lookupTable = lookupTable,
+							$temp$patterns = _Utils_ap(newPatterns, restOfPatterns),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findUsedConstructors;
+					case 9:
+						var left = _v1.a;
+						var right = _v1.b;
+						var $temp$lookupTable = lookupTable,
+							$temp$patterns = A2(
+							$elm$core$List$cons,
+							left,
+							A2($elm$core$List$cons, right, restOfPatterns)),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findUsedConstructors;
+					case 10:
+						var newPatterns = _v1.a;
+						var $temp$lookupTable = lookupTable,
+							$temp$patterns = _Utils_ap(newPatterns, restOfPatterns),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findUsedConstructors;
+					case 13:
+						var node = _v1.a;
+						var $temp$lookupTable = lookupTable,
+							$temp$patterns = A2($elm$core$List$cons, node, restOfPatterns),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findUsedConstructors;
+					case 14:
+						var node = _v1.a;
+						var $temp$lookupTable = lookupTable,
+							$temp$patterns = A2($elm$core$List$cons, node, restOfPatterns),
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findUsedConstructors;
+					default:
+						var $temp$lookupTable = lookupTable,
+							$temp$patterns = restOfPatterns,
+							$temp$acc = acc;
+						lookupTable = $temp$lookupTable;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findUsedConstructors;
+				}
+			}
 		}
 	});
 var $jfmengels$elm_review_unused$NoUnused$Exports$typesUsedInDeclaration = F2(
@@ -21742,63 +22878,82 @@ var $jfmengels$elm_review_unused$NoUnused$Exports$typesUsedInDeclaration = F2(
 			case 0:
 				var _function = _v0.a;
 				return _Utils_Tuple2(
-					A2(
-						$elm$core$Maybe$withDefault,
-						_List_Nil,
-						A2(
-							$elm$core$Maybe$map,
-							A2(
-								$elm$core$Basics$composeR,
-								$stil4m$elm_syntax$Elm$Syntax$Node$value,
-								A2(
-									$elm$core$Basics$composeR,
-									function ($) {
-										return $.fz;
-									},
-									$jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation(moduleContext))),
-							_function.gJ)),
+					function () {
+						var _v1 = _function.hi;
+						if (!_v1.$) {
+							var signature = _v1.a;
+							return A3(
+								$jfmengels$elm_review_unused$NoUnused$Exports$findUsedConstructors,
+								moduleContext.l,
+								$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).eT,
+								A3(
+									$jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation,
+									moduleContext,
+									_List_fromArray(
+										[
+											$stil4m$elm_syntax$Elm$Syntax$Node$value(signature).f7
+										]),
+									_List_Nil));
+						} else {
+							return A3(
+								$jfmengels$elm_review_unused$NoUnused$Exports$findUsedConstructors,
+								moduleContext.l,
+								$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).eT,
+								_List_Nil);
+						}
+					}(),
 					false);
 			case 2:
 				var type_ = _v0.a;
+				var typesUsedInArguments = A3(
+					$elm$core$List$foldl,
+					F2(
+						function (constructor, acc) {
+							return A3(
+								$jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation,
+								moduleContext,
+								$stil4m$elm_syntax$Elm$Syntax$Node$value(constructor).eT,
+								acc);
+						}),
+					_List_Nil,
+					type_.gt);
 				return _Utils_Tuple2(
-					A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation(moduleContext),
-						A2(
-							$elm$core$List$concatMap,
-							A2(
-								$elm$core$Basics$composeR,
-								$stil4m$elm_syntax$Elm$Syntax$Node$value,
-								function ($) {
-									return $.el;
-								}),
-							type_.fV)),
-					!function () {
-						var _v1 = A2(
+					typesUsedInArguments,
+					function () {
+						var _v2 = A2(
 							$elm$core$Maybe$map,
 							function ($) {
-								return $.b4;
+								return $.bL;
 							},
 							A2(
 								$elm$core$Dict$get,
-								$stil4m$elm_syntax$Elm$Syntax$Node$value(type_.bT),
-								moduleContext.eG));
-						if ((!_v1.$) && (_v1.a === 2)) {
-							var _v2 = _v1.a;
-							return true;
-						} else {
+								$stil4m$elm_syntax$Elm$Syntax$Node$value(type_.b5),
+								moduleContext.fc));
+						if ((!_v2.$) && (_v2.a.$ === 2)) {
 							return false;
+						} else {
+							return true;
 						}
 					}());
 			case 1:
 				var alias_ = _v0.a;
 				return _Utils_Tuple2(
-					A2($jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation, moduleContext, alias_.fz),
+					A3(
+						$jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation,
+						moduleContext,
+						_List_fromArray(
+							[alias_.f7]),
+						_List_Nil),
 					false);
 			case 3:
 				var signature = _v0.a;
 				return _Utils_Tuple2(
-					A2($jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation, moduleContext, signature.fz),
+					A3(
+						$jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation,
+						moduleContext,
+						_List_fromArray(
+							[signature.f7]),
+						_List_Nil),
 					false);
 			case 4:
 				return _Utils_Tuple2(_List_Nil, false);
@@ -21806,56 +22961,31 @@ var $jfmengels$elm_review_unused$NoUnused$Exports$typesUsedInDeclaration = F2(
 				return _Utils_Tuple2(_List_Nil, false);
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Exports$declarationListVisitor = F2(
-	function (declarations, moduleContext) {
-		var typesUsedInDeclaration_ = A2(
-			$elm$core$List$map,
-			$jfmengels$elm_review_unused$NoUnused$Exports$typesUsedInDeclaration(moduleContext),
-			declarations);
-		var testFunctions = A2(
-			$elm$core$List$filterMap,
-			$jfmengels$elm_review_unused$NoUnused$Exports$testFunctionName(moduleContext),
-			declarations);
-		var declaredNames = $elm$core$Set$fromList(
-			A2(
-				$elm$core$List$filterMap,
-				A2($elm$core$Basics$composeR, $stil4m$elm_syntax$Elm$Syntax$Node$value, $jfmengels$elm_review_unused$NoUnused$Exports$declarationName),
-				declarations));
-		var allUsedTypes = A2($elm$core$List$concatMap, $elm$core$Tuple$first, typesUsedInDeclaration_);
-		var contextWithUsedElements = A2($jfmengels$elm_review_unused$NoUnused$Exports$registerMultipleAsUsed, allUsedTypes, moduleContext);
-		return _Utils_Tuple2(
-			_List_Nil,
-			_Utils_update(
-				contextWithUsedElements,
-				{
-					c3: $elm$core$Set$fromList(
-						A2(
-							$elm$core$List$append,
-							testFunctions,
-							A2(
-								$elm$core$List$map,
-								$elm$core$Tuple$second,
-								A2(
-									$elm$core$List$concatMap,
-									function (_v0) {
-										var list = _v0.a;
-										var comesFromCustomTypeWithHiddenConstructors = _v0.b;
-										return comesFromCustomTypeWithHiddenConstructors ? _List_Nil : A2(
-											$elm$core$List$filter,
-											function (_v1) {
-												var moduleName = _v1.a;
-												var name = _v1.b;
-												return $jfmengels$elm_review_unused$NoUnused$Exports$isType(name) && _Utils_eq(moduleName, _List_Nil);
-											},
-											list);
-									},
-									typesUsedInDeclaration_)))),
-					eG: (moduleContext.c8 ? $elm$core$Basics$identity : $elm$core$Dict$filter(
-						F2(
-							function (name, _v2) {
-								return A2($elm$core$Set$member, name, declaredNames);
-							})))(contextWithUsedElements.eG)
-				}));
+var $jfmengels$elm_review_unused$NoUnused$Exports$declarationVisitor = F2(
+	function (node, moduleContext) {
+		var _v0 = A2($jfmengels$elm_review_unused$NoUnused$Exports$typesUsedInDeclaration, moduleContext, node);
+		var allUsedTypes = _v0.a;
+		var comesFromCustomTypeWithHiddenConstructors = _v0.b;
+		var used = A3($elm$core$List$foldl, $elm$core$Set$insert, moduleContext.a1, allUsedTypes);
+		var elementsNotToReport = A2(
+			$jfmengels$elm_review_unused$NoUnused$Exports$maybeSetInsert,
+			A2($jfmengels$elm_review_unused$NoUnused$Exports$testFunctionName, moduleContext, node),
+			comesFromCustomTypeWithHiddenConstructors ? moduleContext.cn : A3(
+				$elm$core$List$foldl,
+				F2(
+					function (_v1, acc) {
+						var name = _v1.b;
+						return A2($elm$core$Set$insert, name, acc);
+					}),
+				moduleContext.cn,
+				allUsedTypes));
+		return _Utils_update(
+			moduleContext,
+			{
+				cU: moduleContext.cU || A2($jfmengels$elm_review_unused$NoUnused$Exports$doesModuleContainMainFunction, moduleContext.ae, node),
+				cn: elementsNotToReport,
+				a1: used
+			});
 	});
 var $jfmengels$elm_review_unused$NoUnused$Exports$registerAsUsed = F2(
 	function (_v0, moduleContext) {
@@ -21864,10 +22994,10 @@ var $jfmengels$elm_review_unused$NoUnused$Exports$registerAsUsed = F2(
 		return _Utils_update(
 			moduleContext,
 			{
-				_: A2(
+				a1: A2(
 					$elm$core$Set$insert,
 					_Utils_Tuple2(moduleName, name),
-					moduleContext._)
+					moduleContext.a1)
 			});
 	});
 var $jfmengels$elm_review_unused$NoUnused$Exports$expressionVisitor = F2(
@@ -21879,14 +23009,12 @@ var $jfmengels$elm_review_unused$NoUnused$Exports$expressionVisitor = F2(
 				var _v1 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, moduleContext.l, node);
 				if (!_v1.$) {
 					var moduleName = _v1.a;
-					return _Utils_Tuple2(
-						_List_Nil,
-						A2(
-							$jfmengels$elm_review_unused$NoUnused$Exports$registerAsUsed,
-							_Utils_Tuple2(moduleName, name),
-							moduleContext));
+					return A2(
+						$jfmengels$elm_review_unused$NoUnused$Exports$registerAsUsed,
+						_Utils_Tuple2(moduleName, name),
+						moduleContext);
 				} else {
-					return _Utils_Tuple2(_List_Nil, moduleContext);
+					return moduleContext;
 				}
 			case 22:
 				var _v2 = _v0.a;
@@ -21895,268 +23023,184 @@ var $jfmengels$elm_review_unused$NoUnused$Exports$expressionVisitor = F2(
 				var _v3 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, moduleContext.l, range);
 				if (!_v3.$) {
 					var moduleName = _v3.a;
-					return _Utils_Tuple2(
-						_List_Nil,
-						A2(
-							$jfmengels$elm_review_unused$NoUnused$Exports$registerAsUsed,
-							_Utils_Tuple2(moduleName, name),
-							moduleContext));
+					return A2(
+						$jfmengels$elm_review_unused$NoUnused$Exports$registerAsUsed,
+						_Utils_Tuple2(moduleName, name),
+						moduleContext);
 				} else {
-					return _Utils_Tuple2(_List_Nil, moduleContext);
+					return moduleContext;
 				}
 			case 15:
-				var declarations = _v0.a.ew;
-				var used = A2(
-					$elm$core$List$concatMap,
-					function (declaration) {
-						var _v4 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
-						if (!_v4.$) {
-							var _function = _v4.a;
-							return A2(
-								$elm$core$Maybe$withDefault,
-								_List_Nil,
-								A2(
-									$elm$core$Maybe$map,
-									A2(
-										$elm$core$Basics$composeR,
-										$stil4m$elm_syntax$Elm$Syntax$Node$value,
-										A2(
-											$elm$core$Basics$composeR,
-											function ($) {
-												return $.fz;
-											},
-											$jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation(moduleContext))),
-									_function.gJ));
-						} else {
-							return _List_Nil;
-						}
-					},
-					declarations);
-				return _Utils_Tuple2(
+				var declarations = _v0.a.e2;
+				var used = A3(
+					$elm$core$List$foldl,
+					F2(
+						function (declaration, acc) {
+							var _v4 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
+							if (!_v4.$) {
+								var _function = _v4.a;
+								var _v5 = _function.hi;
+								if (!_v5.$) {
+									var signature = _v5.a;
+									return A3(
+										$jfmengels$elm_review_unused$NoUnused$Exports$findUsedConstructors,
+										moduleContext.l,
+										$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).eT,
+										A3(
+											$jfmengels$elm_review_unused$NoUnused$Exports$collectTypesFromTypeAnnotation,
+											moduleContext,
+											_List_fromArray(
+												[
+													$stil4m$elm_syntax$Elm$Syntax$Node$value(signature).f7
+												]),
+											acc));
+								} else {
+									return A3(
+										$jfmengels$elm_review_unused$NoUnused$Exports$findUsedConstructors,
+										moduleContext.l,
+										$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).eT,
+										acc);
+								}
+							} else {
+								var pattern = _v4.a;
+								return A3(
+									$jfmengels$elm_review_unused$NoUnused$Exports$findUsedConstructors,
+									moduleContext.l,
+									_List_fromArray(
+										[pattern]),
+									acc);
+							}
+						}),
 					_List_Nil,
-					A2($jfmengels$elm_review_unused$NoUnused$Exports$registerMultipleAsUsed, used, moduleContext));
+					declarations);
+				return _Utils_update(
+					moduleContext,
+					{
+						a1: A3($elm$core$List$foldl, $elm$core$Set$insert, moduleContext.a1, used)
+					});
+			case 16:
+				var cases = _v0.a.go;
+				var usedConstructors = A3(
+					$jfmengels$elm_review_unused$NoUnused$Exports$findUsedConstructors,
+					moduleContext.l,
+					A2($elm$core$List$map, $elm$core$Tuple$first, cases),
+					_List_Nil);
+				return _Utils_update(
+					moduleContext,
+					{
+						a1: A3($elm$core$List$foldl, $elm$core$Set$insert, moduleContext.a1, usedConstructors)
+					});
 			default:
-				return _Utils_Tuple2(_List_Nil, moduleContext);
+				return moduleContext;
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Exports$importVisitor = F2(
-	function (node, moduleContext) {
-		var _v0 = A2(
-			$elm$core$Maybe$map,
-			$stil4m$elm_syntax$Elm$Syntax$Node$value,
-			$stil4m$elm_syntax$Elm$Syntax$Node$value(node).dJ);
+var $jfmengels$elm_review_unused$NoUnused$Exports$collectUsedFromImport = F3(
+	function (moduleName, exposingList, used) {
+		var _v0 = A2($elm$core$Maybe$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, exposingList);
 		if (!_v0.$) {
 			if (_v0.a.$ === 1) {
 				var list = _v0.a.a;
-				var moduleName = $stil4m$elm_syntax$Elm$Syntax$Node$value(
-					$stil4m$elm_syntax$Elm$Syntax$Node$value(node).dn);
-				var usedElements = A2(
-					$elm$core$List$filterMap,
-					A2(
-						$elm$core$Basics$composeR,
-						$stil4m$elm_syntax$Elm$Syntax$Node$value,
-						function (element) {
+				return A3(
+					$elm$core$List$foldl,
+					F2(
+						function (_v1, acc) {
+							var element = _v1.b;
 							switch (element.$) {
 								case 1:
 									var name = element.a;
-									return $elm$core$Maybe$Just(
-										_Utils_Tuple2(moduleName, name));
+									return A2(
+										$elm$core$Set$insert,
+										_Utils_Tuple2(moduleName, name),
+										acc);
 								case 2:
 									var name = element.a;
-									return $elm$core$Maybe$Just(
-										_Utils_Tuple2(moduleName, name));
+									return A2(
+										$elm$core$Set$insert,
+										_Utils_Tuple2(moduleName, name),
+										acc);
 								case 3:
-									var name = element.a.bT;
-									return $elm$core$Maybe$Just(
-										_Utils_Tuple2(moduleName, name));
+									var name = element.a.b5;
+									return A2(
+										$elm$core$Set$insert,
+										_Utils_Tuple2(moduleName, name),
+										acc);
 								default:
-									return $elm$core$Maybe$Nothing;
+									return acc;
 							}
 						}),
+					used,
 					list);
-				return _Utils_Tuple2(
-					_List_Nil,
-					A2($jfmengels$elm_review_unused$NoUnused$Exports$registerMultipleAsUsed, usedElements, moduleContext));
 			} else {
-				return _Utils_Tuple2(_List_Nil, moduleContext);
+				return used;
 			}
 		} else {
-			return _Utils_Tuple2(_List_Nil, moduleContext);
+			return used;
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Exports$ExposedType = 2;
-var $jfmengels$elm_review_unused$NoUnused$Exports$Function = 0;
-var $jfmengels$elm_review_unused$NoUnused$Exports$TypeOrTypeAlias = 1;
-var $elm$core$List$map3 = _List_map3;
-var $jfmengels$elm_review_unused$NoUnused$Exports$untilEndOfVariable = F2(
-	function (name, range) {
-		return _Utils_eq(range.cm.bs, range.b6.bs) ? range : _Utils_update(
-			range,
+var $jfmengels$elm_review_unused$NoUnused$Exports$importVisitor = F2(
+	function (_v0, moduleContext) {
+		var import_ = _v0.b;
+		var moduleName = $stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dR);
+		return _Utils_update(
+			moduleContext,
 			{
-				b6: {
-					bb: range.cm.bb + $elm$core$String$length(name),
-					bs: range.cm.bs
-				}
+				bY: A2($elm$core$Set$insert, moduleName, moduleContext.bY),
+				a1: A3($jfmengels$elm_review_unused$NoUnused$Exports$collectUsedFromImport, moduleName, import_.ef, moduleContext.a1)
 			});
-	});
-var $jfmengels$elm_review_unused$NoUnused$Exports$collectExposedElements = function (nodes) {
-	var listWithPreviousRange = A2(
-		$elm$core$List$cons,
-		$elm$core$Maybe$Nothing,
-		A2(
-			$elm$core$List$take,
-			$elm$core$List$length(nodes) - 1,
-			A2(
-				$elm$core$List$map,
-				A2($elm$core$Basics$composeR, $stil4m$elm_syntax$Elm$Syntax$Node$range, $elm$core$Maybe$Just),
-				nodes)));
-	var listWithNextRange = _Utils_ap(
-		A2(
-			$elm$core$List$drop,
-			1,
-			A2($elm$core$List$map, $stil4m$elm_syntax$Elm$Syntax$Node$range, nodes)),
-		_List_fromArray(
-			[
-				{
-				b6: {bb: 0, bs: 0},
-				cm: {bb: 0, bs: 0}
-			}
-			]));
-	return $elm$core$Dict$fromList(
-		A2(
-			$elm$core$List$filterMap,
-			$elm$core$Basics$identity,
-			A2(
-				$elm$core$List$indexedMap,
-				F2(
-					function (index, _v0) {
-						var maybePreviousRange = _v0.a;
-						var _v1 = _v0.b;
-						var range = _v1.a;
-						var value = _v1.b;
-						var nextRange = _v0.c;
-						var rangeToRemove = function () {
-							if ($elm$core$List$length(nodes) === 1) {
-								return $elm$core$Maybe$Nothing;
-							} else {
-								if (!index) {
-									return $elm$core$Maybe$Just(
-										_Utils_update(
-											range,
-											{b6: nextRange.cm}));
-								} else {
-									if (maybePreviousRange.$ === 1) {
-										return $elm$core$Maybe$Just(range);
-									} else {
-										var previousRange = maybePreviousRange.a;
-										return $elm$core$Maybe$Just(
-											_Utils_update(
-												range,
-												{cm: previousRange.b6}));
-									}
-								}
-							}
-						}();
-						switch (value.$) {
-							case 1:
-								var name = value.a;
-								return $elm$core$Maybe$Just(
-									_Utils_Tuple2(
-										name,
-										{
-											b4: 0,
-											d6: A2($jfmengels$elm_review_unused$NoUnused$Exports$untilEndOfVariable, name, range),
-											d7: rangeToRemove
-										}));
-							case 2:
-								var name = value.a;
-								return $elm$core$Maybe$Just(
-									_Utils_Tuple2(
-										name,
-										{
-											b4: 1,
-											d6: A2($jfmengels$elm_review_unused$NoUnused$Exports$untilEndOfVariable, name, range),
-											d7: rangeToRemove
-										}));
-							case 3:
-								var name = value.a.bT;
-								return $elm$core$Maybe$Just(
-									_Utils_Tuple2(
-										name,
-										{
-											b4: 2,
-											d6: A2($jfmengels$elm_review_unused$NoUnused$Exports$untilEndOfVariable, name, range),
-											d7: $elm$core$Maybe$Nothing
-										}));
-							default:
-								return $elm$core$Maybe$Nothing;
-						}
-					}),
-				A4(
-					$elm$core$List$map3,
-					F3(
-						function (prev, next, current) {
-							return _Utils_Tuple3(prev, current, next);
-						}),
-					listWithPreviousRange,
-					listWithNextRange,
-					nodes))));
-};
-var $jfmengels$elm_review_unused$NoUnused$Exports$moduleDefinitionVisitor = F2(
-	function (moduleNode, moduleContext) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Module$exposingList(
-			$stil4m$elm_syntax$Elm$Syntax$Node$value(moduleNode));
-		if (!_v0.$) {
-			return _Utils_Tuple2(
-				_List_Nil,
-				_Utils_update(
-					moduleContext,
-					{c8: true}));
-		} else {
-			var list = _v0.a;
-			return _Utils_Tuple2(
-				_List_Nil,
-				_Utils_update(
-					moduleContext,
-					{
-						eG: $jfmengels$elm_review_unused$NoUnused$Exports$collectExposedElements(list)
-					}));
-		}
 	});
 var $jfmengels$elm_review_unused$NoUnused$Exports$moduleVisitor = function (schema) {
 	return A2(
 		$jfmengels$elm_review$Review$Rule$withExpressionEnterVisitor,
-		$jfmengels$elm_review_unused$NoUnused$Exports$expressionVisitor,
+		F2(
+			function (node, context) {
+				return _Utils_Tuple2(
+					_List_Nil,
+					A2($jfmengels$elm_review_unused$NoUnused$Exports$expressionVisitor, node, context));
+			}),
 		A2(
-			$jfmengels$elm_review$Review$Rule$withDeclarationListVisitor,
-			$jfmengels$elm_review_unused$NoUnused$Exports$declarationListVisitor,
+			$jfmengels$elm_review$Review$Rule$withDeclarationEnterVisitor,
+			F2(
+				function (node, context) {
+					return _Utils_Tuple2(
+						_List_Nil,
+						A2($jfmengels$elm_review_unused$NoUnused$Exports$declarationVisitor, node, context));
+				}),
 			A2(
 				$jfmengels$elm_review$Review$Rule$withImportVisitor,
-				$jfmengels$elm_review_unused$NoUnused$Exports$importVisitor,
-				A2($jfmengels$elm_review$Review$Rule$withModuleDefinitionVisitor, $jfmengels$elm_review_unused$NoUnused$Exports$moduleDefinitionVisitor, schema))));
+				F2(
+					function (node, context) {
+						return _Utils_Tuple2(
+							_List_Nil,
+							A2($jfmengels$elm_review_unused$NoUnused$Exports$importVisitor, node, context));
+					}),
+				schema)));
 };
 var $jfmengels$elm_review_unused$NoUnused$Exports$rule = $jfmengels$elm_review$Review$Rule$fromProjectRuleSchema(
-	A2(
-		$jfmengels$elm_review$Review$Rule$withFinalProjectEvaluation,
-		$jfmengels$elm_review_unused$NoUnused$Exports$finalEvaluationForProject,
+	$jfmengels$elm_review$Review$Rule$providesFixesForProjectRule(
 		A2(
-			$jfmengels$elm_review$Review$Rule$withElmJsonProjectVisitor,
-			$jfmengels$elm_review_unused$NoUnused$Exports$elmJsonVisitor,
-			$jfmengels$elm_review$Review$Rule$withContextFromImportedModules(
+			$jfmengels$elm_review$Review$Rule$withFinalProjectEvaluation,
+			$jfmengels$elm_review_unused$NoUnused$Exports$finalEvaluationForProject,
+			A2(
+				$jfmengels$elm_review$Review$Rule$withElmJsonProjectVisitor,
+				F2(
+					function (elmJson, context) {
+						return _Utils_Tuple2(
+							_List_Nil,
+							A2($jfmengels$elm_review_unused$NoUnused$Exports$elmJsonVisitor, elmJson, context));
+					}),
 				A2(
 					$jfmengels$elm_review$Review$Rule$withModuleContextUsingContextCreator,
-					{
-						bG: $jfmengels$elm_review_unused$NoUnused$Exports$foldProjectContexts,
-						b9: $jfmengels$elm_review$Review$Rule$withMetadata(
-							$jfmengels$elm_review$Review$Rule$withModuleKey(
-								$jfmengels$elm_review$Review$Rule$initContextCreator($jfmengels$elm_review_unused$NoUnused$Exports$fromModuleToProject))),
-						eO: $jfmengels$elm_review$Review$Rule$withModuleNameLookupTable(
-							$jfmengels$elm_review$Review$Rule$initContextCreator($jfmengels$elm_review_unused$NoUnused$Exports$fromProjectToModule))
-					},
+					{bS: $jfmengels$elm_review_unused$NoUnused$Exports$foldProjectContexts, cu: $jfmengels$elm_review_unused$NoUnused$Exports$fromModuleToProject, fk: $jfmengels$elm_review_unused$NoUnused$Exports$fromProjectToModule},
 					A2(
 						$jfmengels$elm_review$Review$Rule$withModuleVisitor,
 						$jfmengels$elm_review_unused$NoUnused$Exports$moduleVisitor,
 						A2($jfmengels$elm_review$Review$Rule$newProjectRuleSchema, 'NoUnused.Exports', $jfmengels$elm_review_unused$NoUnused$Exports$initialProjectContext)))))));
+var $jfmengels$elm_review_unused$NoUnused$Modules$Application = function (a) {
+	return {$: 1, a: a};
+};
+var $jfmengels$elm_review_unused$NoUnused$Modules$ElmApplication = 0;
+var $jfmengels$elm_review_unused$NoUnused$Modules$LamderaApplication = 1;
+var $jfmengels$elm_review_unused$NoUnused$Modules$Package = {$: 0};
 var $jfmengels$elm_review_unused$NoUnused$Modules$elmJsonVisitor = F2(
 	function (maybeProject, projectContext) {
 		var _v0 = function () {
@@ -22166,32 +23210,42 @@ var $jfmengels$elm_review_unused$NoUnused$Modules$elmJsonVisitor = F2(
 					return $.e;
 				},
 				maybeProject);
-			if ((!_v1.$) && (_v1.a.$ === 1)) {
-				var exposed = _v1.a.a.eG;
-				if (!exposed.$) {
-					var names = exposed.a;
-					return _Utils_Tuple2(names, true);
+			if (!_v1.$) {
+				if (_v1.a.$ === 1) {
+					var exposed = _v1.a.a.fc;
+					if (!exposed.$) {
+						var names = exposed.a;
+						return _Utils_Tuple2(names, $jfmengels$elm_review_unused$NoUnused$Modules$Package);
+					} else {
+						var fakeDict = exposed.a;
+						return _Utils_Tuple2(
+							A2($elm$core$List$concatMap, $elm$core$Tuple$second, fakeDict),
+							$jfmengels$elm_review_unused$NoUnused$Modules$Package);
+					}
 				} else {
-					var fakeDict = exposed.a;
+					var depsDirect = _v1.a.a.e6;
+					var elmApplicationType = $jfmengels$elm_review_unused$NoUnused$LamderaSupport$isLamderaApplication(depsDirect) ? 1 : 0;
 					return _Utils_Tuple2(
-						A2($elm$core$List$concatMap, $elm$core$Tuple$second, fakeDict),
-						true);
+						_List_Nil,
+						$jfmengels$elm_review_unused$NoUnused$Modules$Application(elmApplicationType));
 				}
 			} else {
-				return _Utils_Tuple2(_List_Nil, false);
+				return _Utils_Tuple2(
+					_List_Nil,
+					$jfmengels$elm_review_unused$NoUnused$Modules$Application(0));
 			}
 		}();
 		var exposedModules = _v0.a;
-		var isPackage = _v0.b;
+		var projectType = _v0.b;
 		return _Utils_Tuple2(
 			_List_Nil,
 			_Utils_update(
 				projectContext,
 				{
-					au: isPackage,
-					a8: A2(
+					ae: projectType,
+					cd: A2(
 						$elm$core$Set$union,
-						projectContext.a8,
+						projectContext.cd,
 						$elm$core$Set$fromList(
 							A2(
 								$elm$core$List$map,
@@ -22204,21 +23258,21 @@ var $jfmengels$elm_review_unused$NoUnused$Modules$elmJsonVisitor = F2(
 	});
 var $jfmengels$elm_review_unused$NoUnused$Modules$error = function (_v0) {
 	var moduleName = _v0.a;
-	var moduleKey = _v0.b.dm;
-	var moduleNameLocation = _v0.b.e3;
+	var moduleKey = _v0.b.dQ;
+	var moduleNameLocation = _v0.b.fB;
 	return A3(
 		$jfmengels$elm_review$Review$Rule$errorForModule,
 		moduleKey,
 		{
-			c2: _List_fromArray(
+			dx: _List_fromArray(
 				['This module is never used. You may want to remove it to keep your project clean, and maybe detect some unused code in your project.']),
-			a2: 'Module `' + (A2($elm$core$String$join, '.', moduleName) + '` is never used.')
+			a8: 'Module `' + (A2($elm$core$String$join, '.', moduleName) + '` is never used.')
 		},
 		moduleNameLocation);
 };
 var $jfmengels$elm_review_unused$NoUnused$Modules$finalEvaluationForProject = function (_v0) {
-	var modules = _v0.a3;
-	var usedModules = _v0.a8;
+	var modules = _v0.ba;
+	var usedModules = _v0.cd;
 	return A2(
 		$elm$core$List$map,
 		$jfmengels$elm_review_unused$NoUnused$Modules$error,
@@ -22234,56 +23288,70 @@ var $jfmengels$elm_review_unused$NoUnused$Modules$finalEvaluationForProject = fu
 var $jfmengels$elm_review_unused$NoUnused$Modules$foldProjectContexts = F2(
 	function (newContext, previousContext) {
 		return {
-			au: previousContext.au,
-			a3: A2($elm$core$Dict$union, previousContext.a3, newContext.a3),
-			a8: A2($elm$core$Set$union, previousContext.a8, newContext.a8)
+			ba: A2($elm$core$Dict$union, newContext.ba, previousContext.ba),
+			ae: previousContext.ae,
+			cd: A2($elm$core$Set$union, newContext.cd, previousContext.cd)
 		};
 	});
-var $jfmengels$elm_review_unused$NoUnused$Modules$fromModuleToProject = F3(
-	function (moduleKey, moduleName, moduleContext) {
-		return {
-			au: moduleContext.au,
-			a3: A2(
-				$elm$core$Dict$singleton,
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(moduleName),
-				{
-					dm: moduleKey,
-					e3: $stil4m$elm_syntax$Elm$Syntax$Node$range(moduleName)
-				}),
-			a8: (A2(
-				$elm$core$Set$member,
-				_List_fromArray(
-					['Test']),
-				moduleContext.bM) || moduleContext.cZ) ? A2(
-				$elm$core$Set$insert,
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(moduleName),
-				moduleContext.bM) : moduleContext.bM
-		};
-	});
-var $jfmengels$elm_review_unused$NoUnused$Modules$fromProjectToModule = F3(
-	function (_v0, _v1, projectContext) {
-		return {cZ: false, bM: $elm$core$Set$empty, au: projectContext.au};
+var $jfmengels$elm_review_unused$NoUnused$Modules$fromModuleToProject = $jfmengels$elm_review$Review$Rule$withModuleKey(
+	$jfmengels$elm_review$Review$Rule$withModuleNameNode(
+		$jfmengels$elm_review$Review$Rule$initContextCreator(
+			F3(
+				function (_v0, moduleKey, moduleContext) {
+					var moduleNameRange = _v0.a;
+					var moduleName = _v0.b;
+					return {
+						ba: A2(
+							$elm$core$Dict$singleton,
+							moduleName,
+							{dQ: moduleKey, fB: moduleNameRange}),
+						ae: moduleContext.ae,
+						cd: (A2(
+							$elm$core$Set$member,
+							_List_fromArray(
+								['Test']),
+							moduleContext.bY) || moduleContext.cU) ? A2($elm$core$Set$insert, moduleName, moduleContext.bY) : moduleContext.bY
+					};
+				}))));
+var $jfmengels$elm_review_unused$NoUnused$Modules$fromProjectToModule = $jfmengels$elm_review$Review$Rule$initContextCreator(
+	function (projectContext) {
+		return {cU: false, bY: $elm$core$Set$empty, ae: projectContext.ae};
 	});
 var $jfmengels$elm_review_unused$NoUnused$Modules$initialProjectContext = {
-	au: false,
-	a3: $elm$core$Dict$empty,
-	a8: $elm$core$Set$singleton(
+	ba: $elm$core$Dict$empty,
+	ae: $jfmengels$elm_review_unused$NoUnused$Modules$Application(0),
+	cd: $elm$core$Set$singleton(
 		_List_fromArray(
 			['ReviewConfig']))
 };
+var $jfmengels$elm_review_unused$NoUnused$Modules$isMainFunction = function (elmApplicationType) {
+	if (!elmApplicationType) {
+		return function (name) {
+			return name === 'main';
+		};
+	} else {
+		return function (name) {
+			return (name === 'main') || (name === 'app');
+		};
+	}
+};
 var $jfmengels$elm_review_unused$NoUnused$Modules$declarationListVisitor = F2(
 	function (list, context) {
-		if (context.au) {
+		var _v0 = context.ae;
+		if (!_v0.$) {
 			return _Utils_Tuple2(_List_Nil, context);
 		} else {
+			var elmApplicationType = _v0.a;
+			var isMain = $jfmengels$elm_review_unused$NoUnused$Modules$isMainFunction(elmApplicationType);
 			var containsMainFunction = A2(
 				$elm$core$List$any,
 				function (declaration) {
-					var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
-					if (!_v0.$) {
-						var _function = _v0.a;
-						return $stil4m$elm_syntax$Elm$Syntax$Node$value(
-							$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).bT) === 'main';
+					var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
+					if (!_v1.$) {
+						var _function = _v1.a;
+						return isMain(
+							$stil4m$elm_syntax$Elm$Syntax$Node$value(
+								$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).b5));
 					} else {
 						return false;
 					}
@@ -22293,12 +23361,12 @@ var $jfmengels$elm_review_unused$NoUnused$Modules$declarationListVisitor = F2(
 				_List_Nil,
 				_Utils_update(
 					context,
-					{cZ: containsMainFunction}));
+					{cU: containsMainFunction}));
 		}
 	});
 var $jfmengels$elm_review_unused$NoUnused$Modules$moduleNameForImport = function (node) {
 	return $stil4m$elm_syntax$Elm$Syntax$Node$value(
-		$stil4m$elm_syntax$Elm$Syntax$Node$value(node).dn);
+		$stil4m$elm_syntax$Elm$Syntax$Node$value(node).dR);
 };
 var $jfmengels$elm_review_unused$NoUnused$Modules$importVisitor = F2(
 	function (node, context) {
@@ -22307,10 +23375,10 @@ var $jfmengels$elm_review_unused$NoUnused$Modules$importVisitor = F2(
 			_Utils_update(
 				context,
 				{
-					bM: A2(
+					bY: A2(
 						$elm$core$Set$insert,
 						$jfmengels$elm_review_unused$NoUnused$Modules$moduleNameForImport(node),
-						context.bM)
+						context.bY)
 				}));
 	});
 var $jfmengels$elm_review_unused$NoUnused$Modules$moduleVisitor = function (schema) {
@@ -22327,123 +23395,709 @@ var $jfmengels$elm_review_unused$NoUnused$Modules$rule = $jfmengels$elm_review$R
 			$jfmengels$elm_review$Review$Rule$withElmJsonProjectVisitor,
 			$jfmengels$elm_review_unused$NoUnused$Modules$elmJsonVisitor,
 			A2(
-				$jfmengels$elm_review$Review$Rule$withModuleContext,
-				{bG: $jfmengels$elm_review_unused$NoUnused$Modules$foldProjectContexts, b9: $jfmengels$elm_review_unused$NoUnused$Modules$fromModuleToProject, eO: $jfmengels$elm_review_unused$NoUnused$Modules$fromProjectToModule},
+				$jfmengels$elm_review$Review$Rule$withModuleContextUsingContextCreator,
+				{bS: $jfmengels$elm_review_unused$NoUnused$Modules$foldProjectContexts, cu: $jfmengels$elm_review_unused$NoUnused$Modules$fromModuleToProject, fk: $jfmengels$elm_review_unused$NoUnused$Modules$fromProjectToModule},
 				A2(
 					$jfmengels$elm_review$Review$Rule$withModuleVisitor,
 					$jfmengels$elm_review_unused$NoUnused$Modules$moduleVisitor,
 					A2($jfmengels$elm_review$Review$Rule$newProjectRuleSchema, 'NoUnused.Modules', $jfmengels$elm_review_unused$NoUnused$Modules$initialProjectContext))))));
-var $jfmengels$elm_review_unused$NoUnused$Parameters$rememberValue = F2(
-	function (value, context) {
-		return A2($elm$core$Set$insert, value, context);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$rememberRecordPattern = F2(
-	function (list, context) {
-		return A3(
-			$elm$core$List$foldl,
-			A2($elm$core$Basics$composeR, $stil4m$elm_syntax$Elm$Syntax$Node$value, $jfmengels$elm_review_unused$NoUnused$Parameters$rememberValue),
-			context,
-			list);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$rememberPattern = F2(
-	function (_v0, context) {
-		rememberPattern:
+var $jfmengels$elm_review_unused$NoUnused$Parameters$NamedFunction = 0;
+var $jfmengels$elm_review_unused$NoUnused$Parameters$getArgNamesHelp = F3(
+	function (declared, index, acc) {
+		getArgNamesHelp:
 		while (true) {
-			var pattern = _v0.b;
-			switch (pattern.$) {
-				case 0:
-					return context;
-				case 11:
-					var value = pattern.a;
-					return A2($jfmengels$elm_review_unused$NoUnused$Parameters$rememberValue, value, context);
-				case 7:
-					var patterns = pattern.a;
-					return A2($jfmengels$elm_review_unused$NoUnused$Parameters$rememberPatternList, patterns, context);
-				case 8:
-					var values = pattern.a;
-					return A2($jfmengels$elm_review_unused$NoUnused$Parameters$rememberRecordPattern, values, context);
-				case 9:
-					var first = pattern.a;
-					var second = pattern.b;
-					return A2(
-						$jfmengels$elm_review_unused$NoUnused$Parameters$rememberPatternList,
-						_List_fromArray(
-							[first, second]),
-						context);
-				case 10:
-					var patterns = pattern.a;
-					return A2($jfmengels$elm_review_unused$NoUnused$Parameters$rememberPatternList, patterns, context);
-				case 12:
-					var patterns = pattern.b;
-					return A2($jfmengels$elm_review_unused$NoUnused$Parameters$rememberPatternList, patterns, context);
-				case 13:
-					var inner = pattern.a;
-					var name = pattern.b;
-					var $temp$_v0 = inner,
-						$temp$context = A2(
-						$jfmengels$elm_review_unused$NoUnused$Parameters$rememberValue,
-						$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
-						context);
-					_v0 = $temp$_v0;
-					context = $temp$context;
-					continue rememberPattern;
-				case 14:
-					var inner = pattern.a;
-					var $temp$_v0 = inner,
-						$temp$context = context;
-					_v0 = $temp$_v0;
-					context = $temp$context;
-					continue rememberPattern;
-				default:
-					return context;
+			if (!declared.b) {
+				return acc;
+			} else {
+				var args = declared.a;
+				var restOfDeclared = declared.b;
+				var newAcc = function () {
+					if (args.b && (!args.b.b)) {
+						var arg = args.a;
+						return A3($elm$core$Dict$insert, index, arg.b5, acc);
+					} else {
+						return acc;
+					}
+				}();
+				var $temp$declared = restOfDeclared,
+					$temp$index = index + 1,
+					$temp$acc = newAcc;
+				declared = $temp$declared;
+				index = $temp$index;
+				acc = $temp$acc;
+				continue getArgNamesHelp;
 			}
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$rememberPatternList = F2(
-	function (list, context) {
-		return A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Parameters$rememberPattern, context, list);
+var $jfmengels$elm_review_unused$NoUnused$Parameters$getArgNames = function (declared) {
+	return A3($jfmengels$elm_review_unused$NoUnused$Parameters$getArgNamesHelp, declared, 0, $elm$core$Dict$empty);
+};
+var $jfmengels$elm_review_unused$NoUnused$Parameters$Alias = 1;
+var $jfmengels$elm_review_unused$NoUnused$Parameters$Parameter = 0;
+var $jfmengels$elm_review_unused$NoUnused$Parameters$TupleWithoutVariables = 2;
+var $jfmengels$elm_review_unused$NoUnused$Parameters$formatRecord = function (fields) {
+	return '{ ' + (A2($elm$core$String$join, ', ', fields) + ' }');
+};
+var $jfmengels$elm_review_unused$NoUnused$Parameters$isPatternWildCard = function (node) {
+	isPatternWildCard:
+	while (true) {
+		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+		switch (_v0.$) {
+			case 14:
+				var pattern = _v0.a;
+				var $temp$node = pattern;
+				node = $temp$node;
+				continue isPatternWildCard;
+			case 0:
+				return true;
+			default:
+				return false;
+		}
+	}
+};
+var $jfmengels$elm_review_unused$NoUnused$Parameters$getParametersFromAsPattern = F3(
+	function (source, pattern, asName) {
+		var parametersFromPatterns = A2($jfmengels$elm_review_unused$NoUnused$Parameters$getParametersFromPatterns, source, pattern);
+		var asParameter = {
+			bO: _List_fromArray(
+				[
+					$jfmengels$elm_review$Review$Fix$removeRange(
+					{
+						cp: $stil4m$elm_syntax$Elm$Syntax$Node$range(asName).cp,
+						cN: $stil4m$elm_syntax$Elm$Syntax$Node$range(pattern).cp
+					})
+				]),
+			b1: 1,
+			b5: $stil4m$elm_syntax$Elm$Syntax$Node$value(asName),
+			eD: $stil4m$elm_syntax$Elm$Syntax$Node$range(asName),
+			hj: source
+		};
+		return A2($elm$core$List$cons, asParameter, parametersFromPatterns);
 	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$rememberFunctionImplementation = F2(
-	function (_v0, context) {
-		var _arguments = _v0.b.el;
-		return A2($jfmengels$elm_review_unused$NoUnused$Parameters$rememberPatternList, _arguments, context);
+var $jfmengels$elm_review_unused$NoUnused$Parameters$getParametersFromPatterns = F2(
+	function (source, node) {
+		getParametersFromPatterns:
+		while (true) {
+			var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+			switch (_v0.$) {
+				case 14:
+					var pattern = _v0.a;
+					var $temp$source = source,
+						$temp$node = pattern;
+					source = $temp$source;
+					node = $temp$node;
+					continue getParametersFromPatterns;
+				case 11:
+					var name = _v0.a;
+					return _List_fromArray(
+						[
+							{
+							bO: _List_fromArray(
+								[
+									A2(
+									$jfmengels$elm_review$Review$Fix$replaceRangeBy,
+									$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+									'_')
+								]),
+							b1: 0,
+							b5: name,
+							eD: $stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+							hj: source
+						}
+						]);
+				case 13:
+					var pattern = _v0.a;
+					var asName = _v0.b;
+					return A3($jfmengels$elm_review_unused$NoUnused$Parameters$getParametersFromAsPattern, source, pattern, asName);
+				case 8:
+					var fields = _v0.a;
+					if (fields.b && (!fields.b.b)) {
+						var field = fields.a;
+						return _List_fromArray(
+							[
+								{
+								bO: _List_fromArray(
+									[
+										A2(
+										$jfmengels$elm_review$Review$Fix$replaceRangeBy,
+										$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+										'_')
+									]),
+								b1: 0,
+								b5: $stil4m$elm_syntax$Elm$Syntax$Node$value(field),
+								eD: $stil4m$elm_syntax$Elm$Syntax$Node$range(field),
+								hj: source
+							}
+							]);
+					} else {
+						var fieldNames = A2($elm$core$List$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, fields);
+						return A2(
+							$elm$core$List$map,
+							function (field) {
+								return {
+									bO: _List_fromArray(
+										[
+											A2(
+											$jfmengels$elm_review$Review$Fix$replaceRangeBy,
+											$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+											$jfmengels$elm_review_unused$NoUnused$Parameters$formatRecord(
+												A2(
+													$elm$core$List$filter,
+													function (f) {
+														return !_Utils_eq(
+															f,
+															$stil4m$elm_syntax$Elm$Syntax$Node$value(field));
+													},
+													fieldNames)))
+										]),
+									b1: 0,
+									b5: $stil4m$elm_syntax$Elm$Syntax$Node$value(field),
+									eD: $stil4m$elm_syntax$Elm$Syntax$Node$range(field),
+									hj: source
+								};
+							},
+							fields);
+					}
+				case 7:
+					var patterns = _v0.a;
+					var parametersFromPatterns = A2(
+						$elm$core$List$concatMap,
+						$jfmengels$elm_review_unused$NoUnused$Parameters$getParametersFromPatterns(source),
+						patterns);
+					return ($elm$core$List$isEmpty(parametersFromPatterns) && A2($elm$core$List$all, $jfmengels$elm_review_unused$NoUnused$Parameters$isPatternWildCard, patterns)) ? _List_fromArray(
+						[
+							{
+							bO: _List_fromArray(
+								[
+									A2(
+									$jfmengels$elm_review$Review$Fix$replaceRangeBy,
+									$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+									'_')
+								]),
+							b1: 2,
+							b5: '',
+							eD: $stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+							hj: source
+						}
+						]) : parametersFromPatterns;
+				case 12:
+					var patterns = _v0.b;
+					return A2(
+						$elm$core$List$concatMap,
+						$jfmengels$elm_review_unused$NoUnused$Parameters$getParametersFromPatterns(source),
+						patterns);
+				default:
+					return _List_Nil;
+			}
+		}
 	});
 var $jfmengels$elm_review_unused$NoUnused$Parameters$declarationEnterVisitor = F2(
 	function (node, context) {
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 		if (!_v0.$) {
-			var declaration = _v0.a.fX;
+			var declaration = _v0.a.gv;
+			var functionName = $stil4m$elm_syntax$Elm$Syntax$Node$value(
+				$stil4m$elm_syntax$Elm$Syntax$Node$value(declaration).b5);
+			var _arguments = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration).eT;
+			var declared = A2(
+				$elm$core$List$map,
+				$jfmengels$elm_review_unused$NoUnused$Parameters$getParametersFromPatterns(0),
+				_arguments);
 			return _Utils_Tuple2(
 				_List_Nil,
-				A2($jfmengels$elm_review_unused$NoUnused$Parameters$rememberFunctionImplementation, declaration, context));
+				{
+					bv: A2(
+						$elm$core$Dict$singleton,
+						functionName,
+						$jfmengels$elm_review_unused$NoUnused$Parameters$getArgNames(declared)),
+					cD: $elm$core$Dict$empty,
+					t: _List_fromArray(
+						[
+							{
+							cY: $elm$core$List$concat(declared),
+							cv: functionName,
+							a1: $elm$core$Set$empty,
+							ce: $elm$core$Set$empty
+						}
+						])
+				});
 		} else {
 			return _Utils_Tuple2(_List_Nil, context);
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$Function = 1;
-var $jfmengels$elm_review_unused$NoUnused$Parameters$andThen = F3(
-	function (_function, value, _v0) {
-		var errors = _v0.a;
-		var context = _v0.b;
-		var _v1 = A2(_function, value, context);
-		var newErrors = _v1.a;
-		var newContext = _v1.b;
-		return _Utils_Tuple2(
-			_Utils_ap(newErrors, errors),
-			newContext);
+var $jfmengels$elm_review_unused$NoUnused$Parameters$applyFix = F2(
+	function (source, fix) {
+		if (!source) {
+			return _List_Nil;
+		} else {
+			return fix;
+		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$isAllPattern = function (_v0) {
-	var pattern = _v0.b;
-	if (!pattern.$) {
-		return true;
+var $jfmengels$elm_review_unused$NoUnused$Parameters$errorMessage = F2(
+	function (kind, name) {
+		switch (kind) {
+			case 0:
+				return {
+					dx: _List_fromArray(
+						['You should either use this parameter somewhere, or remove it at the location I pointed at.']),
+					a8: 'Parameter `' + (name + '` is not used')
+				};
+			case 1:
+				return {
+					dx: _List_fromArray(
+						['You should either use this parameter somewhere, or remove it at the location I pointed at.']),
+					a8: 'Pattern alias `' + (name + '` is not used')
+				};
+			default:
+				return {
+					dx: _List_fromArray(
+						['You should remove this pattern.']),
+					a8: 'Tuple pattern is not needed'
+				};
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$errorsForValue = function (_v0) {
+	var name = _v0.b5;
+	var kind = _v0.b1;
+	var range = _v0.eD;
+	var source = _v0.hj;
+	var fix = _v0.bO;
+	return A3(
+		$jfmengels$elm_review$Review$Rule$errorWithFix,
+		A2($jfmengels$elm_review_unused$NoUnused$Parameters$errorMessage, kind, name),
+		range,
+		A2($jfmengels$elm_review_unused$NoUnused$Parameters$applyFix, source, fix));
+};
+var $jfmengels$elm_review_unused$NoUnused$Parameters$recursiveParameterError = F2(
+	function (functionName, _v0) {
+		var name = _v0.b5;
+		var range = _v0.eD;
+		return A2(
+			$jfmengels$elm_review$Review$Rule$error,
+			{
+				dx: _List_fromArray(
+					['This parameter is only used to be passed as an argument to \'' + (functionName + '\', but its value is never read or used.'), 'You should either use this parameter somewhere, or remove it at the location I pointed at.']),
+				a8: 'Parameter `' + (name + '` is only used in recursion')
+			},
+			range);
+	});
+var $elm$core$Set$remove = F2(
+	function (key, _v0) {
+		var dict = _v0;
+		return A2($elm$core$Dict$remove, key, dict);
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$findErrorsAndVariablesNotPartOfScope = F3(
+	function (scope, declared, _v0) {
+		var errors_ = _v0.a;
+		var remainingUsed_ = _v0.b;
+		return A2($elm$core$Set$member, declared.b5, scope.ce) ? (A2($elm$core$Set$member, declared.b5, remainingUsed_) ? _Utils_Tuple2(
+			errors_,
+			A2($elm$core$Set$remove, declared.b5, remainingUsed_)) : _Utils_Tuple2(
+			A2(
+				$elm$core$List$cons,
+				A2($jfmengels$elm_review_unused$NoUnused$Parameters$recursiveParameterError, scope.cv, declared),
+				errors_),
+			A2($elm$core$Set$remove, declared.b5, remainingUsed_))) : (A2($elm$core$Set$member, declared.b5, remainingUsed_) ? _Utils_Tuple2(
+			errors_,
+			A2($elm$core$Set$remove, declared.b5, remainingUsed_)) : _Utils_Tuple2(
+			A2(
+				$elm$core$List$cons,
+				$jfmengels$elm_review_unused$NoUnused$Parameters$errorsForValue(declared),
+				errors_),
+			remainingUsed_));
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$markAllAsUsed = F2(
+	function (names, scopes) {
+		if (!scopes.b) {
+			return scopes;
+		} else {
+			var headScope = scopes.a;
+			var restOfScopes = scopes.b;
+			return A2(
+				$elm$core$List$cons,
+				_Utils_update(
+					headScope,
+					{
+						a1: A2($elm$core$Set$union, names, headScope.a1)
+					}),
+				restOfScopes);
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$report = function (context) {
+	var _v0 = context.t;
+	if (_v0.b) {
+		var headScope = _v0.a;
+		var restOfScopes = _v0.b;
+		var _v1 = A3(
+			$elm$core$List$foldl,
+			$jfmengels$elm_review_unused$NoUnused$Parameters$findErrorsAndVariablesNotPartOfScope(headScope),
+			_Utils_Tuple2(_List_Nil, headScope.a1),
+			headScope.cY);
+		var errors = _v1.a;
+		var remainingUsed = _v1.b;
+		return _Utils_Tuple2(
+			errors,
+			_Utils_update(
+				context,
+				{
+					bv: A2($elm$core$Dict$remove, headScope.cv, context.bv),
+					t: A2($jfmengels$elm_review_unused$NoUnused$Parameters$markAllAsUsed, remainingUsed, restOfScopes)
+				}));
 	} else {
-		return false;
+		return _Utils_Tuple2(_List_Nil, context);
 	}
 };
-var $jfmengels$elm_review_unused$NoUnused$Parameters$removeDetails = _List_fromArray(
-	['You should remove it at the location I pointed at.']);
-var $jfmengels$elm_review_unused$NoUnused$Parameters$singularDetails = _List_fromArray(
-	['You should either use this parameter somewhere, or remove it at the location I pointed at.']);
+var $jfmengels$elm_review_unused$NoUnused$Parameters$declarationExitVisitor = F2(
+	function (node, context) {
+		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+		if (!_v0.$) {
+			return $jfmengels$elm_review_unused$NoUnused$Parameters$report(context);
+		} else {
+			return _Utils_Tuple2(_List_Nil, context);
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$Lambda = 1;
+var $jfmengels$elm_review_unused$NoUnused$Parameters$isRangeIncluded = F2(
+	function (inner, outer) {
+		return (!(!A2($stil4m$elm_syntax$Elm$Syntax$Range$compareLocations, inner.cN, outer.cN))) && (A2($stil4m$elm_syntax$Elm$Syntax$Range$compareLocations, inner.cp, outer.cp) !== 2);
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$shouldBeIgnored = F3(
+	function (range, name, context) {
+		var _v0 = A2($elm$core$Dict$get, name, context.cD);
+		if (!_v0.$) {
+			var ranges = _v0.a;
+			return A2(
+				$elm$core$List$any,
+				$jfmengels$elm_review_unused$NoUnused$Parameters$isRangeIncluded(range),
+				ranges);
+		} else {
+			return false;
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$markValueAsUsed = F3(
+	function (range, name, context) {
+		var _v0 = context.t;
+		if (!_v0.b) {
+			return context;
+		} else {
+			var headScope = _v0.a;
+			var restOfScopes = _v0.b;
+			var newHeadScope = A3($jfmengels$elm_review_unused$NoUnused$Parameters$shouldBeIgnored, range, name, context) ? _Utils_update(
+				headScope,
+				{
+					ce: A2($elm$core$Set$insert, name, headScope.ce)
+				}) : _Utils_update(
+				headScope,
+				{
+					a1: A2($elm$core$Set$insert, name, headScope.a1)
+				});
+			return _Utils_update(
+				context,
+				{
+					t: A2($elm$core$List$cons, newHeadScope, restOfScopes)
+				});
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$ignoreLocations = F5(
+	function (fnArgs, numberOfIgnoredArguments, nodes, index, acc) {
+		ignoreLocations:
+		while (true) {
+			if (!nodes.b) {
+				return acc;
+			} else {
+				var _v1 = nodes.a;
+				var range = _v1.a;
+				var rest = nodes.b;
+				var newAcc = function () {
+					var _v2 = A2($elm$core$Dict$get, numberOfIgnoredArguments + index, fnArgs);
+					if (!_v2.$) {
+						var argName = _v2.a;
+						var _v3 = A2($elm$core$Dict$get, argName, acc);
+						if (!_v3.$) {
+							var existingLocations = _v3.a;
+							return A3(
+								$elm$core$Dict$insert,
+								argName,
+								A2($elm$core$List$cons, range, existingLocations),
+								acc);
+						} else {
+							return A3(
+								$elm$core$Dict$insert,
+								argName,
+								_List_fromArray(
+									[range]),
+								acc);
+						}
+					} else {
+						return acc;
+					}
+				}();
+				var $temp$fnArgs = fnArgs,
+					$temp$numberOfIgnoredArguments = numberOfIgnoredArguments,
+					$temp$nodes = rest,
+					$temp$index = index + 1,
+					$temp$acc = newAcc;
+				fnArgs = $temp$fnArgs;
+				numberOfIgnoredArguments = $temp$numberOfIgnoredArguments;
+				nodes = $temp$nodes;
+				index = $temp$index;
+				acc = $temp$acc;
+				continue ignoreLocations;
+			}
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$registerFunctionCall = F4(
+	function (fnName, numberOfIgnoredArguments, _arguments, context) {
+		var _v0 = A2($elm$core$Dict$get, fnName, context.bv);
+		if (!_v0.$) {
+			var fnArgs = _v0.a;
+			var locationsToIgnore = A5($jfmengels$elm_review_unused$NoUnused$Parameters$ignoreLocations, fnArgs, numberOfIgnoredArguments, _arguments, 0, context.cD);
+			return _Utils_update(
+				context,
+				{cD: locationsToIgnore});
+		} else {
+			return context;
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$expressionEnterVisitorHelp = F2(
+	function (node, context) {
+		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+		_v0$6:
+		while (true) {
+			switch (_v0.$) {
+				case 3:
+					if (!_v0.a.b) {
+						var name = _v0.b;
+						return A3(
+							$jfmengels$elm_review_unused$NoUnused$Parameters$markValueAsUsed,
+							$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+							name,
+							context);
+					} else {
+						break _v0$6;
+					}
+				case 22:
+					var name = _v0.a;
+					return A3(
+						$jfmengels$elm_review_unused$NoUnused$Parameters$markValueAsUsed,
+						$stil4m$elm_syntax$Elm$Syntax$Node$range(name),
+						$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
+						context);
+				case 17:
+					var args = _v0.a.ge;
+					return _Utils_update(
+						context,
+						{
+							t: A2(
+								$elm$core$List$cons,
+								{
+									cY: A2(
+										$elm$core$List$concatMap,
+										$jfmengels$elm_review_unused$NoUnused$Parameters$getParametersFromPatterns(1),
+										args),
+									cv: 'dummy lambda',
+									a1: $elm$core$Set$empty,
+									ce: $elm$core$Set$empty
+								},
+								context.t)
+						});
+				case 1:
+					if ((_v0.a.b && (_v0.a.a.b.$ === 3)) && (!_v0.a.a.b.a.b)) {
+						var _v1 = _v0.a;
+						var _v2 = _v1.a;
+						var _v3 = _v2.b;
+						var fnName = _v3.b;
+						var _arguments = _v1.b;
+						return A4($jfmengels$elm_review_unused$NoUnused$Parameters$registerFunctionCall, fnName, 0, _arguments, context);
+					} else {
+						break _v0$6;
+					}
+				case 2:
+					switch (_v0.a) {
+						case '|>':
+							if ((((_v0.d.b.$ === 1) && _v0.d.b.a.b) && (_v0.d.b.a.a.b.$ === 3)) && (!_v0.d.b.a.a.b.a.b)) {
+								var lastArgument = _v0.c;
+								var _v4 = _v0.d;
+								var _v5 = _v4.b.a;
+								var _v6 = _v5.a;
+								var _v7 = _v6.b;
+								var fnName = _v7.b;
+								var _arguments = _v5.b;
+								return A4(
+									$jfmengels$elm_review_unused$NoUnused$Parameters$registerFunctionCall,
+									fnName,
+									$elm$core$List$length(_arguments),
+									_List_fromArray(
+										[lastArgument]),
+									context);
+							} else {
+								break _v0$6;
+							}
+						case '<|':
+							if ((((_v0.c.b.$ === 1) && _v0.c.b.a.b) && (_v0.c.b.a.a.b.$ === 3)) && (!_v0.c.b.a.a.b.a.b)) {
+								var _v8 = _v0.c;
+								var _v9 = _v8.b.a;
+								var _v10 = _v9.a;
+								var _v11 = _v10.b;
+								var fnName = _v11.b;
+								var _arguments = _v9.b;
+								var lastArgument = _v0.d;
+								return A4(
+									$jfmengels$elm_review_unused$NoUnused$Parameters$registerFunctionCall,
+									fnName,
+									$elm$core$List$length(_arguments),
+									_List_fromArray(
+										[lastArgument]),
+									context);
+							} else {
+								break _v0$6;
+							}
+						default:
+							break _v0$6;
+					}
+				default:
+					break _v0$6;
+			}
+		}
+		return context;
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$expressionEnterVisitor = F2(
+	function (node, context) {
+		return _Utils_Tuple2(
+			_List_Nil,
+			A2($jfmengels$elm_review_unused$NoUnused$Parameters$expressionEnterVisitorHelp, node, context));
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$expressionExitVisitor = F2(
+	function (_v0, context) {
+		var node = _v0.b;
+		if (node.$ === 17) {
+			return $jfmengels$elm_review_unused$NoUnused$Parameters$report(context);
+		} else {
+			return _Utils_Tuple2(_List_Nil, context);
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$initialContext = {bv: $elm$core$Dict$empty, cD: $elm$core$Dict$empty, t: _List_Nil};
+var $jfmengels$elm_review_unused$NoUnused$Parameters$letDeclarationEnterVisitor = F3(
+	function (_v0, letDeclaration, context) {
+		var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(letDeclaration);
+		if (!_v1.$) {
+			var _function = _v1.a;
+			var declaration = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv);
+			if ($elm$core$List$isEmpty(declaration.eT)) {
+				return _Utils_Tuple2(_List_Nil, context);
+			} else {
+				var functionName = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration.b5);
+				var declared = A2(
+					$elm$core$List$map,
+					$jfmengels$elm_review_unused$NoUnused$Parameters$getParametersFromPatterns(0),
+					declaration.eT);
+				var newScope = {
+					cY: $elm$core$List$concat(declared),
+					cv: functionName,
+					a1: $elm$core$Set$empty,
+					ce: $elm$core$Set$empty
+				};
+				return _Utils_Tuple2(
+					_List_Nil,
+					_Utils_update(
+						context,
+						{
+							bv: A3(
+								$elm$core$Dict$insert,
+								functionName,
+								$jfmengels$elm_review_unused$NoUnused$Parameters$getArgNames(declared),
+								context.bv),
+							t: A2($elm$core$List$cons, newScope, context.t)
+						}));
+			}
+		} else {
+			return _Utils_Tuple2(_List_Nil, context);
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$letDeclarationExitVisitor = F3(
+	function (_v0, letDeclaration, context) {
+		var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(letDeclaration);
+		if (!_v1.$) {
+			var _function = _v1.a;
+			var declaration = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv);
+			return $elm$core$List$isEmpty(declaration.eT) ? _Utils_Tuple2(_List_Nil, context) : $jfmengels$elm_review_unused$NoUnused$Parameters$report(context);
+		} else {
+			return _Utils_Tuple2(_List_Nil, context);
+		}
+	});
+var $jfmengels$elm_review$Review$Rule$withDeclarationExitVisitor = F2(
+	function (visitor, _v0) {
+		var schema = _v0;
+		return _Utils_update(
+			schema,
+			{
+				ax: A2($elm$core$List$cons, visitor, schema.ax)
+			});
+	});
+var $jfmengels$elm_review$Review$Rule$withExpressionExitVisitor = F2(
+	function (visitor, _v0) {
+		var schema = _v0;
+		return _Utils_update(
+			schema,
+			{
+				R: A2($elm$core$List$cons, visitor, schema.R)
+			});
+	});
+var $jfmengels$elm_review$Review$Rule$withLetDeclarationEnterVisitor = F2(
+	function (visitor, _v0) {
+		var schema = _v0;
+		return _Utils_update(
+			schema,
+			{
+				aC: A2($elm$core$List$cons, visitor, schema.aC)
+			});
+	});
+var $jfmengels$elm_review$Review$Rule$withLetDeclarationExitVisitor = F2(
+	function (visitor, _v0) {
+		var schema = _v0;
+		return _Utils_update(
+			schema,
+			{
+				aD: A2($elm$core$List$cons, visitor, schema.aD)
+			});
+	});
+var $jfmengels$elm_review_unused$NoUnused$Parameters$rule = $jfmengels$elm_review$Review$Rule$fromModuleRuleSchema(
+	$jfmengels$elm_review$Review$Rule$providesFixesForModuleRule(
+		A2(
+			$jfmengels$elm_review$Review$Rule$withLetDeclarationExitVisitor,
+			$jfmengels$elm_review_unused$NoUnused$Parameters$letDeclarationExitVisitor,
+			A2(
+				$jfmengels$elm_review$Review$Rule$withLetDeclarationEnterVisitor,
+				$jfmengels$elm_review_unused$NoUnused$Parameters$letDeclarationEnterVisitor,
+				A2(
+					$jfmengels$elm_review$Review$Rule$withExpressionExitVisitor,
+					$jfmengels$elm_review_unused$NoUnused$Parameters$expressionExitVisitor,
+					A2(
+						$jfmengels$elm_review$Review$Rule$withExpressionEnterVisitor,
+						$jfmengels$elm_review_unused$NoUnused$Parameters$expressionEnterVisitor,
+						A2(
+							$jfmengels$elm_review$Review$Rule$withDeclarationExitVisitor,
+							$jfmengels$elm_review_unused$NoUnused$Parameters$declarationExitVisitor,
+							A2(
+								$jfmengels$elm_review$Review$Rule$withDeclarationEnterVisitor,
+								$jfmengels$elm_review_unused$NoUnused$Parameters$declarationEnterVisitor,
+								A2($jfmengels$elm_review$Review$Rule$newModuleRuleSchema, 'NoUnused.Parameters', $jfmengels$elm_review_unused$NoUnused$Parameters$initialContext)))))))));
+var $jfmengels$elm_review_unused$NoUnused$Patterns$Matching = 1;
+var $jfmengels$elm_review_unused$NoUnused$Patterns$Destructuring = 0;
+var $jfmengels$elm_review_unused$NoUnused$Patterns$RecordPattern = function (a) {
+	return {$: 1, a: a};
+};
+var $jfmengels$elm_review_unused$NoUnused$Patterns$SimplifiablePattern = function (a) {
+	return {$: 2, a: a};
+};
+var $jfmengels$elm_review_unused$NoUnused$Patterns$SingleValue = function (a) {
+	return {$: 0, a: a};
+};
+var $jfmengels$elm_review_unused$NoUnused$Patterns$removeDetails = _List_fromArray(
+	['This pattern is redundant and should be removed.']);
+var $jfmengels$elm_review_unused$NoUnused$Patterns$singularRemoveDetails = _List_fromArray(
+	['You should either use this value somewhere or remove it.']);
+var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
 var $elm$core$String$repeatHelp = F3(
 	function (n, chunk, result) {
@@ -22543,7 +24197,6 @@ var $stil4m$structured_writer$StructuredWriter$bracesComma = $stil4m$structured_
 var $stil4m$structured_writer$StructuredWriter$bracketsComma = $stil4m$structured_writer$StructuredWriter$Sep(
 	_Utils_Tuple3('[', ', ', ']'));
 var $stil4m$elm_syntax$Elm$Writer$escapeString = A2($elm$core$String$replace, '\"', '\\\"');
-var $elm$core$String$fromFloat = _String_fromNumber;
 var $stil4m$structured_writer$StructuredWriter$Joined = function (a) {
 	return {$: 6, a: a};
 };
@@ -22640,8 +24293,8 @@ var $stil4m$elm_syntax$Elm$Writer$writeModuleName = function (moduleName) {
 		A2($elm$core$String$join, '.', moduleName));
 };
 var $stil4m$elm_syntax$Elm$Writer$writeQualifiedNameRef = function (_v0) {
-	var moduleName = _v0.dn;
-	var name = _v0.bT;
+	var moduleName = _v0.dR;
+	var name = _v0.b5;
 	if (!moduleName.b) {
 		return $stil4m$structured_writer$StructuredWriter$string(name);
 	} else {
@@ -22751,434 +24404,774 @@ var $stil4m$elm_syntax$Elm$Writer$writePattern = function (_v0) {
 					]));
 	}
 };
-var $jfmengels$elm_review_unused$NoUnused$Parameters$errorsForAsPattern = F5(
-	function (use, patternRange, inner, _v0, context) {
-		var range = _v0.a;
-		var name = _v0.b;
-		if (A2($elm$core$Set$member, name, context)) {
-			var fix = function () {
-				if (!use) {
-					return _List_fromArray(
+var $jfmengels$elm_review_unused$NoUnused$Patterns$writePattern = function (pattern) {
+	var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(pattern);
+	switch (_v0.$) {
+		case 0:
+			return '_';
+		case 1:
+			return '()';
+		case 2:
+			var c = _v0.a;
+			return '\'' + ($elm$core$String$fromChar(c) + '\'');
+		case 3:
+			var s = _v0.a;
+			return '\"' + (A3($elm$core$String$replace, '\"', '\\\"', s) + '\"');
+		case 5:
+			return $stil4m$elm_syntax$Elm$Writer$write(
+				$stil4m$elm_syntax$Elm$Writer$writePattern(pattern));
+		case 4:
+			var i = _v0.a;
+			return $elm$core$String$fromInt(i);
+		case 6:
+			var f = _v0.a;
+			return $elm$core$String$fromFloat(f);
+		case 7:
+			var inner = _v0.a;
+			return '( ' + (A2(
+				$elm$core$String$join,
+				', ',
+				A2($elm$core$List$map, $jfmengels$elm_review_unused$NoUnused$Patterns$writePattern, inner)) + ' )');
+		case 8:
+			var inner = _v0.a;
+			return '{ ' + (A2(
+				$elm$core$String$join,
+				', ',
+				A2($elm$core$List$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, inner)) + ' }');
+		case 9:
+			var left = _v0.a;
+			var right = _v0.b;
+			return $jfmengels$elm_review_unused$NoUnused$Patterns$writePattern(left) + (' :: ' + $jfmengels$elm_review_unused$NoUnused$Patterns$writePattern(right));
+		case 10:
+			var inner = _v0.a;
+			return '[ ' + (A2(
+				$elm$core$String$join,
+				', ',
+				A2($elm$core$List$map, $jfmengels$elm_review_unused$NoUnused$Patterns$writePattern, inner)) + ' ]');
+		case 11:
+			var _var = _v0.a;
+			return _var;
+		case 12:
+			var qnr = _v0.a;
+			var others = _v0.b;
+			return A2(
+				$elm$core$String$join,
+				' ',
+				A2(
+					$elm$core$List$cons,
+					A2(
+						$elm$core$String$join,
+						'.',
+						_Utils_ap(
+							qnr.dR,
+							_List_fromArray(
+								[qnr.b5]))),
+					A2($elm$core$List$map, $jfmengels$elm_review_unused$NoUnused$Patterns$writePattern, others)));
+		case 13:
+			var innerPattern = _v0.a;
+			var asName = _v0.b;
+			return $jfmengels$elm_review_unused$NoUnused$Patterns$writePattern(innerPattern) + (' as ' + $stil4m$elm_syntax$Elm$Syntax$Node$value(asName));
+		default:
+			var innerPattern = _v0.a;
+			return '(' + ($jfmengels$elm_review_unused$NoUnused$Patterns$writePattern(innerPattern) + ')');
+	}
+};
+var $jfmengels$elm_review_unused$NoUnused$Patterns$findPatternForAsPattern = F3(
+	function (patternRange, pattern, nameNode) {
+		findPatternForAsPattern:
+		while (true) {
+			var range = nameNode.a;
+			var name = nameNode.b;
+			var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(pattern);
+			switch (_v0.$) {
+				case 14:
+					var subPattern = _v0.a;
+					var $temp$patternRange = patternRange,
+						$temp$pattern = subPattern,
+						$temp$nameNode = nameNode;
+					patternRange = $temp$patternRange;
+					pattern = $temp$pattern;
+					nameNode = $temp$nameNode;
+					continue findPatternForAsPattern;
+				case 0:
+					return $jfmengels$elm_review_unused$NoUnused$Patterns$SimplifiablePattern(
+						A3(
+							$jfmengels$elm_review$Review$Rule$errorWithFix,
+							{dx: $jfmengels$elm_review_unused$NoUnused$Patterns$removeDetails, a8: 'Pattern `_` is not needed'},
+							$stil4m$elm_syntax$Elm$Syntax$Node$range(pattern),
+							_List_fromArray(
+								[
+									A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, patternRange, name)
+								])));
+				case 11:
+					var innerName = _v0.a;
+					return $jfmengels$elm_review_unused$NoUnused$Patterns$SimplifiablePattern(
+						A2(
+							$jfmengels$elm_review$Review$Rule$error,
+							{
+								dx: _List_fromArray(
+									['This alias is redundant because the value is already named `' + (innerName + '`. I suggest you remove one of them.')]),
+								a8: 'Unnecessary duplicate alias `' + (name + '`')
+							},
+							range));
+				case 13:
+					var _v1 = _v0.b;
+					var innerRange = _v1.a;
+					var innerName = _v1.b;
+					return $jfmengels$elm_review_unused$NoUnused$Patterns$SimplifiablePattern(
+						A2(
+							$jfmengels$elm_review$Review$Rule$error,
+							{
+								dx: _List_fromArray(
+									['This name is redundant because the value is already aliased as `' + (name + '`. I suggest you remove one of them.')]),
+								a8: 'Unnecessary duplicate alias `' + (innerName + '`')
+							},
+							innerRange));
+				default:
+					var fix = _List_fromArray(
 						[
 							A2(
 							$jfmengels$elm_review$Review$Fix$replaceRangeBy,
 							patternRange,
-							$stil4m$elm_syntax$Elm$Writer$write(
-								$stil4m$elm_syntax$Elm$Writer$writePattern(inner)))
+							$jfmengels$elm_review_unused$NoUnused$Patterns$writePattern(pattern))
 						]);
-				} else {
-					return _List_Nil;
-				}
-			}();
-			return _Utils_Tuple2(
-				_List_fromArray(
-					[
-						A3(
-						$jfmengels$elm_review$Review$Rule$errorWithFix,
-						{c2: $jfmengels$elm_review_unused$NoUnused$Parameters$singularDetails, a2: 'Pattern alias `' + (name + '` is not used.')},
-						range,
-						fix)
-					]),
-				A2($elm$core$Set$remove, name, context));
-		} else {
-			if ($jfmengels$elm_review_unused$NoUnused$Parameters$isAllPattern(inner)) {
-				return _Utils_Tuple2(
-					_List_fromArray(
-						[
-							A3(
-							$jfmengels$elm_review$Review$Rule$errorWithFix,
-							{c2: $jfmengels$elm_review_unused$NoUnused$Parameters$removeDetails, a2: 'Pattern `_` is not needed'},
-							$stil4m$elm_syntax$Elm$Syntax$Node$range(inner),
-							_List_fromArray(
-								[
-									A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, patternRange, name)
-								]))
-						]),
-					A2($elm$core$Set$remove, name, context));
-			} else {
-				return _Utils_Tuple2(_List_Nil, context);
+					return $jfmengels$elm_review_unused$NoUnused$Patterns$SingleValue(
+						{dx: $jfmengels$elm_review_unused$NoUnused$Patterns$singularRemoveDetails, bO: fix, a8: 'Pattern alias `' + (name + '` is not used'), b5: name, eD: range});
 			}
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$forgetNode = F2(
-	function (_v0, context) {
-		var value = _v0.b;
-		return A2($elm$core$Set$remove, value, context);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$isNodeInContext = F2(
-	function (context, _v0) {
-		var value = _v0.b;
-		return A2($elm$core$Set$member, value, context);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$pluralDetails = _List_fromArray(
-	['You should either use these parameters somewhere, or remove them at the location I pointed at.']);
-var $jfmengels$elm_review_unused$NoUnused$Parameters$listToDetails = F2(
-	function (_v0, rest) {
-		if (!rest.b) {
-			return $jfmengels$elm_review_unused$NoUnused$Parameters$singularDetails;
-		} else {
-			return $jfmengels$elm_review_unused$NoUnused$Parameters$pluralDetails;
+var $jfmengels$elm_review_unused$NoUnused$Patterns$isAllPattern = function (_v0) {
+	var pattern = _v0.b;
+	if (!pattern.$) {
+		return true;
+	} else {
+		return false;
+	}
+};
+var $jfmengels$elm_review_unused$NoUnused$Patterns$redundantDetails = _List_fromArray(
+	['This pattern is redundant and should be replaced with \'_\'.']);
+var $jfmengels$elm_review_unused$NoUnused$Patterns$singularReplaceDetails = _List_fromArray(
+	['You should either use this value somewhere or replace it with \'_\'.']);
+var $jfmengels$elm_review_unused$NoUnused$Patterns$findPatternsHelp = F3(
+	function (use, patterns, acc) {
+		findPatternsHelp:
+		while (true) {
+			if (!patterns.b) {
+				return acc;
+			} else {
+				var _v1 = patterns.a;
+				var range = _v1.a;
+				var pattern = _v1.b;
+				var rest = patterns.b;
+				_v2$3:
+				while (true) {
+					switch (pattern.$) {
+						case 11:
+							var name = pattern.a;
+							var foundPattern = $jfmengels$elm_review_unused$NoUnused$Patterns$SingleValue(
+								{
+									dx: $jfmengels$elm_review_unused$NoUnused$Patterns$singularReplaceDetails,
+									bO: _List_fromArray(
+										[
+											A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, range, '_')
+										]),
+									a8: 'Value `' + (name + '` is not used'),
+									b5: name,
+									eD: range
+								});
+							var $temp$use = use,
+								$temp$patterns = rest,
+								$temp$acc = A2($elm$core$List$cons, foundPattern, acc);
+							use = $temp$use;
+							patterns = $temp$patterns;
+							acc = $temp$acc;
+							continue findPatternsHelp;
+						case 7:
+							if (((pattern.a.b && (!pattern.a.a.b.$)) && pattern.a.b.b) && (!pattern.a.b.a.b.$)) {
+								if (!pattern.a.b.b.b) {
+									var _v3 = pattern.a;
+									var _v4 = _v3.a;
+									var _v5 = _v4.b;
+									var _v6 = _v3.b;
+									var _v7 = _v6.a;
+									var _v8 = _v7.b;
+									var foundPattern = $jfmengels$elm_review_unused$NoUnused$Patterns$SimplifiablePattern(
+										A3(
+											$jfmengels$elm_review$Review$Rule$errorWithFix,
+											{dx: $jfmengels$elm_review_unused$NoUnused$Patterns$redundantDetails, a8: 'Tuple pattern is not needed'},
+											range,
+											_List_fromArray(
+												[
+													A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, range, '_')
+												])));
+									var $temp$use = use,
+										$temp$patterns = rest,
+										$temp$acc = A2($elm$core$List$cons, foundPattern, acc);
+									use = $temp$use;
+									patterns = $temp$patterns;
+									acc = $temp$acc;
+									continue findPatternsHelp;
+								} else {
+									if ((!pattern.a.b.b.a.b.$) && (!pattern.a.b.b.b.b)) {
+										var _v9 = pattern.a;
+										var _v10 = _v9.a;
+										var _v11 = _v10.b;
+										var _v12 = _v9.b;
+										var _v13 = _v12.a;
+										var _v14 = _v13.b;
+										var _v15 = _v12.b;
+										var _v16 = _v15.a;
+										var _v17 = _v16.b;
+										var foundPattern = $jfmengels$elm_review_unused$NoUnused$Patterns$SimplifiablePattern(
+											A3(
+												$jfmengels$elm_review$Review$Rule$errorWithFix,
+												{dx: $jfmengels$elm_review_unused$NoUnused$Patterns$redundantDetails, a8: 'Tuple pattern is not needed'},
+												range,
+												_List_fromArray(
+													[
+														A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, range, '_')
+													])));
+										var $temp$use = use,
+											$temp$patterns = rest,
+											$temp$acc = A2($elm$core$List$cons, foundPattern, acc);
+										use = $temp$use;
+										patterns = $temp$patterns;
+										acc = $temp$acc;
+										continue findPatternsHelp;
+									} else {
+										break _v2$3;
+									}
+								}
+							} else {
+								break _v2$3;
+							}
+						case 8:
+							var fields = pattern.a;
+							var foundPattern = $jfmengels$elm_review_unused$NoUnused$Patterns$RecordPattern(
+								{ei: fields, fO: range});
+							var $temp$use = use,
+								$temp$patterns = rest,
+								$temp$acc = A2($elm$core$List$cons, foundPattern, acc);
+							use = $temp$use;
+							patterns = $temp$patterns;
+							acc = $temp$acc;
+							continue findPatternsHelp;
+						case 9:
+							var first = pattern.a;
+							var second = pattern.b;
+							var $temp$use = use,
+								$temp$patterns = A2(
+								$elm$core$List$cons,
+								first,
+								A2($elm$core$List$cons, second, rest)),
+								$temp$acc = acc;
+							use = $temp$use;
+							patterns = $temp$patterns;
+							acc = $temp$acc;
+							continue findPatternsHelp;
+						case 10:
+							var subPatterns = pattern.a;
+							var $temp$use = use,
+								$temp$patterns = _Utils_ap(subPatterns, rest),
+								$temp$acc = acc;
+							use = $temp$use;
+							patterns = $temp$patterns;
+							acc = $temp$acc;
+							continue findPatternsHelp;
+						case 12:
+							var subPatterns = pattern.b;
+							if ((!use) && A2($elm$core$List$all, $jfmengels$elm_review_unused$NoUnused$Patterns$isAllPattern, subPatterns)) {
+								var foundPattern = $jfmengels$elm_review_unused$NoUnused$Patterns$SimplifiablePattern(
+									A3(
+										$jfmengels$elm_review$Review$Rule$errorWithFix,
+										{dx: $jfmengels$elm_review_unused$NoUnused$Patterns$redundantDetails, a8: 'Named pattern is not needed'},
+										range,
+										_List_fromArray(
+											[
+												A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, range, '_')
+											])));
+								var $temp$use = use,
+									$temp$patterns = rest,
+									$temp$acc = A2($elm$core$List$cons, foundPattern, acc);
+								use = $temp$use;
+								patterns = $temp$patterns;
+								acc = $temp$acc;
+								continue findPatternsHelp;
+							} else {
+								var $temp$use = use,
+									$temp$patterns = _Utils_ap(subPatterns, rest),
+									$temp$acc = acc;
+								use = $temp$use;
+								patterns = $temp$patterns;
+								acc = $temp$acc;
+								continue findPatternsHelp;
+							}
+						case 13:
+							var inner = pattern.a;
+							var name = pattern.b;
+							var $temp$use = use,
+								$temp$patterns = A2($elm$core$List$cons, inner, rest),
+								$temp$acc = A2(
+								$elm$core$List$cons,
+								A3($jfmengels$elm_review_unused$NoUnused$Patterns$findPatternForAsPattern, range, inner, name),
+								acc);
+							use = $temp$use;
+							patterns = $temp$patterns;
+							acc = $temp$acc;
+							continue findPatternsHelp;
+						case 14:
+							var inner = pattern.a;
+							var $temp$use = use,
+								$temp$patterns = A2($elm$core$List$cons, inner, rest),
+								$temp$acc = acc;
+							use = $temp$use;
+							patterns = $temp$patterns;
+							acc = $temp$acc;
+							continue findPatternsHelp;
+						default:
+							var $temp$use = use,
+								$temp$patterns = rest,
+								$temp$acc = acc;
+							use = $temp$use;
+							patterns = $temp$patterns;
+							acc = $temp$acc;
+							continue findPatternsHelp;
+					}
+				}
+				var subPatterns = pattern.a;
+				var $temp$use = use,
+					$temp$patterns = _Utils_ap(subPatterns, rest),
+					$temp$acc = acc;
+				use = $temp$use;
+				patterns = $temp$patterns;
+				acc = $temp$acc;
+				continue findPatternsHelp;
+			}
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$listToMessage = F2(
+var $jfmengels$elm_review_unused$NoUnused$Patterns$findPatterns = F2(
+	function (use, pattern) {
+		return A3(
+			$jfmengels$elm_review_unused$NoUnused$Patterns$findPatternsHelp,
+			use,
+			_List_fromArray(
+				[pattern]),
+			_List_Nil);
+	});
+var $jfmengels$elm_review_unused$NoUnused$Patterns$caseBranchEnterVisitor = F3(
+	function (_v0, _v1, context) {
+		var pattern = _v1.a;
+		return _Utils_Tuple2(
+			_List_Nil,
+			A2(
+				$elm$core$List$cons,
+				{
+					cY: A2($jfmengels$elm_review_unused$NoUnused$Patterns$findPatterns, 1, pattern),
+					a1: $elm$core$Set$empty
+				},
+				context));
+	});
+var $jfmengels$elm_review_unused$NoUnused$Patterns$findDeclaredPatterns = function (scope) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (foundPattern, acc) {
+				switch (foundPattern.$) {
+					case 0:
+						var v = foundPattern.a;
+						return {
+							bB: acc.bB,
+							bE: acc.bE,
+							bF: A2($elm$core$List$cons, v, acc.bF)
+						};
+					case 1:
+						var v = foundPattern.a;
+						return {
+							bB: A2($elm$core$List$cons, v, acc.bB),
+							bE: acc.bE,
+							bF: acc.bF
+						};
+					default:
+						var simplifiablePatternError = foundPattern.a;
+						return {
+							bB: acc.bB,
+							bE: A2($elm$core$List$cons, simplifiablePatternError, acc.bE),
+							bF: acc.bF
+						};
+				}
+			}),
+		{bB: _List_Nil, bE: _List_Nil, bF: _List_Nil},
+		scope.cY);
+};
+var $jfmengels$elm_review_unused$NoUnused$Patterns$isUnused = F2(
+	function (name, context) {
+		if (!context.b) {
+			return false;
+		} else {
+			var headScope = context.a;
+			return !A2($elm$core$Set$member, name, headScope.a1);
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Patterns$isNodeInContext = F2(
+	function (context, _v0) {
+		var value = _v0.b;
+		return A2($jfmengels$elm_review_unused$NoUnused$Patterns$isUnused, value, context);
+	});
+var $jfmengels$elm_review_unused$NoUnused$Patterns$pluralDetails = _List_fromArray(
+	['You should either use these values somewhere or remove them.']);
+var $jfmengels$elm_review_unused$NoUnused$Patterns$listToDetails = F2(
+	function (_v0, rest) {
+		if (!rest.b) {
+			return $jfmengels$elm_review_unused$NoUnused$Patterns$singularRemoveDetails;
+		} else {
+			return $jfmengels$elm_review_unused$NoUnused$Patterns$pluralDetails;
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Patterns$listToMessage = F2(
 	function (first, rest) {
 		var _v0 = $elm$core$List$reverse(rest);
 		if (!_v0.b) {
-			return 'Parameter `' + (first + '` is not used.');
+			return 'Value `' + (first + '` is not used');
 		} else {
 			var last = _v0.a;
 			var middle = _v0.b;
-			return 'Parameters `' + (A2(
+			return 'Values `' + (A2(
 				$elm$core$String$join,
 				'`, `',
-				A2($elm$core$List$cons, first, middle)) + ('` and `' + (last + '` are not used.')));
+				A2($elm$core$List$cons, first, middle)) + ('` and `' + (last + '` are not used')));
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$errorsForRecordValueList = F4(
-	function (use, recordRange, list, context) {
-		if ($elm$core$List$isEmpty(list)) {
-			return _Utils_Tuple2(
-				_List_fromArray(
-					[
-						A3(
-						$jfmengels$elm_review$Review$Rule$errorWithFix,
-						{
-							c2: _List_fromArray(
-								['This pattern is redundant and should be replaced with \'_\'.']),
-							a2: 'Record pattern is not needed'
-						},
-						recordRange,
-						_List_fromArray(
-							[
-								A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, recordRange, '_')
-							]))
-					]),
-				context);
+var $elm$core$List$partition = F2(function (f, xs) {
+  var truesHead = _List_Cons(undefined, _List_Nil);
+  var falsesHead = _List_Cons(undefined, _List_Nil);
+  var truesEnd = truesHead;
+  var falsesEnd = falsesHead;
+  for (; xs.b; xs = xs.b) {
+    var next = _List_Cons(xs.a, _List_Nil);
+    if (f(xs.a)) {
+      truesEnd.b = next;
+      truesEnd = next;
+    } else {
+      falsesEnd.b = next;
+      falsesEnd = next;
+    }
+  }
+  return _Utils_Tuple2(truesHead.b, falsesHead.b);
+});
+var $jfmengels$elm_review_unused$NoUnused$Patterns$recordErrors = F2(
+	function (context, _v0) {
+		var fields = _v0.ei;
+		var recordRange = _v0.fO;
+		if ($elm$core$List$isEmpty(fields)) {
+			return _List_fromArray(
+				[
+					A3(
+					$jfmengels$elm_review$Review$Rule$errorWithFix,
+					{
+						dx: _List_fromArray(
+							['This pattern is redundant and should be replaced with \'_\'.']),
+						a8: 'Record pattern is not needed'
+					},
+					recordRange,
+					_List_fromArray(
+						[
+							A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, recordRange, '_')
+						]))
+				]);
 		} else {
-			var _v0 = A2(
+			var _v1 = A2(
 				$elm$core$List$partition,
-				$jfmengels$elm_review_unused$NoUnused$Parameters$isNodeInContext(context),
-				list);
-			var unused = _v0.a;
-			var used = _v0.b;
+				$jfmengels$elm_review_unused$NoUnused$Patterns$isNodeInContext(context),
+				fields);
+			var unused = _v1.a;
+			var used = _v1.b;
 			if (!unused.b) {
-				return _Utils_Tuple2(_List_Nil, context);
+				return _List_Nil;
 			} else {
 				var firstNode = unused.a;
 				var restNodes = unused.b;
 				var rest = A2($elm$core$List$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, restNodes);
-				var fix = function () {
-					var _v2 = _Utils_Tuple2(use, used);
-					if (!_v2.a) {
-						if (!_v2.b.b) {
-							var _v3 = _v2.a;
-							return _List_fromArray(
-								[
-									A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, recordRange, '_')
-								]);
-						} else {
-							var _v4 = _v2.a;
-							return _List_fromArray(
-								[
-									A2(
-									$jfmengels$elm_review$Review$Fix$replaceRangeBy,
-									recordRange,
-									$stil4m$elm_syntax$Elm$Writer$write(
-										$stil4m$elm_syntax$Elm$Writer$writePattern(
-											A2(
-												$stil4m$elm_syntax$Elm$Syntax$Node$Node,
-												$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
-												$stil4m$elm_syntax$Elm$Syntax$Pattern$RecordPattern(used)))))
-								]);
-						}
+				var first = $stil4m$elm_syntax$Elm$Syntax$Node$value(firstNode);
+				var _v3 = function () {
+					if (!used.b) {
+						return _Utils_Tuple2(
+							recordRange,
+							A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, recordRange, '_'));
 					} else {
-						var _v5 = _v2.a;
-						return _List_Nil;
+						return _Utils_Tuple2(
+							$stil4m$elm_syntax$Elm$Syntax$Range$combine(
+								A2($elm$core$List$map, $stil4m$elm_syntax$Elm$Syntax$Node$range, unused)),
+							A2(
+								$jfmengels$elm_review$Review$Fix$replaceRangeBy,
+								recordRange,
+								$jfmengels$elm_review_unused$NoUnused$Patterns$writePattern(
+									A2(
+										$stil4m$elm_syntax$Elm$Syntax$Node$Node,
+										$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
+										$stil4m$elm_syntax$Elm$Syntax$Pattern$RecordPattern(used)))));
 					}
 				}();
-				var first = $stil4m$elm_syntax$Elm$Syntax$Node$value(firstNode);
-				var errorRange = $stil4m$elm_syntax$Elm$Syntax$Range$combine(
-					A2($elm$core$List$map, $stil4m$elm_syntax$Elm$Syntax$Node$range, unused));
-				return _Utils_Tuple2(
-					_List_fromArray(
-						[
-							A3(
-							$jfmengels$elm_review$Review$Rule$errorWithFix,
-							{
-								c2: A2($jfmengels$elm_review_unused$NoUnused$Parameters$listToDetails, first, rest),
-								a2: A2($jfmengels$elm_review_unused$NoUnused$Parameters$listToMessage, first, rest)
-							},
-							errorRange,
-							fix)
-						]),
-					A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Parameters$forgetNode, context, unused));
-			}
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$errorsForUselessNamePattern = F3(
-	function (use, range, context) {
-		var fix = function () {
-			if (!use) {
+				var errorRange = _v3.a;
+				var fix = _v3.b;
 				return _List_fromArray(
-					[
-						A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, range, '_')
-					]);
-			} else {
-				return _List_Nil;
-			}
-		}();
-		return _Utils_Tuple2(
-			_List_fromArray(
-				[
-					A3(
-					$jfmengels$elm_review$Review$Rule$errorWithFix,
-					{c2: $jfmengels$elm_review_unused$NoUnused$Parameters$removeDetails, a2: 'Named pattern is not needed'},
-					range,
-					fix)
-				]),
-			context);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$errorsForUselessTuple = F3(
-	function (use, range, context) {
-		var fix = function () {
-			if (!use) {
-				return _List_fromArray(
-					[
-						A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, range, '_')
-					]);
-			} else {
-				return _List_Nil;
-			}
-		}();
-		return _Utils_Tuple2(
-			_List_fromArray(
-				[
-					A3(
-					$jfmengels$elm_review$Review$Rule$errorWithFix,
-					{c2: $jfmengels$elm_review_unused$NoUnused$Parameters$removeDetails, a2: 'Tuple pattern is not needed'},
-					range,
-					fix)
-				]),
-			context);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$errorsForValue = F4(
-	function (use, value, range, context) {
-		if (A2($elm$core$Set$member, value, context)) {
-			var fix = function () {
-				if (!use) {
-					return _List_fromArray(
-						[
-							A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, range, '_')
-						]);
-				} else {
-					return _List_Nil;
-				}
-			}();
-			return _Utils_Tuple2(
-				_List_fromArray(
 					[
 						A3(
 						$jfmengels$elm_review$Review$Rule$errorWithFix,
-						{c2: $jfmengels$elm_review_unused$NoUnused$Parameters$singularDetails, a2: 'Parameter `' + (value + '` is not used.')},
-						range,
-						fix)
-					]),
-				A2($elm$core$Set$remove, value, context));
-		} else {
-			return _Utils_Tuple2(_List_Nil, context);
+						{
+							dx: A2($jfmengels$elm_review_unused$NoUnused$Patterns$listToDetails, first, rest),
+							a8: A2($jfmengels$elm_review_unused$NoUnused$Patterns$listToMessage, first, rest)
+						},
+						errorRange,
+						_List_fromArray(
+							[fix]))
+					]);
+			}
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$errorsForPattern = F3(
-	function (use, _v0, context) {
-		errorsForPattern:
+var $jfmengels$elm_review_unused$NoUnused$Patterns$useValue = F2(
+	function (name, context) {
+		if (!context.b) {
+			return context;
+		} else {
+			var headScope = context.a;
+			var restOfScopes = context.b;
+			return A2(
+				$elm$core$List$cons,
+				_Utils_update(
+					headScope,
+					{
+						a1: A2($elm$core$Set$insert, name, headScope.a1)
+					}),
+				restOfScopes);
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Patterns$report = function (context) {
+	if (context.b) {
+		var headScope = context.a;
+		var restOfScopes = context.b;
+		var _v1 = $jfmengels$elm_review_unused$NoUnused$Patterns$findDeclaredPatterns(headScope);
+		var singles = _v1.bF;
+		var records = _v1.bB;
+		var simplifiablePatterns = _v1.bE;
+		var allDeclared = $elm$core$List$concat(
+			_List_fromArray(
+				[
+					A2(
+					$elm$core$List$map,
+					function ($) {
+						return $.b5;
+					},
+					singles),
+					A2(
+					$elm$core$List$concatMap,
+					A2(
+						$elm$core$Basics$composeR,
+						function ($) {
+							return $.ei;
+						},
+						$elm$core$List$map($stil4m$elm_syntax$Elm$Syntax$Node$value)),
+					records)
+				]));
+		var nonUsedVars = A2(
+			$elm$core$Set$diff,
+			headScope.a1,
+			$elm$core$Set$fromList(allDeclared));
+		var singleErrors = A2(
+			$elm$core$List$map,
+			function (pattern) {
+				return A3(
+					$jfmengels$elm_review$Review$Rule$errorWithFix,
+					{dx: pattern.dx, a8: pattern.a8},
+					pattern.eD,
+					pattern.bO);
+			},
+			A2(
+				$elm$core$List$filter,
+				function (_v2) {
+					var name = _v2.b5;
+					return !A2($elm$core$Set$member, name, headScope.a1);
+				},
+				singles));
+		var errors = $elm$core$List$concat(
+			_List_fromArray(
+				[
+					singleErrors,
+					A2(
+					$elm$core$List$concatMap,
+					$jfmengels$elm_review_unused$NoUnused$Patterns$recordErrors(context),
+					records),
+					simplifiablePatterns
+				]));
+		return _Utils_Tuple2(
+			errors,
+			A3(
+				$elm$core$List$foldl,
+				$jfmengels$elm_review_unused$NoUnused$Patterns$useValue,
+				restOfScopes,
+				$elm$core$Set$toList(nonUsedVars)));
+	} else {
+		return _Utils_Tuple2(_List_Nil, context);
+	}
+};
+var $jfmengels$elm_review_unused$NoUnused$Patterns$caseBranchExitVisitor = F3(
+	function (_v0, _v1, context) {
+		return $jfmengels$elm_review_unused$NoUnused$Patterns$report(context);
+	});
+var $jfmengels$elm_review_unused$NoUnused$Patterns$findAsPatternsErrors = F2(
+	function (patterns, acc) {
+		findAsPatternsErrors:
 		while (true) {
-			var range = _v0.a;
-			var pattern = _v0.b;
-			_v1$5:
-			while (true) {
-				switch (pattern.$) {
-					case 0:
-						return _Utils_Tuple2(_List_Nil, context);
-					case 11:
-						var value = pattern.a;
-						return A4($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForValue, use, value, range, context);
-					case 8:
-						var values = pattern.a;
-						return A4($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForRecordValueList, use, range, values, context);
-					case 7:
-						if (((pattern.a.b && (!pattern.a.a.b.$)) && pattern.a.b.b) && (!pattern.a.b.a.b.$)) {
-							if (!pattern.a.b.b.b) {
-								var _v2 = pattern.a;
-								var _v3 = _v2.a;
-								var _v4 = _v3.b;
-								var _v5 = _v2.b;
-								var _v6 = _v5.a;
-								var _v7 = _v6.b;
-								return A3($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForUselessTuple, use, range, context);
-							} else {
-								if ((!pattern.a.b.b.a.b.$) && (!pattern.a.b.b.b.b)) {
-									var _v8 = pattern.a;
-									var _v9 = _v8.a;
-									var _v10 = _v9.b;
-									var _v11 = _v8.b;
-									var _v12 = _v11.a;
-									var _v13 = _v12.b;
-									var _v14 = _v11.b;
-									var _v15 = _v14.a;
-									var _v16 = _v15.b;
-									return A3($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForUselessTuple, use, range, context);
-								} else {
-									break _v1$5;
-								}
-							}
-						} else {
-							break _v1$5;
-						}
-					case 9:
-						var first = pattern.a;
-						var second = pattern.b;
-						return A3(
-							$jfmengels$elm_review_unused$NoUnused$Parameters$errorsForPatternList,
-							use,
-							_List_fromArray(
-								[first, second]),
-							context);
-					case 10:
-						var patterns = pattern.a;
-						return A3($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForPatternList, use, patterns, context);
-					case 12:
-						var patterns = pattern.b;
-						return A2($elm$core$List$all, $jfmengels$elm_review_unused$NoUnused$Parameters$isAllPattern, patterns) ? A3($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForUselessNamePattern, use, range, context) : A3($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForPatternList, use, patterns, context);
+			if (!patterns.b) {
+				return acc;
+			} else {
+				var pattern = patterns.a;
+				var rest = patterns.b;
+				var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(pattern);
+				switch (_v1.$) {
 					case 13:
-						var inner = pattern.a;
-						var name = pattern.b;
-						return A3(
-							$jfmengels$elm_review_unused$NoUnused$Parameters$andThen,
-							$jfmengels$elm_review_unused$NoUnused$Parameters$errorsForPattern(use),
-							inner,
-							A5($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForAsPattern, use, range, inner, name, context));
+						var inner = _v1.a;
+						var name = _v1.b;
+						var newAcc = function () {
+							var _v2 = A3(
+								$jfmengels$elm_review_unused$NoUnused$Patterns$findPatternForAsPattern,
+								$stil4m$elm_syntax$Elm$Syntax$Node$range(pattern),
+								inner,
+								name);
+							switch (_v2.$) {
+								case 2:
+									var error = _v2.a;
+									return A2($elm$core$List$cons, error, acc);
+								case 0:
+									return acc;
+								default:
+									return acc;
+							}
+						}();
+						var $temp$patterns = A2($elm$core$List$cons, inner, rest),
+							$temp$acc = newAcc;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findAsPatternsErrors;
+					case 7:
+						var subPatterns = _v1.a;
+						var $temp$patterns = _Utils_ap(subPatterns, rest),
+							$temp$acc = acc;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findAsPatternsErrors;
+					case 9:
+						var first = _v1.a;
+						var second = _v1.b;
+						var $temp$patterns = A2(
+							$elm$core$List$cons,
+							first,
+							A2($elm$core$List$cons, second, rest)),
+							$temp$acc = acc;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findAsPatternsErrors;
+					case 10:
+						var subPatterns = _v1.a;
+						var $temp$patterns = _Utils_ap(subPatterns, rest),
+							$temp$acc = acc;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findAsPatternsErrors;
+					case 12:
+						var subPatterns = _v1.b;
+						var $temp$patterns = _Utils_ap(subPatterns, rest),
+							$temp$acc = acc;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findAsPatternsErrors;
 					case 14:
-						var inner = pattern.a;
-						var $temp$use = use,
-							$temp$_v0 = inner,
-							$temp$context = context;
-						use = $temp$use;
-						_v0 = $temp$_v0;
-						context = $temp$context;
-						continue errorsForPattern;
+						var inner = _v1.a;
+						var $temp$patterns = A2($elm$core$List$cons, inner, rest),
+							$temp$acc = acc;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findAsPatternsErrors;
 					default:
-						return _Utils_Tuple2(_List_Nil, context);
+						var $temp$patterns = rest,
+							$temp$acc = acc;
+						patterns = $temp$patterns;
+						acc = $temp$acc;
+						continue findAsPatternsErrors;
 				}
 			}
-			var patterns = pattern.a;
-			return A3($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForPatternList, use, patterns, context);
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$errorsForPatternList = F3(
-	function (use, list, context) {
-		return A3(
-			$elm$core$List$foldl,
-			$jfmengels$elm_review_unused$NoUnused$Parameters$andThen(
-				$jfmengels$elm_review_unused$NoUnused$Parameters$errorsForPattern(use)),
-			_Utils_Tuple2(_List_Nil, context),
-			list);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$errorsForFunctionImplementation = F2(
-	function (_v0, context) {
-		var _arguments = _v0.b.el;
-		return A3($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForPatternList, 1, _arguments, context);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$declarationExitVisitor = F2(
+var $jfmengels$elm_review_unused$NoUnused$Patterns$declarationEnterVisitor = F2(
 	function (node, context) {
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 		if (!_v0.$) {
-			var declaration = _v0.a.fX;
-			return A2($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForFunctionImplementation, declaration, context);
+			var declaration = _v0.a.gv;
+			return _Utils_Tuple2(
+				A2(
+					$jfmengels$elm_review_unused$NoUnused$Patterns$findAsPatternsErrors,
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(declaration).eT,
+					_List_Nil),
+				context);
 		} else {
 			return _Utils_Tuple2(_List_Nil, context);
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$rememberLetFunctionImplementation = F2(
-	function (_v0, context) {
-		var _arguments = _v0.b.el;
-		return A2($jfmengels$elm_review_unused$NoUnused$Parameters$rememberPatternList, _arguments, context);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$rememberLetDeclaration = F2(
-	function (_v0, context) {
-		var letDeclaration = _v0.b;
-		if (!letDeclaration.$) {
-			var declaration = letDeclaration.a.fX;
-			return A2($jfmengels$elm_review_unused$NoUnused$Parameters$rememberLetFunctionImplementation, declaration, context);
-		} else {
-			return context;
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$rememberLetDeclarationList = F2(
-	function (list, context) {
-		return A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Parameters$rememberLetDeclaration, context, list);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$expressionEnterVisitor = F2(
+var $jfmengels$elm_review_unused$NoUnused$Patterns$expressionEnterVisitor = F2(
 	function (node, context) {
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 		switch (_v0.$) {
-			case 17:
-				var args = _v0.a.fG;
-				return _Utils_Tuple2(
-					_List_Nil,
-					A2($jfmengels$elm_review_unused$NoUnused$Parameters$rememberPatternList, args, context));
 			case 15:
-				var declarations = _v0.a.ew;
+				var declarations = _v0.a.e2;
+				var findPatternsInLetDeclaration = function (letDeclaration) {
+					var _v2 = $stil4m$elm_syntax$Elm$Syntax$Node$value(letDeclaration);
+					if (!_v2.$) {
+						return _List_Nil;
+					} else {
+						var pattern = _v2.a;
+						return A2($jfmengels$elm_review_unused$NoUnused$Patterns$findPatterns, 0, pattern);
+					}
+				};
+				var asPatternsErrors = function (letDeclaration) {
+					var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(letDeclaration);
+					if (!_v1.$) {
+						var declaration = _v1.a.gv;
+						return A2(
+							$jfmengels$elm_review_unused$NoUnused$Patterns$findAsPatternsErrors,
+							$stil4m$elm_syntax$Elm$Syntax$Node$value(declaration).eT,
+							_List_Nil);
+					} else {
+						return _List_Nil;
+					}
+				};
 				return _Utils_Tuple2(
-					_List_Nil,
-					A2($jfmengels$elm_review_unused$NoUnused$Parameters$rememberLetDeclarationList, declarations, context));
+					A2($elm$core$List$concatMap, asPatternsErrors, declarations),
+					A2(
+						$elm$core$List$cons,
+						{
+							cY: A2($elm$core$List$concatMap, findPatternsInLetDeclaration, declarations),
+							a1: $elm$core$Set$empty
+						},
+						context));
+			case 17:
+				var args = _v0.a.ge;
+				return _Utils_Tuple2(
+					A2($jfmengels$elm_review_unused$NoUnused$Patterns$findAsPatternsErrors, args, _List_Nil),
+					context);
 			default:
 				return _Utils_Tuple2(_List_Nil, context);
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$Lambda = 0;
-var $jfmengels$elm_review_unused$NoUnused$Parameters$errorsForLetFunctionImplementation = F2(
-	function (_v0, context) {
-		var _arguments = _v0.b.el;
-		return A3($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForPatternList, 1, _arguments, context);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$errorsForLetDeclaration = F2(
-	function (_v0, context) {
-		var letDeclaration = _v0.b;
-		if (!letDeclaration.$) {
-			var declaration = letDeclaration.a.fX;
-			return A2($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForLetFunctionImplementation, declaration, context);
+var $jfmengels$elm_review_unused$NoUnused$Patterns$expressionExitVisitor = F2(
+	function (node, context) {
+		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+		if (_v0.$ === 15) {
+			return $jfmengels$elm_review_unused$NoUnused$Patterns$report(context);
 		} else {
 			return _Utils_Tuple2(_List_Nil, context);
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$errorsForLetDeclarationList = F2(
-	function (list, context) {
-		return A3(
-			$elm$core$List$foldl,
-			$jfmengels$elm_review_unused$NoUnused$Parameters$andThen($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForLetDeclaration),
-			_Utils_Tuple2(_List_Nil, context),
-			list);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$expressionExitVisitor = F2(
-	function (node, context) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-		switch (_v0.$) {
-			case 17:
-				var args = _v0.a.fG;
-				return A3($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForPatternList, 0, args, context);
-			case 15:
-				var declarations = _v0.a.ew;
-				return A2($jfmengels$elm_review_unused$NoUnused$Parameters$errorsForLetDeclarationList, declarations, context);
-			default:
-				return _Utils_Tuple2(_List_Nil, context);
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$initialContext = $elm$core$Set$empty;
-var $jfmengels$elm_review_unused$NoUnused$Parameters$useValue = F2(
-	function (value, context) {
-		return A2($elm$core$Set$remove, value, context);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$valueVisitor = F2(
+var $jfmengels$elm_review_unused$NoUnused$Patterns$initialContext = _List_Nil;
+var $jfmengels$elm_review_unused$NoUnused$Patterns$valueVisitor = F2(
 	function (_v0, context) {
 		var _v1 = _v0.b;
 		var moduleName = _v1.a;
@@ -23186,19 +25179,10 @@ var $jfmengels$elm_review_unused$NoUnused$Parameters$valueVisitor = F2(
 		if (!moduleName.b) {
 			return _Utils_Tuple2(
 				_List_Nil,
-				A2($jfmengels$elm_review_unused$NoUnused$Parameters$useValue, value, context));
+				A2($jfmengels$elm_review_unused$NoUnused$Patterns$useValue, value, context));
 		} else {
 			return _Utils_Tuple2(_List_Nil, context);
 		}
-	});
-var $jfmengels$elm_review$Review$Rule$withDeclarationExitVisitor = F2(
-	function (visitor, _v0) {
-		var schema = _v0;
-		return _Utils_update(
-			schema,
-			{
-				aq: A2($elm$core$List$cons, visitor, schema.aq)
-			});
 	});
 var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$ValueVisitor = function (a) {
 	return {$: 1, a: a};
@@ -23299,20 +25283,20 @@ var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitPattern = fu
 				var list = _v0.a;
 				return $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitPatternList(list);
 			case 12:
-				var moduleName = _v0.a.dn;
-				var name = _v0.a.bT;
+				var moduleName = _v0.a.dR;
+				var name = _v0.a.b5;
 				var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$range(node);
-				var start = _v1.cm;
+				var start = _v1.cN;
 				var newEnd = _Utils_update(
 					start,
 					{
-						bb: start.bb + $elm$core$String$length(
+						bh: start.bh + $elm$core$String$length(
 							A2(
 								$elm$core$String$join,
 								'.',
 								A2($elm$core$List$cons, name, moduleName)))
 					});
-				var range = {b6: newEnd, cm: start};
+				var range = {cp: newEnd, cN: start};
 				return $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitValue(
 					A2(
 						$stil4m$elm_syntax$Elm$Syntax$Node$Node,
@@ -23338,7 +25322,7 @@ var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitPatternList 
 };
 var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitFunctionImplementation = function (node) {
 	return $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitPatternList(
-		$stil4m$elm_syntax$Elm$Syntax$Node$value(node).el);
+		$stil4m$elm_syntax$Elm$Syntax$Node$value(node).eT);
 };
 var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$Type = function (a) {
 	return {$: 1, a: a};
@@ -23392,7 +25376,7 @@ var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitTypeAnnotati
 };
 var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitSignature = function (node) {
 	return $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitTypeAnnotation(
-		$stil4m$elm_syntax$Elm$Syntax$Node$value(node).fz);
+		$stil4m$elm_syntax$Elm$Syntax$Node$value(node).f7);
 };
 var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitMaybeSignature = function (maybeNode) {
 	if (!maybeNode.$) {
@@ -23404,7 +25388,7 @@ var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitMaybeSignatu
 };
 var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitValueConstructor = function (node) {
 	return $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitTypeAnnotationList(
-		$stil4m$elm_syntax$Elm$Syntax$Node$value(node).el);
+		$stil4m$elm_syntax$Elm$Syntax$Node$value(node).eT);
 };
 var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitValueConstructorList = function (list) {
 	return A2($jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$fastConcatMap, $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitValueConstructor, list);
@@ -23413,19 +25397,19 @@ var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitDeclaration 
 	var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 	switch (_v0.$) {
 		case 0:
-			var signature = _v0.a.gJ;
-			var declaration = _v0.a.fX;
+			var signature = _v0.a.hi;
+			var declaration = _v0.a.gv;
 			return _Utils_ap(
 				$jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitMaybeSignature(signature),
 				$jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitFunctionImplementation(declaration));
 		case 1:
-			var typeAnnotation = _v0.a.fz;
+			var typeAnnotation = _v0.a.f7;
 			return $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitTypeAnnotation(typeAnnotation);
 		case 2:
-			var constructors = _v0.a.fV;
+			var constructors = _v0.a.gt;
 			return $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitValueConstructorList(constructors);
 		case 3:
-			var typeAnnotation = _v0.a.fz;
+			var typeAnnotation = _v0.a.f7;
 			return $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitTypeAnnotation(typeAnnotation);
 		default:
 			return _List_Nil;
@@ -23452,8 +25436,8 @@ var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitCaseList = f
 var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitLetDeclaration = function (node) {
 	var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 	if (!_v0.$) {
-		var signature = _v0.a.gJ;
-		var declaration = _v0.a.fX;
+		var signature = _v0.a.hi;
+		var declaration = _v0.a.gv;
 		return _Utils_ap(
 			$jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitMaybeSignature(signature),
 			$jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitFunctionImplementation(declaration));
@@ -23478,13 +25462,13 @@ var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitExpression =
 					range,
 					_Utils_Tuple2(moduleName, _function)));
 		case 15:
-			var declarations = expression.a.ew;
+			var declarations = expression.a.e2;
 			return $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitLetDeclarationList(declarations);
 		case 16:
-			var cases = expression.a.fQ;
+			var cases = expression.a.go;
 			return $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitCaseList(cases);
 		case 17:
-			var args = expression.a.fG;
+			var args = expression.a.ge;
 			return $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$visitPatternList(args);
 		case 22:
 			var name = expression.a;
@@ -23518,573 +25502,27 @@ var $jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$withValueVisitor 
 				$jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$declarationListVisitor(visitor),
 				rule));
 	});
-var $jfmengels$elm_review_unused$NoUnused$Parameters$rule = $jfmengels$elm_review$Review$Rule$fromModuleRuleSchema(
-	A2(
-		$jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$withValueVisitor,
-		$jfmengels$elm_review_unused$NoUnused$Parameters$valueVisitor,
-		A2(
-			$jfmengels$elm_review$Review$Rule$withExpressionExitVisitor,
-			$jfmengels$elm_review_unused$NoUnused$Parameters$expressionExitVisitor,
-			A2(
-				$jfmengels$elm_review$Review$Rule$withExpressionEnterVisitor,
-				$jfmengels$elm_review_unused$NoUnused$Parameters$expressionEnterVisitor,
-				A2(
-					$jfmengels$elm_review$Review$Rule$withDeclarationExitVisitor,
-					$jfmengels$elm_review_unused$NoUnused$Parameters$declarationExitVisitor,
-					A2(
-						$jfmengels$elm_review$Review$Rule$withDeclarationEnterVisitor,
-						$jfmengels$elm_review_unused$NoUnused$Parameters$declarationEnterVisitor,
-						A2($jfmengels$elm_review$Review$Rule$newModuleRuleSchema, 'NoUnused.Parameters', $jfmengels$elm_review_unused$NoUnused$Parameters$initialContext)))))));
-var $jfmengels$elm_review_unused$NoUnused$Patterns$Destructuring = 0;
-var $jfmengels$elm_review_unused$NoUnused$Patterns$Matching = 1;
-var $jfmengels$elm_review_unused$NoUnused$Patterns$RecordPattern = function (a) {
-	return {$: 1, a: a};
-};
-var $jfmengels$elm_review_unused$NoUnused$Patterns$SimplifiablePattern = function (a) {
-	return {$: 2, a: a};
-};
-var $jfmengels$elm_review_unused$NoUnused$Patterns$SingleValue = function (a) {
-	return {$: 0, a: a};
-};
-var $jfmengels$elm_review_unused$NoUnused$Patterns$isAllPattern = function (_v0) {
-	var pattern = _v0.b;
-	if (!pattern.$) {
-		return true;
-	} else {
-		return false;
-	}
-};
-var $jfmengels$elm_review_unused$NoUnused$Patterns$removeDetails = _List_fromArray(
-	['This pattern is redundant and should be removed.']);
-var $jfmengels$elm_review_unused$NoUnused$Patterns$singularRemoveDetails = _List_fromArray(
-	['You should either use this value somewhere or remove it.']);
-var $jfmengels$elm_review_unused$NoUnused$Patterns$findPatternForAsPattern = F3(
-	function (patternRange, inner, _v0) {
-		var range = _v0.a;
-		var name = _v0.b;
-		if ($jfmengels$elm_review_unused$NoUnused$Patterns$isAllPattern(inner)) {
-			return $jfmengels$elm_review_unused$NoUnused$Patterns$SimplifiablePattern(
-				A3(
-					$jfmengels$elm_review$Review$Rule$errorWithFix,
-					{c2: $jfmengels$elm_review_unused$NoUnused$Patterns$removeDetails, a2: 'Pattern `_` is not needed'},
-					$stil4m$elm_syntax$Elm$Syntax$Node$range(inner),
-					_List_fromArray(
-						[
-							A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, patternRange, name)
-						])));
-		} else {
-			var fix = _List_fromArray(
-				[
-					A2(
-					$jfmengels$elm_review$Review$Fix$replaceRangeBy,
-					patternRange,
-					$stil4m$elm_syntax$Elm$Writer$write(
-						$stil4m$elm_syntax$Elm$Writer$writePattern(inner)))
-				]);
-			return $jfmengels$elm_review_unused$NoUnused$Patterns$SingleValue(
-				{c2: $jfmengels$elm_review_unused$NoUnused$Patterns$singularRemoveDetails, dO: fix, a2: 'Pattern alias `' + (name + '` is not used.'), bT: name, d6: range});
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Patterns$redundantDetails = _List_fromArray(
-	['This pattern is redundant and should be replaced with \'_\'.']);
-var $jfmengels$elm_review_unused$NoUnused$Patterns$singularReplaceDetails = _List_fromArray(
-	['You should either use this value somewhere or replace it with \'_\'.']);
-var $jfmengels$elm_review_unused$NoUnused$Patterns$findPatterns = F2(
-	function (use, _v0) {
-		findPatterns:
-		while (true) {
-			var range = _v0.a;
-			var pattern = _v0.b;
-			_v1$3:
-			while (true) {
-				switch (pattern.$) {
-					case 11:
-						var name = pattern.a;
-						return _List_fromArray(
-							[
-								$jfmengels$elm_review_unused$NoUnused$Patterns$SingleValue(
-								{
-									c2: $jfmengels$elm_review_unused$NoUnused$Patterns$singularReplaceDetails,
-									dO: _List_fromArray(
-										[
-											A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, range, '_')
-										]),
-									a2: 'Value `' + (name + '` is not used.'),
-									bT: name,
-									d6: range
-								})
-							]);
-					case 7:
-						if (((pattern.a.b && (!pattern.a.a.b.$)) && pattern.a.b.b) && (!pattern.a.b.a.b.$)) {
-							if (!pattern.a.b.b.b) {
-								var _v2 = pattern.a;
-								var _v3 = _v2.a;
-								var _v4 = _v3.b;
-								var _v5 = _v2.b;
-								var _v6 = _v5.a;
-								var _v7 = _v6.b;
-								return _List_fromArray(
-									[
-										$jfmengels$elm_review_unused$NoUnused$Patterns$SimplifiablePattern(
-										A3(
-											$jfmengels$elm_review$Review$Rule$errorWithFix,
-											{c2: $jfmengels$elm_review_unused$NoUnused$Patterns$redundantDetails, a2: 'Tuple pattern is not needed'},
-											range,
-											_List_fromArray(
-												[
-													A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, range, '_')
-												])))
-									]);
-							} else {
-								if ((!pattern.a.b.b.a.b.$) && (!pattern.a.b.b.b.b)) {
-									var _v8 = pattern.a;
-									var _v9 = _v8.a;
-									var _v10 = _v9.b;
-									var _v11 = _v8.b;
-									var _v12 = _v11.a;
-									var _v13 = _v12.b;
-									var _v14 = _v11.b;
-									var _v15 = _v14.a;
-									var _v16 = _v15.b;
-									return _List_fromArray(
-										[
-											$jfmengels$elm_review_unused$NoUnused$Patterns$SimplifiablePattern(
-											A3(
-												$jfmengels$elm_review$Review$Rule$errorWithFix,
-												{c2: $jfmengels$elm_review_unused$NoUnused$Patterns$redundantDetails, a2: 'Tuple pattern is not needed'},
-												range,
-												_List_fromArray(
-													[
-														A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, range, '_')
-													])))
-										]);
-								} else {
-									break _v1$3;
-								}
-							}
-						} else {
-							break _v1$3;
-						}
-					case 8:
-						var fields = pattern.a;
-						return _List_fromArray(
-							[
-								$jfmengels$elm_review_unused$NoUnused$Patterns$RecordPattern(
-								{dM: fields, fe: range})
-							]);
-					case 9:
-						var first = pattern.a;
-						var second = pattern.b;
-						return _Utils_ap(
-							A2($jfmengels$elm_review_unused$NoUnused$Patterns$findPatterns, use, first),
-							A2($jfmengels$elm_review_unused$NoUnused$Patterns$findPatterns, use, second));
-					case 10:
-						var patterns = pattern.a;
-						return A2(
-							$elm$core$List$concatMap,
-							$jfmengels$elm_review_unused$NoUnused$Patterns$findPatterns(use),
-							patterns);
-					case 12:
-						var patterns = pattern.b;
-						return ((!use) && A2($elm$core$List$all, $jfmengels$elm_review_unused$NoUnused$Patterns$isAllPattern, patterns)) ? _List_fromArray(
-							[
-								$jfmengels$elm_review_unused$NoUnused$Patterns$SimplifiablePattern(
-								A3(
-									$jfmengels$elm_review$Review$Rule$errorWithFix,
-									{c2: $jfmengels$elm_review_unused$NoUnused$Patterns$redundantDetails, a2: 'Named pattern is not needed'},
-									range,
-									_List_fromArray(
-										[
-											A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, range, '_')
-										])))
-							]) : A2(
-							$elm$core$List$concatMap,
-							$jfmengels$elm_review_unused$NoUnused$Patterns$findPatterns(use),
-							patterns);
-					case 13:
-						var inner = pattern.a;
-						var name = pattern.b;
-						return A2(
-							$elm$core$List$cons,
-							A3($jfmengels$elm_review_unused$NoUnused$Patterns$findPatternForAsPattern, range, inner, name),
-							A2($jfmengels$elm_review_unused$NoUnused$Patterns$findPatterns, use, inner));
-					case 14:
-						var inner = pattern.a;
-						var $temp$use = use,
-							$temp$_v0 = inner;
-						use = $temp$use;
-						_v0 = $temp$_v0;
-						continue findPatterns;
-					default:
-						return _List_Nil;
-				}
-			}
-			var patterns = pattern.a;
-			return A2(
-				$elm$core$List$concatMap,
-				$jfmengels$elm_review_unused$NoUnused$Patterns$findPatterns(use),
-				patterns);
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$RangeDict$insert = function (range) {
-	return $elm$core$Dict$insert(
-		$jfmengels$elm_review_unused$NoUnused$RangeDict$rangeAsString(range));
-};
-var $jfmengels$elm_review_unused$NoUnused$Patterns$expressionEnterVisitorHelp = F2(
-	function (node, context) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-		switch (_v0.$) {
-			case 15:
-				var declarations = _v0.a.ew;
-				var findPatternsInLetDeclaration = function (letDeclaration) {
-					var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(letDeclaration);
-					if (!_v1.$) {
-						return _List_Nil;
-					} else {
-						var pattern = _v1.a;
-						return A2($jfmengels$elm_review_unused$NoUnused$Patterns$findPatterns, 0, pattern);
-					}
-				};
-				return _Utils_Tuple2(
-					_List_Nil,
-					_Utils_update(
-						context,
-						{
-							t: A2(
-								$elm$core$List$cons,
-								{
-									c$: A2($elm$core$List$concatMap, findPatternsInLetDeclaration, declarations),
-									_: $elm$core$Set$empty
-								},
-								context.t),
-							bu: A3(
-								$jfmengels$elm_review_unused$NoUnused$RangeDict$insert,
-								$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
-								_List_Nil,
-								context.bu)
-						}));
-			case 16:
-				var cases = _v0.a.fQ;
-				return _Utils_Tuple2(
-					_List_Nil,
-					_Utils_update(
-						context,
-						{
-							bu: A3(
-								$elm$core$List$foldl,
-								F2(
-									function (_v2, scopesToCreate) {
-										var pattern = _v2.a;
-										var expr = _v2.b;
-										return A3(
-											$jfmengels$elm_review_unused$NoUnused$RangeDict$insert,
-											$stil4m$elm_syntax$Elm$Syntax$Node$range(expr),
-											A2($jfmengels$elm_review_unused$NoUnused$Patterns$findPatterns, 1, pattern),
-											scopesToCreate);
-									}),
-								context.bu,
-								cases)
-						}));
-			default:
-				return _Utils_Tuple2(_List_Nil, context);
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Patterns$expressionEnterVisitor = F2(
-	function (node, context) {
-		var newContext = function () {
-			var _v0 = A2(
-				$jfmengels$elm_review_unused$NoUnused$RangeDict$get,
-				$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
-				context.bu);
-			if (!_v0.$) {
-				var declared = _v0.a;
-				return _Utils_update(
-					context,
-					{
-						t: A2(
-							$elm$core$List$cons,
-							{c$: declared, _: $elm$core$Set$empty},
-							context.t)
-					});
-			} else {
-				return context;
-			}
-		}();
-		return A2($jfmengels$elm_review_unused$NoUnused$Patterns$expressionEnterVisitorHelp, node, newContext);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Patterns$findDeclaredPatterns = function (scope) {
-	return A3(
-		$elm$core$List$foldl,
-		F2(
-			function (foundPattern, acc) {
-				switch (foundPattern.$) {
-					case 0:
-						var v = foundPattern.a;
-						return _Utils_update(
-							acc,
-							{
-								dv: A2($elm$core$List$cons, v, acc.dv)
-							});
-					case 1:
-						var v = foundPattern.a;
-						return _Utils_update(
-							acc,
-							{
-								dp: A2($elm$core$List$cons, v, acc.dp)
-							});
-					default:
-						var simplifiablePatternError = foundPattern.a;
-						return _Utils_update(
-							acc,
-							{
-								du: A2($elm$core$List$cons, simplifiablePatternError, acc.du)
-							});
-				}
-			}),
-		{dp: _List_Nil, du: _List_Nil, dv: _List_Nil},
-		scope.c$);
-};
-var $jfmengels$elm_review_unused$NoUnused$Patterns$isUnused = F2(
-	function (name, context) {
-		var _v0 = context.t;
-		if (!_v0.b) {
-			return false;
-		} else {
-			var headScope = _v0.a;
-			return !A2($elm$core$Set$member, name, headScope._);
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Patterns$isNodeInContext = F2(
-	function (context, _v0) {
-		var value = _v0.b;
-		return A2($jfmengels$elm_review_unused$NoUnused$Patterns$isUnused, value, context);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Patterns$pluralDetails = _List_fromArray(
-	['You should either use these values somewhere or remove them.']);
-var $jfmengels$elm_review_unused$NoUnused$Patterns$listToDetails = F2(
-	function (_v0, rest) {
-		if (!rest.b) {
-			return $jfmengels$elm_review_unused$NoUnused$Patterns$singularRemoveDetails;
-		} else {
-			return $jfmengels$elm_review_unused$NoUnused$Patterns$pluralDetails;
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Patterns$listToMessage = F2(
-	function (first, rest) {
-		var _v0 = $elm$core$List$reverse(rest);
-		if (!_v0.b) {
-			return 'Value `' + (first + '` is not used.');
-		} else {
-			var last = _v0.a;
-			var middle = _v0.b;
-			return 'Values `' + (A2(
-				$elm$core$String$join,
-				'`, `',
-				A2($elm$core$List$cons, first, middle)) + ('` and `' + (last + '` are not used.')));
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Patterns$recordErrors = F2(
-	function (context, _v0) {
-		var fields = _v0.dM;
-		var recordRange = _v0.fe;
-		if ($elm$core$List$isEmpty(fields)) {
-			return _List_fromArray(
-				[
-					A3(
-					$jfmengels$elm_review$Review$Rule$errorWithFix,
-					{
-						c2: _List_fromArray(
-							['This pattern is redundant and should be replaced with \'_\'.']),
-						a2: 'Record pattern is not needed'
-					},
-					recordRange,
-					_List_fromArray(
-						[
-							A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, recordRange, '_')
-						]))
-				]);
-		} else {
-			var _v1 = A2(
-				$elm$core$List$partition,
-				$jfmengels$elm_review_unused$NoUnused$Patterns$isNodeInContext(context),
-				fields);
-			var unused = _v1.a;
-			var used = _v1.b;
-			if (!unused.b) {
-				return _List_Nil;
-			} else {
-				var firstNode = unused.a;
-				var restNodes = unused.b;
-				var rest = A2($elm$core$List$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, restNodes);
-				var first = $stil4m$elm_syntax$Elm$Syntax$Node$value(firstNode);
-				var _v3 = function () {
-					if (!used.b) {
-						return _Utils_Tuple2(
-							recordRange,
-							A2($jfmengels$elm_review$Review$Fix$replaceRangeBy, recordRange, '_'));
-					} else {
-						return _Utils_Tuple2(
-							$stil4m$elm_syntax$Elm$Syntax$Range$combine(
-								A2($elm$core$List$map, $stil4m$elm_syntax$Elm$Syntax$Node$range, unused)),
-							A2(
-								$jfmengels$elm_review$Review$Fix$replaceRangeBy,
-								recordRange,
-								$stil4m$elm_syntax$Elm$Writer$write(
-									$stil4m$elm_syntax$Elm$Writer$writePattern(
-										A2(
-											$stil4m$elm_syntax$Elm$Syntax$Node$Node,
-											$stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
-											$stil4m$elm_syntax$Elm$Syntax$Pattern$RecordPattern(used))))));
-					}
-				}();
-				var errorRange = _v3.a;
-				var fix = _v3.b;
-				return _List_fromArray(
-					[
-						A3(
-						$jfmengels$elm_review$Review$Rule$errorWithFix,
-						{
-							c2: A2($jfmengels$elm_review_unused$NoUnused$Patterns$listToDetails, first, rest),
-							a2: A2($jfmengels$elm_review_unused$NoUnused$Patterns$listToMessage, first, rest)
-						},
-						errorRange,
-						_List_fromArray(
-							[fix]))
-					]);
-			}
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Patterns$useValue = F2(
-	function (name, context) {
-		var _v0 = context.t;
-		if (!_v0.b) {
-			return context;
-		} else {
-			var headScope = _v0.a;
-			var restOfScopes = _v0.b;
-			return _Utils_update(
-				context,
-				{
-					t: A2(
-						$elm$core$List$cons,
-						_Utils_update(
-							headScope,
-							{
-								_: A2($elm$core$Set$insert, name, headScope._)
-							}),
-						restOfScopes)
-				});
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Patterns$report = function (context) {
-	var _v0 = context.t;
-	if (_v0.b) {
-		var headScope = _v0.a;
-		var restOfScopes = _v0.b;
-		var _v1 = $jfmengels$elm_review_unused$NoUnused$Patterns$findDeclaredPatterns(headScope);
-		var singles = _v1.dv;
-		var records = _v1.dp;
-		var simplifiablePatterns = _v1.du;
-		var allDeclared = $elm$core$List$concat(
-			_List_fromArray(
-				[
-					A2(
-					$elm$core$List$map,
-					function ($) {
-						return $.bT;
-					},
-					singles),
-					A2(
-					$elm$core$List$concatMap,
-					A2(
-						$elm$core$Basics$composeR,
-						function ($) {
-							return $.dM;
-						},
-						$elm$core$List$map($stil4m$elm_syntax$Elm$Syntax$Node$value)),
-					records)
-				]));
-		var nonUsedVars = A2(
-			$elm$core$Set$diff,
-			headScope._,
-			$elm$core$Set$fromList(allDeclared));
-		var singleErrors = A2(
-			$elm$core$List$map,
-			function (pattern) {
-				return A3(
-					$jfmengels$elm_review$Review$Rule$errorWithFix,
-					{c2: pattern.c2, a2: pattern.a2},
-					pattern.d6,
-					pattern.dO);
-			},
-			A2(
-				$elm$core$List$filter,
-				function (_v2) {
-					var name = _v2.bT;
-					return !A2($elm$core$Set$member, name, headScope._);
-				},
-				singles));
-		var errors = $elm$core$List$concat(
-			_List_fromArray(
-				[
-					singleErrors,
-					A2(
-					$elm$core$List$concatMap,
-					$jfmengels$elm_review_unused$NoUnused$Patterns$recordErrors(context),
-					records),
-					simplifiablePatterns
-				]));
-		return _Utils_Tuple2(
-			errors,
-			A3(
-				$elm$core$List$foldl,
-				$jfmengels$elm_review_unused$NoUnused$Patterns$useValue,
-				_Utils_update(
-					context,
-					{t: restOfScopes}),
-				$elm$core$Set$toList(nonUsedVars)));
-	} else {
-		return _Utils_Tuple2(_List_Nil, context);
-	}
-};
-var $jfmengels$elm_review_unused$NoUnused$Patterns$expressionExitVisitor = F2(
-	function (node, context) {
-		var _v0 = A2(
-			$jfmengels$elm_review_unused$NoUnused$RangeDict$get,
-			$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
-			context.bu);
-		if (!_v0.$) {
-			return $jfmengels$elm_review_unused$NoUnused$Patterns$report(context);
-		} else {
-			return _Utils_Tuple2(_List_Nil, context);
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$RangeDict$empty = $elm$core$Dict$empty;
-var $jfmengels$elm_review_unused$NoUnused$Patterns$initialContext = {t: _List_Nil, bu: $jfmengels$elm_review_unused$NoUnused$RangeDict$empty};
-var $jfmengels$elm_review_unused$NoUnused$Patterns$valueVisitor = F2(
-	function (_v0, context) {
-		var _v1 = _v0.b;
-		var moduleName = _v1.a;
-		var value = _v1.b;
-		if (!moduleName.b) {
-			return _Utils_Tuple2(
-				_List_Nil,
-				A2($jfmengels$elm_review_unused$NoUnused$Patterns$useValue, value, context));
-		} else {
-			return _Utils_Tuple2(_List_Nil, context);
-		}
-	});
 var $jfmengels$elm_review_unused$NoUnused$Patterns$rule = $jfmengels$elm_review$Review$Rule$fromModuleRuleSchema(
-	A2(
-		$jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$withValueVisitor,
-		$jfmengels$elm_review_unused$NoUnused$Patterns$valueVisitor,
+	$jfmengels$elm_review$Review$Rule$providesFixesForModuleRule(
 		A2(
-			$jfmengels$elm_review$Review$Rule$withExpressionExitVisitor,
-			$jfmengels$elm_review_unused$NoUnused$Patterns$expressionExitVisitor,
+			$jfmengels$elm_review_unused$NoUnused$Patterns$NameVisitor$withValueVisitor,
+			$jfmengels$elm_review_unused$NoUnused$Patterns$valueVisitor,
 			A2(
-				$jfmengels$elm_review$Review$Rule$withExpressionEnterVisitor,
-				$jfmengels$elm_review_unused$NoUnused$Patterns$expressionEnterVisitor,
-				A2($jfmengels$elm_review$Review$Rule$newModuleRuleSchema, 'NoUnused.Patterns', $jfmengels$elm_review_unused$NoUnused$Patterns$initialContext)))));
+				$jfmengels$elm_review$Review$Rule$withCaseBranchExitVisitor,
+				$jfmengels$elm_review_unused$NoUnused$Patterns$caseBranchExitVisitor,
+				A2(
+					$jfmengels$elm_review$Review$Rule$withCaseBranchEnterVisitor,
+					$jfmengels$elm_review_unused$NoUnused$Patterns$caseBranchEnterVisitor,
+					A2(
+						$jfmengels$elm_review$Review$Rule$withExpressionExitVisitor,
+						$jfmengels$elm_review_unused$NoUnused$Patterns$expressionExitVisitor,
+						A2(
+							$jfmengels$elm_review$Review$Rule$withExpressionEnterVisitor,
+							$jfmengels$elm_review_unused$NoUnused$Patterns$expressionEnterVisitor,
+							A2(
+								$jfmengels$elm_review$Review$Rule$withDeclarationEnterVisitor,
+								$jfmengels$elm_review_unused$NoUnused$Patterns$declarationEnterVisitor,
+								A2($jfmengels$elm_review$Review$Rule$newModuleRuleSchema, 'NoUnused.Patterns', $jfmengels$elm_review_unused$NoUnused$Patterns$initialContext)))))))));
 var $jfmengels$elm_review_unused$NoUnused$Variables$dependenciesVisitor = F2(
 	function (dependencies, projectContext) {
 		var customTypes = $elm$core$Dict$fromList(
@@ -24092,18 +25530,18 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$dependenciesVisitor = F2(
 				$elm$core$List$map,
 				function (module_) {
 					return _Utils_Tuple2(
-						A2($elm$core$String$split, '.', module_.bT),
+						A2($elm$core$String$split, '.', module_.b5),
 						$elm$core$Dict$fromList(
 							A2(
 								$elm$core$List$map,
 								function (_v0) {
-									var name = _v0.bT;
-									var tags = _v0.gS;
+									var name = _v0.b5;
+									var tags = _v0.hr;
 									return _Utils_Tuple2(
 										name,
 										A2($elm$core$List$map, $elm$core$Tuple$first, tags));
 								},
-								module_.fA)));
+								module_.f8)));
 				},
 				A2(
 					$elm$core$List$concatMap,
@@ -24113,7 +25551,7 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$dependenciesVisitor = F2(
 			_List_Nil,
 			_Utils_update(
 				projectContext,
-				{dE: customTypes}));
+				{d9: customTypes}));
 	});
 var $jfmengels$elm_review_unused$NoUnused$Variables$elmJsonVisitor = F2(
 	function (maybeElmJson, projectContext) {
@@ -24125,52 +25563,46 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$elmJsonVisitor = F2(
 			maybeElmJson);
 		if (!_v0.$) {
 			if (!_v0.a.$) {
-				return _Utils_Tuple2(
-					_List_Nil,
-					_Utils_update(
-						projectContext,
-						{al: true}));
+				return _Utils_update(
+					projectContext,
+					{ar: true});
 			} else {
-				return _Utils_Tuple2(
-					_List_Nil,
-					_Utils_update(
-						projectContext,
-						{al: false}));
+				return _Utils_update(
+					projectContext,
+					{ar: false});
 			}
 		} else {
-			return _Utils_Tuple2(
-				_List_Nil,
-				_Utils_update(
-					projectContext,
-					{al: true}));
+			return _Utils_update(
+				projectContext,
+				{ar: true});
 		}
 	});
 var $jfmengels$elm_review_unused$NoUnused$Variables$foldProjectContexts = F2(
 	function (newProjectContext, previousProjectContext) {
 		return {
-			dE: A2($elm$core$Dict$union, newProjectContext.dE, previousProjectContext.dE),
-			al: previousProjectContext.al
+			d9: A2($elm$core$Dict$union, newProjectContext.d9, previousProjectContext.d9),
+			ar: previousProjectContext.ar
 		};
 	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$fromModuleToProject = $jfmengels$elm_review$Review$Rule$withMetadata(
+var $jfmengels$elm_review_unused$NoUnused$Variables$fromModuleToProject = $jfmengels$elm_review$Review$Rule$withModuleName(
 	$jfmengels$elm_review$Review$Rule$initContextCreator(
 		F2(
-			function (metadata, moduleContext) {
+			function (moduleName, moduleContext) {
 				return {
-					dE: A2(
+					d9: A2(
 						$elm$core$Dict$singleton,
-						$jfmengels$elm_review$Review$Rule$moduleNameFromMetadata(metadata),
+						moduleName,
 						A2(
 							$elm$core$Dict$map,
 							F2(
 								function (_v0, customType) {
-									return customType.eh;
+									return customType.d3;
 								}),
-							moduleContext.bQ)),
-					al: true
+							moduleContext.b3)),
+					ar: true
 				};
 			})));
-var $jfmengels$elm_review_unused$NoUnused$Variables$emptyScope = {c$: $elm$core$Dict$empty, _: $elm$core$Dict$empty};
+var $jfmengels$elm_review_unused$NoUnused$Variables$emptyScope = {cY: $elm$core$Dict$empty, b7: $elm$core$Set$empty, a1: $elm$core$Dict$empty};
 var $jfmengels$elm_review_unused$NoUnused$NonemptyList$Nonempty = F2(
 	function (a, b) {
 		return {$: 0, a: a, b: b};
@@ -24182,292 +25614,157 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$fromProjectToModule = $jfmen
 	$jfmengels$elm_review$Review$Rule$initContextCreator(
 		F2(
 			function (lookupTable, _v0) {
-				var isApplication = _v0.al;
-				var customTypes = _v0.dE;
+				var isApplication = _v0.ar;
+				var customTypes = _v0.d9;
 				return {
-					bc: $elm$core$Dict$empty,
-					dE: customTypes,
-					ew: $elm$core$Dict$empty,
-					b2: _List_Nil,
-					c8: false,
-					bB: _List_Nil,
-					bj: $elm$core$Dict$empty,
-					bk: _List_Nil,
-					al: isApplication,
-					bQ: $elm$core$Dict$empty,
+					bi: $elm$core$Dict$empty,
+					d9: customTypes,
+					cl: _List_Nil,
+					dC: false,
+					bN: _List_Nil,
+					br: $elm$core$Dict$empty,
+					bs: _List_Nil,
+					ar: isApplication,
+					b3: $elm$core$Dict$empty,
 					l: lookupTable,
 					t: $jfmengels$elm_review_unused$NoUnused$NonemptyList$fromElement($jfmengels$elm_review_unused$NoUnused$Variables$emptyScope),
-					a6: $elm$core$Dict$empty,
-					a8: $elm$core$Set$empty
+					bd: $elm$core$Dict$empty,
+					cd: $elm$core$Set$empty
 				};
 			})));
-var $jfmengels$elm_review_unused$NoUnused$Variables$initialContext = {dE: $elm$core$Dict$empty, al: true};
-var $jfmengels$elm_review_unused$NoUnused$Variables$untilStartOfNextLine = function (range) {
-	return (range.b6.bb === 1) ? range : _Utils_update(
-		range,
-		{
-			b6: {bb: 1, bs: range.b6.bs + 1}
-		});
-};
-var $jfmengels$elm_review_unused$NoUnused$Variables$rangeToRemoveForNodeWithDocumentation = F2(
-	function (_v0, documentation) {
-		var nodeRange = _v0.a;
-		if (documentation.$ === 1) {
-			return $jfmengels$elm_review_unused$NoUnused$Variables$untilStartOfNextLine(nodeRange);
-		} else {
-			var _v2 = documentation.a;
-			var documentationRange = _v2.a;
-			return $jfmengels$elm_review_unused$NoUnused$Variables$untilStartOfNextLine(
-				{b6: nodeRange.b6, cm: documentationRange.cm});
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$NonemptyList$mapHead = F2(
-	function (fn, _v0) {
+var $jfmengels$elm_review_unused$NoUnused$Variables$initialContext = {d9: $elm$core$Dict$empty, ar: true};
+var $jfmengels$elm_review_unused$NoUnused$NonemptyList$cons = F2(
+	function (y, _v0) {
 		var x = _v0.a;
 		var xs = _v0.b;
 		return A2(
 			$jfmengels$elm_review_unused$NoUnused$NonemptyList$Nonempty,
-			fn(x),
-			xs);
+			y,
+			A2($elm$core$List$cons, x, xs));
 	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$registerVariable = F3(
-	function (variableInfo, name, context) {
-		var scopes = A2(
-			$jfmengels$elm_review_unused$NoUnused$NonemptyList$mapHead,
-			function (scope) {
-				return _Utils_update(
-					scope,
-					{
-						c$: A3($elm$core$Dict$insert, name, variableInfo, scope.c$)
-					});
-			},
-			context.t);
-		return _Utils_update(
-			context,
-			{t: scopes});
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$declarationListVisitor = F2(
-	function (nodes, context) {
-		return A3(
-			$elm$core$List$foldl,
-			F2(
-				function (node, _v0) {
-					var errors = _v0.a;
-					var ctx = _v0.b;
-					var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-					switch (_v1.$) {
-						case 2:
-							var name = _v1.a.bT;
-							var constructors = _v1.a.fV;
-							var documentation = _v1.a.dH;
-							var typeName = $stil4m$elm_syntax$Elm$Syntax$Node$value(name);
-							var customType = {
-								d7: A2($jfmengels$elm_review_unused$NoUnused$Variables$rangeToRemoveForNodeWithDocumentation, node, documentation),
-								aX: $stil4m$elm_syntax$Elm$Syntax$Node$range(name),
-								eh: A2(
-									$elm$core$List$map,
-									A2(
-										$elm$core$Basics$composeR,
-										$stil4m$elm_syntax$Elm$Syntax$Node$value,
-										A2(
-											$elm$core$Basics$composeR,
-											function ($) {
-												return $.bT;
-											},
-											$stil4m$elm_syntax$Elm$Syntax$Node$value)),
-									constructors)
-							};
-							var constructorsForType = $elm$core$Dict$fromList(
-								A2(
-									$elm$core$List$map,
-									function (constructorName) {
-										return _Utils_Tuple2(constructorName, typeName);
-									},
-									A2(
-										$elm$core$List$map,
-										A2(
-											$elm$core$Basics$composeR,
-											$stil4m$elm_syntax$Elm$Syntax$Node$value,
-											A2(
-												$elm$core$Basics$composeR,
-												function ($) {
-													return $.bT;
-												},
-												$stil4m$elm_syntax$Elm$Syntax$Node$value)),
-										constructors)));
-							return _Utils_Tuple2(
-								errors,
-								_Utils_update(
-									ctx,
-									{
-										bc: A2($elm$core$Dict$union, constructorsForType, ctx.bc),
-										bQ: A3(
-											$elm$core$Dict$insert,
-											$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
-											customType,
-											ctx.bQ)
-									}));
-						case 1:
-							var name = _v1.a.bT;
-							var documentation = _v1.a.dH;
-							var contextWithRemovedShadowedImports = _Utils_update(
-								context,
-								{
-									bj: A2(
-										$elm$core$Dict$remove,
-										$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
-										context.bj)
-								});
-							return _Utils_Tuple2(
-								_List_Nil,
-								context.c8 ? contextWithRemovedShadowedImports : A3(
-									$jfmengels$elm_review_unused$NoUnused$Variables$registerVariable,
-									{
-										d7: $elm$core$Maybe$Just(
-											A2($jfmengels$elm_review_unused$NoUnused$Variables$rangeToRemoveForNodeWithDocumentation, node, documentation)),
-										gU: 'Type',
-										aX: $stil4m$elm_syntax$Elm$Syntax$Node$range(name),
-										aY: ''
-									},
-									$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
-									contextWithRemovedShadowedImports));
-						default:
-							return _Utils_Tuple2(errors, ctx);
-					}
-				}),
-			_Utils_Tuple2(_List_Nil, context),
-			nodes);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$collectModuleNamesFromTypeAnnotation = F2(
-	function (lookupTable, node) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-		switch (_v0.$) {
-			case 6:
-				var a = _v0.a;
-				var b = _v0.b;
-				return _Utils_ap(
-					A2($jfmengels$elm_review_unused$NoUnused$Variables$collectModuleNamesFromTypeAnnotation, lookupTable, a),
-					A2($jfmengels$elm_review_unused$NoUnused$Variables$collectModuleNamesFromTypeAnnotation, lookupTable, b));
-			case 1:
-				var nameNode = _v0.a;
-				var params = _v0.b;
-				var _v1 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, nameNode);
-				if (!_v1.$) {
-					var realModuleName = _v1.a;
-					return A2(
-						$elm$core$List$cons,
-						_Utils_Tuple2(
-							realModuleName,
-							$stil4m$elm_syntax$Elm$Syntax$Node$value(nameNode).a),
-						A2(
-							$elm$core$List$concatMap,
-							$jfmengels$elm_review_unused$NoUnused$Variables$collectModuleNamesFromTypeAnnotation(lookupTable),
-							params));
-				} else {
-					return A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$Variables$collectModuleNamesFromTypeAnnotation(lookupTable),
-						params);
+var $jfmengels$elm_review_unused$NoUnused$Variables$getDeclaredParametersFromPatternHelp = F2(
+	function (nodes, acc) {
+		getDeclaredParametersFromPatternHelp:
+		while (true) {
+			if (nodes.b) {
+				var _v1 = nodes.a;
+				var node = _v1.b;
+				var restOfNodes = nodes.b;
+				switch (node.$) {
+					case 14:
+						var pattern = node.a;
+						var $temp$nodes = A2($elm$core$List$cons, pattern, restOfNodes),
+							$temp$acc = acc;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue getDeclaredParametersFromPatternHelp;
+					case 11:
+						var name = node.a;
+						var $temp$nodes = restOfNodes,
+							$temp$acc = A2($elm$core$List$cons, name, acc);
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue getDeclaredParametersFromPatternHelp;
+					case 13:
+						var pattern = node.a;
+						var _v3 = node.b;
+						var asName = _v3.b;
+						var $temp$nodes = A2($elm$core$List$cons, pattern, restOfNodes),
+							$temp$acc = A2($elm$core$List$cons, asName, acc);
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue getDeclaredParametersFromPatternHelp;
+					case 8:
+						var fields = node.a;
+						var $temp$nodes = restOfNodes,
+							$temp$acc = _Utils_ap(
+							A2($elm$core$List$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, fields),
+							acc);
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue getDeclaredParametersFromPatternHelp;
+					case 7:
+						var patterns = node.a;
+						var $temp$nodes = _Utils_ap(patterns, restOfNodes),
+							$temp$acc = acc;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue getDeclaredParametersFromPatternHelp;
+					case 12:
+						var patterns = node.b;
+						var $temp$nodes = _Utils_ap(patterns, restOfNodes),
+							$temp$acc = acc;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue getDeclaredParametersFromPatternHelp;
+					case 9:
+						var left = node.a;
+						var right = node.b;
+						var $temp$nodes = A2(
+							$elm$core$List$cons,
+							left,
+							A2($elm$core$List$cons, right, restOfNodes)),
+							$temp$acc = acc;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue getDeclaredParametersFromPatternHelp;
+					case 10:
+						var patterns = node.a;
+						var $temp$nodes = _Utils_ap(patterns, restOfNodes),
+							$temp$acc = acc;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue getDeclaredParametersFromPatternHelp;
+					default:
+						var $temp$nodes = restOfNodes,
+							$temp$acc = acc;
+						nodes = $temp$nodes;
+						acc = $temp$acc;
+						continue getDeclaredParametersFromPatternHelp;
 				}
-			case 4:
-				var list = _v0.a;
-				return A2(
-					$elm$core$List$concatMap,
-					$jfmengels$elm_review_unused$NoUnused$Variables$collectModuleNamesFromTypeAnnotation(lookupTable),
-					A2(
-						$elm$core$List$map,
-						A2($elm$core$Basics$composeR, $stil4m$elm_syntax$Elm$Syntax$Node$value, $elm$core$Tuple$second),
-						list));
-			case 5:
-				var list = _v0.b;
-				return A2(
-					$elm$core$List$concatMap,
-					$jfmengels$elm_review_unused$NoUnused$Variables$collectModuleNamesFromTypeAnnotation(lookupTable),
-					A2(
-						$elm$core$List$map,
-						A2($elm$core$Basics$composeR, $stil4m$elm_syntax$Elm$Syntax$Node$value, $elm$core$Tuple$second),
-						$stil4m$elm_syntax$Elm$Syntax$Node$value(list)));
-			case 3:
-				var list = _v0.a;
-				return A2(
-					$elm$core$List$concatMap,
-					$jfmengels$elm_review_unused$NoUnused$Variables$collectModuleNamesFromTypeAnnotation(lookupTable),
-					list);
-			case 0:
-				return _List_Nil;
-			default:
-				return _List_Nil;
+			} else {
+				return acc;
+			}
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$collectTypesFromTypeAnnotation = function (node) {
-	var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-	switch (_v0.$) {
-		case 6:
-			var a = _v0.a;
-			var b = _v0.b;
-			return _Utils_ap(
-				$jfmengels$elm_review_unused$NoUnused$Variables$collectTypesFromTypeAnnotation(a),
-				$jfmengels$elm_review_unused$NoUnused$Variables$collectTypesFromTypeAnnotation(b));
-		case 1:
-			var nameNode = _v0.a;
-			var params = _v0.b;
-			var name = function () {
-				var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(nameNode);
-				if (!_v1.a.b) {
-					var str = _v1.b;
-					return _List_fromArray(
-						[str]);
-				} else {
-					return _List_Nil;
-				}
-			}();
-			return _Utils_ap(
-				name,
-				A2($elm$core$List$concatMap, $jfmengels$elm_review_unused$NoUnused$Variables$collectTypesFromTypeAnnotation, params));
-		case 4:
-			var list = _v0.a;
-			return A2(
-				$elm$core$List$concatMap,
-				$jfmengels$elm_review_unused$NoUnused$Variables$collectTypesFromTypeAnnotation,
-				A2(
-					$elm$core$List$map,
-					A2($elm$core$Basics$composeR, $stil4m$elm_syntax$Elm$Syntax$Node$value, $elm$core$Tuple$second),
-					list));
-		case 5:
-			var list = _v0.b;
-			return A2(
-				$elm$core$List$concatMap,
-				$jfmengels$elm_review_unused$NoUnused$Variables$collectTypesFromTypeAnnotation,
-				A2(
-					$elm$core$List$map,
-					A2($elm$core$Basics$composeR, $stil4m$elm_syntax$Elm$Syntax$Node$value, $elm$core$Tuple$second),
-					$stil4m$elm_syntax$Elm$Syntax$Node$value(list)));
-		case 3:
-			var list = _v0.a;
-			return A2($elm$core$List$concatMap, $jfmengels$elm_review_unused$NoUnused$Variables$collectTypesFromTypeAnnotation, list);
-		case 0:
-			return _List_Nil;
-		default:
-			return _List_Nil;
-	}
+var $jfmengels$elm_review_unused$NoUnused$Variables$getDeclaredParametersFromPattern = function (node) {
+	return A2(
+		$jfmengels$elm_review_unused$NoUnused$Variables$getDeclaredParametersFromPatternHelp,
+		_List_fromArray(
+			[node]),
+		_List_Nil);
 };
-var $jfmengels$elm_review_unused$NoUnused$Variables$collectNamesFromTypeAnnotation = F2(
-	function (lookupTable, node) {
-		return {
-			a3: A2($jfmengels$elm_review_unused$NoUnused$Variables$collectModuleNamesFromTypeAnnotation, lookupTable, node),
-			D: $jfmengels$elm_review_unused$NoUnused$Variables$collectTypesFromTypeAnnotation(node)
-		};
+var $jfmengels$elm_review_unused$NoUnused$Variables$caseBranchEnterVisitor = F2(
+	function (_v0, context) {
+		var pattern = _v0.a;
+		return _Utils_update(
+			context,
+			{
+				t: A2(
+					$jfmengels$elm_review_unused$NoUnused$NonemptyList$cons,
+					{
+						cY: $elm$core$Dict$empty,
+						b7: $elm$core$Set$fromList(
+							$jfmengels$elm_review_unused$NoUnused$Variables$getDeclaredParametersFromPattern(pattern)),
+						a1: $elm$core$Dict$empty
+					},
+					context.t)
+			});
 	});
+var $jfmengels$elm_review_unused$NoUnused$NonemptyList$head = function (_v0) {
+	var x = _v0.a;
+	return x;
+};
 var $jfmengels$elm_review_unused$NoUnused$Variables$details = _List_fromArray(
 	['You should either use this value somewhere, or remove it at the location I pointed at.']);
 var $jfmengels$elm_review_unused$NoUnused$Variables$error = F2(
 	function (variableInfo, name) {
 		return A3(
 			$jfmengels$elm_review$Review$Rule$errorWithFix,
-			{c2: $jfmengels$elm_review_unused$NoUnused$Variables$details, a2: variableInfo.gU + (' `' + (name + ('` is not used' + variableInfo.aY)))},
-			variableInfo.aX,
+			{dx: $jfmengels$elm_review_unused$NoUnused$Variables$details, a8: variableInfo.ht + (' `' + (name + ('` is not used' + variableInfo.a2)))},
+			variableInfo.a0,
 			function () {
-				var _v0 = variableInfo.d7;
+				var _v0 = variableInfo.eE;
 				if (!_v0.$) {
 					var rangeToRemove = _v0.a;
 					return _List_fromArray(
@@ -24479,192 +25776,48 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$error = F2(
 				}
 			}());
 	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$foldUsedTypesAndModules = A2(
-	$elm$core$List$foldl,
-	F2(
-		function (a, b) {
-			return {
-				a3: _Utils_ap(a.a3, b.a3),
-				D: _Utils_ap(a.D, b.D)
-			};
-		}),
-	{a3: _List_Nil, D: _List_Nil});
-var $jfmengels$elm_review_unused$NoUnused$Variables$getUsedModulesFromPattern = F2(
-	function (lookupTable, patternNode) {
-		getUsedModulesFromPattern:
-		while (true) {
-			var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(patternNode);
-			switch (_v0.$) {
-				case 0:
-					return _List_Nil;
-				case 1:
-					return _List_Nil;
-				case 2:
-					return _List_Nil;
-				case 3:
-					return _List_Nil;
-				case 4:
-					return _List_Nil;
-				case 5:
-					return _List_Nil;
-				case 6:
-					return _List_Nil;
-				case 7:
-					var patterns = _v0.a;
-					return A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$Variables$getUsedModulesFromPattern(lookupTable),
-						patterns);
-				case 8:
-					return _List_Nil;
-				case 9:
-					var pattern1 = _v0.a;
-					var pattern2 = _v0.b;
-					return A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$Variables$getUsedModulesFromPattern(lookupTable),
-						_List_fromArray(
-							[pattern1, pattern2]));
-				case 10:
-					var patterns = _v0.a;
-					return A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$Variables$getUsedModulesFromPattern(lookupTable),
-						patterns);
-				case 11:
-					return _List_Nil;
-				case 12:
-					var qualifiedNameRef = _v0.a;
-					var patterns = _v0.b;
-					var _v1 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, patternNode);
-					if (!_v1.$) {
-						var realModuleName = _v1.a;
-						return A2(
-							$elm$core$List$cons,
-							_Utils_Tuple2(realModuleName, qualifiedNameRef.dn),
-							A2(
-								$elm$core$List$concatMap,
-								$jfmengels$elm_review_unused$NoUnused$Variables$getUsedModulesFromPattern(lookupTable),
-								patterns));
-					} else {
-						return A2(
-							$elm$core$List$concatMap,
-							$jfmengels$elm_review_unused$NoUnused$Variables$getUsedModulesFromPattern(lookupTable),
-							patterns);
-					}
-				case 13:
-					var pattern = _v0.a;
-					var $temp$lookupTable = lookupTable,
-						$temp$patternNode = pattern;
-					lookupTable = $temp$lookupTable;
-					patternNode = $temp$patternNode;
-					continue getUsedModulesFromPattern;
-				default:
-					var pattern = _v0.a;
-					var $temp$lookupTable = lookupTable,
-						$temp$patternNode = pattern;
-					lookupTable = $temp$lookupTable;
-					patternNode = $temp$patternNode;
-					continue getUsedModulesFromPattern;
-			}
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$getUsedTypesFromPattern = F2(
-	function (constructorNameToTypeName, patternNode) {
-		getUsedTypesFromPattern:
-		while (true) {
-			var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(patternNode);
-			switch (_v0.$) {
-				case 0:
-					return _List_Nil;
-				case 1:
-					return _List_Nil;
-				case 2:
-					return _List_Nil;
-				case 3:
-					return _List_Nil;
-				case 4:
-					return _List_Nil;
-				case 5:
-					return _List_Nil;
-				case 6:
-					return _List_Nil;
-				case 7:
-					var patterns = _v0.a;
-					return A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$Variables$getUsedTypesFromPattern(constructorNameToTypeName),
-						patterns);
-				case 8:
-					return _List_Nil;
-				case 9:
-					var pattern1 = _v0.a;
-					var pattern2 = _v0.b;
-					return A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$Variables$getUsedTypesFromPattern(constructorNameToTypeName),
-						_List_fromArray(
-							[pattern1, pattern2]));
-				case 10:
-					var patterns = _v0.a;
-					return A2(
-						$elm$core$List$concatMap,
-						$jfmengels$elm_review_unused$NoUnused$Variables$getUsedTypesFromPattern(constructorNameToTypeName),
-						patterns);
-				case 11:
-					return _List_Nil;
-				case 12:
-					var qualifiedNameRef = _v0.a;
-					var patterns = _v0.b;
-					var _v1 = qualifiedNameRef.dn;
-					if (!_v1.b) {
-						return A2(
-							$elm$core$List$cons,
-							A2(
-								$elm$core$Maybe$withDefault,
-								qualifiedNameRef.bT,
-								A2($elm$core$Dict$get, qualifiedNameRef.bT, constructorNameToTypeName)),
-							A2(
-								$elm$core$List$concatMap,
-								$jfmengels$elm_review_unused$NoUnused$Variables$getUsedTypesFromPattern(constructorNameToTypeName),
-								patterns));
-					} else {
-						return A2(
-							$elm$core$List$concatMap,
-							$jfmengels$elm_review_unused$NoUnused$Variables$getUsedTypesFromPattern(constructorNameToTypeName),
-							patterns);
-					}
-				case 13:
-					var pattern = _v0.a;
-					var $temp$constructorNameToTypeName = constructorNameToTypeName,
-						$temp$patternNode = pattern;
-					constructorNameToTypeName = $temp$constructorNameToTypeName;
-					patternNode = $temp$patternNode;
-					continue getUsedTypesFromPattern;
-				default:
-					var pattern = _v0.a;
-					var $temp$constructorNameToTypeName = constructorNameToTypeName,
-						$temp$patternNode = pattern;
-					constructorNameToTypeName = $temp$constructorNameToTypeName;
-					patternNode = $temp$patternNode;
-					continue getUsedTypesFromPattern;
-			}
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$getUsedVariablesFromPattern = F2(
-	function (context, patternNode) {
-		return {
-			a3: A2($jfmengels$elm_review_unused$NoUnused$Variables$getUsedModulesFromPattern, context.l, patternNode),
-			D: A2($jfmengels$elm_review_unused$NoUnused$Variables$getUsedTypesFromPattern, context.bc, patternNode)
-		};
-	});
-var $jfmengels$elm_review_unused$NoUnused$NonemptyList$head = function (_v0) {
-	var x = _v0.a;
-	return x;
+var $jfmengels$elm_review_unused$NoUnused$Variables$makeReportHelp = function (_v0) {
+	var declared = _v0.cY;
+	var used = _v0.a1;
+	var namesToIgnore = _v0.b7;
+	var usedLocally = A2(
+		$elm$core$Maybe$withDefault,
+		$elm$core$Set$empty,
+		A2($elm$core$Dict$get, _List_Nil, used));
+	var nonUsedVars = $elm$core$Set$toList(
+		function (set) {
+			return A2($elm$core$Set$diff, set, namesToIgnore);
+		}(
+			A2(
+				$elm$core$Set$diff,
+				usedLocally,
+				$elm$core$Set$fromList(
+					$elm$core$Dict$keys(declared)))));
+	var errors = A3(
+		$elm$core$Dict$foldl,
+		F3(
+			function (key, variableInfo, acc) {
+				return (!A2($elm$core$Set$member, key, usedLocally)) ? A2(
+					$elm$core$List$cons,
+					A2($jfmengels$elm_review_unused$NoUnused$Variables$error, variableInfo, key),
+					acc) : acc;
+			}),
+		_List_Nil,
+		declared);
+	return _Utils_Tuple2(errors, nonUsedVars);
 };
+var $jfmengels$elm_review_unused$NoUnused$NonemptyList$mapHead = F2(
+	function (fn, _v0) {
+		var x = _v0.a;
+		var xs = _v0.b;
+		return A2(
+			$jfmengels$elm_review_unused$NoUnused$NonemptyList$Nonempty,
+			fn(x),
+			xs);
+	});
 var $jfmengels$elm_review_unused$NoUnused$Variables$markAsUsed = F2(
 	function (name, context) {
-		if (A2($elm$core$List$member, name, context.bk)) {
+		if (A2($elm$core$List$member, name, context.bs)) {
 			return context;
 		} else {
 			var scopes = A2(
@@ -24673,7 +25826,7 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$markAsUsed = F2(
 					return _Utils_update(
 						scope,
 						{
-							_: A3(
+							a1: A3(
 								$elm$core$Dict$update,
 								_List_Nil,
 								function (set) {
@@ -24683,7 +25836,7 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$markAsUsed = F2(
 											name,
 											A2($elm$core$Maybe$withDefault, $elm$core$Set$empty, set)));
 								},
-								scope._)
+								scope.a1)
 						});
 				},
 				context.t);
@@ -24696,591 +25849,6 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$markAllAsUsed = F2(
 	function (names, context) {
 		return A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Variables$markAsUsed, context, names);
 	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$markModuleAsUsed = F2(
-	function (realAndAliasModuleNames, context) {
-		var realModuleName = realAndAliasModuleNames.a;
-		var aliasName = realAndAliasModuleNames.b;
-		return _Utils_update(
-			context,
-			{
-				bB: A2(
-					$elm$core$List$map,
-					function (module_) {
-						return _Utils_eq(module_.bT, realModuleName) ? ((_Utils_eq(module_.bT, aliasName) || _Utils_eq(
-							$elm$core$Maybe$Just(
-								A2($elm$core$String$join, '.', aliasName)),
-							module_.aD)) ? _Utils_update(
-							module_,
-							{dA: true}) : (_Utils_eq(aliasName, _List_Nil) ? _Utils_update(
-							module_,
-							{dz: true}) : module_)) : module_;
-					},
-					context.bB),
-				a8: A2($elm$core$Set$insert, realAndAliasModuleNames, context.a8)
-			});
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$markAllModulesAsUsed = F2(
-	function (names, context) {
-		return A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Variables$markModuleAsUsed, context, names);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed = F2(
-	function (name, context) {
-		if (A2($elm$core$Dict$member, name, context.bc)) {
-			return A2($jfmengels$elm_review_unused$NoUnused$Variables$markAsUsed, name, context);
-		} else {
-			var _v0 = A2($elm$core$Dict$get, name, context.bj);
-			if (!_v0.$) {
-				var customTypeName = _v0.a;
-				return _Utils_update(
-					context,
-					{
-						a6: A2($elm$core$Dict$remove, customTypeName, context.a6)
-					});
-			} else {
-				return A2($jfmengels$elm_review_unused$NoUnused$Variables$markAsUsed, name, context);
-			}
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$declarationVisitor = F2(
-	function (node, context) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-		switch (_v0.$) {
-			case 0:
-				var _function = _v0.a;
-				var namesUsedInSignature = A2(
-					$elm$core$Maybe$withDefault,
-					{a3: _List_Nil, D: _List_Nil},
-					A2(
-						$elm$core$Maybe$map,
-						A2(
-							$elm$core$Basics$composeR,
-							$stil4m$elm_syntax$Elm$Syntax$Node$value,
-							A2(
-								$elm$core$Basics$composeR,
-								function ($) {
-									return $.fz;
-								},
-								$jfmengels$elm_review_unused$NoUnused$Variables$collectNamesFromTypeAnnotation(context.l))),
-						_function.gJ));
-				var namesUsedInArgumentPatterns = $jfmengels$elm_review_unused$NoUnused$Variables$foldUsedTypesAndModules(
-					A2(
-						$elm$core$List$map,
-						$jfmengels$elm_review_unused$NoUnused$Variables$getUsedVariablesFromPattern(context),
-						$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).el));
-				var functionImplementation = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX);
-				var functionName = $stil4m$elm_syntax$Elm$Syntax$Node$value(functionImplementation.bT);
-				var shadowingImportError = function () {
-					var _v1 = A2(
-						$elm$core$Dict$get,
-						functionName,
-						$jfmengels$elm_review_unused$NoUnused$NonemptyList$head(context.t).c$);
-					if (!_v1.$) {
-						var existingVariable = _v1.a;
-						return (existingVariable.gU === 'Imported variable') ? _List_fromArray(
-							[
-								A2($jfmengels$elm_review_unused$NoUnused$Variables$error, existingVariable, functionName)
-							]) : _List_Nil;
-					} else {
-						return _List_Nil;
-					}
-				}();
-				var newContextWhereFunctionIsRegistered = (context.c8 || (context.al && (functionName === 'main'))) ? context : A3(
-					$jfmengels$elm_review_unused$NoUnused$Variables$registerVariable,
-					{
-						d7: $elm$core$Maybe$Just(
-							A2($jfmengels$elm_review_unused$NoUnused$Variables$rangeToRemoveForNodeWithDocumentation, node, _function.dH)),
-						gU: 'Top-level variable',
-						aX: $stil4m$elm_syntax$Elm$Syntax$Node$range(functionImplementation.bT),
-						aY: ''
-					},
-					functionName,
-					context);
-				var newContext = A2(
-					$jfmengels$elm_review_unused$NoUnused$Variables$markAllModulesAsUsed,
-					namesUsedInArgumentPatterns.a3,
-					A2(
-						$jfmengels$elm_review_unused$NoUnused$Variables$markAllModulesAsUsed,
-						namesUsedInSignature.a3,
-						A2(
-							$jfmengels$elm_review_unused$NoUnused$Variables$markAllAsUsed,
-							namesUsedInSignature.D,
-							function (ctx) {
-								return A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, ctx, namesUsedInArgumentPatterns.D);
-							}(
-								_Utils_update(
-									newContextWhereFunctionIsRegistered,
-									{
-										ew: $elm$core$Dict$empty,
-										bk: _List_fromArray(
-											[functionName])
-									})))));
-				return _Utils_Tuple2(shadowingImportError, newContext);
-			case 2:
-				var name = _v0.a.bT;
-				var constructors = _v0.a.fV;
-				var _v2 = $jfmengels$elm_review_unused$NoUnused$Variables$foldUsedTypesAndModules(
-					A2(
-						$elm$core$List$map,
-						$jfmengels$elm_review_unused$NoUnused$Variables$collectNamesFromTypeAnnotation(context.l),
-						A2(
-							$elm$core$List$concatMap,
-							A2(
-								$elm$core$Basics$composeR,
-								$stil4m$elm_syntax$Elm$Syntax$Node$value,
-								function ($) {
-									return $.el;
-								}),
-							constructors)));
-				var types = _v2.D;
-				var modules = _v2.a3;
-				return _Utils_Tuple2(
-					_List_Nil,
-					A2(
-						$jfmengels$elm_review_unused$NoUnused$Variables$markAllModulesAsUsed,
-						modules,
-						A3(
-							$elm$core$List$foldl,
-							$jfmengels$elm_review_unused$NoUnused$Variables$markAsUsed,
-							context,
-							A2(
-								$elm$core$List$filter,
-								$elm$core$Basics$neq(
-									$stil4m$elm_syntax$Elm$Syntax$Node$value(name)),
-								types))));
-			case 1:
-				var name = _v0.a.bT;
-				var typeAnnotation = _v0.a.fz;
-				var namesUsedInTypeAnnotation = A2($jfmengels$elm_review_unused$NoUnused$Variables$collectNamesFromTypeAnnotation, context.l, typeAnnotation);
-				return _Utils_Tuple2(
-					_List_Nil,
-					A2(
-						$jfmengels$elm_review_unused$NoUnused$Variables$markAllModulesAsUsed,
-						namesUsedInTypeAnnotation.a3,
-						A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Variables$markAsUsed, context, namesUsedInTypeAnnotation.D)));
-			case 3:
-				var name = _v0.a.bT;
-				var typeAnnotation = _v0.a.fz;
-				var namesUsedInTypeAnnotation = A2($jfmengels$elm_review_unused$NoUnused$Variables$collectNamesFromTypeAnnotation, context.l, typeAnnotation);
-				var contextWithUsedElements = A2(
-					$jfmengels$elm_review_unused$NoUnused$Variables$markAllModulesAsUsed,
-					namesUsedInTypeAnnotation.a3,
-					A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Variables$markAsUsed, context, namesUsedInTypeAnnotation.D));
-				return _Utils_Tuple2(
-					_List_Nil,
-					context.c8 ? contextWithUsedElements : A3(
-						$jfmengels$elm_review_unused$NoUnused$Variables$registerVariable,
-						{
-							d7: $elm$core$Maybe$Nothing,
-							gU: 'Port',
-							aX: $stil4m$elm_syntax$Elm$Syntax$Node$range(name),
-							aY: ' (Warning: Removing this port may break your application if it is used in the JS code)'
-						},
-						$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
-						contextWithUsedElements));
-			case 4:
-				var operator = _v0.a.gv;
-				var _function = _v0.a.f6;
-				return _Utils_Tuple2(
-					_List_Nil,
-					A3(
-						$jfmengels$elm_review_unused$NoUnused$Variables$registerVariable,
-						{
-							d7: $elm$core$Maybe$Just(
-								$stil4m$elm_syntax$Elm$Syntax$Node$range(node)),
-							gU: 'Declared operator',
-							aX: $stil4m$elm_syntax$Elm$Syntax$Node$range(operator),
-							aY: ''
-						},
-						$stil4m$elm_syntax$Elm$Syntax$Node$value(operator),
-						A2(
-							$jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed,
-							$stil4m$elm_syntax$Elm$Syntax$Node$value(_function),
-							context)));
-			default:
-				return _Utils_Tuple2(_List_Nil, context);
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$HasMultipleDeclarations = {$: 0};
-var $jfmengels$elm_review_unused$NoUnused$Variables$HasNoOtherDeclarations = function (a) {
-	return {$: 1, a: a};
-};
-var $jfmengels$elm_review_unused$NoUnused$NonemptyList$cons = F2(
-	function (y, _v0) {
-		var x = _v0.a;
-		var xs = _v0.b;
-		return A2(
-			$jfmengels$elm_review_unused$NoUnused$NonemptyList$Nonempty,
-			y,
-			A2($elm$core$List$cons, x, xs));
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$letDeclarationToRemoveRange = F2(
-	function (letBlockContext, range) {
-		if (!letBlockContext.$) {
-			return range;
-		} else {
-			var letDeclarationsRange = letBlockContext.a;
-			return letDeclarationsRange;
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$positionAsInt = function (_v0) {
-	var row = _v0.bs;
-	var column = _v0.bb;
-	return (row * 1000000) + column;
-};
-var $jfmengels$elm_review_unused$NoUnused$Variables$rangeUpUntil = F2(
-	function (range, position) {
-		var positionAsInt_ = $jfmengels$elm_review_unused$NoUnused$Variables$positionAsInt(position);
-		return ((_Utils_cmp(
-			$jfmengels$elm_review_unused$NoUnused$Variables$positionAsInt(range.cm),
-			positionAsInt_) < 1) && (_Utils_cmp(
-			$jfmengels$elm_review_unused$NoUnused$Variables$positionAsInt(range.b6),
-			positionAsInt_) > -1)) ? _Utils_update(
-			range,
-			{b6: position}) : range;
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$comparePosition = F2(
-	function (a, b) {
-		var _v0 = A2($elm$core$Basics$compare, a.bs, b.bs);
-		if (_v0 === 1) {
-			return A2($elm$core$Basics$compare, a.bb, b.bb);
-		} else {
-			var order = _v0;
-			return order;
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$mergeRanges = F2(
-	function (a, b) {
-		var start = function () {
-			var _v1 = A2($jfmengels$elm_review_unused$NoUnused$Variables$comparePosition, a.cm, b.cm);
-			switch (_v1) {
-				case 0:
-					return a.cm;
-				case 1:
-					return a.cm;
-				default:
-					return b.cm;
-			}
-		}();
-		var end = function () {
-			var _v0 = A2($jfmengels$elm_review_unused$NoUnused$Variables$comparePosition, a.b6, b.b6);
-			switch (_v0) {
-				case 0:
-					return b.b6;
-				case 1:
-					return b.b6;
-				default:
-					return a.b6;
-			}
-		}();
-		return {b6: end, cm: start};
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$registerFunction = F3(
-	function (letBlockContext, _function, context) {
-		var namesUsedInSignature = function () {
-			var _v1 = A2($elm$core$Maybe$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, _function.gJ);
-			if (!_v1.$) {
-				var signature = _v1.a;
-				return A2($jfmengels$elm_review_unused$NoUnused$Variables$collectNamesFromTypeAnnotation, context.l, signature.fz);
-			} else {
-				return {a3: _List_Nil, D: _List_Nil};
-			}
-		}();
-		var functionRange = function () {
-			var _v0 = _function.gJ;
-			if (!_v0.$) {
-				var signature = _v0.a;
-				return A2(
-					$jfmengels$elm_review_unused$NoUnused$Variables$mergeRanges,
-					$stil4m$elm_syntax$Elm$Syntax$Node$range(_function.fX),
-					$stil4m$elm_syntax$Elm$Syntax$Node$range(signature));
-			} else {
-				return $stil4m$elm_syntax$Elm$Syntax$Node$range(_function.fX);
-			}
-		}();
-		var declaration = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX);
-		return A3(
-			$jfmengels$elm_review_unused$NoUnused$Variables$registerVariable,
-			{
-				d7: $elm$core$Maybe$Just(
-					A2($jfmengels$elm_review_unused$NoUnused$Variables$letDeclarationToRemoveRange, letBlockContext, functionRange)),
-				gU: '`let in` variable',
-				aX: $stil4m$elm_syntax$Elm$Syntax$Node$range(declaration.bT),
-				aY: ''
-			},
-			$stil4m$elm_syntax$Elm$Syntax$Node$value(declaration.bT),
-			A2(
-				$jfmengels$elm_review_unused$NoUnused$Variables$markAllModulesAsUsed,
-				namesUsedInSignature.a3,
-				A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Variables$markAsUsed, context, namesUsedInSignature.D)));
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$removeParens = function (node) {
-	removeParens:
-	while (true) {
-		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
-		if (_v0.$ === 14) {
-			var pattern = _v0.a;
-			var $temp$node = pattern;
-			node = $temp$node;
-			continue removeParens;
-		} else {
-			return node;
-		}
-	}
-};
-var $jfmengels$elm_review_unused$NoUnused$Variables$expressionEnterVisitorHelp = F2(
-	function (_v0, context) {
-		var range = _v0.a;
-		var value = _v0.b;
-		switch (value.$) {
-			case 3:
-				if (!value.a.b) {
-					var name = value.b;
-					var _v2 = A2($elm$core$Dict$get, name, context.bc);
-					if (!_v2.$) {
-						var typeName = _v2.a;
-						return _Utils_Tuple2(
-							_List_Nil,
-							A2($jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, typeName, context));
-					} else {
-						var _v3 = A2($elm$core$Dict$get, name, context.bj);
-						if (!_v3.$) {
-							var customTypeName = _v3.a;
-							return _Utils_Tuple2(
-								_List_Nil,
-								_Utils_update(
-									context,
-									{
-										a6: A2($elm$core$Dict$remove, customTypeName, context.a6)
-									}));
-						} else {
-							var _v4 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, context.l, range);
-							if (!_v4.$) {
-								var realModuleName = _v4.a;
-								return _Utils_Tuple2(
-									_List_Nil,
-									A2(
-										$jfmengels$elm_review_unused$NoUnused$Variables$markModuleAsUsed,
-										_Utils_Tuple2(realModuleName, _List_Nil),
-										A2($jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, name, context)));
-							} else {
-								return _Utils_Tuple2(
-									_List_Nil,
-									A2($jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, name, context));
-							}
-						}
-					}
-				} else {
-					var moduleName = value.a;
-					var _v5 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, context.l, range);
-					if (!_v5.$) {
-						var realModuleName = _v5.a;
-						return _Utils_Tuple2(
-							_List_Nil,
-							A2(
-								$jfmengels$elm_review_unused$NoUnused$Variables$markModuleAsUsed,
-								_Utils_Tuple2(realModuleName, moduleName),
-								context));
-					} else {
-						return _Utils_Tuple2(_List_Nil, context);
-					}
-				}
-			case 2:
-				var name = value.a;
-				return _Utils_Tuple2(
-					_List_Nil,
-					A2($jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, name, context));
-			case 5:
-				var name = value.a;
-				return _Utils_Tuple2(
-					_List_Nil,
-					A2($jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, name, context));
-			case 15:
-				var declarations = value.a.ew;
-				var expression = value.a.da;
-				var letBlockContext = ($elm$core$List$length(declarations) === 1) ? $jfmengels$elm_review_unused$NoUnused$Variables$HasNoOtherDeclarations(
-					A2(
-						$jfmengels$elm_review_unused$NoUnused$Variables$rangeUpUntil,
-						range,
-						$stil4m$elm_syntax$Elm$Syntax$Node$range(expression).cm)) : $jfmengels$elm_review_unused$NoUnused$Variables$HasMultipleDeclarations;
-				return A3(
-					$elm$core$List$foldl,
-					F2(
-						function (declaration, _v6) {
-							var errors = _v6.a;
-							var foldContext = _v6.b;
-							var _v7 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
-							if (!_v7.$) {
-								var _function = _v7.a;
-								var namesUsedInArgumentPatterns = $jfmengels$elm_review_unused$NoUnused$Variables$foldUsedTypesAndModules(
-									A2(
-										$elm$core$List$map,
-										$jfmengels$elm_review_unused$NoUnused$Variables$getUsedVariablesFromPattern(context),
-										$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).el));
-								var markAsInTheDeclarationOf = F2(
-									function (name, ctx) {
-										return _Utils_update(
-											ctx,
-											{
-												ew: A3(
-													$jfmengels$elm_review_unused$NoUnused$RangeDict$insert,
-													$stil4m$elm_syntax$Elm$Syntax$Node$range(
-														$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).da),
-													name,
-													ctx.ew)
-											});
-									});
-								return _Utils_Tuple2(
-									errors,
-									A2(
-										markAsInTheDeclarationOf,
-										$stil4m$elm_syntax$Elm$Syntax$Node$value(
-											$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).bT),
-										A3(
-											$jfmengels$elm_review_unused$NoUnused$Variables$registerFunction,
-											letBlockContext,
-											_function,
-											A2(
-												$jfmengels$elm_review_unused$NoUnused$Variables$markAllModulesAsUsed,
-												namesUsedInArgumentPatterns.a3,
-												A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, foldContext, namesUsedInArgumentPatterns.D)))));
-							} else {
-								var pattern = _v7.a;
-								var _v8 = $jfmengels$elm_review_unused$NoUnused$Variables$removeParens(pattern);
-								switch (_v8.b.$) {
-									case 0:
-										var wildCardRange = _v8.a;
-										var _v9 = _v8.b;
-										return _Utils_Tuple2(
-											A2(
-												$elm$core$List$cons,
-												A3(
-													$jfmengels$elm_review$Review$Rule$errorWithFix,
-													{
-														c2: _List_fromArray(
-															['This value has been assigned to a wildcard, which makes the value unusable. You should remove it at the location I pointed at.']),
-														a2: 'Value assigned to `_` is unused'
-													},
-													wildCardRange,
-													_List_fromArray(
-														[
-															$jfmengels$elm_review$Review$Fix$removeRange(
-															A2(
-																$jfmengels$elm_review_unused$NoUnused$Variables$letDeclarationToRemoveRange,
-																letBlockContext,
-																$stil4m$elm_syntax$Elm$Syntax$Node$range(declaration)))
-														])),
-												errors),
-											foldContext);
-									case 1:
-										var unitPattern = _v8.a;
-										var _v10 = _v8.b;
-										return _Utils_Tuple2(
-											A2(
-												$elm$core$List$cons,
-												A3(
-													$jfmengels$elm_review$Review$Rule$errorWithFix,
-													{
-														c2: _List_fromArray(
-															['This value has no data, which makes the value unusable. You should remove it at the location I pointed at.']),
-														a2: 'Unit value is unused'
-													},
-													unitPattern,
-													_List_fromArray(
-														[
-															$jfmengels$elm_review$Review$Fix$removeRange(
-															A2(
-																$jfmengels$elm_review_unused$NoUnused$Variables$letDeclarationToRemoveRange,
-																letBlockContext,
-																$stil4m$elm_syntax$Elm$Syntax$Node$range(declaration)))
-														])),
-												errors),
-											foldContext);
-									default:
-										var namesUsedInPattern = A2($jfmengels$elm_review_unused$NoUnused$Variables$getUsedVariablesFromPattern, context, pattern);
-										return _Utils_Tuple2(
-											_List_Nil,
-											A2(
-												$jfmengels$elm_review_unused$NoUnused$Variables$markAllModulesAsUsed,
-												namesUsedInPattern.a3,
-												A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, foldContext, namesUsedInPattern.D)));
-								}
-							}
-						}),
-					_Utils_Tuple2(
-						_List_Nil,
-						_Utils_update(
-							context,
-							{
-								t: A2($jfmengels$elm_review_unused$NoUnused$NonemptyList$cons, $jfmengels$elm_review_unused$NoUnused$Variables$emptyScope, context.t)
-							})),
-					declarations);
-			case 17:
-				var args = value.a.fG;
-				var namesUsedInArgumentPatterns = $jfmengels$elm_review_unused$NoUnused$Variables$foldUsedTypesAndModules(
-					A2(
-						$elm$core$List$map,
-						$jfmengels$elm_review_unused$NoUnused$Variables$getUsedVariablesFromPattern(context),
-						args));
-				return _Utils_Tuple2(
-					_List_Nil,
-					A2(
-						$jfmengels$elm_review_unused$NoUnused$Variables$markAllModulesAsUsed,
-						namesUsedInArgumentPatterns.a3,
-						A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, context, namesUsedInArgumentPatterns.D)));
-			default:
-				return _Utils_Tuple2(_List_Nil, context);
-		}
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$expressionEnterVisitor = F2(
-	function (node, context) {
-		var newContext = function () {
-			var _v0 = A2(
-				$jfmengels$elm_review_unused$NoUnused$RangeDict$get,
-				$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
-				context.ew);
-			if (!_v0.$) {
-				var functionName = _v0.a;
-				return _Utils_update(
-					context,
-					{
-						bk: A2($elm$core$List$cons, functionName, context.bk)
-					});
-			} else {
-				return context;
-			}
-		}();
-		return A2($jfmengels$elm_review_unused$NoUnused$Variables$expressionEnterVisitorHelp, node, newContext);
-	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$makeReport = function (_v0) {
-	var declared = _v0.c$;
-	var used = _v0._;
-	var usedLocally = A2(
-		$elm$core$Maybe$withDefault,
-		$elm$core$Set$empty,
-		A2($elm$core$Dict$get, _List_Nil, used));
-	var nonUsedVars = $elm$core$Set$toList(
-		A2(
-			$elm$core$Set$diff,
-			usedLocally,
-			$elm$core$Set$fromList(
-				$elm$core$Dict$keys(declared))));
-	var errors = A2(
-		$elm$core$List$map,
-		function (_v2) {
-			var key = _v2.a;
-			var variableInfo = _v2.b;
-			return A2($jfmengels$elm_review_unused$NoUnused$Variables$error, variableInfo, key);
-		},
-		$elm$core$Dict$toList(
-			A2(
-				$elm$core$Dict$filter,
-				F2(
-					function (key, _v1) {
-						return !A2($elm$core$Set$member, key, usedLocally);
-					}),
-				declared)));
-	return _Utils_Tuple2(errors, nonUsedVars);
-};
 var $jfmengels$elm_review_unused$NoUnused$NonemptyList$pop = function (_v0) {
 	var x = _v0.a;
 	var xs = _v0.b;
@@ -25292,63 +25860,713 @@ var $jfmengels$elm_review_unused$NoUnused$NonemptyList$pop = function (_v0) {
 		return A2($jfmengels$elm_review_unused$NoUnused$NonemptyList$Nonempty, y, ys);
 	}
 };
-var $jfmengels$elm_review_unused$NoUnused$Variables$expressionExitVisitorHelp = F2(
+var $jfmengels$elm_review_unused$NoUnused$Variables$makeReport = function (context) {
+	var contextWithPoppedScope = _Utils_update(
+		context,
+		{
+			t: $jfmengels$elm_review_unused$NoUnused$NonemptyList$pop(context.t)
+		});
+	var _v0 = $jfmengels$elm_review_unused$NoUnused$Variables$makeReportHelp(
+		$jfmengels$elm_review_unused$NoUnused$NonemptyList$head(context.t));
+	var errors = _v0.a;
+	var remainingUsed = _v0.b;
+	return _Utils_Tuple2(
+		errors,
+		A2($jfmengels$elm_review_unused$NoUnused$Variables$markAllAsUsed, remainingUsed, contextWithPoppedScope));
+};
+var $jfmengels$elm_review_unused$NoUnused$Variables$caseBranchExitVisitor = F3(
+	function (_v0, _v1, context) {
+		return $jfmengels$elm_review_unused$NoUnused$Variables$makeReport(context);
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$markModuleAsUsed = F2(
+	function (realAndAliasModuleNames, context) {
+		var realModuleName = realAndAliasModuleNames.a;
+		var aliasName = realAndAliasModuleNames.b;
+		return _Utils_update(
+			context,
+			{
+				bN: A2(
+					$elm$core$List$map,
+					function (module_) {
+						return _Utils_eq(module_.b5, realModuleName) ? ((_Utils_eq(module_.b5, aliasName) || _Utils_eq(
+							$elm$core$Maybe$Just(
+								A2($elm$core$String$join, '.', aliasName)),
+							module_.aI)) ? _Utils_update(
+							module_,
+							{d5: true}) : (_Utils_eq(aliasName, _List_Nil) ? _Utils_update(
+							module_,
+							{d4: true}) : module_)) : module_;
+					},
+					context.bN),
+				cd: A2($elm$core$Set$insert, realAndAliasModuleNames, context.cd)
+			});
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$collectNamesFromTypeAnnotation = F3(
+	function (exception, nodes, context) {
+		collectNamesFromTypeAnnotation:
+		while (true) {
+			if (!nodes.b) {
+				return context;
+			} else {
+				var node = nodes.a;
+				var restOfNodes = nodes.b;
+				var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+				switch (_v1.$) {
+					case 6:
+						var left = _v1.a;
+						var right = _v1.b;
+						var $temp$exception = exception,
+							$temp$nodes = A2(
+							$elm$core$List$cons,
+							left,
+							A2($elm$core$List$cons, right, restOfNodes)),
+							$temp$context = context;
+						exception = $temp$exception;
+						nodes = $temp$nodes;
+						context = $temp$context;
+						continue collectNamesFromTypeAnnotation;
+					case 1:
+						var _v2 = _v1.a;
+						var typeRange = _v2.a;
+						var _v3 = _v2.b;
+						var rawModuleName = _v3.a;
+						var typeName = _v3.b;
+						var params = _v1.b;
+						var contextAfterTypeUsage = function () {
+							if (!_Utils_eq(
+								$elm$core$Maybe$Just(typeName),
+								exception)) {
+								if (!rawModuleName.b) {
+									return A2($jfmengels$elm_review_unused$NoUnused$Variables$markAsUsed, typeName, context);
+								} else {
+									return context;
+								}
+							} else {
+								return context;
+							}
+						}();
+						var contextAfterModuleUsage = function () {
+							var _v4 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, context.l, typeRange);
+							if (!_v4.$) {
+								var realModuleName = _v4.a;
+								return A2(
+									$jfmengels$elm_review_unused$NoUnused$Variables$markModuleAsUsed,
+									_Utils_Tuple2(realModuleName, rawModuleName),
+									contextAfterTypeUsage);
+							} else {
+								return contextAfterTypeUsage;
+							}
+						}();
+						var $temp$exception = exception,
+							$temp$nodes = _Utils_ap(params, restOfNodes),
+							$temp$context = contextAfterModuleUsage;
+						exception = $temp$exception;
+						nodes = $temp$nodes;
+						context = $temp$context;
+						continue collectNamesFromTypeAnnotation;
+					case 4:
+						var fields = _v1.a;
+						var subNodes = A2(
+							$elm$core$List$map,
+							function (_v6) {
+								var _v7 = _v6.b;
+								var value = _v7.b;
+								return value;
+							},
+							fields);
+						var $temp$exception = exception,
+							$temp$nodes = _Utils_ap(subNodes, restOfNodes),
+							$temp$context = context;
+						exception = $temp$exception;
+						nodes = $temp$nodes;
+						context = $temp$context;
+						continue collectNamesFromTypeAnnotation;
+					case 5:
+						var _v8 = _v1.b;
+						var fields = _v8.b;
+						var subNodes = A2(
+							$elm$core$List$map,
+							function (_v9) {
+								var _v10 = _v9.b;
+								var value = _v10.b;
+								return value;
+							},
+							fields);
+						var $temp$exception = exception,
+							$temp$nodes = _Utils_ap(subNodes, restOfNodes),
+							$temp$context = context;
+						exception = $temp$exception;
+						nodes = $temp$nodes;
+						context = $temp$context;
+						continue collectNamesFromTypeAnnotation;
+					case 3:
+						var list = _v1.a;
+						var $temp$exception = exception,
+							$temp$nodes = _Utils_ap(list, restOfNodes),
+							$temp$context = context;
+						exception = $temp$exception;
+						nodes = $temp$nodes;
+						context = $temp$context;
+						continue collectNamesFromTypeAnnotation;
+					default:
+						var $temp$exception = exception,
+							$temp$nodes = restOfNodes,
+							$temp$context = context;
+						exception = $temp$exception;
+						nodes = $temp$nodes;
+						context = $temp$context;
+						continue collectNamesFromTypeAnnotation;
+				}
+			}
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed = F2(
+	function (name, context) {
+		if (A2($elm$core$Dict$member, name, context.bi)) {
+			return A2($jfmengels$elm_review_unused$NoUnused$Variables$markAsUsed, name, context);
+		} else {
+			var _v0 = A2($elm$core$Dict$get, name, context.br);
+			if (!_v0.$) {
+				var customTypeName = _v0.a;
+				return _Utils_update(
+					context,
+					{
+						bd: A2($elm$core$Dict$remove, customTypeName, context.bd)
+					});
+			} else {
+				return A2($jfmengels$elm_review_unused$NoUnused$Variables$markAsUsed, name, context);
+			}
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$markValuesFromPatternsAsUsed = F2(
+	function (nodes, context) {
+		markValuesFromPatternsAsUsed:
+		while (true) {
+			if (!nodes.b) {
+				return context;
+			} else {
+				var node = nodes.a;
+				var restOfNodes = nodes.b;
+				var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+				switch (_v1.$) {
+					case 7:
+						var patterns = _v1.a;
+						var $temp$nodes = _Utils_ap(patterns, restOfNodes),
+							$temp$context = context;
+						nodes = $temp$nodes;
+						context = $temp$context;
+						continue markValuesFromPatternsAsUsed;
+					case 9:
+						var left = _v1.a;
+						var right = _v1.b;
+						var $temp$nodes = A2(
+							$elm$core$List$cons,
+							left,
+							A2($elm$core$List$cons, right, restOfNodes)),
+							$temp$context = context;
+						nodes = $temp$nodes;
+						context = $temp$context;
+						continue markValuesFromPatternsAsUsed;
+					case 10:
+						var patterns = _v1.a;
+						var $temp$nodes = _Utils_ap(patterns, restOfNodes),
+							$temp$context = context;
+						nodes = $temp$nodes;
+						context = $temp$context;
+						continue markValuesFromPatternsAsUsed;
+					case 12:
+						var qualifiedNameRef = _v1.a;
+						var patterns = _v1.b;
+						var contextAfterTypeUsage = function () {
+							var _v3 = qualifiedNameRef.dR;
+							if (!_v3.b) {
+								var name = A2(
+									$elm$core$Maybe$withDefault,
+									qualifiedNameRef.b5,
+									A2($elm$core$Dict$get, qualifiedNameRef.b5, context.bi));
+								return A2($jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, name, context);
+							} else {
+								return context;
+							}
+						}();
+						var contextAfterModuleUsage = function () {
+							var _v2 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, context.l, node);
+							if (!_v2.$) {
+								var realModuleName = _v2.a;
+								return A2(
+									$jfmengels$elm_review_unused$NoUnused$Variables$markModuleAsUsed,
+									_Utils_Tuple2(realModuleName, qualifiedNameRef.dR),
+									contextAfterTypeUsage);
+							} else {
+								return contextAfterTypeUsage;
+							}
+						}();
+						var $temp$nodes = _Utils_ap(patterns, restOfNodes),
+							$temp$context = contextAfterModuleUsage;
+						nodes = $temp$nodes;
+						context = $temp$context;
+						continue markValuesFromPatternsAsUsed;
+					case 13:
+						var pattern = _v1.a;
+						var $temp$nodes = A2($elm$core$List$cons, pattern, restOfNodes),
+							$temp$context = context;
+						nodes = $temp$nodes;
+						context = $temp$context;
+						continue markValuesFromPatternsAsUsed;
+					case 14:
+						var pattern = _v1.a;
+						var $temp$nodes = A2($elm$core$List$cons, pattern, restOfNodes),
+							$temp$context = context;
+						nodes = $temp$nodes;
+						context = $temp$context;
+						continue markValuesFromPatternsAsUsed;
+					default:
+						var $temp$nodes = restOfNodes,
+							$temp$context = context;
+						nodes = $temp$nodes;
+						context = $temp$context;
+						continue markValuesFromPatternsAsUsed;
+				}
+			}
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$registerVariable = F3(
+	function (variableInfo, name, context) {
+		var scopes = A2(
+			$jfmengels$elm_review_unused$NoUnused$NonemptyList$mapHead,
+			function (scope) {
+				return _Utils_update(
+					scope,
+					{
+						cY: A3($elm$core$Dict$insert, name, variableInfo, scope.cY)
+					});
+			},
+			context.t);
+		return _Utils_update(
+			context,
+			{t: scopes});
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$scopeWithPatternsToIgnore = function (patterns) {
+	return {
+		cY: $elm$core$Dict$empty,
+		b7: $elm$core$Set$fromList(
+			A2($elm$core$List$concatMap, $jfmengels$elm_review_unused$NoUnused$Variables$getDeclaredParametersFromPattern, patterns)),
+		a1: $elm$core$Dict$empty
+	};
+};
+var $jfmengels$elm_review_unused$NoUnused$Variables$untilStartOfNextLine = function (range) {
+	return (range.cp.bh === 1) ? range : _Utils_update(
+		range,
+		{
+			cp: {bh: 1, bD: range.cp.bD + 1}
+		});
+};
+var $jfmengels$elm_review_unused$NoUnused$Variables$declarationEnterVisitor = F2(
 	function (node, context) {
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 		switch (_v0.$) {
-			case 22:
-				var expr = _v0.a;
-				return _Utils_Tuple2(
-					_List_Nil,
-					A2(
-						$jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed,
-						$stil4m$elm_syntax$Elm$Syntax$Node$value(expr),
-						context));
-			case 16:
-				var cases = _v0.a.fQ;
-				var usedVariables = $jfmengels$elm_review_unused$NoUnused$Variables$foldUsedTypesAndModules(
-					A2(
-						$elm$core$List$map,
-						function (_v1) {
-							var patternNode = _v1.a;
-							return A2($jfmengels$elm_review_unused$NoUnused$Variables$getUsedVariablesFromPattern, context, patternNode);
-						},
-						cases));
-				return _Utils_Tuple2(
-					_List_Nil,
-					A2(
-						$jfmengels$elm_review_unused$NoUnused$Variables$markAllModulesAsUsed,
-						usedVariables.a3,
-						A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, context, usedVariables.D)));
-			case 15:
-				var contextWithPoppedScope = _Utils_update(
-					context,
+			case 0:
+				var _function = _v0.a;
+				var typeAnnotation = function () {
+					var _v2 = _function.hi;
+					if (!_v2.$) {
+						var signature = _v2.a;
+						return _List_fromArray(
+							[
+								$stil4m$elm_syntax$Elm$Syntax$Node$value(signature).f7
+							]);
+					} else {
+						return _List_Nil;
+					}
+				}();
+				var functionImplementation = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv);
+				var functionName = $stil4m$elm_syntax$Elm$Syntax$Node$value(functionImplementation.b5);
+				var shadowingImportError = function () {
+					var _v1 = A2(
+						$elm$core$Dict$get,
+						functionName,
+						$jfmengels$elm_review_unused$NoUnused$NonemptyList$head(context.t).cY);
+					if (!_v1.$) {
+						var existingVariable = _v1.a;
+						return (existingVariable.ht === 'Imported variable') ? _List_fromArray(
+							[
+								A2($jfmengels$elm_review_unused$NoUnused$Variables$error, existingVariable, functionName)
+							]) : _List_Nil;
+					} else {
+						return _List_Nil;
+					}
+				}();
+				var newContextWhereFunctionIsRegistered = (context.dC || (context.ar && (functionName === 'main'))) ? context : A3(
+					$jfmengels$elm_review_unused$NoUnused$Variables$registerVariable,
 					{
-						t: $jfmengels$elm_review_unused$NoUnused$NonemptyList$pop(context.t)
-					});
-				var _v2 = $jfmengels$elm_review_unused$NoUnused$Variables$makeReport(
-					$jfmengels$elm_review_unused$NoUnused$NonemptyList$head(context.t));
-				var errors = _v2.a;
-				var remainingUsed = _v2.b;
+						eE: $elm$core$Maybe$Just(
+							$jfmengels$elm_review_unused$NoUnused$Variables$untilStartOfNextLine(
+								$stil4m$elm_syntax$Elm$Syntax$Node$range(node))),
+						ht: 'Top-level variable',
+						a0: $stil4m$elm_syntax$Elm$Syntax$Node$range(functionImplementation.b5),
+						a2: ''
+					},
+					functionName,
+					context);
+				var newContext = A3(
+					$jfmengels$elm_review_unused$NoUnused$Variables$collectNamesFromTypeAnnotation,
+					$elm$core$Maybe$Nothing,
+					typeAnnotation,
+					A2(
+						$jfmengels$elm_review_unused$NoUnused$Variables$markValuesFromPatternsAsUsed,
+						$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).eT,
+						_Utils_update(
+							newContextWhereFunctionIsRegistered,
+							{
+								bs: _List_fromArray(
+									[functionName]),
+								t: A2(
+									$jfmengels$elm_review_unused$NoUnused$NonemptyList$cons,
+									$jfmengels$elm_review_unused$NoUnused$Variables$scopeWithPatternsToIgnore(functionImplementation.eT),
+									newContextWhereFunctionIsRegistered.t)
+							})));
+				return _Utils_Tuple2(shadowingImportError, newContext);
+			case 2:
+				var name = _v0.a.b5;
+				var constructors = _v0.a.gt;
+				var _arguments = A2(
+					$elm$core$List$concatMap,
+					A2(
+						$elm$core$Basics$composeR,
+						$stil4m$elm_syntax$Elm$Syntax$Node$value,
+						function ($) {
+							return $.eT;
+						}),
+					constructors);
 				return _Utils_Tuple2(
-					errors,
-					A2($jfmengels$elm_review_unused$NoUnused$Variables$markAllAsUsed, remainingUsed, contextWithPoppedScope));
+					_List_Nil,
+					A3(
+						$jfmengels$elm_review_unused$NoUnused$Variables$collectNamesFromTypeAnnotation,
+						$elm$core$Maybe$Just(
+							$stil4m$elm_syntax$Elm$Syntax$Node$value(name)),
+						_arguments,
+						context));
+			case 1:
+				var typeAnnotation = _v0.a.f7;
+				return _Utils_Tuple2(
+					_List_Nil,
+					A3(
+						$jfmengels$elm_review_unused$NoUnused$Variables$collectNamesFromTypeAnnotation,
+						$elm$core$Maybe$Nothing,
+						_List_fromArray(
+							[typeAnnotation]),
+						context));
+			case 3:
+				var name = _v0.a.b5;
+				var typeAnnotation = _v0.a.f7;
+				var contextWithUsedElements = A3(
+					$jfmengels$elm_review_unused$NoUnused$Variables$collectNamesFromTypeAnnotation,
+					$elm$core$Maybe$Nothing,
+					_List_fromArray(
+						[typeAnnotation]),
+					context);
+				return _Utils_Tuple2(
+					_List_Nil,
+					context.dC ? contextWithUsedElements : A3(
+						$jfmengels$elm_review_unused$NoUnused$Variables$registerVariable,
+						{
+							eE: $elm$core$Maybe$Nothing,
+							ht: 'Port',
+							a0: $stil4m$elm_syntax$Elm$Syntax$Node$range(name),
+							a2: ' (Warning: Removing this port may break your application if it is used in the JS code)'
+						},
+						$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
+						contextWithUsedElements));
+			case 4:
+				var operator = _v0.a.g3;
+				var _function = _v0.a.gG;
+				return _Utils_Tuple2(
+					_List_Nil,
+					A3(
+						$jfmengels$elm_review_unused$NoUnused$Variables$registerVariable,
+						{
+							eE: $elm$core$Maybe$Just(
+								$stil4m$elm_syntax$Elm$Syntax$Node$range(node)),
+							ht: 'Declared operator',
+							a0: $stil4m$elm_syntax$Elm$Syntax$Node$range(operator),
+							a2: ''
+						},
+						$stil4m$elm_syntax$Elm$Syntax$Node$value(operator),
+						A2(
+							$jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed,
+							$stil4m$elm_syntax$Elm$Syntax$Node$value(_function),
+							context)));
 			default:
 				return _Utils_Tuple2(_List_Nil, context);
 		}
 	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$expressionExitVisitor = F2(
+var $jfmengels$elm_review_unused$NoUnused$Variables$declarationExitVisitor = F2(
 	function (node, context) {
-		var newContext = A2(
-			$jfmengels$elm_review_unused$NoUnused$RangeDict$member,
-			$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
-			context.ew) ? _Utils_update(
+		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+		if (!_v0.$) {
+			return $jfmengels$elm_review_unused$NoUnused$Variables$makeReport(context);
+		} else {
+			return _Utils_Tuple2(_List_Nil, context);
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$CustomTypeKind = 0;
+var $jfmengels$elm_review_unused$NoUnused$Variables$registerCustomType = F3(
+	function (range, _v0, context) {
+		var name = _v0.b5;
+		var constructors = _v0.gt;
+		var typeName = $stil4m$elm_syntax$Elm$Syntax$Node$value(name);
+		var constructorNames = A2(
+			$elm$core$List$map,
+			A2(
+				$elm$core$Basics$composeR,
+				$stil4m$elm_syntax$Elm$Syntax$Node$value,
+				A2(
+					$elm$core$Basics$composeR,
+					function ($) {
+						return $.b5;
+					},
+					$stil4m$elm_syntax$Elm$Syntax$Node$value)),
+			constructors);
+		var customType = {
+			b1: 0,
+			eE: $jfmengels$elm_review_unused$NoUnused$Variables$untilStartOfNextLine(range),
+			a0: $stil4m$elm_syntax$Elm$Syntax$Node$range(name),
+			d3: constructorNames
+		};
+		var constructorNameToTypeName = A3(
+			$elm$core$List$foldl,
+			F2(
+				function (constructorName, acc) {
+					return A3($elm$core$Dict$insert, constructorName, typeName, acc);
+				}),
+			context.bi,
+			constructorNames);
+		return _Utils_update(
 			context,
 			{
-				bk: A2($elm$core$List$drop, 1, context.bk)
-			}) : context;
-		return A2($jfmengels$elm_review_unused$NoUnused$Variables$expressionExitVisitorHelp, node, newContext);
+				bi: constructorNameToTypeName,
+				b3: A3(
+					$elm$core$Dict$insert,
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
+					customType,
+					context.b3)
+			});
 	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$TypeAliasKind = 1;
+var $jfmengels$elm_review_unused$NoUnused$Variables$registerTypeAlias = F3(
+	function (range, _v0, context) {
+		var name = _v0.b5;
+		var typeAnnotation = _v0.f7;
+		var newContext = function () {
+			var _v3 = $stil4m$elm_syntax$Elm$Syntax$Node$value(typeAnnotation);
+			if (_v3.$ === 4) {
+				return _Utils_update(
+					context,
+					{
+						br: A2(
+							$elm$core$Dict$remove,
+							$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
+							context.br)
+					});
+			} else {
+				return context;
+			}
+		}();
+		var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(typeAnnotation);
+		if (_v1.$ === 4) {
+			return context.dC ? newContext : A3(
+				$jfmengels$elm_review_unused$NoUnused$Variables$registerVariable,
+				{
+					eE: $elm$core$Maybe$Just(
+						$jfmengels$elm_review_unused$NoUnused$Variables$untilStartOfNextLine(range)),
+					ht: 'Type',
+					a0: $stil4m$elm_syntax$Elm$Syntax$Node$range(name),
+					a2: ''
+				},
+				$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
+				newContext);
+		} else {
+			var typeAlias = {
+				b1: 1,
+				eE: $jfmengels$elm_review_unused$NoUnused$Variables$untilStartOfNextLine(range),
+				a0: $stil4m$elm_syntax$Elm$Syntax$Node$range(name),
+				d3: function () {
+					var _v2 = $stil4m$elm_syntax$Elm$Syntax$Node$value(typeAnnotation);
+					if (_v2.$ === 4) {
+						return _List_fromArray(
+							[
+								$stil4m$elm_syntax$Elm$Syntax$Node$value(name)
+							]);
+					} else {
+						return _List_Nil;
+					}
+				}()
+			};
+			var localCustomTypes = A3(
+				$elm$core$Dict$insert,
+				$stil4m$elm_syntax$Elm$Syntax$Node$value(name),
+				typeAlias,
+				newContext.b3);
+			return _Utils_update(
+				newContext,
+				{b3: localCustomTypes});
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$registerTypes = F2(
+	function (node, context) {
+		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+		switch (_v0.$) {
+			case 2:
+				var customType = _v0.a;
+				return A3(
+					$jfmengels$elm_review_unused$NoUnused$Variables$registerCustomType,
+					$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+					customType,
+					context);
+			case 1:
+				var typeAliasDeclaration = _v0.a;
+				return A3(
+					$jfmengels$elm_review_unused$NoUnused$Variables$registerTypeAlias,
+					$stil4m$elm_syntax$Elm$Syntax$Node$range(node),
+					typeAliasDeclaration,
+					context);
+			default:
+				return context;
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$declarationListVisitor = F2(
+	function (nodes, context) {
+		return A3($elm$core$List$foldl, $jfmengels$elm_review_unused$NoUnused$Variables$registerTypes, context, nodes);
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$expressionEnterVisitor = F2(
+	function (_v0, context) {
+		var range = _v0.a;
+		var value = _v0.b;
+		switch (value.$) {
+			case 3:
+				if (!value.a.b) {
+					var name = value.b;
+					var _v2 = A2($elm$core$Dict$get, name, context.bi);
+					if (!_v2.$) {
+						var typeName = _v2.a;
+						return A2($jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, typeName, context);
+					} else {
+						var _v3 = A2($elm$core$Dict$get, name, context.br);
+						if (!_v3.$) {
+							var customTypeName = _v3.a;
+							return _Utils_update(
+								context,
+								{
+									bd: A2($elm$core$Dict$remove, customTypeName, context.bd)
+								});
+						} else {
+							var _v4 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, context.l, range);
+							if (!_v4.$) {
+								var realModuleName = _v4.a;
+								return A2(
+									$jfmengels$elm_review_unused$NoUnused$Variables$markModuleAsUsed,
+									_Utils_Tuple2(realModuleName, _List_Nil),
+									A2($jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, name, context));
+							} else {
+								return A2($jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, name, context);
+							}
+						}
+					}
+				} else {
+					var moduleName = value.a;
+					var _v5 = A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameAt, context.l, range);
+					if (!_v5.$) {
+						var realModuleName = _v5.a;
+						return A2(
+							$jfmengels$elm_review_unused$NoUnused$Variables$markModuleAsUsed,
+							_Utils_Tuple2(realModuleName, moduleName),
+							context);
+					} else {
+						return context;
+					}
+				}
+			case 2:
+				var name = value.a;
+				return A2($jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, name, context);
+			case 5:
+				var name = value.a;
+				return A2($jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed, name, context);
+			case 22:
+				var expr = value.a;
+				return A2(
+					$jfmengels$elm_review_unused$NoUnused$Variables$markValueAsUsed,
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(expr),
+					context);
+			case 17:
+				var args = value.a.ge;
+				return A2(
+					$jfmengels$elm_review_unused$NoUnused$Variables$markValuesFromPatternsAsUsed,
+					args,
+					_Utils_update(
+						context,
+						{
+							t: A2(
+								$jfmengels$elm_review_unused$NoUnused$NonemptyList$cons,
+								$jfmengels$elm_review_unused$NoUnused$Variables$scopeWithPatternsToIgnore(args),
+								context.t)
+						}));
+			case 16:
+				var cases = value.a.go;
+				return A2(
+					$jfmengels$elm_review_unused$NoUnused$Variables$markValuesFromPatternsAsUsed,
+					A2(
+						$elm$core$List$map,
+						function (_v6) {
+							var patternNode = _v6.a;
+							return patternNode;
+						},
+						cases),
+					context);
+			case 15:
+				return _Utils_update(
+					context,
+					{
+						t: A2(
+							$jfmengels$elm_review_unused$NoUnused$NonemptyList$cons,
+							{cY: $elm$core$Dict$empty, b7: $elm$core$Set$empty, a1: $elm$core$Dict$empty},
+							context.t)
+					});
+			default:
+				return context;
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$expressionExitVisitor = F2(
+	function (node, context) {
+		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+		switch (_v0.$) {
+			case 15:
+				return $jfmengels$elm_review_unused$NoUnused$Variables$makeReport(context);
+			case 17:
+				return $jfmengels$elm_review_unused$NoUnused$Variables$makeReport(context);
+			default:
+				return _Utils_Tuple2(_List_Nil, context);
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$errorForLocalType = function (_v0) {
+	var name = _v0.a;
+	var type_ = _v0.b;
+	var kind = function () {
+		var _v1 = type_.b1;
+		if (!_v1) {
+			return 'Type';
+		} else {
+			return 'Type alias';
+		}
+	}();
+	return A3(
+		$jfmengels$elm_review$Review$Rule$errorWithFix,
+		{dx: $jfmengels$elm_review_unused$NoUnused$Variables$details, a8: kind + (' `' + (name + '` is not used'))},
+		type_.a0,
+		_List_fromArray(
+			[
+				$jfmengels$elm_review$Review$Fix$removeRange(type_.eE)
+			]));
+};
 var $jfmengels$elm_review_unused$NoUnused$Variables$getModuleName = function (name) {
 	return A2($elm$core$String$join, '.', name);
 };
@@ -25357,26 +26575,26 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$finalEvaluation = function (
 	var usedLocally = A2(
 		$elm$core$Maybe$withDefault,
 		$elm$core$Set$empty,
-		A2($elm$core$Dict$get, _List_Nil, rootScope._));
+		A2($elm$core$Dict$get, _List_Nil, rootScope.a1));
 	var namesOfCustomTypesUsedByCallingAConstructor = $elm$core$Set$fromList(
 		$elm$core$Dict$values(
 			A2(
 				$elm$core$Dict$filter,
 				F2(
-					function (usedName, _v7) {
+					function (usedName, _v6) {
 						return A2(
 							$elm$core$Set$member,
 							usedName,
 							A2(
 								$elm$core$Maybe$withDefault,
 								$elm$core$Set$empty,
-								A2($elm$core$Dict$get, _List_Nil, rootScope._)));
+								A2($elm$core$Dict$get, _List_Nil, rootScope.a1)));
 					}),
-				context.bc)));
+				context.bi)));
 	var newRootScope = _Utils_update(
 		rootScope,
 		{
-			_: A3(
+			a1: A3(
 				$elm$core$Dict$update,
 				_List_Nil,
 				function (set) {
@@ -25386,20 +26604,20 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$finalEvaluation = function (
 							namesOfCustomTypesUsedByCallingAConstructor,
 							A2($elm$core$Maybe$withDefault, $elm$core$Set$empty, set)));
 				},
-				rootScope._)
+				rootScope.a1)
 		});
 	var moduleThatExposeEverythingErrors = A2(
 		$elm$core$List$map,
 		function (module_) {
-			var importRange = module_.dU;
-			var exposingRange = module_.dK;
-			return (!module_.dz) ? (module_.dA ? _Utils_Tuple2(
+			var importRange = module_.ep;
+			var exposingRange = module_.eg;
+			return (!module_.d4) ? (module_.d5 ? _Utils_Tuple2(
 				$elm$core$Maybe$Just(
 					A3(
 						$jfmengels$elm_review$Review$Rule$errorWithFix,
 						{
-							c2: $jfmengels$elm_review_unused$NoUnused$Variables$details,
-							a2: 'No imported elements from `' + (A2($elm$core$String$join, '.', module_.bT) + '` are used')
+							dx: $jfmengels$elm_review_unused$NoUnused$Variables$details,
+							a8: 'No imported elements from `' + (A2($elm$core$String$join, '.', module_.b5) + '` are used')
 						},
 						exposingRange,
 						_List_fromArray(
@@ -25411,153 +26629,142 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$finalEvaluation = function (
 					A3(
 						$jfmengels$elm_review$Review$Rule$errorWithFix,
 						{
-							c2: $jfmengels$elm_review_unused$NoUnused$Variables$details,
-							a2: 'Imported module `' + (A2($elm$core$String$join, '.', module_.bT) + '` is not used')
+							dx: $jfmengels$elm_review_unused$NoUnused$Variables$details,
+							a8: 'Imported module `' + (A2($elm$core$String$join, '.', module_.b5) + '` is not used')
 						},
-						module_.d1,
+						module_.ey,
 						_List_fromArray(
 							[
 								$jfmengels$elm_review$Review$Fix$removeRange(
 								_Utils_update(
 									importRange,
 									{
-										b6: {bb: 1, bs: importRange.b6.bs + 1}
+										cp: {bh: 1, bD: importRange.cp.bD + 1}
 									}))
 							]))),
 				A2(
 					$elm$core$Maybe$map,
 					function (alias) {
 						return _Utils_Tuple2(
-							module_.bT,
+							module_.b5,
 							_List_fromArray(
 								[alias]));
 					},
-					module_.aD))) : _Utils_Tuple2($elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing);
+					module_.aI))) : _Utils_Tuple2($elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing);
 		},
-		context.bB);
+		context.bN);
 	var usedModules = A2(
 		$elm$core$Set$union,
 		$elm$core$Set$fromList(
 			A2($elm$core$List$filterMap, $elm$core$Tuple$second, moduleThatExposeEverythingErrors)),
-		context.a8);
+		context.cd);
 	var moduleNamesInUse = $elm$core$Set$fromList(
 		A2(
 			$elm$core$List$map,
-			function (_v6) {
-				var alias = _v6.aD;
-				var moduleName = _v6.dn;
+			function (_v5) {
+				var alias = _v5.aI;
+				var moduleName = _v5.dR;
 				return A2(
 					$elm$core$Maybe$withDefault,
 					$jfmengels$elm_review_unused$NoUnused$Variables$getModuleName(moduleName),
 					alias);
 			},
-			context.b2));
+			context.cl));
 	var moduleErrors = A2(
 		$elm$core$List$map,
 		function (variableInfo) {
 			var name = function () {
-				var _v5 = variableInfo.aD;
-				if (!_v5.$) {
-					var alias = _v5.a;
+				var _v4 = variableInfo.aI;
+				if (!_v4.$) {
+					var alias = _v4.a;
 					return alias;
 				} else {
-					return $jfmengels$elm_review_unused$NoUnused$Variables$getModuleName(variableInfo.dn);
+					return $jfmengels$elm_review_unused$NoUnused$Variables$getModuleName(variableInfo.dR);
 				}
 			}();
 			var fix = function () {
-				var _v4 = variableInfo.a9;
-				if (!_v4.$) {
+				var _v3 = variableInfo.bf;
+				if (!_v3.$) {
 					return _List_fromArray(
 						[
-							$jfmengels$elm_review$Review$Fix$removeRange(variableInfo.d7)
+							$jfmengels$elm_review$Review$Fix$removeRange(variableInfo.eE)
 						]);
 				} else {
-					var originalNameOfTheImport = _v4.a.fa;
-					var exposesSomething = _v4.a.eI;
+					var originalNameOfTheImport = _v3.a.fI;
+					var exposesSomething = _v3.a.fe;
 					return ((!exposesSomething) || (!A2($elm$core$Set$member, originalNameOfTheImport, moduleNamesInUse))) ? _List_fromArray(
 						[
-							$jfmengels$elm_review$Review$Fix$removeRange(variableInfo.d7)
+							$jfmengels$elm_review$Review$Fix$removeRange(variableInfo.eE)
 						]) : _List_Nil;
 				}
 			}();
 			return A3(
 				$jfmengels$elm_review$Review$Rule$errorWithFix,
-				{c2: $jfmengels$elm_review_unused$NoUnused$Variables$details, a2: variableInfo.gU + (' `' + (name + '` is not used'))},
-				variableInfo.aX,
+				{dx: $jfmengels$elm_review_unused$NoUnused$Variables$details, a8: variableInfo.ht + (' `' + (name + '` is not used'))},
+				variableInfo.a0,
 				fix);
 		},
 		A2(
 			$elm$core$List$filter,
 			function (variableInfo) {
 				return !function () {
-					var _v3 = variableInfo.aD;
-					if (!_v3.$) {
-						var alias = _v3.a;
+					var _v2 = variableInfo.aI;
+					if (!_v2.$) {
+						var alias = _v2.a;
 						return A2(
 							$elm$core$Set$member,
 							_Utils_Tuple2(
-								variableInfo.dn,
+								variableInfo.dR,
 								_List_fromArray(
 									[alias])),
 							usedModules);
 					} else {
 						return A2(
 							$elm$core$Set$member,
-							_Utils_Tuple2(variableInfo.dn, variableInfo.dn),
+							_Utils_Tuple2(variableInfo.dR, variableInfo.dR),
 							usedModules);
 					}
 				}();
 			},
-			context.b2));
+			context.cl));
 	var importedTypeErrors = A2(
 		$elm$core$List$map,
-		function (_v2) {
-			var name = _v2.a;
-			var under = _v2.b.aX;
-			var rangeToRemove = _v2.b.d7;
-			var openRange = _v2.b.d4;
-			return (A2($elm$core$Set$member, name, usedLocally) && (!A2($elm$core$Dict$member, name, context.bQ))) ? A3(
+		function (_v1) {
+			var name = _v1.a;
+			var under = _v1.b.a0;
+			var rangeToRemove = _v1.b.eE;
+			var openRange = _v1.b.eB;
+			return (A2($elm$core$Set$member, name, usedLocally) && (!A2($elm$core$Dict$member, name, context.b3))) ? A3(
 				$jfmengels$elm_review$Review$Rule$errorWithFix,
-				{c2: $jfmengels$elm_review_unused$NoUnused$Variables$details, a2: 'Imported constructors for `' + (name + '` are not used')},
+				{dx: $jfmengels$elm_review_unused$NoUnused$Variables$details, a8: 'Imported constructors for `' + (name + '` are not used')},
 				under,
 				_List_fromArray(
 					[
 						$jfmengels$elm_review$Review$Fix$removeRange(openRange)
 					])) : A3(
 				$jfmengels$elm_review$Review$Rule$errorWithFix,
-				{c2: $jfmengels$elm_review_unused$NoUnused$Variables$details, a2: 'Imported type `' + (name + '` is not used')},
+				{dx: $jfmengels$elm_review_unused$NoUnused$Variables$details, a8: 'Imported type `' + (name + '` is not used')},
 				under,
 				_List_fromArray(
 					[
 						$jfmengels$elm_review$Review$Fix$removeRange(rangeToRemove)
 					]));
 		},
-		$elm$core$Dict$toList(context.a6));
-	var customTypeErrors = context.c8 ? _List_Nil : A2(
+		$elm$core$Dict$toList(context.bd));
+	var customTypeErrors = context.dC ? _List_Nil : A2(
 		$elm$core$List$map,
-		function (_v1) {
-			var name = _v1.a;
-			var customType = _v1.b;
-			return A3(
-				$jfmengels$elm_review$Review$Rule$errorWithFix,
-				{c2: $jfmengels$elm_review_unused$NoUnused$Variables$details, a2: 'Type `' + (name + '` is not used')},
-				customType.aX,
-				_List_fromArray(
-					[
-						$jfmengels$elm_review$Review$Fix$removeRange(customType.d7)
-					]));
-		},
+		$jfmengels$elm_review_unused$NoUnused$Variables$errorForLocalType,
 		A2(
 			$elm$core$List$filter,
 			function (_v0) {
 				var name = _v0.a;
 				return !A2($elm$core$Set$member, name, usedLocally);
 			},
-			$elm$core$Dict$toList(context.bQ)));
+			$elm$core$Dict$toList(context.b3)));
 	return $elm$core$List$concat(
 		_List_fromArray(
 			[
-				$jfmengels$elm_review_unused$NoUnused$Variables$makeReport(newRootScope).a,
+				$jfmengels$elm_review_unused$NoUnused$Variables$makeReportHelp(newRootScope).a,
 				importedTypeErrors,
 				moduleErrors,
 				A2($elm$core$List$filterMap, $elm$core$Tuple$first, moduleThatExposeEverythingErrors),
@@ -25572,14 +26779,15 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$TypeOrValue = F2(
 	function (a, b) {
 		return {$: 1, a: a, b: b};
 	});
+var $elm$core$List$map3 = _List_map3;
 var $jfmengels$elm_review_unused$NoUnused$Variables$untilEndOfVariable = F2(
 	function (name, range) {
-		return _Utils_eq(range.cm.bs, range.b6.bs) ? range : _Utils_update(
+		return _Utils_eq(range.cN.bD, range.cp.bD) ? range : _Utils_update(
 			range,
 			{
-				b6: {
-					bb: range.cm.bb + $elm$core$String$length(name),
-					bs: range.cm.bs
+				cp: {
+					bh: range.cN.bh + $elm$core$String$length(name),
+					bD: range.cN.bD
 				}
 			});
 	});
@@ -25603,8 +26811,8 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$collectExplicitlyExposedElem
 			_List_fromArray(
 				[
 					{
-					b6: {bb: 0, bs: 0},
-					cm: {bb: 0, bs: 0}
+					cp: {bh: 0, bD: 0},
+					cN: {bh: 0, bD: 0}
 				}
 				]));
 		return A2(
@@ -25626,7 +26834,7 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$collectExplicitlyExposedElem
 								if (!index) {
 									return _Utils_update(
 										range,
-										{b6: nextRange.cm});
+										{cp: nextRange.cN});
 								} else {
 									if (maybePreviousRange.$ === 1) {
 										return range;
@@ -25634,7 +26842,7 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$collectExplicitlyExposedElem
 										var previousRange = maybePreviousRange.a;
 										return _Utils_update(
 											range,
-											{cm: previousRange.b6});
+											{cN: previousRange.cp});
 									}
 								}
 							}
@@ -25647,10 +26855,10 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$collectExplicitlyExposedElem
 										$jfmengels$elm_review_unused$NoUnused$Variables$TypeOrValue,
 										name,
 										{
-											d7: $elm$core$Maybe$Just(rangeToRemove),
-											gU: 'Imported variable',
-											aX: A2($jfmengels$elm_review_unused$NoUnused$Variables$untilEndOfVariable, name, range),
-											aY: ''
+											eE: $elm$core$Maybe$Just(rangeToRemove),
+											ht: 'Imported variable',
+											a0: A2($jfmengels$elm_review_unused$NoUnused$Variables$untilEndOfVariable, name, range),
+											a2: ''
 										}));
 							case 0:
 								var name = value.a;
@@ -25659,10 +26867,10 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$collectExplicitlyExposedElem
 										$jfmengels$elm_review_unused$NoUnused$Variables$TypeOrValue,
 										name,
 										{
-											d7: $elm$core$Maybe$Just(rangeToRemove),
-											gU: 'Imported operator',
-											aX: A2($jfmengels$elm_review_unused$NoUnused$Variables$untilEndOfVariable, name, range),
-											aY: ''
+											eE: $elm$core$Maybe$Just(rangeToRemove),
+											ht: 'Imported operator',
+											a0: A2($jfmengels$elm_review_unused$NoUnused$Variables$untilEndOfVariable, name, range),
+											a2: ''
 										}));
 							case 2:
 								var name = value.a;
@@ -25671,21 +26879,21 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$collectExplicitlyExposedElem
 										$jfmengels$elm_review_unused$NoUnused$Variables$TypeOrValue,
 										name,
 										{
-											d7: $elm$core$Maybe$Just(rangeToRemove),
-											gU: 'Imported type',
-											aX: A2($jfmengels$elm_review_unused$NoUnused$Variables$untilEndOfVariable, name, range),
-											aY: ''
+											eE: $elm$core$Maybe$Just(rangeToRemove),
+											ht: 'Imported type',
+											a0: A2($jfmengels$elm_review_unused$NoUnused$Variables$untilEndOfVariable, name, range),
+											a2: ''
 										}));
 							default:
-								var name = value.a.bT;
-								var open = value.a.gu;
+								var name = value.a.b5;
+								var open = value.a.g2;
 								if (!open.$) {
 									var openRange = open.a;
 									return $elm$core$Maybe$Just(
 										A2(
 											$jfmengels$elm_review_unused$NoUnused$Variables$CustomType,
 											name,
-											{d4: openRange, d7: rangeToRemove, gU: 'Imported type', aX: range}));
+											{eB: openRange, eE: rangeToRemove, ht: 'Imported type', a0: range}));
 								} else {
 									return $elm$core$Maybe$Nothing;
 								}
@@ -25701,15 +26909,6 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$collectExplicitlyExposedElem
 					listWithNextRange,
 					list)));
 	});
-var $jfmengels$elm_review_unused$NoUnused$Variables$moduleAliasRange = F2(
-	function (_v0, range) {
-		var moduleName = _v0.b.dn;
-		return _Utils_update(
-			range,
-			{
-				cm: $stil4m$elm_syntax$Elm$Syntax$Node$range(moduleName).b6
-			});
-	});
 var $jfmengels$elm_review_unused$NoUnused$Variables$registerExposedElements = F3(
 	function (customTypesFromModule, importedElement, context) {
 		if (!importedElement.$) {
@@ -25721,7 +26920,7 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$registerExposedElements = F3
 				return _Utils_update(
 					context,
 					{
-						bj: A2(
+						br: A2(
 							$elm$core$Dict$union,
 							$elm$core$Dict$fromList(
 								A2(
@@ -25730,8 +26929,8 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$registerExposedElements = F3
 										return _Utils_Tuple2(constructorName, name);
 									},
 									constructorNames)),
-							context.bj),
-						a6: A3($elm$core$Dict$insert, name, variableInfo, context.a6)
+							context.br),
+						bd: A3($elm$core$Dict$insert, name, variableInfo, context.bd)
 					});
 			} else {
 				return context;
@@ -25742,6 +26941,47 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$registerExposedElements = F3
 			return A3($jfmengels$elm_review_unused$NoUnused$Variables$registerVariable, variableInfo, name, context);
 		}
 	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$handleExposedElements = F2(
+	function (declared, customTypesFromModule) {
+		return F2(
+			function (importedElement, _v0) {
+				var errors = _v0.a;
+				var context = _v0.b;
+				var name = function () {
+					if (!importedElement.$) {
+						var elementName = importedElement.a;
+						return elementName;
+					} else {
+						var elementName = importedElement.a;
+						return elementName;
+					}
+				}();
+				var newErrors = function () {
+					var _v1 = A2($elm$core$Dict$get, name, declared);
+					if (!_v1.$) {
+						var variableInfo = _v1.a;
+						return A2(
+							$elm$core$List$cons,
+							A2($jfmengels$elm_review_unused$NoUnused$Variables$error, variableInfo, name),
+							errors);
+					} else {
+						return errors;
+					}
+				}();
+				return _Utils_Tuple2(
+					newErrors,
+					A3($jfmengels$elm_review_unused$NoUnused$Variables$registerExposedElements, customTypesFromModule, importedElement, context));
+			});
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$moduleAliasRange = F2(
+	function (_v0, range) {
+		var moduleName = _v0.b.dR;
+		return _Utils_update(
+			range,
+			{
+				cN: $stil4m$elm_syntax$Elm$Syntax$Node$range(moduleName).cp
+			});
+	});
 var $jfmengels$elm_review_unused$NoUnused$Variables$ModuleAlias = function (a) {
 	return {$: 1, a: a};
 };
@@ -25750,22 +26990,22 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$registerModule = F2(
 		return _Utils_update(
 			context,
 			{
-				b2: A2($elm$core$List$cons, declaredModule, context.b2)
+				cl: A2($elm$core$List$cons, declaredModule, context.cl)
 			});
 	});
 var $jfmengels$elm_review_unused$NoUnused$Variables$registerModuleAlias = F3(
 	function (node, moduleAlias, context) {
 		var range = node.a;
-		var exposingList = node.b.dJ;
-		var moduleName = node.b.dn;
+		var exposingList = node.b.ef;
+		var moduleName = node.b.dR;
 		return A2(
 			$jfmengels$elm_review_unused$NoUnused$Variables$registerModule,
 			{
-				aD: $elm$core$Maybe$Just(
+				aI: $elm$core$Maybe$Just(
 					$jfmengels$elm_review_unused$NoUnused$Variables$getModuleName(
 						$stil4m$elm_syntax$Elm$Syntax$Node$value(moduleAlias))),
-				dn: $stil4m$elm_syntax$Elm$Syntax$Node$value(moduleName),
-				d7: function () {
+				dR: $stil4m$elm_syntax$Elm$Syntax$Node$value(moduleName),
+				eE: function () {
 					if (exposingList.$ === 1) {
 						return $jfmengels$elm_review_unused$NoUnused$Variables$untilStartOfNextLine(range);
 					} else {
@@ -25775,12 +27015,12 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$registerModuleAlias = F3(
 							$stil4m$elm_syntax$Elm$Syntax$Node$range(moduleAlias));
 					}
 				}(),
-				gU: 'Module alias',
-				aX: $stil4m$elm_syntax$Elm$Syntax$Node$range(moduleAlias),
-				a9: $jfmengels$elm_review_unused$NoUnused$Variables$ModuleAlias(
+				ht: 'Module alias',
+				a0: $stil4m$elm_syntax$Elm$Syntax$Node$range(moduleAlias),
+				bf: $jfmengels$elm_review_unused$NoUnused$Variables$ModuleAlias(
 					{
-						eI: !_Utils_eq(exposingList, $elm$core$Maybe$Nothing),
-						fa: $jfmengels$elm_review_unused$NoUnused$Variables$getModuleName(
+						fe: !_Utils_eq(exposingList, $elm$core$Maybe$Nothing),
+						fI: $jfmengels$elm_review_unused$NoUnused$Variables$getModuleName(
 							$stil4m$elm_syntax$Elm$Syntax$Node$value(moduleName))
 					})
 			},
@@ -25790,8 +27030,8 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$ImportedModule = {$: 0};
 var $jfmengels$elm_review_unused$NoUnused$Variables$registerModuleNameOrAlias = F2(
 	function (node, context) {
 		var range = node.a;
-		var moduleAlias = node.b.gi;
-		var moduleName = node.b.dn;
+		var moduleAlias = node.b.gS;
+		var moduleName = node.b.dR;
 		if (!moduleAlias.$) {
 			var moduleAlias_ = moduleAlias.a;
 			return A3($jfmengels$elm_review_unused$NoUnused$Variables$registerModuleAlias, node, moduleAlias_, context);
@@ -25799,12 +27039,12 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$registerModuleNameOrAlias = 
 			return A2(
 				$jfmengels$elm_review_unused$NoUnused$Variables$registerModule,
 				{
-					aD: $elm$core$Maybe$Nothing,
-					dn: $stil4m$elm_syntax$Elm$Syntax$Node$value(moduleName),
-					d7: $jfmengels$elm_review_unused$NoUnused$Variables$untilStartOfNextLine(range),
-					gU: 'Imported module',
-					aX: $stil4m$elm_syntax$Elm$Syntax$Node$range(moduleName),
-					a9: $jfmengels$elm_review_unused$NoUnused$Variables$ImportedModule
+					aI: $elm$core$Maybe$Nothing,
+					dR: $stil4m$elm_syntax$Elm$Syntax$Node$value(moduleName),
+					eE: $jfmengels$elm_review_unused$NoUnused$Variables$untilStartOfNextLine(range),
+					ht: 'Imported module',
+					a0: $stil4m$elm_syntax$Elm$Syntax$Node$range(moduleName),
+					bf: $jfmengels$elm_review_unused$NoUnused$Variables$ImportedModule
 				},
 				context);
 		}
@@ -25814,19 +27054,19 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$importVisitor = F2(
 		var importRange = node.a;
 		var import_ = node.b;
 		var errors = function () {
-			var _v3 = import_.gi;
-			if (!_v3.$) {
-				var moduleAlias = _v3.a;
+			var _v4 = import_.gS;
+			if (!_v4.$) {
+				var moduleAlias = _v4.a;
 				return _Utils_eq(
 					$stil4m$elm_syntax$Elm$Syntax$Node$value(moduleAlias),
-					$stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dn)) ? _List_fromArray(
+					$stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dR)) ? _List_fromArray(
 					[
 						A3(
 						$jfmengels$elm_review$Review$Rule$errorWithFix,
 						{
-							c2: _List_fromArray(
+							dx: _List_fromArray(
 								['The alias is the same as the module name, and brings no useful value']),
-							a2: 'Module `' + (A2(
+							a8: 'Module `' + (A2(
 								$elm$core$String$join,
 								'.',
 								$stil4m$elm_syntax$Elm$Syntax$Node$value(moduleAlias)) + '` is aliased as itself')
@@ -25845,71 +27085,442 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$importVisitor = F2(
 				return _List_Nil;
 			}
 		}();
-		var _v0 = import_.dJ;
-		if (_v0.$ === 1) {
-			return _Utils_Tuple2(
-				errors,
-				A2($jfmengels$elm_review_unused$NoUnused$Variables$registerModuleNameOrAlias, node, context));
-		} else {
-			var declaredImports = _v0.a;
-			var contextWithAlias = function () {
-				var _v2 = import_.gi;
+		var _v0 = function () {
+			var _v1 = import_.ef;
+			if (_v1.$ === 1) {
+				return _Utils_Tuple2(
+					_List_Nil,
+					A2($jfmengels$elm_review_unused$NoUnused$Variables$registerModuleNameOrAlias, node, context));
+			} else {
+				var declaredImports = _v1.a;
+				var contextWithAlias = function () {
+					var _v3 = import_.gS;
+					if (!_v3.$) {
+						var moduleAlias = _v3.a;
+						return A3($jfmengels$elm_review_unused$NoUnused$Variables$registerModuleAlias, node, moduleAlias, context);
+					} else {
+						return context;
+					}
+				}();
+				var _v2 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaredImports);
 				if (!_v2.$) {
-					var moduleAlias = _v2.a;
-					return A3($jfmengels$elm_review_unused$NoUnused$Variables$registerModuleAlias, node, moduleAlias, context);
-				} else {
-					return context;
-				}
-			}();
-			return _Utils_Tuple2(
-				errors,
-				function () {
-					var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaredImports);
-					if (!_v1.$) {
-						return A2(
-							$elm$core$Dict$member,
-							$stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dn),
-							context.dE) ? _Utils_update(
+					return A2(
+						$elm$core$Dict$member,
+						$stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dR),
+						context.d9) ? _Utils_Tuple2(
+						_List_Nil,
+						_Utils_update(
 							contextWithAlias,
 							{
-								bB: A2(
+								bN: A2(
 									$elm$core$List$cons,
 									{
-										aD: A2(
+										aI: A2(
 											$elm$core$Maybe$map,
 											A2(
 												$elm$core$Basics$composeR,
 												$stil4m$elm_syntax$Elm$Syntax$Node$value,
 												$elm$core$String$join('.')),
-											import_.gi),
-										dK: $stil4m$elm_syntax$Elm$Syntax$Node$range(declaredImports),
-										dU: importRange,
-										d1: $stil4m$elm_syntax$Elm$Syntax$Node$range(import_.dn),
-										bT: $stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dn),
-										dz: false,
-										dA: false
+											import_.gS),
+										eg: $stil4m$elm_syntax$Elm$Syntax$Node$range(declaredImports),
+										ep: importRange,
+										ey: $stil4m$elm_syntax$Elm$Syntax$Node$range(import_.dR),
+										b5: $stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dR),
+										d4: false,
+										d5: false
 									},
-									context.bB)
-							}) : contextWithAlias;
+									context.bN)
+							})) : _Utils_Tuple2(_List_Nil, contextWithAlias);
+				} else {
+					var list = _v2.a;
+					var customTypesFromModule = A2(
+						$elm$core$Maybe$withDefault,
+						$elm$core$Dict$empty,
+						A2(
+							$elm$core$Dict$get,
+							$stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dR),
+							context.d9));
+					return A3(
+						$elm$core$List$foldl,
+						A2(
+							$jfmengels$elm_review_unused$NoUnused$Variables$handleExposedElements,
+							$jfmengels$elm_review_unused$NoUnused$NonemptyList$head(contextWithAlias.t).cY,
+							customTypesFromModule),
+						_Utils_Tuple2(_List_Nil, contextWithAlias),
+						A2(
+							$jfmengels$elm_review_unused$NoUnused$Variables$collectExplicitlyExposedElements,
+							$stil4m$elm_syntax$Elm$Syntax$Node$range(declaredImports),
+							list));
+				}
+			}
+		}();
+		var exposingErrors = _v0.a;
+		var newContext = _v0.b;
+		return _Utils_Tuple2(
+			_Utils_ap(exposingErrors, errors),
+			newContext);
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$HasMultipleDeclarations = {$: 0};
+var $jfmengels$elm_review_unused$NoUnused$Variables$HasNoOtherDeclarations = function (a) {
+	return {$: 1, a: a};
+};
+var $jfmengels$elm_review_unused$NoUnused$Variables$introducesVariable = function (nodes) {
+	introducesVariable:
+	while (true) {
+		if (!nodes.b) {
+			return false;
+		} else {
+			var patternNode = nodes.a;
+			var restOfNodes = nodes.b;
+			var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(patternNode);
+			switch (_v1.$) {
+				case 11:
+					return true;
+				case 13:
+					return true;
+				case 8:
+					var fields = _v1.a;
+					if ($elm$core$List$isEmpty(fields)) {
+						var $temp$nodes = restOfNodes;
+						nodes = $temp$nodes;
+						continue introducesVariable;
 					} else {
-						var list = _v1.a;
-						var customTypesFromModule = A2(
-							$elm$core$Maybe$withDefault,
-							$elm$core$Dict$empty,
-							A2(
-								$elm$core$Dict$get,
-								$stil4m$elm_syntax$Elm$Syntax$Node$value(import_.dn),
-								context.dE));
-						return A3(
-							$elm$core$List$foldl,
-							$jfmengels$elm_review_unused$NoUnused$Variables$registerExposedElements(customTypesFromModule),
-							contextWithAlias,
-							A2(
-								$jfmengels$elm_review_unused$NoUnused$Variables$collectExplicitlyExposedElements,
-								$stil4m$elm_syntax$Elm$Syntax$Node$range(declaredImports),
-								list));
+						return true;
 					}
-				}());
+				case 7:
+					var patterns = _v1.a;
+					var $temp$nodes = _Utils_ap(patterns, restOfNodes);
+					nodes = $temp$nodes;
+					continue introducesVariable;
+				case 9:
+					var left = _v1.a;
+					var right = _v1.b;
+					var $temp$nodes = A2(
+						$elm$core$List$cons,
+						left,
+						A2($elm$core$List$cons, right, restOfNodes));
+					nodes = $temp$nodes;
+					continue introducesVariable;
+				case 10:
+					var patterns = _v1.a;
+					var $temp$nodes = _Utils_ap(patterns, restOfNodes);
+					nodes = $temp$nodes;
+					continue introducesVariable;
+				case 12:
+					var patterns = _v1.b;
+					var $temp$nodes = _Utils_ap(patterns, restOfNodes);
+					nodes = $temp$nodes;
+					continue introducesVariable;
+				case 14:
+					var pattern = _v1.a;
+					var $temp$nodes = A2($elm$core$List$cons, pattern, restOfNodes);
+					nodes = $temp$nodes;
+					continue introducesVariable;
+				default:
+					var $temp$nodes = restOfNodes;
+					nodes = $temp$nodes;
+					continue introducesVariable;
+			}
+		}
+	}
+};
+var $jfmengels$elm_review_unused$NoUnused$Variables$removeParensFromExpression = function (node) {
+	removeParensFromExpression:
+	while (true) {
+		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+		if (_v0.$ === 14) {
+			var expr = _v0.a;
+			var $temp$node = expr;
+			node = $temp$node;
+			continue removeParensFromExpression;
+		} else {
+			return node;
+		}
+	}
+};
+var $jfmengels$elm_review_unused$NoUnused$Variables$isDebugLog = F2(
+	function (lookupTable, node) {
+		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+		_v0$3:
+		while (true) {
+			switch (_v0.$) {
+				case 1:
+					if (((_v0.a.b && _v0.a.b.b) && _v0.a.b.b.b) && (!_v0.a.b.b.b.b)) {
+						var _v1 = _v0.a;
+						var functionWithParens = _v1.a;
+						var _v2 = _v1.b;
+						var _v3 = _v2.b;
+						var _function = $jfmengels$elm_review_unused$NoUnused$Variables$removeParensFromExpression(functionWithParens);
+						var _v4 = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function);
+						if ((_v4.$ === 3) && (_v4.b === 'log')) {
+							return _Utils_eq(
+								A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, _function),
+								$elm$core$Maybe$Just(
+									_List_fromArray(
+										['Debug'])));
+						} else {
+							return false;
+						}
+					} else {
+						break _v0$3;
+					}
+				case 2:
+					switch (_v0.a) {
+						case '|>':
+							var pipeFunction = _v0.d;
+							var _v5 = $stil4m$elm_syntax$Elm$Syntax$Node$value(
+								$jfmengels$elm_review_unused$NoUnused$Variables$removeParensFromExpression(pipeFunction));
+							if ((((_v5.$ === 1) && _v5.a.b) && _v5.a.b.b) && (!_v5.a.b.b.b)) {
+								var _v6 = _v5.a;
+								var functionWithParens = _v6.a;
+								var _v7 = _v6.b;
+								var _function = $jfmengels$elm_review_unused$NoUnused$Variables$removeParensFromExpression(functionWithParens);
+								var _v8 = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function);
+								if ((_v8.$ === 3) && (_v8.b === 'log')) {
+									return _Utils_eq(
+										A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, _function),
+										$elm$core$Maybe$Just(
+											_List_fromArray(
+												['Debug'])));
+								} else {
+									return false;
+								}
+							} else {
+								return false;
+							}
+						case '<|':
+							var pipeFunction = _v0.c;
+							var _v9 = $stil4m$elm_syntax$Elm$Syntax$Node$value(
+								$jfmengels$elm_review_unused$NoUnused$Variables$removeParensFromExpression(pipeFunction));
+							if ((((_v9.$ === 1) && _v9.a.b) && _v9.a.b.b) && (!_v9.a.b.b.b)) {
+								var _v10 = _v9.a;
+								var functionWithParens = _v10.a;
+								var _v11 = _v10.b;
+								var _function = $jfmengels$elm_review_unused$NoUnused$Variables$removeParensFromExpression(functionWithParens);
+								var _v12 = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function);
+								if ((_v12.$ === 3) && (_v12.b === 'log')) {
+									return _Utils_eq(
+										A2($jfmengels$elm_review$Review$ModuleNameLookupTable$moduleNameFor, lookupTable, _function),
+										$elm$core$Maybe$Just(
+											_List_fromArray(
+												['Debug'])));
+								} else {
+									return false;
+								}
+							} else {
+								return false;
+							}
+						default:
+							break _v0$3;
+					}
+				default:
+					break _v0$3;
+			}
+		}
+		return false;
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$letDeclarationToRemoveRange = F2(
+	function (letBlockContext, range) {
+		if (!letBlockContext.$) {
+			return range;
+		} else {
+			var letDeclarationsRange = letBlockContext.a;
+			return letDeclarationsRange;
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$positionAsInt = function (_v0) {
+	var row = _v0.bD;
+	var column = _v0.bh;
+	return (row * 1000000) + column;
+};
+var $jfmengels$elm_review_unused$NoUnused$Variables$rangeUpUntil = F2(
+	function (range, position) {
+		var positionAsInt_ = $jfmengels$elm_review_unused$NoUnused$Variables$positionAsInt(position);
+		return ((_Utils_cmp(
+			$jfmengels$elm_review_unused$NoUnused$Variables$positionAsInt(range.cN),
+			positionAsInt_) < 1) && (_Utils_cmp(
+			$jfmengels$elm_review_unused$NoUnused$Variables$positionAsInt(range.cp),
+			positionAsInt_) > -1)) ? _Utils_update(
+			range,
+			{cp: position}) : range;
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$registerFunction = F4(
+	function (letBlockContext, _function, functionDeclarationRange, context) {
+		var typeAnnotations = function () {
+			var _v0 = A2($elm$core$Maybe$map, $stil4m$elm_syntax$Elm$Syntax$Node$value, _function.hi);
+			if (!_v0.$) {
+				var signature = _v0.a;
+				return _List_fromArray(
+					[signature.f7]);
+			} else {
+				return _List_Nil;
+			}
+		}();
+		var declaration = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv);
+		return A3(
+			$jfmengels$elm_review_unused$NoUnused$Variables$registerVariable,
+			{
+				eE: $elm$core$Maybe$Just(
+					A2($jfmengels$elm_review_unused$NoUnused$Variables$letDeclarationToRemoveRange, letBlockContext, functionDeclarationRange)),
+				ht: '`let in` variable',
+				a0: $stil4m$elm_syntax$Elm$Syntax$Node$range(declaration.b5),
+				a2: ''
+			},
+			$stil4m$elm_syntax$Elm$Syntax$Node$value(declaration.b5),
+			A3($jfmengels$elm_review_unused$NoUnused$Variables$collectNamesFromTypeAnnotation, $elm$core$Maybe$Nothing, typeAnnotations, context));
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$removeParensFromPattern = function (node) {
+	removeParensFromPattern:
+	while (true) {
+		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
+		if (_v0.$ === 14) {
+			var pattern = _v0.a;
+			var $temp$node = pattern;
+			node = $temp$node;
+			continue removeParensFromPattern;
+		} else {
+			return node;
+		}
+	}
+};
+var $jfmengels$elm_review_unused$NoUnused$Variables$letDeclarationEnterVisitor = F3(
+	function (_v0, declaration, context) {
+		var range = _v0.a;
+		var declarations = _v0.b.e2;
+		var expression = _v0.b.dE;
+		var letBlockContext = ($elm$core$List$length(declarations) === 1) ? $jfmengels$elm_review_unused$NoUnused$Variables$HasNoOtherDeclarations(
+			A2(
+				$jfmengels$elm_review_unused$NoUnused$Variables$rangeUpUntil,
+				range,
+				$stil4m$elm_syntax$Elm$Syntax$Node$range(expression).cN)) : $jfmengels$elm_review_unused$NoUnused$Variables$HasMultipleDeclarations;
+		var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
+		if (!_v1.$) {
+			var _function = _v1.a;
+			var functionDeclaration = $stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv);
+			var namesToIgnore = $elm$core$Set$fromList(
+				A2($elm$core$List$concatMap, $jfmengels$elm_review_unused$NoUnused$Variables$getDeclaredParametersFromPattern, functionDeclaration.eT));
+			var newContext = A4(
+				$jfmengels$elm_review_unused$NoUnused$Variables$registerFunction,
+				letBlockContext,
+				_function,
+				$stil4m$elm_syntax$Elm$Syntax$Node$range(declaration),
+				A2(
+					$jfmengels$elm_review_unused$NoUnused$Variables$markValuesFromPatternsAsUsed,
+					functionDeclaration.eT,
+					_Utils_update(
+						context,
+						{
+							bs: A2(
+								$elm$core$List$cons,
+								$stil4m$elm_syntax$Elm$Syntax$Node$value(functionDeclaration.b5),
+								context.bs)
+						})));
+			return _Utils_Tuple2(
+				_List_Nil,
+				_Utils_update(
+					newContext,
+					{
+						t: A2(
+							$jfmengels$elm_review_unused$NoUnused$NonemptyList$cons,
+							{cY: $elm$core$Dict$empty, b7: namesToIgnore, a1: $elm$core$Dict$empty},
+							newContext.t)
+					}));
+		} else {
+			var pattern = _v1.a;
+			var value = _v1.b;
+			var _v2 = $jfmengels$elm_review_unused$NoUnused$Variables$removeParensFromPattern(pattern);
+			switch (_v2.b.$) {
+				case 0:
+					var wildCardRange = _v2.a;
+					var _v3 = _v2.b;
+					return A2($jfmengels$elm_review_unused$NoUnused$Variables$isDebugLog, context.l, value) ? _Utils_Tuple2(_List_Nil, context) : _Utils_Tuple2(
+						_List_fromArray(
+							[
+								A3(
+								$jfmengels$elm_review$Review$Rule$errorWithFix,
+								{
+									dx: _List_fromArray(
+										['This value has been assigned to a wildcard, which makes the value unusable. You should remove it at the location I pointed at.']),
+									a8: 'Value assigned to `_` is unused'
+								},
+								wildCardRange,
+								_List_fromArray(
+									[
+										$jfmengels$elm_review$Review$Fix$removeRange(
+										A2(
+											$jfmengels$elm_review_unused$NoUnused$Variables$letDeclarationToRemoveRange,
+											letBlockContext,
+											$stil4m$elm_syntax$Elm$Syntax$Node$range(declaration)))
+									]))
+							]),
+						context);
+				case 1:
+					var unitPattern = _v2.a;
+					var _v4 = _v2.b;
+					return _Utils_Tuple2(
+						_List_fromArray(
+							[
+								A3(
+								$jfmengels$elm_review$Review$Rule$errorWithFix,
+								{
+									dx: _List_fromArray(
+										['This value has no data, which makes the value unusable. You should remove it at the location I pointed at.']),
+									a8: 'Unit value is unused'
+								},
+								unitPattern,
+								_List_fromArray(
+									[
+										$jfmengels$elm_review$Review$Fix$removeRange(
+										A2(
+											$jfmengels$elm_review_unused$NoUnused$Variables$letDeclarationToRemoveRange,
+											letBlockContext,
+											$stil4m$elm_syntax$Elm$Syntax$Node$range(declaration)))
+									]))
+							]),
+						context);
+				default:
+					return _Utils_Tuple2(
+						$jfmengels$elm_review_unused$NoUnused$Variables$introducesVariable(
+							_List_fromArray(
+								[pattern])) ? _List_Nil : _List_fromArray(
+							[
+								A3(
+								$jfmengels$elm_review$Review$Rule$errorWithFix,
+								{
+									dx: _List_fromArray(
+										['This value has been computed but isn\'t assigned to any variable, which makes the value unusable. You should remove it at the location I pointed at.']),
+									a8: 'Pattern doesn\'t introduce any variables'
+								},
+								$stil4m$elm_syntax$Elm$Syntax$Node$range(pattern),
+								_List_fromArray(
+									[
+										$jfmengels$elm_review$Review$Fix$removeRange(
+										A2(
+											$jfmengels$elm_review_unused$NoUnused$Variables$letDeclarationToRemoveRange,
+											letBlockContext,
+											$stil4m$elm_syntax$Elm$Syntax$Node$range(declaration)))
+									]))
+							]),
+						A2(
+							$jfmengels$elm_review_unused$NoUnused$Variables$markValuesFromPatternsAsUsed,
+							_List_fromArray(
+								[pattern]),
+							context));
+			}
+		}
+	});
+var $jfmengels$elm_review_unused$NoUnused$Variables$letDeclarationExitVisitor = F3(
+	function (_v0, declaration, context) {
+		var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
+		if (!_v1.$) {
+			return $jfmengels$elm_review_unused$NoUnused$Variables$makeReport(
+				_Utils_update(
+					context,
+					{
+						bs: A2($elm$core$List$drop, 1, context.bs)
+					}));
+		} else {
+			return _Utils_Tuple2(_List_Nil, context);
 		}
 	});
 var $jfmengels$elm_review_unused$NoUnused$Variables$getExposingName = function (node) {
@@ -25922,7 +27533,7 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$getExposingName = function (
 			var name = _v0.a;
 			return name;
 		case 3:
-			var name = _v0.a.bT;
+			var name = _v0.a.b5;
 			return name;
 		default:
 			var name = _v0.a;
@@ -25934,17 +27545,13 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$moduleDefinitionVisitor = F2
 		var moduleNode = _v0.b;
 		var _v1 = $stil4m$elm_syntax$Elm$Syntax$Module$exposingList(moduleNode);
 		if (!_v1.$) {
-			return _Utils_Tuple2(
-				_List_Nil,
-				_Utils_update(
-					context,
-					{c8: true}));
+			return _Utils_update(
+				context,
+				{dC: true});
 		} else {
 			var list = _v1.a;
 			var names = A2($elm$core$List$map, $jfmengels$elm_review_unused$NoUnused$Variables$getExposingName, list);
-			return _Utils_Tuple2(
-				_List_Nil,
-				A2($jfmengels$elm_review_unused$NoUnused$Variables$markAllAsUsed, names, context));
+			return A2($jfmengels$elm_review_unused$NoUnused$Variables$markAllAsUsed, names, context);
 		}
 	});
 var $jfmengels$elm_review_unused$NoUnused$Variables$moduleVisitor = function (schema) {
@@ -25952,37 +27559,93 @@ var $jfmengels$elm_review_unused$NoUnused$Variables$moduleVisitor = function (sc
 		$jfmengels$elm_review$Review$Rule$withFinalModuleEvaluation,
 		$jfmengels$elm_review_unused$NoUnused$Variables$finalEvaluation,
 		A2(
-			$jfmengels$elm_review$Review$Rule$withExpressionExitVisitor,
-			$jfmengels$elm_review_unused$NoUnused$Variables$expressionExitVisitor,
+			$jfmengels$elm_review$Review$Rule$withCaseBranchExitVisitor,
+			$jfmengels$elm_review_unused$NoUnused$Variables$caseBranchExitVisitor,
 			A2(
-				$jfmengels$elm_review$Review$Rule$withExpressionEnterVisitor,
-				$jfmengels$elm_review_unused$NoUnused$Variables$expressionEnterVisitor,
+				$jfmengels$elm_review$Review$Rule$withCaseBranchEnterVisitor,
+				F3(
+					function (_v0, casePattern, context) {
+						return _Utils_Tuple2(
+							_List_Nil,
+							A2($jfmengels$elm_review_unused$NoUnused$Variables$caseBranchEnterVisitor, casePattern, context));
+					}),
 				A2(
-					$jfmengels$elm_review$Review$Rule$withDeclarationEnterVisitor,
-					$jfmengels$elm_review_unused$NoUnused$Variables$declarationVisitor,
+					$jfmengels$elm_review$Review$Rule$withLetDeclarationExitVisitor,
+					$jfmengels$elm_review_unused$NoUnused$Variables$letDeclarationExitVisitor,
 					A2(
-						$jfmengels$elm_review$Review$Rule$withDeclarationListVisitor,
-						$jfmengels$elm_review_unused$NoUnused$Variables$declarationListVisitor,
+						$jfmengels$elm_review$Review$Rule$withLetDeclarationEnterVisitor,
+						$jfmengels$elm_review_unused$NoUnused$Variables$letDeclarationEnterVisitor,
 						A2(
-							$jfmengels$elm_review$Review$Rule$withImportVisitor,
-							$jfmengels$elm_review_unused$NoUnused$Variables$importVisitor,
-							A2($jfmengels$elm_review$Review$Rule$withModuleDefinitionVisitor, $jfmengels$elm_review_unused$NoUnused$Variables$moduleDefinitionVisitor, schema)))))));
+							$jfmengels$elm_review$Review$Rule$withExpressionExitVisitor,
+							$jfmengels$elm_review_unused$NoUnused$Variables$expressionExitVisitor,
+							A2(
+								$jfmengels$elm_review$Review$Rule$withExpressionEnterVisitor,
+								F2(
+									function (node, context) {
+										return _Utils_Tuple2(
+											_List_Nil,
+											A2($jfmengels$elm_review_unused$NoUnused$Variables$expressionEnterVisitor, node, context));
+									}),
+								A2(
+									$jfmengels$elm_review$Review$Rule$withDeclarationExitVisitor,
+									$jfmengels$elm_review_unused$NoUnused$Variables$declarationExitVisitor,
+									A2(
+										$jfmengels$elm_review$Review$Rule$withDeclarationEnterVisitor,
+										$jfmengels$elm_review_unused$NoUnused$Variables$declarationEnterVisitor,
+										A2(
+											$jfmengels$elm_review$Review$Rule$withDeclarationListVisitor,
+											F2(
+												function (nodes, context) {
+													return _Utils_Tuple2(
+														_List_Nil,
+														A2($jfmengels$elm_review_unused$NoUnused$Variables$declarationListVisitor, nodes, context));
+												}),
+											A2(
+												$jfmengels$elm_review$Review$Rule$withImportVisitor,
+												$jfmengels$elm_review_unused$NoUnused$Variables$importVisitor,
+												A2(
+													$jfmengels$elm_review$Review$Rule$withModuleDefinitionVisitor,
+													F2(
+														function (module_, context) {
+															return _Utils_Tuple2(
+																_List_Nil,
+																A2($jfmengels$elm_review_unused$NoUnused$Variables$moduleDefinitionVisitor, module_, context));
+														}),
+													schema))))))))))));
 };
+var $jfmengels$elm_review$Review$Rule$withDirectDependenciesProjectVisitor = F2(
+	function (visitor, _v0) {
+		var schema = _v0;
+		return _Utils_update(
+			schema,
+			{
+				O: A2(
+					$elm$core$List$cons,
+					$jfmengels$elm_review$Review$Rule$removeErrorPhantomTypeFromVisitor(visitor),
+					schema.O)
+			});
+	});
 var $jfmengels$elm_review_unused$NoUnused$Variables$rule = $jfmengels$elm_review$Review$Rule$fromProjectRuleSchema(
-	$jfmengels$elm_review$Review$Rule$withContextFromImportedModules(
-		A2(
-			$jfmengels$elm_review$Review$Rule$withModuleContextUsingContextCreator,
-			{bG: $jfmengels$elm_review_unused$NoUnused$Variables$foldProjectContexts, b9: $jfmengels$elm_review_unused$NoUnused$Variables$fromModuleToProject, eO: $jfmengels$elm_review_unused$NoUnused$Variables$fromProjectToModule},
+	$jfmengels$elm_review$Review$Rule$providesFixesForProjectRule(
+		$jfmengels$elm_review$Review$Rule$withContextFromImportedModules(
 			A2(
-				$jfmengels$elm_review$Review$Rule$withModuleVisitor,
-				$jfmengels$elm_review_unused$NoUnused$Variables$moduleVisitor,
+				$jfmengels$elm_review$Review$Rule$withModuleContextUsingContextCreator,
+				{bS: $jfmengels$elm_review_unused$NoUnused$Variables$foldProjectContexts, cu: $jfmengels$elm_review_unused$NoUnused$Variables$fromModuleToProject, fk: $jfmengels$elm_review_unused$NoUnused$Variables$fromProjectToModule},
 				A2(
-					$jfmengels$elm_review$Review$Rule$withDependenciesProjectVisitor,
-					$jfmengels$elm_review_unused$NoUnused$Variables$dependenciesVisitor,
+					$jfmengels$elm_review$Review$Rule$withModuleVisitor,
+					$jfmengels$elm_review_unused$NoUnused$Variables$moduleVisitor,
 					A2(
-						$jfmengels$elm_review$Review$Rule$withElmJsonProjectVisitor,
-						$jfmengels$elm_review_unused$NoUnused$Variables$elmJsonVisitor,
-						A2($jfmengels$elm_review$Review$Rule$newProjectRuleSchema, 'NoUnused.Variables', $jfmengels$elm_review_unused$NoUnused$Variables$initialContext)))))));
+						$jfmengels$elm_review$Review$Rule$withDirectDependenciesProjectVisitor,
+						$jfmengels$elm_review_unused$NoUnused$Variables$dependenciesVisitor,
+						A2(
+							$jfmengels$elm_review$Review$Rule$withElmJsonProjectVisitor,
+							F2(
+								function (project, context) {
+									return _Utils_Tuple2(
+										_List_Nil,
+										A2($jfmengels$elm_review_unused$NoUnused$Variables$elmJsonVisitor, project, context));
+								}),
+							A2($jfmengels$elm_review$Review$Rule$newProjectRuleSchema, 'NoUnused.Variables', $jfmengels$elm_review_unused$NoUnused$Variables$initialContext))))))));
 var $sparksp$elm_review_ports$NoUnusedPorts$formatCaller = function (_v0) {
 	var moduleName = _v0.a;
 	var caller = _v0.b;
@@ -26009,7 +27672,7 @@ var $sparksp$elm_review_ports$NoUnusedPorts$callerDetails = function (maybeCalle
 var $sparksp$elm_review_ports$NoUnusedPorts$report = F2(
 	function (portName, callers) {
 		return {
-			c2: A2(
+			dx: A2(
 				$elm$core$List$cons,
 				'Unused ports are not available in the compiled JavaScript and can cause runtime errors when you try to access them.',
 				A2(
@@ -26019,7 +27682,7 @@ var $sparksp$elm_review_ports$NoUnusedPorts$report = F2(
 						$elm$core$List$cons,
 						'Warning: If you remove this port, remember to remove any calls to it in your JavaScript code too.',
 						$sparksp$elm_review_ports$NoUnusedPorts$callerDetails(callers)))),
-			a2: 'Port `' + (portName + '` is never used (Warning: can cause JS runtime errors)')
+			a8: 'Port `' + (portName + '` is never used (Warning: can cause JS runtime errors)')
 		};
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$reportUnusedPort = F2(
@@ -26027,8 +27690,8 @@ var $sparksp$elm_review_ports$NoUnusedPorts$reportUnusedPort = F2(
 		var _v1 = _v0.a;
 		var moduleName = _v1.a;
 		var portName = _v1.b;
-		var range = _v0.b.d6;
-		var moduleKey = _v0.b.dm;
+		var range = _v0.b.eD;
+		var moduleKey = _v0.b.dQ;
 		var callers = A2(
 			$elm$core$Dict$get,
 			_Utils_Tuple2(moduleName, portName),
@@ -26040,8 +27703,8 @@ var $sparksp$elm_review_ports$NoUnusedPorts$reportUnusedPort = F2(
 			range);
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$finalEvaluation = function (_v0) {
-	var functionCalls = _v0.A;
-	var ports = _v0.Q;
+	var functionCalls = _v0.D;
+	var ports = _v0.T;
 	return A2(
 		$elm$core$List$map,
 		$sparksp$elm_review_ports$NoUnusedPorts$reportUnusedPort(functionCalls),
@@ -26068,19 +27731,19 @@ var $sparksp$elm_review_ports$NoUnusedPorts$removePorts = F2(
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$foldProjectContexts = F2(
 	function (a, b) {
-		var usedPorts = A2($sparksp$elm_review_ports$NoUnusedPorts$mergePorts, a.co, b.co);
+		var usedPorts = A2($sparksp$elm_review_ports$NoUnusedPorts$mergePorts, a.cP, b.cP);
 		return {
-			A: A2($sparksp$elm_review_ports$NoUnusedPorts$mergeFunctionCalls, a.A, b.A),
-			Q: A2(
+			D: A2($sparksp$elm_review_ports$NoUnusedPorts$mergeFunctionCalls, a.D, b.D),
+			T: A2(
 				$sparksp$elm_review_ports$NoUnusedPorts$removePorts,
 				usedPorts,
-				A2($sparksp$elm_review_ports$NoUnusedPorts$mergePorts, a.Q, b.Q)),
-			co: usedPorts
+				A2($sparksp$elm_review_ports$NoUnusedPorts$mergePorts, a.T, b.T)),
+			cP: usedPorts
 		};
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$SearchContext = F2(
 	function (calls, used) {
-		return {aE: calls, _: used};
+		return {aJ: calls, a1: used};
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$insertOrSetFunctionCall = F2(
 	function (item, maybeSet) {
@@ -26103,29 +27766,29 @@ var $sparksp$elm_review_ports$NoUnusedPorts$updateCalls = F3(
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$findUsedFunction = F4(
 	function (portName, data, _function, context) {
-		var calls = data.aE;
-		var functionCalls = data.A;
-		var main = data.d$;
-		var used = context._;
+		var calls = data.aJ;
+		var functionCalls = data.D;
+		var main = data.ew;
+		var used = context.a1;
 		if (_Utils_eq(_function, main)) {
 			return _Utils_update(
 				context,
 				{
-					_: A2($elm$core$Set$union, calls, used)
+					a1: A2($elm$core$Set$union, calls, used)
 				});
 		} else {
 			if (A2($elm$core$Set$member, _function, used)) {
 				return _Utils_update(
 					context,
 					{
-						_: A2($elm$core$Set$union, calls, used)
+						a1: A2($elm$core$Set$union, calls, used)
 					});
 			} else {
 				if (A2($elm$core$Set$member, _function, calls)) {
 					return _Utils_update(
 						context,
 						{
-							aE: A3($sparksp$elm_review_ports$NoUnusedPorts$updateCalls, portName, _function, context.aE)
+							aJ: A3($sparksp$elm_review_ports$NoUnusedPorts$updateCalls, portName, _function, context.aJ)
 						});
 				} else {
 					var _v0 = A2($elm$core$Dict$get, _function, functionCalls);
@@ -26133,7 +27796,7 @@ var $sparksp$elm_review_ports$NoUnusedPorts$findUsedFunction = F4(
 						return _Utils_update(
 							context,
 							{
-								aE: A3($sparksp$elm_review_ports$NoUnusedPorts$updateCalls, portName, _function, context.aE)
+								aJ: A3($sparksp$elm_review_ports$NoUnusedPorts$updateCalls, portName, _function, context.aJ)
 							});
 					} else {
 						var callers = _v0.a;
@@ -26145,7 +27808,7 @@ var $sparksp$elm_review_ports$NoUnusedPorts$findUsedFunction = F4(
 								_Utils_update(
 									data,
 									{
-										aE: A2($elm$core$Set$insert, _function, calls)
+										aJ: A2($elm$core$Set$insert, _function, calls)
 									})),
 							context,
 							callers);
@@ -26158,42 +27821,24 @@ var $sparksp$elm_review_ports$NoUnusedPorts$findUsedPort = F4(
 	function (data, portName, _v0, context) {
 		return A4($sparksp$elm_review_ports$NoUnusedPorts$findUsedFunction, portName, data, portName, context);
 	});
-var $elm$core$Dict$partition = F2(
-	function (isGood, dict) {
-		var add = F3(
-			function (key, value, _v0) {
-				var t1 = _v0.a;
-				var t2 = _v0.b;
-				return A2(isGood, key, value) ? _Utils_Tuple2(
-					A3($elm$core$Dict$insert, key, value, t1),
-					t2) : _Utils_Tuple2(
-					t1,
-					A3($elm$core$Dict$insert, key, value, t2));
-			});
-		return A3(
-			$elm$core$Dict$foldl,
-			add,
-			_Utils_Tuple2($elm$core$Dict$empty, $elm$core$Dict$empty),
-			dict);
-	});
 var $sparksp$elm_review_ports$NoUnusedPorts$fromModuleToProject = F3(
 	function (_v0, _v1, _v2) {
-		var functionCalls = _v2.A;
-		var moduleName = _v2.dn;
-		var ports = _v2.Q;
+		var functionCalls = _v2.D;
+		var moduleName = _v2.dR;
+		var ports = _v2.T;
 		var finder = $sparksp$elm_review_ports$NoUnusedPorts$findUsedPort(
 			{
-				aE: $elm$core$Set$empty,
-				A: functionCalls,
-				d$: _Utils_Tuple2(moduleName, 'main')
+				aJ: $elm$core$Set$empty,
+				D: functionCalls,
+				ew: _Utils_Tuple2(moduleName, 'main')
 			});
 		var _v3 = A3(
 			$elm$core$Dict$foldl,
 			finder,
 			A2($sparksp$elm_review_ports$NoUnusedPorts$SearchContext, $elm$core$Dict$empty, $elm$core$Set$empty),
 			ports);
-		var used = _v3._;
-		var calls = _v3.aE;
+		var used = _v3.a1;
+		var calls = _v3.aJ;
 		var _v4 = A2(
 			$elm$core$Dict$partition,
 			F2(
@@ -26203,61 +27848,61 @@ var $sparksp$elm_review_ports$NoUnusedPorts$fromModuleToProject = F3(
 			ports);
 		var usedPorts = _v4.a;
 		var unusedPorts = _v4.b;
-		return {A: calls, Q: unusedPorts, co: usedPorts};
+		return {D: calls, T: unusedPorts, cP: usedPorts};
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$initialModuleContext = function (_v0) {
-	var functionCalls = _v0.A;
-	var moduleKey = _v0.dm;
-	var moduleName = _v0.dn;
-	var ports = _v0.Q;
+	var functionCalls = _v0.D;
+	var moduleKey = _v0.dQ;
+	var moduleName = _v0.dR;
+	var ports = _v0.T;
 	return {
-		c_: _Utils_Tuple2(_List_Nil, ''),
-		A: functionCalls,
-		cH: !$elm$core$Dict$isEmpty(ports),
-		cJ: $elm$core$Dict$empty,
-		bL: $elm$core$Dict$empty,
-		cM: false,
-		dm: moduleKey,
-		dn: moduleName,
-		Q: ports
+		du: _Utils_Tuple2(_List_Nil, ''),
+		D: functionCalls,
+		da: !$elm$core$Dict$isEmpty(ports),
+		dc: $elm$core$Dict$empty,
+		bX: $elm$core$Dict$empty,
+		df: false,
+		dQ: moduleKey,
+		dR: moduleName,
+		T: ports
 	};
 };
 var $sparksp$elm_review_ports$NoUnusedPorts$fromProjectToModule = F3(
 	function (moduleKey, moduleName, context) {
 		return $sparksp$elm_review_ports$NoUnusedPorts$initialModuleContext(
 			{
-				A: context.A,
-				dm: moduleKey,
-				dn: $stil4m$elm_syntax$Elm$Syntax$Node$value(moduleName),
-				Q: context.Q
+				D: context.D,
+				dQ: moduleKey,
+				dR: $stil4m$elm_syntax$Elm$Syntax$Node$value(moduleName),
+				T: context.T
 			});
 	});
-var $sparksp$elm_review_ports$NoUnusedPorts$initialProjectContext = {A: $elm$core$Dict$empty, Q: $elm$core$Dict$empty, co: $elm$core$Dict$empty};
+var $sparksp$elm_review_ports$NoUnusedPorts$initialProjectContext = {D: $elm$core$Dict$empty, T: $elm$core$Dict$empty, cP: $elm$core$Dict$empty};
 var $sparksp$elm_review_ports$NoUnusedPorts$Port = $elm$core$Basics$identity;
 var $sparksp$elm_review_ports$NoUnusedPorts$rememberPort = F2(
 	function (node, context) {
 		var portName = _Utils_Tuple2(
-			context.dn,
+			context.dR,
 			$stil4m$elm_syntax$Elm$Syntax$Node$value(node));
 		return _Utils_update(
 			context,
 			{
-				cH: true,
-				Q: A3(
+				da: true,
+				T: A3(
 					$elm$core$Dict$insert,
 					portName,
 					{
-						dm: context.dm,
-						d6: $stil4m$elm_syntax$Elm$Syntax$Node$range(node)
+						dQ: context.dQ,
+						eD: $stil4m$elm_syntax$Elm$Syntax$Node$range(node)
 					},
-					context.Q)
+					context.T)
 			});
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$rememberDeclaration = F2(
 	function (node, context) {
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 		if (_v0.$ === 3) {
-			var name = _v0.a.bT;
+			var name = _v0.a.b5;
 			return A2($sparksp$elm_review_ports$NoUnusedPorts$rememberPort, name, context);
 		} else {
 			return context;
@@ -26273,20 +27918,20 @@ var $sparksp$elm_review_ports$NoUnusedPorts$rememberCurrentFunction = F2(
 	function (_function, context) {
 		return _Utils_update(
 			context,
-			{c_: _function});
+			{du: _function});
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$declarationVisitor = F2(
 	function (node, context) {
 		var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(node);
 		if (!_v0.$) {
-			var declaration = _v0.a.fX;
+			var declaration = _v0.a.gv;
 			var name = $stil4m$elm_syntax$Elm$Syntax$Node$value(
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(declaration).bT);
+				$stil4m$elm_syntax$Elm$Syntax$Node$value(declaration).b5);
 			return _Utils_Tuple2(
 				_List_Nil,
 				A2(
 					$sparksp$elm_review_ports$NoUnusedPorts$rememberCurrentFunction,
-					_Utils_Tuple2(context.dn, name),
+					_Utils_Tuple2(context.dR, name),
 					context));
 		} else {
 			return _Utils_Tuple2(_List_Nil, context);
@@ -26308,9 +27953,9 @@ var $sparksp$elm_review_ports$NoUnusedPorts$lookupModuleAlias = F2(
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$expandFunctionCall = F2(
 	function (_v0, _v1) {
-		var importedAliases = _v0.cJ;
-		var importedFunctions = _v0.bL;
-		var moduleName = _v0.dn;
+		var importedAliases = _v0.dc;
+		var importedFunctions = _v0.bX;
+		var moduleName = _v0.dR;
 		var moduleCall = _v1.a;
 		var functionCall = _v1.b;
 		var expandedModule = function () {
@@ -26339,11 +27984,11 @@ var $sparksp$elm_review_ports$NoUnusedPorts$rememberFunctionCall = F2(
 		return _Utils_update(
 			context,
 			{
-				A: A3(
+				D: A3(
 					$elm$core$Dict$update,
 					functionCall,
-					$sparksp$elm_review_ports$NoUnusedPorts$maybeSetInsert(context.c_),
-					context.A)
+					$sparksp$elm_review_ports$NoUnusedPorts$maybeSetInsert(context.du),
+					context.D)
 			});
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$expressionVisitor = F2(
@@ -26364,11 +28009,11 @@ var $sparksp$elm_review_ports$NoUnusedPorts$expressionVisitor = F2(
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$guardedDeclarationVisitor = F3(
 	function (visitor, a, context) {
-		return (context.cM || context.cH) ? A2(visitor, a, context) : _Utils_Tuple2(_List_Nil, context);
+		return (context.df || context.da) ? A2(visitor, a, context) : _Utils_Tuple2(_List_Nil, context);
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$guardedExpressionVisitor = F3(
 	function (visitor, a, context) {
-		return context.cH ? A2(visitor, a, context) : _Utils_Tuple2(_List_Nil, context);
+		return context.da ? A2(visitor, a, context) : _Utils_Tuple2(_List_Nil, context);
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$rememberImportedAlias = F3(
 	function (moduleName, maybeModuleAlias, context) {
@@ -26378,7 +28023,7 @@ var $sparksp$elm_review_ports$NoUnusedPorts$rememberImportedAlias = F3(
 			return _Utils_update(
 				context,
 				{
-					cJ: A3($elm$core$Dict$insert, moduleAlias, moduleName, context.cJ)
+					dc: A3($elm$core$Dict$insert, moduleAlias, moduleName, context.dc)
 				});
 		} else {
 			return context;
@@ -26401,7 +28046,7 @@ var $sparksp$elm_review_ports$NoUnusedPorts$rememberImportedFunction = F2(
 		return _Utils_update(
 			context,
 			{
-				bL: A3($elm$core$Dict$insert, name, moduleName, context.bL)
+				bX: A3($elm$core$Dict$insert, name, moduleName, context.bX)
 			});
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$rememberImportedFunctionList = F2(
@@ -26415,7 +28060,7 @@ var $sparksp$elm_review_ports$NoUnusedPorts$rememberImportedAll = F2(
 			A2(
 				$sparksp$elm_review_ports$NoUnusedPorts$filterByFirst,
 				moduleName,
-				$elm$core$Dict$keys(context.Q)),
+				$elm$core$Dict$keys(context.T)),
 			context);
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$rememberImportedItem = F3(
@@ -26455,9 +28100,9 @@ var $sparksp$elm_review_ports$NoUnusedPorts$rememberImportedList = F3(
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$rememberImportedModule = F2(
 	function (_v0, context) {
-		var moduleName = _v0.dn;
-		var moduleAlias = _v0.gi;
-		var exposingList = _v0.dJ;
+		var moduleName = _v0.dR;
+		var moduleAlias = _v0.gS;
+		var exposingList = _v0.ef;
 		return A3(
 			$sparksp$elm_review_ports$NoUnusedPorts$rememberImportedList,
 			$stil4m$elm_syntax$Elm$Syntax$Node$value(moduleName),
@@ -26485,13 +28130,13 @@ var $sparksp$elm_review_ports$NoUnusedPorts$moduleDefinitionVisitor = F2(
 				_List_Nil,
 				_Utils_update(
 					context,
-					{cM: true}));
+					{df: true}));
 		} else {
 			return _Utils_Tuple2(
 				_List_Nil,
 				_Utils_update(
 					context,
-					{cM: false}));
+					{df: false}));
 		}
 	});
 var $sparksp$elm_review_ports$NoUnusedPorts$moduleVisitor = function (schema) {
@@ -26515,7 +28160,7 @@ var $sparksp$elm_review_ports$NoUnusedPorts$rule = $jfmengels$elm_review$Review$
 		$sparksp$elm_review_ports$NoUnusedPorts$finalEvaluation,
 		A2(
 			$jfmengels$elm_review$Review$Rule$withModuleContext,
-			{bG: $sparksp$elm_review_ports$NoUnusedPorts$foldProjectContexts, b9: $sparksp$elm_review_ports$NoUnusedPorts$fromModuleToProject, eO: $sparksp$elm_review_ports$NoUnusedPorts$fromProjectToModule},
+			{bS: $sparksp$elm_review_ports$NoUnusedPorts$foldProjectContexts, cu: $sparksp$elm_review_ports$NoUnusedPorts$fromModuleToProject, fk: $sparksp$elm_review_ports$NoUnusedPorts$fromProjectToModule},
 			A2(
 				$jfmengels$elm_review$Review$Rule$withModuleVisitor,
 				$sparksp$elm_review_ports$NoUnusedPorts$moduleVisitor,
@@ -26525,21 +28170,21 @@ var $jfmengels$elm_review_the_elm_architecture$NoUselessSubscriptions$error = fu
 	return A2(
 		$jfmengels$elm_review$Review$Rule$error,
 		{
-			c2: _List_fromArray(
+			dx: _List_fromArray(
 				['The `subscription` function never returns any subscriptions. You might as well remove it.']),
-			a2: 'The `subscription` function never returns any subscriptions'
+			a8: 'The `subscription` function never returns any subscriptions'
 		},
 		$stil4m$elm_syntax$Elm$Syntax$Node$range(
-			$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).da));
+			$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).dE));
 };
 var $jfmengels$elm_review_the_elm_architecture$NoUselessSubscriptions$declarationVisitor = function (declaration) {
 	var _v0 = $stil4m$elm_syntax$Elm$Syntax$Node$value(declaration);
 	if (!_v0.$) {
 		var _function = _v0.a;
 		if ($stil4m$elm_syntax$Elm$Syntax$Node$value(
-			$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).bT) === 'subscriptions') {
+			$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).b5) === 'subscriptions') {
 			var _v1 = $stil4m$elm_syntax$Elm$Syntax$Node$value(
-				$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.fX).da);
+				$stil4m$elm_syntax$Elm$Syntax$Node$value(_function.gv).dE);
 			_v1$4:
 			while (true) {
 				switch (_v1.$) {
@@ -26690,7 +28335,7 @@ var $author$project$Elm$Review$Main$DecodedFlags = function (fixMode) {
 									return function (ignoredFiles) {
 										return function (writeSuppressionFiles) {
 											return function (logger) {
-												return {ab: detailsMode, b5: enableExtract, bD: fixLimit, a0: fixMode, cb: ignoreProblematicDependencies, dS: ignoredDirs, dT: ignoredFiles, dZ: logger, br: reportMode, eb: rulesFilter, aC: unsuppressMode, cq: writeSuppressionFiles};
+												return {ai: detailsMode, co: enableExtract, bP: fixLimit, aS: fixMode, cz: ignoreProblematicDependencies, en: ignoredDirs, eo: ignoredFiles, eu: logger, bC: reportMode, eI: rulesFilter, aH: unsuppressMode, cR: writeSuppressionFiles};
 											};
 										};
 									};
@@ -26864,10 +28509,10 @@ var $author$project$Elm$Review$Main$encodePosition = function (position) {
 			[
 				_Utils_Tuple2(
 				'line',
-				$elm$json$Json$Encode$int(position.bs)),
+				$elm$json$Json$Encode$int(position.bD)),
 				_Utils_Tuple2(
 				'column',
-				$elm$json$Json$Encode$int(position.bb))
+				$elm$json$Json$Encode$int(position.bh))
 			]));
 };
 var $author$project$Elm$Review$Main$encodeRange = function (range) {
@@ -26876,16 +28521,16 @@ var $author$project$Elm$Review$Main$encodeRange = function (range) {
 			[
 				_Utils_Tuple2(
 				'start',
-				$author$project$Elm$Review$Main$encodePosition(range.cm)),
+				$author$project$Elm$Review$Main$encodePosition(range.cN)),
 				_Utils_Tuple2(
 				'end',
-				$author$project$Elm$Review$Main$encodePosition(range.b6))
+				$author$project$Elm$Review$Main$encodePosition(range.cp))
 			]));
 };
 var $author$project$Elm$Review$Main$encodeReportPart = function (_v0) {
-	var str = _v0.gM;
-	var color = _v0.fS;
-	var href = _v0.f7;
+	var str = _v0.hl;
+	var color = _v0.gq;
+	var href = _v0.gH;
 	return (_Utils_eq(color, $elm$core$Maybe$Nothing) && _Utils_eq(href, $elm$core$Maybe$Nothing)) ? $elm$json$Json$Encode$string(str) : $elm$json$Json$Encode$object(
 		A2(
 			$elm$core$List$filterMap,
@@ -26918,7 +28563,7 @@ var $author$project$Elm$Review$Main$encodeReport = function (texts) {
 var $author$project$Elm$Review$Reporter$Reviewing = 0;
 var $author$project$Elm$Review$Text$Text = $elm$core$Basics$identity;
 var $author$project$Elm$Review$Text$from = function (value) {
-	return {fS: $elm$core$Maybe$Nothing, f7: $elm$core$Maybe$Nothing, gM: value};
+	return {gq: $elm$core$Maybe$Nothing, gH: $elm$core$Maybe$Nothing, hl: value};
 };
 var $elm$core$String$trimLeft = _String_trimLeft;
 var $author$project$Elm$Review$Reporter$getIndexOfFirstNonSpace = function (string) {
@@ -26983,14 +28628,14 @@ var $author$project$Elm$Review$Text$inRed = function (_v0) {
 	return _Utils_update(
 		text,
 		{
-			fS: $elm$core$Maybe$Just('#FF0000')
+			gq: $elm$core$Maybe$Just('#FF0000')
 		});
 };
 var $author$project$Elm$Review$Reporter$underline = F2(
 	function (gutterLength, _v0) {
-		var start = _v0.cm;
-		var end = _v0.b6;
-		var lineContent = _v0.di;
+		var start = _v0.cN;
+		var end = _v0.cp;
+		var lineContent = _v0.dM;
 		var lineChars = $elm$core$String$toList(lineContent);
 		var preText = A2($elm$core$List$take, (gutterLength + start) - 1, lineChars);
 		var unicodePreOffset = $elm$core$String$length(
@@ -27037,10 +28682,10 @@ var $author$project$Elm$Review$Reporter$codeExtract = function (_v0) {
 		}
 	};
 	return function (_v1) {
-		var start = _v1.cm;
-		var end = _v1.b6;
+		var start = _v1.cN;
+		var end = _v1.cp;
 		var maxLineNumber = $elm$core$String$isEmpty(
-			getRowAtLine(end.bs + 1)) ? end.bs : (end.bs + 1);
+			getRowAtLine(end.bD + 1)) ? end.bD : (end.bD + 1);
 		var maxLineNumberLength = $author$project$Elm$Review$Reporter$lengthOfLineNumber(maxLineNumber);
 		var gutterLength = $elm$core$String$length(
 			A2($author$project$Elm$Review$Reporter$lineNumberPrefix, maxLineNumberLength, maxLineNumber));
@@ -27059,11 +28704,11 @@ var $author$project$Elm$Review$Reporter$codeExtract = function (_v0) {
 				A2($author$project$Elm$Review$Reporter$lineNumberPrefix, maxLineNumberLength, rowIndex),
 				getRowAtLine(rowIndex));
 		};
-		if (_Utils_eq(start.bs, end.bs)) {
-			if (_Utils_eq(start.bb, end.bb)) {
+		if (_Utils_eq(start.bD, end.bD)) {
+			if (_Utils_eq(start.bh, end.bh)) {
 				return _List_Nil;
 			} else {
-				var lineContent = getRowWithLineNumber(start.bs - 1);
+				var lineContent = getRowWithLineNumber(start.bD - 1);
 				return A2(
 					$author$project$Elm$Review$Text$join,
 					'\n',
@@ -27072,7 +28717,7 @@ var $author$project$Elm$Review$Reporter$codeExtract = function (_v0) {
 						A2($elm$core$Basics$composeL, $elm$core$Basics$not, $elm$core$List$isEmpty),
 						_List_fromArray(
 							[
-								getRowWithLineNumberUnlessEmpty(start.bs - 2),
+								getRowWithLineNumberUnlessEmpty(start.bD - 2),
 								_List_fromArray(
 								[
 									$author$project$Elm$Review$Text$from(lineContent)
@@ -27080,18 +28725,18 @@ var $author$project$Elm$Review$Reporter$codeExtract = function (_v0) {
 								A2(
 								$author$project$Elm$Review$Reporter$underline,
 								gutterLength,
-								{b6: end.bb, di: lineContent, cm: start.bb}),
-								getRowWithLineNumberUnlessEmpty(end.bs)
+								{cp: end.bh, dM: lineContent, cN: start.bh}),
+								getRowWithLineNumberUnlessEmpty(end.bD)
 							])));
 			}
 		} else {
-			var startLineNumber = start.bs - 1;
+			var startLineNumber = start.bD - 1;
 			var startLineContent = getRowAtLine(startLineNumber);
 			var startLineContentWithLineNumber = _Utils_ap(
 				A2($author$project$Elm$Review$Reporter$lineNumberPrefix, maxLineNumberLength, startLineNumber),
 				startLineContent);
-			var linesBetweenStartAndEnd = A2($elm$core$List$range, start.bs, end.bs - 2);
-			var endLine = end.bs - 1;
+			var linesBetweenStartAndEnd = A2($elm$core$List$range, start.bD, end.bD - 2);
+			var endLine = end.bD - 1;
 			var endLineContent = getRowAtLine(endLine);
 			var endLineContentWithLineNumber = _Utils_ap(
 				A2($author$project$Elm$Review$Reporter$lineNumberPrefix, maxLineNumberLength, endLine),
@@ -27113,10 +28758,10 @@ var $author$project$Elm$Review$Reporter$codeExtract = function (_v0) {
 							$author$project$Elm$Review$Reporter$underline,
 							gutterLength,
 							{
-								b6: $elm$core$List$length(
+								cp: $elm$core$List$length(
 									$elm$core$String$toList(startLineContent)) + 1,
-								di: startLineContentWithLineNumber,
-								cm: start.bb
+								dM: startLineContentWithLineNumber,
+								cN: start.bh
 							}),
 							A2(
 							$author$project$Elm$Review$Text$join,
@@ -27147,9 +28792,9 @@ var $author$project$Elm$Review$Reporter$codeExtract = function (_v0) {
 							$author$project$Elm$Review$Reporter$underline,
 							gutterLength,
 							{
-								b6: end.bb,
-								di: endLineContentWithLineNumber,
-								cm: $author$project$Elm$Review$Reporter$getIndexOfFirstNonSpace(endLineContent) + 1
+								cp: end.bh,
+								dM: endLineContentWithLineNumber,
+								cN: $author$project$Elm$Review$Reporter$getIndexOfFirstNonSpace(endLineContent) + 1
 							}),
 							getRowWithLineNumberUnlessEmpty(endLine + 1)
 						])));
@@ -27161,7 +28806,7 @@ var $author$project$Elm$Review$Text$inBlue = function (_v0) {
 	return _Utils_update(
 		text,
 		{
-			fS: $elm$core$Maybe$Just('#33BBC8')
+			gq: $elm$core$Maybe$Just('#33BBC8')
 		});
 };
 var $author$project$Elm$Review$Text$inYellow = function (_v0) {
@@ -27169,12 +28814,12 @@ var $author$project$Elm$Review$Text$inYellow = function (_v0) {
 	return _Utils_update(
 		text,
 		{
-			fS: $elm$core$Maybe$Just('#E8C338')
+			gq: $elm$core$Maybe$Just('#E8C338')
 		});
 };
 var $author$project$Elm$Review$Reporter$addFixPrefix = F4(
 	function (fixProblemDict, mode, error, previous) {
-		var _v0 = error.eM;
+		var _v0 = error.fi;
 		if (!_v0.$) {
 			var fixKey = _v0.a;
 			if (mode === 1) {
@@ -27199,12 +28844,12 @@ var $author$project$Elm$Review$Text$inOrange = function (_v0) {
 	return _Utils_update(
 		text,
 		{
-			fS: $elm$core$Maybe$Just('#FFA500')
+			gq: $elm$core$Maybe$Just('#FFA500')
 		});
 };
 var $author$project$Elm$Review$Reporter$addSuppressedPrefix = F2(
 	function (error, previous) {
-		return error.fq ? A2(
+		return error.f_ ? A2(
 			$elm$core$List$cons,
 			$author$project$Elm$Review$Text$inOrange(
 				$author$project$Elm$Review$Text$from('(unsuppressed) ')),
@@ -27215,7 +28860,7 @@ var $author$project$Elm$Review$Text$withLink = F2(
 		var text = _v0;
 		return _Utils_update(
 			text,
-			{f7: maybeLink});
+			{gH: maybeLink});
 	});
 var $author$project$Elm$Review$Reporter$formatErrorTitle = F3(
 	function (fixProblemDict, mode, error) {
@@ -27231,10 +28876,10 @@ var $author$project$Elm$Review$Reporter$formatErrorTitle = F3(
 					[
 						A2(
 						$author$project$Elm$Review$Text$withLink,
-						error.fg,
+						error.fQ,
 						$author$project$Elm$Review$Text$inRed(
-							$author$project$Elm$Review$Text$from(error.ea))),
-						$author$project$Elm$Review$Text$from(': ' + error.a2)
+							$author$project$Elm$Review$Text$from(error.eH))),
+						$author$project$Elm$Review$Text$from(': ' + error.a8)
 					])));
 	});
 var $author$project$Elm$Review$Reporter$reasonFromProblem = function (problem) {
@@ -27250,7 +28895,7 @@ var $author$project$Elm$Review$Reporter$reasonFromProblem = function (problem) {
 var $author$project$Elm$Review$Reporter$formatErrorWithExtract = F5(
 	function (fixProblemDict, detailsMode, mode, source, error) {
 		var fixFailMessage = function () {
-			var _v2 = error.eM;
+			var _v2 = error.fi;
 			if (!_v2.$) {
 				var fixKey = _v2.a;
 				if (mode === 1) {
@@ -27282,13 +28927,13 @@ var $author$project$Elm$Review$Reporter$formatErrorWithExtract = F5(
 					A2(
 						$elm$core$List$intersperse,
 						$author$project$Elm$Review$Text$from('\n\n'),
-						A2($elm$core$List$map, $author$project$Elm$Review$Text$from, error.c2)));
+						A2($elm$core$List$map, $author$project$Elm$Review$Text$from, error.dx)));
 			} else {
 				return _List_Nil;
 			}
 		}();
 		var codeExtract_ = function () {
-			var _v0 = A2($author$project$Elm$Review$Reporter$codeExtract, source, error.d6);
+			var _v0 = A2($author$project$Elm$Review$Reporter$codeExtract, source, error.eD);
 			if (!_v0.b) {
 				return _List_Nil;
 			} else {
@@ -27317,12 +28962,12 @@ var $author$project$Elm$Review$Text$simplifyHelp = F3(
 			} else {
 				var newLastText = chunks.a;
 				var restOfChunks = chunks.b;
-				if (_Utils_eq(lastText.fS, newLastText.fS) && _Utils_eq(lastText.f7, newLastText.f7)) {
+				if (_Utils_eq(lastText.gq, newLastText.gq) && _Utils_eq(lastText.gH, newLastText.gH)) {
 					var $temp$previousTexts = previousTexts,
 						$temp$lastText = {
-						fS: lastText.fS,
-						f7: lastText.f7,
-						gM: _Utils_ap(lastText.gM, newLastText.gM)
+						gq: lastText.gq,
+						gH: lastText.gH,
+						hl: _Utils_ap(lastText.hl, newLastText.hl)
 					},
 						$temp$chunks = restOfChunks;
 					previousTexts = $temp$previousTexts;
@@ -27370,13 +29015,13 @@ var $author$project$Elm$Review$Main$encodeConfigurationError = F2(
 				[
 					_Utils_Tuple2(
 					'rule',
-					$elm$json$Json$Encode$string(error.ea)),
+					$elm$json$Json$Encode$string(error.eH)),
 					_Utils_Tuple2(
 					'message',
-					$elm$json$Json$Encode$string(error.a2)),
+					$elm$json$Json$Encode$string(error.a8)),
 					_Utils_Tuple2(
 					'details',
-					A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, error.c2)),
+					A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, error.dx)),
 					_Utils_Tuple2(
 					'region',
 					$author$project$Elm$Review$Main$encodeRange($stil4m$elm_syntax$Elm$Syntax$Range$emptyRange)),
@@ -27424,7 +29069,7 @@ var $author$project$Elm$Review$Reporter$classifyFixesHelp = F3(
 				var error = errors.a;
 				var rest = errors.b;
 				var isInvalid = function () {
-					var _v1 = error.eM;
+					var _v1 = error.fi;
 					if (!_v1.$) {
 						var fixesHash = _v1.a;
 						return A2($elm$core$Dict$member, fixesHash, fixProblemDict);
@@ -27436,8 +29081,8 @@ var $author$project$Elm$Review$Reporter$classifyFixesHelp = F3(
 					var $temp$fixProblemDict = fixProblemDict,
 						$temp$errors = rest,
 						$temp$acc = {
-						bJ: acc.bJ,
-						bm: A2($elm$core$List$cons, error, acc.bm)
+						bV: acc.bV,
+						bu: A2($elm$core$List$cons, error, acc.bu)
 					};
 					fixProblemDict = $temp$fixProblemDict;
 					errors = $temp$errors;
@@ -27446,7 +29091,7 @@ var $author$project$Elm$Review$Reporter$classifyFixesHelp = F3(
 				} else {
 					var $temp$fixProblemDict = fixProblemDict,
 						$temp$errors = rest,
-						$temp$acc = {bJ: true, bm: acc.bm};
+						$temp$acc = {bV: true, bu: acc.bu};
 					fixProblemDict = $temp$fixProblemDict;
 					errors = $temp$errors;
 					acc = $temp$acc;
@@ -27461,12 +29106,12 @@ var $author$project$Elm$Review$Reporter$classifyFixes = F2(
 			$author$project$Elm$Review$Reporter$classifyFixesHelp,
 			fixProblemDict,
 			errors,
-			{bJ: false, bm: _List_Nil});
-		var invalidFixableErrors = _v0.bm;
-		var hasIgnoredFixableErrors = _v0.bJ;
+			{bV: false, bu: _List_Nil});
+		var invalidFixableErrors = _v0.bu;
+		var hasIgnoredFixableErrors = _v0.bV;
 		return {
-			bJ: hasIgnoredFixableErrors,
-			bm: $elm$core$List$reverse(invalidFixableErrors)
+			bV: hasIgnoredFixableErrors,
+			bu: $elm$core$List$reverse(invalidFixableErrors)
 		};
 	});
 var $author$project$Elm$Review$Reporter$filePath = function (path_) {
@@ -27486,11 +29131,11 @@ var $author$project$Elm$Review$Reporter$fixableErrors = function (files) {
 		A2(
 			$elm$core$Basics$composeR,
 			function ($) {
-				return $.bf;
+				return $.bo;
 			},
 			$elm$core$List$filter(
 				function (error) {
-					return !_Utils_eq(error.eM, $elm$core$Maybe$Nothing);
+					return !_Utils_eq(error.fi, $elm$core$Maybe$Nothing);
 				})),
 		files);
 };
@@ -27507,7 +29152,7 @@ var $author$project$Elm$Review$Text$inGreen = function (_v0) {
 	return _Utils_update(
 		text,
 		{
-			fS: $elm$core$Maybe$Just('#008000')
+			gq: $elm$core$Maybe$Just('#008000')
 		});
 };
 var $author$project$Elm$Review$Reporter$pluralizeEnding = F2(
@@ -27574,11 +29219,11 @@ var $author$project$Elm$Review$Reporter$fileSeparator = F2(
 	});
 var $author$project$Elm$Review$Reporter$compareRange = F2(
 	function (a, b) {
-		return (_Utils_cmp(a.cm.bs, b.cm.bs) < 0) ? 0 : ((_Utils_cmp(a.cm.bs, b.cm.bs) > 0) ? 2 : ((_Utils_cmp(a.cm.bb, b.cm.bb) < 0) ? 0 : ((_Utils_cmp(a.cm.bb, b.cm.bb) > 0) ? 2 : ((_Utils_cmp(a.b6.bs, b.b6.bs) < 0) ? 0 : ((_Utils_cmp(a.b6.bs, b.b6.bs) > 0) ? 2 : ((_Utils_cmp(a.b6.bb, b.b6.bb) < 0) ? 0 : ((_Utils_cmp(a.b6.bb, b.b6.bb) > 0) ? 2 : 1)))))));
+		return (_Utils_cmp(a.cN.bD, b.cN.bD) < 0) ? 0 : ((_Utils_cmp(a.cN.bD, b.cN.bD) > 0) ? 2 : ((_Utils_cmp(a.cN.bh, b.cN.bh) < 0) ? 0 : ((_Utils_cmp(a.cN.bh, b.cN.bh) > 0) ? 2 : ((_Utils_cmp(a.cp.bD, b.cp.bD) < 0) ? 0 : ((_Utils_cmp(a.cp.bD, b.cp.bD) > 0) ? 2 : ((_Utils_cmp(a.cp.bh, b.cp.bh) < 0) ? 0 : ((_Utils_cmp(a.cp.bh, b.cp.bh) > 0) ? 2 : 1)))))));
 	});
 var $author$project$Elm$Review$Reporter$compareErrorPositions = F2(
 	function (a, b) {
-		return A2($author$project$Elm$Review$Reporter$compareRange, a.d6, b.d6);
+		return A2($author$project$Elm$Review$Reporter$compareRange, a.eD, b.eD);
 	});
 var $author$project$Elm$Review$Reporter$firstErrorPrefix = '-- ELM-REVIEW ERROR -';
 var $author$project$Elm$Review$Reporter$header = F3(
@@ -27587,7 +29232,7 @@ var $author$project$Elm$Review$Reporter$header = F3(
 			switch (filePath_.$) {
 				case 0:
 					var str = filePath_.a;
-					return ' ' + (str + (':' + ($elm$core$String$fromInt(range.cm.bs) + (':' + $elm$core$String$fromInt(range.cm.bb)))));
+					return ' ' + (str + (':' + ($elm$core$String$fromInt(range.cN.bD) + (':' + $elm$core$String$fromInt(range.cN.bh)))));
 				case 1:
 					return ' GLOBAL ERROR';
 				default:
@@ -27621,12 +29266,12 @@ var $author$project$Elm$Review$Reporter$formatReportForFileWithExtract = F4(
 								[
 									_List_fromArray(
 									[
-										A3($author$project$Elm$Review$Reporter$header, !index, file.gx, error.d6)
+										A3($author$project$Elm$Review$Reporter$header, !index, file.g5, error.eD)
 									]),
-									A5($author$project$Elm$Review$Reporter$formatErrorWithExtract, fixProblemDict, detailsMode, mode, file.gK, error)
+									A5($author$project$Elm$Review$Reporter$formatErrorWithExtract, fixProblemDict, detailsMode, mode, file.hj, error)
 								]));
 					}),
-				A2($elm$core$List$sortWith, $author$project$Elm$Review$Reporter$compareErrorPositions, file.bf)));
+				A2($elm$core$List$sortWith, $author$project$Elm$Review$Reporter$compareErrorPositions, file.bo)));
 	});
 var $author$project$Elm$Review$Reporter$formatReports = F3(
 	function (fixProblemDict, detailsMode, files) {
@@ -27645,7 +29290,7 @@ var $author$project$Elm$Review$Reporter$formatReports = F3(
 					_List_fromArray(
 						[
 							A4($author$project$Elm$Review$Reporter$formatReportForFileWithExtract, fixProblemDict, detailsMode, 0, firstFile),
-							A2($author$project$Elm$Review$Reporter$fileSeparator, firstFile.gx, secondFile.gx),
+							A2($author$project$Elm$Review$Reporter$fileSeparator, firstFile.g5, secondFile.g5),
 							A3(
 							$author$project$Elm$Review$Reporter$formatReports,
 							fixProblemDict,
@@ -27672,9 +29317,9 @@ var $author$project$Elm$Review$Reporter$showUnsuppressedWarning = F2(
 						return A2(
 							$elm$core$List$any,
 							function (error) {
-								return error.fq && (!A2($elm$core$Set$member, error.ea, set));
+								return error.f_ && (!A2($elm$core$Set$member, error.eH, set));
 							},
-							file.bf);
+							file.bo);
 					},
 					files);
 			default:
@@ -27684,9 +29329,9 @@ var $author$project$Elm$Review$Reporter$showUnsuppressedWarning = F2(
 						return A2(
 							$elm$core$List$any,
 							function (error) {
-								return error.fq;
+								return error.f_;
 							},
-							file.bf);
+							file.bo);
 					},
 					files);
 		}
@@ -27701,7 +29346,7 @@ var $author$project$Elm$Review$Reporter$totalNumberOfErrorsHelp = F2(
 				var file = files.a;
 				var xs = files.b;
 				var $temp$files = xs,
-					$temp$acc = acc + $elm$core$List$length(file.bf);
+					$temp$acc = acc + $elm$core$List$length(file.bo);
 				files = $temp$files;
 				acc = $temp$acc;
 				continue totalNumberOfErrorsHelp;
@@ -27713,19 +29358,19 @@ var $author$project$Elm$Review$Reporter$totalNumberOfErrors = function (files) {
 };
 var $author$project$Elm$Review$Reporter$formatReport = F2(
 	function (_v0, files) {
-		var suppressedErrors = _v0.B;
-		var unsuppressMode = _v0.aC;
-		var originalNumberOfSuppressedErrors = _v0.ci;
-		var detailsMode = _v0.ab;
-		var errorsHaveBeenFixedPreviously = _v0.b7;
-		var fixProblemDict = _v0.eL;
+		var suppressedErrors = _v0.F;
+		var unsuppressMode = _v0.aH;
+		var originalNumberOfSuppressedErrors = _v0.cI;
+		var detailsMode = _v0.ai;
+		var errorsHaveBeenFixedPreviously = _v0.cq;
+		var fixProblemDict = _v0.fh;
 		var numberOfErrors = $author$project$Elm$Review$Reporter$totalNumberOfErrors(files);
 		var filesWithErrors = A2(
 			$elm$core$List$sortBy,
 			A2(
 				$elm$core$Basics$composeR,
 				function ($) {
-					return $.gx;
+					return $.g5;
 				},
 				$author$project$Elm$Review$Reporter$filePath),
 			A2(
@@ -27733,7 +29378,7 @@ var $author$project$Elm$Review$Reporter$formatReport = F2(
 				A2(
 					$elm$core$Basics$composeR,
 					function ($) {
-						return $.bf;
+						return $.bo;
 					},
 					A2($elm$core$Basics$composeR, $elm$core$List$isEmpty, $elm$core$Basics$not)),
 				files));
@@ -27744,8 +29389,8 @@ var $author$project$Elm$Review$Reporter$formatReport = F2(
 				$author$project$Elm$Review$Reporter$classifyFixes,
 				fixProblemDict,
 				$author$project$Elm$Review$Reporter$fixableErrors(files));
-			var invalidFixableErrors = _v1.bm;
-			var hasIgnoredFixableErrors = _v1.bJ;
+			var invalidFixableErrors = _v1.bu;
+			var hasIgnoredFixableErrors = _v1.bV;
 			return A2(
 				$elm$core$List$map,
 				$author$project$Elm$Review$Text$toRecord,
@@ -27779,7 +29424,7 @@ var $author$project$Elm$Review$Reporter$formatReport = F2(
 												A2(
 													$elm$core$List$map,
 													function ($) {
-														return $.ea;
+														return $.eH;
 													},
 													invalidFixableErrors)));
 										return $elm$core$Maybe$Just(
@@ -27814,11 +29459,11 @@ var $author$project$Elm$Review$Reporter$formatReport = F2(
 	});
 var $jfmengels$elm_review$Review$Rule$getConfigurationError = function (_v0) {
 	var rule = _v0;
-	return rule.aH;
+	return rule.aM;
 };
 var $jfmengels$elm_review$Review$Rule$ruleName = function (_v0) {
 	var rule = _v0;
-	return rule.bT;
+	return rule.b5;
 };
 var $author$project$Elm$Review$Main$getConfigurationError = function (rule) {
 	var _v0 = $jfmengels$elm_review$Review$Rule$getConfigurationError(rule);
@@ -27826,29 +29471,29 @@ var $author$project$Elm$Review$Main$getConfigurationError = function (rule) {
 		var configurationError = _v0.a;
 		return $elm$core$Maybe$Just(
 			{
-				c2: configurationError.c2,
-				eM: $elm$core$Maybe$Nothing,
-				a2: configurationError.a2,
-				d6: $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
-				fg: $elm$core$Maybe$Nothing,
-				ea: $jfmengels$elm_review$Review$Rule$ruleName(rule),
-				fq: false
+				dx: configurationError.dx,
+				fi: $elm$core$Maybe$Nothing,
+				a8: configurationError.a8,
+				eD: $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
+				fQ: $elm$core$Maybe$Nothing,
+				eH: $jfmengels$elm_review$Review$Rule$ruleName(rule),
+				f_: false
 			});
 	} else {
 		return $elm$core$Maybe$Nothing;
 	}
 };
 var $jfmengels$elm_review$Review$Project$Internal$Project = $elm$core$Basics$identity;
-var $jfmengels$elm_review$Review$Project$ProjectCache$empty = {ey: $elm$core$Maybe$Nothing, d_: $elm$core$Dict$empty, a3: $elm$core$Dict$empty};
+var $jfmengels$elm_review$Review$Project$ProjectCache$empty = {e4: $elm$core$Maybe$Nothing, ev: $elm$core$Dict$empty, ba: $elm$core$Dict$empty};
 var $jfmengels$elm_review$Review$Project$new = {
-	fO: $jfmengels$elm_review$Review$Project$ProjectCache$empty,
-	aM: $elm$core$Dict$empty,
-	c5: $elm$core$Maybe$Nothing,
-	e2: $elm$core$Maybe$Nothing,
-	a3: $elm$core$Dict$empty,
-	ch: _List_Nil,
-	d9: $elm$core$Maybe$Nothing,
-	ec: _List_fromArray(
+	gm: $jfmengels$elm_review$Review$Project$ProjectCache$empty,
+	aR: $elm$core$Dict$empty,
+	dz: $elm$core$Maybe$Nothing,
+	fA: $elm$core$Maybe$Nothing,
+	ba: $elm$core$Dict$empty,
+	cH: _List_Nil,
+	eG: $elm$core$Maybe$Nothing,
+	eK: _List_fromArray(
 		['src/'])
 };
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
@@ -28020,8 +29665,8 @@ var $author$project$Elm$Review$Main$closestNames = F2(
 				names));
 	});
 var $author$project$Elm$Review$Main$unknownRulesFilterMessage = function (_v0) {
-	var ruleNames = _v0.fh;
-	var filterNames = _v0.eK;
+	var ruleNames = _v0.fR;
+	var filterNames = _v0.fg;
 	var unknownRulesMessage = A2(
 		$elm$core$String$join,
 		'\n\n',
@@ -28034,9 +29679,17 @@ var $author$project$Elm$Review$Main$unknownRulesFilterMessage = function (_v0) {
 					A2($author$project$Elm$Review$Main$closestNames, ruleNames, filterName))));
 			},
 			filterNames));
-	return {a2: 'You requested to only run several rules, but I could not find some of them.\n\n' + unknownRulesMessage, cU: 'UNKNOWN FILTERED RULE(S)'};
+	return {a8: 'You requested to only run several rules, but I could not find some of them.\n\n' + unknownRulesMessage, dp: 'UNKNOWN FILTERED RULE(S)'};
 };
+var $jfmengels$elm_review$Review$Rule$withRuleId = F2(
+	function (id, _v0) {
+		var rule = _v0;
+		return _Utils_update(
+			rule,
+			{dH: id});
+	});
 var $author$project$Elm$Review$Main$init = function (rawFlags) {
+	var rulesWithIds = A2($elm$core$List$indexedMap, $jfmengels$elm_review$Review$Rule$withRuleId, $author$project$ReviewConfig$config);
 	var _v0 = function () {
 		var _v1 = A2($elm$json$Json$Decode$decodeValue, $author$project$Elm$Review$Main$decodeFlags, rawFlags);
 		if (!_v1.$) {
@@ -28045,7 +29698,7 @@ var $author$project$Elm$Review$Main$init = function (rawFlags) {
 		} else {
 			var error = _v1.a;
 			return _Utils_Tuple2(
-				{ab: 1, b5: false, bD: $elm$core$Maybe$Nothing, a0: 0, cb: false, dS: _List_Nil, dT: _List_Nil, dZ: $author$project$Elm$Review$CliCommunication$dummy, br: 0, eb: $elm$core$Maybe$Nothing, aC: $author$project$Elm$Review$UnsuppressMode$UnsuppressNone, cq: false},
+				{ai: 1, co: false, bP: $elm$core$Maybe$Nothing, aS: 0, cz: false, en: _List_Nil, eo: _List_Nil, eu: $author$project$Elm$Review$CliCommunication$dummy, bC: 0, eI: $elm$core$Maybe$Nothing, aH: $author$project$Elm$Review$UnsuppressMode$UnsuppressNone, cR: false},
 				$author$project$Elm$Review$Main$abort(
 					'Problem decoding the flags when running the elm-review runner:\n  ' + $elm$json$Json$Decode$errorToString(error)));
 		}
@@ -28053,11 +29706,11 @@ var $author$project$Elm$Review$Main$init = function (rawFlags) {
 	var flags = _v0.a;
 	var cmd = _v0.b;
 	var _v2 = function () {
-		var _v3 = flags.eb;
+		var _v3 = flags.eI;
 		if (!_v3.$) {
 			var rulesToEnable = _v3.a;
 			var ruleNames = $elm$core$Set$fromList(
-				A2($elm$core$List$map, $jfmengels$elm_review$Review$Rule$ruleName, $author$project$ReviewConfig$config));
+				A2($elm$core$List$map, $jfmengels$elm_review$Review$Rule$ruleName, rulesWithIds));
 			return _Utils_Tuple2(
 				A2(
 					$elm$core$List$filter,
@@ -28067,11 +29720,11 @@ var $author$project$Elm$Review$Main$init = function (rawFlags) {
 							$jfmengels$elm_review$Review$Rule$ruleName(rule),
 							rulesToEnable);
 					},
-					$author$project$ReviewConfig$config),
+					rulesWithIds),
 				$elm$core$Set$toList(
 					A2($elm$core$Set$diff, rulesToEnable, ruleNames)));
 		} else {
-			return _Utils_Tuple2($author$project$ReviewConfig$config, _List_Nil);
+			return _Utils_Tuple2(rulesWithIds, _List_Nil);
 		}
 	}();
 	var rulesFromConfig = _v2.a;
@@ -28080,22 +29733,22 @@ var $author$project$Elm$Review$Main$init = function (rawFlags) {
 		$elm$core$List$map,
 		A2(
 			$elm$core$Basics$composeR,
-			$jfmengels$elm_review$Review$Rule$ignoreErrorsForDirectories(flags.dS),
-			$jfmengels$elm_review$Review$Rule$ignoreErrorsForFiles(flags.dT)),
+			$jfmengels$elm_review$Review$Rule$ignoreErrorsForDirectories(flags.en),
+			$jfmengels$elm_review$Review$Rule$ignoreErrorsForFiles(flags.eo)),
 		rulesFromConfig);
 	return _Utils_Tuple2(
-		{aG: flags.dZ, ab: flags.ab, b5: flags.b5, at: $author$project$Elm$Review$Main$NotAwaiting, b7: false, cE: $elm$core$Dict$empty, ad: $elm$core$Dict$empty, ae: $jfmengels$elm_review$Review$Project$new, de: rules, bD: flags.bD, a0: flags.a0, cb: flags.cb, dg: true, bn: $elm$core$Dict$empty, ci: 0, e: $jfmengels$elm_review$Review$Project$new, bV: $author$project$Elm$Review$RefusedErrorFixes$empty, br: flags.br, bW: _List_Nil, an: _List_Nil, bt: rules, B: $author$project$Elm$Review$SuppressedErrors$empty, aC: flags.aC, cq: flags.cq},
+		{aL: flags.eu, ai: flags.ai, co: flags.co, aA: $author$project$Elm$Review$Main$NotAwaiting, cq: false, c7: $elm$core$Dict$empty, ak: $elm$core$Dict$empty, al: $jfmengels$elm_review$Review$Project$new, ct: rules, bP: flags.bP, aS: flags.aS, cz: flags.cz, dK: true, bx: $elm$core$Dict$empty, cI: 0, e: $jfmengels$elm_review$Review$Project$new, b8: $author$project$Elm$Review$RefusedErrorFixes$empty, bC: flags.bC, b9: _List_Nil, au: _List_Nil, a_: rules, F: $author$project$Elm$Review$SuppressedErrors$empty, aH: flags.aH, cR: flags.cR},
 		function () {
 			if ($elm$core$List$isEmpty($author$project$ReviewConfig$config)) {
 				return $author$project$Elm$Review$Main$abortWithDetails(
-					{a2: 'Your configuration contains no rules. You can add rules by editing the ReviewConfig.elm file.\n\nI recommend you take a look at the following documents:\n  - How to configure elm-review: https://github.com/jfmengels/elm-review/#Configuration\n  - When to write or enable a rule: https://github.com/jfmengels/elm-review/#when-to-write-or-enable-a-rule', cU: 'CONFIGURATION IS EMPTY'});
+					{a8: 'Your configuration contains no rules. You can add rules by editing the ReviewConfig.elm file.\n\nI recommend you take a look at the following documents:\n  - How to configure elm-review: https://github.com/jfmengels/elm-review/#Configuration\n  - When to write or enable a rule: https://github.com/jfmengels/elm-review/#when-to-write-or-enable-a-rule', dp: 'CONFIGURATION IS EMPTY'});
 			} else {
 				if (!$elm$core$List$isEmpty(filterNames)) {
 					return $author$project$Elm$Review$Main$abortWithDetails(
 						$author$project$Elm$Review$Main$unknownRulesFilterMessage(
 							{
-								eK: filterNames,
-								fh: $elm$core$Set$toList(
+								fg: filterNames,
+								fR: $elm$core$Set$toList(
 									$elm$core$Set$fromList(
 										A2($elm$core$List$map, $jfmengels$elm_review$Review$Rule$ruleName, $author$project$ReviewConfig$config)))
 							}));
@@ -28107,18 +29760,18 @@ var $author$project$Elm$Review$Main$init = function (rawFlags) {
 						var configurationErrors = _v4;
 						return $author$project$Elm$Review$Main$abortForConfigurationErrors(
 							function () {
-								var _v5 = flags.br;
+								var _v5 = flags.bC;
 								if (!_v5) {
 									return $author$project$Elm$Review$Main$encodeReport(
 										A2(
 											$author$project$Elm$Review$Reporter$formatReport,
-											{ab: flags.ab, b7: false, eL: $elm$core$Dict$empty, ci: 0, B: $author$project$Elm$Review$SuppressedErrors$empty, aC: flags.aC},
+											{ai: flags.ai, cq: false, fh: $elm$core$Dict$empty, cI: 0, F: $author$project$Elm$Review$SuppressedErrors$empty, aH: flags.aH},
 											_List_fromArray(
 												[
-													{bf: configurationErrors, gx: $author$project$Elm$Review$Reporter$ConfigurationError, gK: ''}
+													{bo: configurationErrors, g5: $author$project$Elm$Review$Reporter$ConfigurationError, hj: ''}
 												])));
 								} else {
-									return A2($author$project$Elm$Review$Main$encodeConfigurationErrors, flags.ab, configurationErrors);
+									return A2($author$project$Elm$Review$Main$encodeConfigurationErrors, flags.ai, configurationErrors);
 								}
 							}());
 					}
@@ -28197,7 +29850,7 @@ var $author$project$Elm$Review$Main$subscriptions = $elm$core$Platform$Sub$batch
 var $author$project$Elm$Review$Main$acknowledgeFileReceipt = _Platform_outgoingPort('acknowledgeFileReceipt', $elm$core$Basics$identity);
 var $jfmengels$elm_review$Review$Project$Dependency$name = function (_v0) {
 	var dependency = _v0;
-	return dependency.bT;
+	return dependency.b5;
 };
 var $jfmengels$elm_review$Review$Project$addDependency = F2(
 	function (dependency, _v0) {
@@ -28205,26 +29858,26 @@ var $jfmengels$elm_review$Review$Project$addDependency = F2(
 		return _Utils_update(
 			project,
 			{
-				aM: A3(
+				aR: A3(
 					$elm$core$Dict$insert,
 					$jfmengels$elm_review$Review$Project$Dependency$name(dependency),
 					dependency,
-					project.aM)
+					project.aR)
 			});
 	});
 var $jfmengels$elm_review$Review$Project$addElmJson = F2(
 	function (elmJson_, _v0) {
 		var project = _v0;
 		var sourceDirectories = $jfmengels$elm_review$Review$Project$Internal$sourceDirectoriesForProject(elmJson_.e);
-		var modules_ = _Utils_eq(project.ec, sourceDirectories) ? project.a3 : A2(
+		var modules_ = _Utils_eq(project.eK, sourceDirectories) ? project.ba : A2(
 			$elm$core$Dict$map,
 			F2(
 				function (_v1, value) {
-					var osAgnosticPath = $jfmengels$elm_review$Path$makeOSAgnostic(value.gx);
+					var osAgnosticPath = $jfmengels$elm_review$Path$makeOSAgnostic(value.g5);
 					return _Utils_update(
 						value,
 						{
-							dX: A2(
+							es: A2(
 								$elm$core$List$any,
 								function (dir) {
 									return A2($elm$core$String$startsWith, dir, osAgnosticPath);
@@ -28232,27 +29885,30 @@ var $jfmengels$elm_review$Review$Project$addElmJson = F2(
 								sourceDirectories)
 						});
 				}),
-			project.a3);
+			project.ba);
 		return _Utils_update(
 			project,
 			{
-				c5: $elm$core$Maybe$Just(elmJson_),
-				a3: modules_,
-				ec: sourceDirectories
+				dz: $elm$core$Maybe$Just(
+					_Utils_Tuple2(
+						elmJson_,
+						$jfmengels$elm_review$Review$Cache$ContentHash$hash(elmJson_.cL))),
+				ba: modules_,
+				eK: sourceDirectories
 			});
 	});
 var $jfmengels$elm_review$Review$Project$addFileThatFailedToParse = F2(
 	function (_v0, _v1) {
-		var path = _v0.gx;
-		var source = _v0.gK;
+		var path = _v0.g5;
+		var source = _v0.hj;
 		var project = _v1;
 		return _Utils_update(
 			project,
 			{
-				ch: A2(
+				cH: A2(
 					$elm$core$List$cons,
-					{gx: path, gK: source},
-					project.ch)
+					{g5: path, hj: source},
+					project.cH)
 			});
 	});
 var $jfmengels$elm_review$Review$Project$addModuleToProject = F2(
@@ -28261,22 +29917,22 @@ var $jfmengels$elm_review$Review$Project$addModuleToProject = F2(
 		return _Utils_update(
 			project,
 			{
-				a3: A3(
+				ba: A3(
 					$elm$core$Dict$insert,
-					module_.gx,
+					module_.g5,
 					_Utils_update(
 						module_,
 						{
-							fI: $jfmengels$elm_review$Review$Project$Internal$sanitizeModule(module_.fI)
+							gg: $jfmengels$elm_review$Review$Project$Internal$sanitizeModule(module_.gg)
 						}),
-					project.a3)
+					project.ba)
 			});
 	});
 var $jfmengels$elm_review$Review$Project$forceModuleGraphRecomputation = function (_v0) {
 	var project = _v0;
 	return _Utils_update(
 		project,
-		{e2: $elm$core$Maybe$Nothing});
+		{fA: $elm$core$Maybe$Nothing});
 };
 var $jfmengels$elm_review$Review$Project$removeFileFromFilesThatFailedToParse = F2(
 	function (path, _v0) {
@@ -28284,12 +29940,12 @@ var $jfmengels$elm_review$Review$Project$removeFileFromFilesThatFailedToParse = 
 		return _Utils_update(
 			project,
 			{
-				ch: A2(
+				cH: A2(
 					$elm$core$List$filter,
 					function (file) {
-						return !_Utils_eq(file.gx, path);
+						return !_Utils_eq(file.g5, path);
 					},
-					project.ch)
+					project.cH)
 			});
 	});
 var $jfmengels$elm_review$Review$Project$removeFileFromProject = F2(
@@ -28301,17 +29957,17 @@ var $jfmengels$elm_review$Review$Project$removeFileFromProject = F2(
 			_Utils_update(
 				project,
 				{
-					a3: A2($elm$core$Dict$remove, path, project.a3)
+					ba: A2($elm$core$Dict$remove, path, project.ba)
 				}));
 	});
 var $jfmengels$elm_review$Review$Project$Internal$sourceDirectories = function (_v0) {
 	var project = _v0;
-	return project.ec;
+	return project.eK;
 };
 var $jfmengels$elm_review$Review$Project$addModule = F2(
 	function (_v0, project) {
-		var path = _v0.gx;
-		var source = _v0.gK;
+		var path = _v0.g5;
+		var source = _v0.hj;
 		var _v1 = $jfmengels$elm_review$Review$FileParser$parse(source);
 		if (!_v1.$) {
 			var ast = _v1.a;
@@ -28323,8 +29979,9 @@ var $jfmengels$elm_review$Review$Project$addModule = F2(
 					A2(
 						$jfmengels$elm_review$Review$Project$addModuleToProject,
 						{
-							fI: ast,
-							dX: A2(
+							gg: ast,
+							ck: $jfmengels$elm_review$Review$Cache$ContentHash$hash(source),
+							es: A2(
 								$elm$core$List$any,
 								function (dir) {
 									return A2(
@@ -28333,30 +29990,31 @@ var $jfmengels$elm_review$Review$Project$addModule = F2(
 										osAgnosticPath);
 								},
 								$jfmengels$elm_review$Review$Project$Internal$sourceDirectories(project)),
-							gx: path,
-							gK: source
+							g5: path,
+							hj: source
 						},
 						project)));
 		} else {
 			return $jfmengels$elm_review$Review$Project$forceModuleGraphRecomputation(
 				A2(
 					$jfmengels$elm_review$Review$Project$addFileThatFailedToParse,
-					{gx: path, gK: source},
+					{g5: path, hj: source},
 					A2($jfmengels$elm_review$Review$Project$removeFileFromProject, path, project)));
 		}
 	});
 var $jfmengels$elm_review$Review$Project$addParsedModule = F2(
 	function (_v0, project) {
-		var path = _v0.gx;
-		var source = _v0.gK;
-		var ast = _v0.fI;
+		var path = _v0.g5;
+		var source = _v0.hj;
+		var ast = _v0.gg;
 		var osAgnosticPath = $jfmengels$elm_review$Path$makeOSAgnostic(path);
 		return $jfmengels$elm_review$Review$Project$forceModuleGraphRecomputation(
 			A2(
 				$jfmengels$elm_review$Review$Project$addModuleToProject,
 				{
-					fI: ast,
-					dX: A2(
+					gg: ast,
+					ck: $jfmengels$elm_review$Review$Cache$ContentHash$hash(source),
+					es: A2(
 						$elm$core$List$any,
 						function (dir) {
 							return A2(
@@ -28365,8 +30023,8 @@ var $jfmengels$elm_review$Review$Project$addParsedModule = F2(
 								osAgnosticPath);
 						},
 						$jfmengels$elm_review$Review$Project$Internal$sourceDirectories(project)),
-					gx: path,
-					gK: source
+					g5: path,
+					hj: source
 				},
 				A2($jfmengels$elm_review$Review$Project$removeFileFromFilesThatFailedToParse, path, project)));
 	});
@@ -28376,23 +30034,26 @@ var $jfmengels$elm_review$Review$Project$addReadme = F2(
 		return _Utils_update(
 			project,
 			{
-				d9: $elm$core$Maybe$Just(readme_)
+				eG: $elm$core$Maybe$Just(
+					_Utils_Tuple2(
+						readme_,
+						$jfmengels$elm_review$Review$Cache$ContentHash$hash(readme_.cj)))
 			});
 	});
 var $author$project$Elm$Review$Main$addElmFile = F2(
 	function (file, project) {
 		return A2(
 			$jfmengels$elm_review$Review$Project$addModule,
-			{gx: file.gx, gK: file.gK},
+			{g5: file.g5, hj: file.hj},
 			project);
 	});
 var $jfmengels$elm_review$Review$Project$elmJson = function (_v0) {
 	var project = _v0;
-	return project.c5;
+	return A2($elm$core$Maybe$map, $elm$core$Tuple$first, project.dz);
 };
 var $jfmengels$elm_review$Review$Project$readme = function (_v0) {
 	var project = _v0;
-	return project.d9;
+	return A2($elm$core$Maybe$map, $elm$core$Tuple$first, project.eG);
 };
 var $jfmengels$elm_review$Review$Project$removeDependency = F2(
 	function (dependencyName, _v0) {
@@ -28400,7 +30061,7 @@ var $jfmengels$elm_review$Review$Project$removeDependency = F2(
 		return _Utils_update(
 			project,
 			{
-				aM: A2($elm$core$Dict$remove, dependencyName, project.aM)
+				aR: A2($elm$core$Dict$remove, dependencyName, project.aR)
 			});
 	});
 var $author$project$Elm$Review$Main$getPackageName = function (deps) {
@@ -28416,10 +30077,10 @@ var $author$project$Elm$Review$Main$projectDependencies = function (project) {
 			$elm$core$List$concat(
 				_List_fromArray(
 					[
-						$author$project$Elm$Review$Main$getPackageName(application.eA),
-						$author$project$Elm$Review$Main$getPackageName(application.eB),
-						$author$project$Elm$Review$Main$getPackageName(application.fv),
-						$author$project$Elm$Review$Main$getPackageName(application.fw)
+						$author$project$Elm$Review$Main$getPackageName(application.e6),
+						$author$project$Elm$Review$Main$getPackageName(application.e7),
+						$author$project$Elm$Review$Main$getPackageName(application.f3),
+						$author$project$Elm$Review$Main$getPackageName(application.f4)
 					])));
 	} else {
 		var packageInfo = project.a;
@@ -28427,8 +30088,8 @@ var $author$project$Elm$Review$Main$projectDependencies = function (project) {
 			$elm$core$List$concat(
 				_List_fromArray(
 					[
-						$author$project$Elm$Review$Main$getPackageName(packageInfo.ez),
-						$author$project$Elm$Review$Main$getPackageName(packageInfo.fu)
+						$author$project$Elm$Review$Main$getPackageName(packageInfo.e5),
+						$author$project$Elm$Review$Main$getPackageName(packageInfo.f2)
 					])));
 	}
 };
@@ -28443,23 +30104,23 @@ var $author$project$Elm$Review$Main$removedDependencies = F2(
 var $author$project$Elm$Review$Main$addUpdatedFileToProject = F2(
 	function (file, project) {
 		if (_Utils_eq(
-			$elm$core$Maybe$Just(file.gx),
+			$elm$core$Maybe$Just(file.g5),
 			A2(
 				$elm$core$Maybe$map,
 				function ($) {
-					return $.gx;
+					return $.g5;
 				},
 				$jfmengels$elm_review$Review$Project$readme(project)))) {
 			return A2(
 				$jfmengels$elm_review$Review$Project$addReadme,
-				{b1: file.gK, gx: file.gx},
+				{cj: file.hj, g5: file.g5},
 				project);
 		} else {
 			var _v0 = $jfmengels$elm_review$Review$Project$elmJson(project);
 			if (!_v0.$) {
 				var oldElmJson = _v0.a;
-				if (_Utils_eq(file.gx, oldElmJson.gx)) {
-					var _v1 = A2($elm$json$Json$Decode$decodeString, $elm$project_metadata_utils$Elm$Project$decoder, file.gK);
+				if (_Utils_eq(file.g5, oldElmJson.g5)) {
+					var _v1 = A2($elm$json$Json$Decode$decodeString, $elm$project_metadata_utils$Elm$Project$decoder, file.hj);
 					if (!_v1.$) {
 						var newElmJson = _v1.a;
 						return A3(
@@ -28467,7 +30128,7 @@ var $author$project$Elm$Review$Main$addUpdatedFileToProject = F2(
 							$jfmengels$elm_review$Review$Project$removeDependency,
 							A2(
 								$jfmengels$elm_review$Review$Project$addElmJson,
-								{gx: file.gx, e: newElmJson, ck: file.gK},
+								{g5: file.g5, e: newElmJson, cL: file.hj},
 								project),
 							A2($author$project$Elm$Review$Main$removedDependencies, oldElmJson.e, newElmJson));
 					} else {
@@ -28483,7 +30144,7 @@ var $author$project$Elm$Review$Main$addUpdatedFileToProject = F2(
 	});
 var $jfmengels$elm_review$Review$Rule$errorRuleName = function (_v0) {
 	var err = _v0;
-	return err.ea;
+	return err.eH;
 };
 var $author$project$Elm$Review$Vendor$List$Extra$gatherWith = F2(
 	function (testFn, list) {
@@ -28582,7 +30243,7 @@ var $author$project$Elm$Review$SuppressedErrors$apply = F3(
 	});
 var $author$project$Elm$Review$Vendor$Serialize$getJsonEncoder = function (_v0) {
 	var m = _v0;
-	return m.bP;
+	return m.b0;
 };
 var $author$project$Elm$Review$Vendor$Serialize$version = 1;
 var $author$project$Elm$Review$Vendor$Serialize$encodeToJson = F2(
@@ -28599,11 +30260,11 @@ var $author$project$Elm$Review$Vendor$Serialize$encodeToJson = F2(
 var $author$project$Elm$Review$Vendor$Serialize$CustomTypeCodec = $elm$core$Basics$identity;
 var $author$project$Elm$Review$Vendor$Serialize$customType = function (match) {
 	return {
-		cI: 0,
-		av: function (_v0) {
+		db: 0,
+		aB: function (_v0) {
 			return $elm$core$Basics$identity;
 		},
-		dh: match
+		dL: match
 	};
 };
 var $author$project$Elm$Review$AstCodec$InvalidChar = 0;
@@ -28613,11 +30274,11 @@ var $author$project$Elm$Review$Vendor$Serialize$CustomError = function (a) {
 var $author$project$Elm$Review$Vendor$Serialize$Codec = $elm$core$Basics$identity;
 var $author$project$Elm$Review$Vendor$Serialize$build = F2(
 	function (jsonEncoder, jsonDecoder) {
-		return {av: jsonDecoder, bP: jsonEncoder};
+		return {aB: jsonDecoder, b0: jsonEncoder};
 	});
 var $author$project$Elm$Review$Vendor$Serialize$getJsonDecoder = function (_v0) {
 	var m = _v0;
-	return m.av;
+	return m.aB;
 };
 var $author$project$Elm$Review$Vendor$Serialize$mapValid = F3(
 	function (fromBytes_, toBytes_, codec) {
@@ -28668,8 +30329,8 @@ var $author$project$Elm$Review$Vendor$Serialize$field = F3(
 	function (getter, codec, _v0) {
 		var recordCodec = _v0;
 		return {
-			dc: recordCodec.dc + 1,
-			av: A3(
+			dG: recordCodec.dG + 1,
+			aB: A3(
 				$elm$json$Json$Decode$map2,
 				F2(
 					function (f, x) {
@@ -28689,19 +30350,19 @@ var $author$project$Elm$Review$Vendor$Serialize$field = F3(
 							return $elm$core$Result$Err(err);
 						}
 					}),
-				recordCodec.av,
+				recordCodec.aB,
 				A2(
 					$elm$json$Json$Decode$index,
-					recordCodec.dc,
+					recordCodec.dG,
 					$author$project$Elm$Review$Vendor$Serialize$getJsonDecoder(codec))),
-			bP: function (v) {
+			b0: function (v) {
 				return A2(
 					$elm$core$List$cons,
 					A2(
 						$author$project$Elm$Review$Vendor$Serialize$getJsonEncoder,
 						codec,
 						getter(v)),
-					recordCodec.bP(v));
+					recordCodec.b0(v));
 			}
 		};
 	});
@@ -28712,7 +30373,7 @@ var $author$project$Elm$Review$Vendor$Serialize$finishCustomType = function (_v0
 		$author$project$Elm$Review$Vendor$Serialize$build,
 		A2(
 			$elm$core$Basics$composeR,
-			am.dh,
+			am.dL,
 			function (_v1) {
 				var _v2 = _v1;
 				var a = _v2.b;
@@ -28722,7 +30383,7 @@ var $author$project$Elm$Review$Vendor$Serialize$finishCustomType = function (_v0
 			$elm$json$Json$Decode$andThen,
 			function (tag) {
 				return A2(
-					am.av,
+					am.aB,
 					tag,
 					$elm$json$Json$Decode$succeed(
 						$elm$core$Result$Err($author$project$Elm$Review$Vendor$Serialize$DataCorrupted)));
@@ -28732,10 +30393,10 @@ var $author$project$Elm$Review$Vendor$Serialize$finishCustomType = function (_v0
 var $author$project$Elm$Review$Vendor$Serialize$finishRecord = function (_v0) {
 	var codec = _v0;
 	return {
-		av: codec.av,
-		bP: A2(
+		aB: codec.aB,
+		b0: A2(
 			$elm$core$Basics$composeR,
-			codec.bP,
+			codec.b0,
 			A2(
 				$elm$core$Basics$composeR,
 				$elm$core$List$reverse,
@@ -28870,17 +30531,17 @@ var $author$project$Elm$Review$Vendor$Serialize$variant = F3(
 					$elm$core$Basics$identity,
 					A2(
 						$elm$core$List$cons,
-						$elm$json$Json$Encode$int(am.cI),
+						$elm$json$Json$Encode$int(am.db),
 						v)));
 		};
 		var jsonDecoder_ = F2(
 			function (tag, orElse) {
-				return _Utils_eq(tag, am.cI) ? jsonDecoderPiece : A2(am.av, tag, orElse);
+				return _Utils_eq(tag, am.db) ? jsonDecoderPiece : A2(am.aB, tag, orElse);
 			});
 		return {
-			cI: am.cI + 1,
-			av: jsonDecoder_,
-			dh: am.dh(
+			db: am.db + 1,
+			aB: jsonDecoder_,
+			dL: am.dL(
 				matchJsonPiece(jsonEnc))
 		};
 	});
@@ -28946,10 +30607,10 @@ var $author$project$Elm$Review$Vendor$Serialize$maybe = function (justCodec) {
 };
 var $author$project$Elm$Review$Vendor$Serialize$record = function (ctor) {
 	return {
-		dc: 0,
-		av: $elm$json$Json$Decode$succeed(
+		dG: 0,
+		aB: $elm$json$Json$Decode$succeed(
 			$elm$core$Result$Ok(ctor)),
-		bP: function (_v0) {
+		b0: function (_v0) {
 			return _List_Nil;
 		}
 	};
@@ -28967,28 +30628,28 @@ var $author$project$Elm$Review$AstCodec$node = function (codec) {
 				$author$project$Elm$Review$Vendor$Serialize$field,
 				function (_v3) {
 					var range_ = _v3.a;
-					return range_.b6.bb;
+					return range_.cp.bh;
 				},
 				$author$project$Elm$Review$Vendor$Serialize$int,
 				A3(
 					$author$project$Elm$Review$Vendor$Serialize$field,
 					function (_v2) {
 						var range_ = _v2.a;
-						return range_.b6.bs;
+						return range_.cp.bD;
 					},
 					$author$project$Elm$Review$Vendor$Serialize$int,
 					A3(
 						$author$project$Elm$Review$Vendor$Serialize$field,
 						function (_v1) {
 							var range_ = _v1.a;
-							return range_.cm.bb;
+							return range_.cN.bh;
 						},
 						$author$project$Elm$Review$Vendor$Serialize$int,
 						A3(
 							$author$project$Elm$Review$Vendor$Serialize$field,
 							function (_v0) {
 								var range_ = _v0.a;
-								return range_.cm.bs;
+								return range_.cN.bD;
 							},
 							$author$project$Elm$Review$Vendor$Serialize$int,
 							$author$project$Elm$Review$Vendor$Serialize$record(
@@ -28997,8 +30658,8 @@ var $author$project$Elm$Review$AstCodec$node = function (codec) {
 										return A2(
 											$stil4m$elm_syntax$Elm$Syntax$Node$Node,
 											{
-												b6: {bb: d, bs: c},
-												cm: {bb: b, bs: a}
+												cp: {bh: d, bD: c},
+												cN: {bh: b, bD: a}
 											},
 											e);
 									}))))))));
@@ -29007,13 +30668,13 @@ var $author$project$Elm$Review$AstCodec$qualifiedNameRef = $author$project$Elm$R
 	A3(
 		$author$project$Elm$Review$Vendor$Serialize$field,
 		function ($) {
-			return $.bT;
+			return $.b5;
 		},
 		$author$project$Elm$Review$Vendor$Serialize$string,
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.dn;
+				return $.dR;
 			},
 			$author$project$Elm$Review$Vendor$Serialize$list($author$project$Elm$Review$Vendor$Serialize$string),
 			$author$project$Elm$Review$Vendor$Serialize$record($stil4m$elm_syntax$Elm$Syntax$Pattern$QualifiedNameRef))));
@@ -29347,13 +31008,13 @@ var $author$project$Elm$Review$AstCodec$signature = $author$project$Elm$Review$V
 	A3(
 		$author$project$Elm$Review$Vendor$Serialize$field,
 		function ($) {
-			return $.fz;
+			return $.f7;
 		},
 		$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$typeAnnotation),
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.bT;
+				return $.b5;
 			},
 			$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string),
 			$author$project$Elm$Review$Vendor$Serialize$record($stil4m$elm_syntax$Elm$Syntax$Signature$Signature))));
@@ -29743,7 +31404,7 @@ function $author$project$Elm$Review$AstCodec$cyclic$caseBlock() {
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.fQ;
+				return $.go;
 			},
 			$author$project$Elm$Review$Vendor$Serialize$list(
 				A2(
@@ -29754,7 +31415,7 @@ function $author$project$Elm$Review$AstCodec$cyclic$caseBlock() {
 			A3(
 				$author$project$Elm$Review$Vendor$Serialize$field,
 				function ($) {
-					return $.da;
+					return $.dE;
 				},
 				$author$project$Elm$Review$AstCodec$node(
 					$author$project$Elm$Review$AstCodec$cyclic$lazyExpression()),
@@ -29765,14 +31426,14 @@ function $author$project$Elm$Review$AstCodec$cyclic$letBlock() {
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.da;
+				return $.dE;
 			},
 			$author$project$Elm$Review$AstCodec$node(
 				$author$project$Elm$Review$AstCodec$cyclic$lazyExpression()),
 			A3(
 				$author$project$Elm$Review$Vendor$Serialize$field,
 				function ($) {
-					return $.ew;
+					return $.e2;
 				},
 				$author$project$Elm$Review$Vendor$Serialize$list(
 					$author$project$Elm$Review$AstCodec$node(
@@ -29809,21 +31470,21 @@ function $author$project$Elm$Review$AstCodec$cyclic$function() {
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.fX;
+				return $.gv;
 			},
 			$author$project$Elm$Review$AstCodec$node(
 				$author$project$Elm$Review$AstCodec$cyclic$functionImplementation()),
 			A3(
 				$author$project$Elm$Review$Vendor$Serialize$field,
 				function ($) {
-					return $.gJ;
+					return $.hi;
 				},
 				$author$project$Elm$Review$Vendor$Serialize$maybe(
 					$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$signature)),
 				A3(
 					$author$project$Elm$Review$Vendor$Serialize$field,
 					function ($) {
-						return $.dH;
+						return $.ed;
 					},
 					$author$project$Elm$Review$Vendor$Serialize$maybe(
 						$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string)),
@@ -29834,21 +31495,21 @@ function $author$project$Elm$Review$AstCodec$cyclic$functionImplementation() {
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.da;
+				return $.dE;
 			},
 			$author$project$Elm$Review$AstCodec$node(
 				$author$project$Elm$Review$AstCodec$cyclic$lazyExpression()),
 			A3(
 				$author$project$Elm$Review$Vendor$Serialize$field,
 				function ($) {
-					return $.el;
+					return $.eT;
 				},
 				$author$project$Elm$Review$Vendor$Serialize$list(
 					$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$pattern)),
 				A3(
 					$author$project$Elm$Review$Vendor$Serialize$field,
 					function ($) {
-						return $.bT;
+						return $.b5;
 					},
 					$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string),
 					$author$project$Elm$Review$Vendor$Serialize$record($stil4m$elm_syntax$Elm$Syntax$Expression$FunctionImplementation)))));
@@ -29858,14 +31519,14 @@ function $author$project$Elm$Review$AstCodec$cyclic$lambda() {
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.da;
+				return $.dE;
 			},
 			$author$project$Elm$Review$AstCodec$node(
 				$author$project$Elm$Review$AstCodec$cyclic$lazyExpression()),
 			A3(
 				$author$project$Elm$Review$Vendor$Serialize$field,
 				function ($) {
-					return $.fG;
+					return $.ge;
 				},
 				$author$project$Elm$Review$Vendor$Serialize$list(
 					$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$pattern)),
@@ -29924,25 +31585,25 @@ var $author$project$Elm$Review$AstCodec$infix_ = $author$project$Elm$Review$Vend
 	A3(
 		$author$project$Elm$Review$Vendor$Serialize$field,
 		function ($) {
-			return $.f6;
+			return $.gG;
 		},
 		$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string),
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.gv;
+				return $.g3;
 			},
 			$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string),
 			A3(
 				$author$project$Elm$Review$Vendor$Serialize$field,
 				function ($) {
-					return $.gz;
+					return $.g7;
 				},
 				$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$int),
 				A3(
 					$author$project$Elm$Review$Vendor$Serialize$field,
 					function ($) {
-						return $.fY;
+						return $.gw;
 					},
 					$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$infixDirection),
 					$author$project$Elm$Review$Vendor$Serialize$record($stil4m$elm_syntax$Elm$Syntax$Infix$Infix))))));
@@ -29950,26 +31611,26 @@ var $author$project$Elm$Review$AstCodec$typeAlias = $author$project$Elm$Review$V
 	A3(
 		$author$project$Elm$Review$Vendor$Serialize$field,
 		function ($) {
-			return $.fz;
+			return $.f7;
 		},
 		$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$typeAnnotation),
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.eP;
+				return $.fl;
 			},
 			$author$project$Elm$Review$Vendor$Serialize$list(
 				$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string)),
 			A3(
 				$author$project$Elm$Review$Vendor$Serialize$field,
 				function ($) {
-					return $.bT;
+					return $.b5;
 				},
 				$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string),
 				A3(
 					$author$project$Elm$Review$Vendor$Serialize$field,
 					function ($) {
-						return $.dH;
+						return $.ed;
 					},
 					$author$project$Elm$Review$Vendor$Serialize$maybe(
 						$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string)),
@@ -29978,14 +31639,14 @@ var $author$project$Elm$Review$AstCodec$valueConstructor = $author$project$Elm$R
 	A3(
 		$author$project$Elm$Review$Vendor$Serialize$field,
 		function ($) {
-			return $.el;
+			return $.eT;
 		},
 		$author$project$Elm$Review$Vendor$Serialize$list(
 			$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$typeAnnotation)),
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.bT;
+				return $.b5;
 			},
 			$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string),
 			$author$project$Elm$Review$Vendor$Serialize$record($stil4m$elm_syntax$Elm$Syntax$Type$ValueConstructor))));
@@ -29993,27 +31654,27 @@ var $author$project$Elm$Review$AstCodec$type_ = $author$project$Elm$Review$Vendo
 	A3(
 		$author$project$Elm$Review$Vendor$Serialize$field,
 		function ($) {
-			return $.fV;
+			return $.gt;
 		},
 		$author$project$Elm$Review$Vendor$Serialize$list(
 			$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$valueConstructor)),
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.eP;
+				return $.fl;
 			},
 			$author$project$Elm$Review$Vendor$Serialize$list(
 				$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string)),
 			A3(
 				$author$project$Elm$Review$Vendor$Serialize$field,
 				function ($) {
-					return $.bT;
+					return $.b5;
 				},
 				$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string),
 				A3(
 					$author$project$Elm$Review$Vendor$Serialize$field,
 					function ($) {
-						return $.dH;
+						return $.ed;
 					},
 					$author$project$Elm$Review$Vendor$Serialize$maybe(
 						$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string)),
@@ -30075,10 +31736,10 @@ var $author$project$Elm$Review$AstCodec$range = $author$project$Elm$Review$Vendo
 		A2(
 			$elm$core$Basics$composeR,
 			function ($) {
-				return $.b6;
+				return $.cp;
 			},
 			function ($) {
-				return $.bb;
+				return $.bh;
 			}),
 		$author$project$Elm$Review$Vendor$Serialize$int,
 		A3(
@@ -30086,10 +31747,10 @@ var $author$project$Elm$Review$AstCodec$range = $author$project$Elm$Review$Vendo
 			A2(
 				$elm$core$Basics$composeR,
 				function ($) {
-					return $.b6;
+					return $.cp;
 				},
 				function ($) {
-					return $.bs;
+					return $.bD;
 				}),
 			$author$project$Elm$Review$Vendor$Serialize$int,
 			A3(
@@ -30097,10 +31758,10 @@ var $author$project$Elm$Review$AstCodec$range = $author$project$Elm$Review$Vendo
 				A2(
 					$elm$core$Basics$composeR,
 					function ($) {
-						return $.cm;
+						return $.cN;
 					},
 					function ($) {
-						return $.bb;
+						return $.bh;
 					}),
 				$author$project$Elm$Review$Vendor$Serialize$int,
 				A3(
@@ -30108,31 +31769,31 @@ var $author$project$Elm$Review$AstCodec$range = $author$project$Elm$Review$Vendo
 					A2(
 						$elm$core$Basics$composeR,
 						function ($) {
-							return $.cm;
+							return $.cN;
 						},
 						function ($) {
-							return $.bs;
+							return $.bD;
 						}),
 					$author$project$Elm$Review$Vendor$Serialize$int,
 					$author$project$Elm$Review$Vendor$Serialize$record(
 						F4(
 							function (startRow, startColumn, endRow, endColumn) {
 								return {
-									b6: {bb: endColumn, bs: endRow},
-									cm: {bb: startColumn, bs: startRow}
+									cp: {bh: endColumn, bD: endRow},
+									cN: {bh: startColumn, bD: startRow}
 								};
 							})))))));
 var $author$project$Elm$Review$AstCodec$exposedType = $author$project$Elm$Review$Vendor$Serialize$finishRecord(
 	A3(
 		$author$project$Elm$Review$Vendor$Serialize$field,
 		function ($) {
-			return $.gu;
+			return $.g2;
 		},
 		$author$project$Elm$Review$Vendor$Serialize$maybe($author$project$Elm$Review$AstCodec$range),
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.bT;
+				return $.b5;
 			},
 			$author$project$Elm$Review$Vendor$Serialize$string,
 			$author$project$Elm$Review$Vendor$Serialize$record($stil4m$elm_syntax$Elm$Syntax$Exposing$ExposedType))));
@@ -30196,14 +31857,14 @@ var $author$project$Elm$Review$AstCodec$import_ = $author$project$Elm$Review$Ven
 	A3(
 		$author$project$Elm$Review$Vendor$Serialize$field,
 		function ($) {
-			return $.dJ;
+			return $.ef;
 		},
 		$author$project$Elm$Review$Vendor$Serialize$maybe(
 			$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$exposing_)),
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.gi;
+				return $.gS;
 			},
 			$author$project$Elm$Review$Vendor$Serialize$maybe(
 				$author$project$Elm$Review$AstCodec$node(
@@ -30211,7 +31872,7 @@ var $author$project$Elm$Review$AstCodec$import_ = $author$project$Elm$Review$Ven
 			A3(
 				$author$project$Elm$Review$Vendor$Serialize$field,
 				function ($) {
-					return $.dn;
+					return $.dR;
 				},
 				$author$project$Elm$Review$AstCodec$node(
 					$author$project$Elm$Review$Vendor$Serialize$list($author$project$Elm$Review$Vendor$Serialize$string)),
@@ -30220,46 +31881,46 @@ var $author$project$Elm$Review$AstCodec$defaultModuleData = $author$project$Elm$
 	A3(
 		$author$project$Elm$Review$Vendor$Serialize$field,
 		function ($) {
-			return $.dJ;
+			return $.ef;
 		},
 		$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$exposing_),
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.dn;
+				return $.dR;
 			},
 			$author$project$Elm$Review$AstCodec$node(
 				$author$project$Elm$Review$Vendor$Serialize$list($author$project$Elm$Review$Vendor$Serialize$string)),
 			$author$project$Elm$Review$Vendor$Serialize$record($stil4m$elm_syntax$Elm$Syntax$Module$DefaultModuleData))));
 var $stil4m$elm_syntax$Elm$Syntax$Module$EffectModuleData = F4(
 	function (moduleName, exposingList, command, subscription) {
-		return {fT: command, dJ: exposingList, dn: moduleName, gO: subscription};
+		return {gr: command, ef: exposingList, dR: moduleName, hn: subscription};
 	});
 var $author$project$Elm$Review$AstCodec$effectModuleData = $author$project$Elm$Review$Vendor$Serialize$finishRecord(
 	A3(
 		$author$project$Elm$Review$Vendor$Serialize$field,
 		function ($) {
-			return $.gO;
+			return $.hn;
 		},
 		$author$project$Elm$Review$Vendor$Serialize$maybe(
 			$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string)),
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.fT;
+				return $.gr;
 			},
 			$author$project$Elm$Review$Vendor$Serialize$maybe(
 				$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string)),
 			A3(
 				$author$project$Elm$Review$Vendor$Serialize$field,
 				function ($) {
-					return $.dJ;
+					return $.ef;
 				},
 				$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$exposing_),
 				A3(
 					$author$project$Elm$Review$Vendor$Serialize$field,
 					function ($) {
-						return $.dn;
+						return $.dR;
 					},
 					$author$project$Elm$Review$AstCodec$node(
 						$author$project$Elm$Review$Vendor$Serialize$list($author$project$Elm$Review$Vendor$Serialize$string)),
@@ -30296,28 +31957,28 @@ var $author$project$Elm$Review$AstCodec$file = $author$project$Elm$Review$Vendor
 	A3(
 		$author$project$Elm$Review$Vendor$Serialize$field,
 		function ($) {
-			return $.fU;
+			return $.gs;
 		},
 		$author$project$Elm$Review$Vendor$Serialize$list(
 			$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$Vendor$Serialize$string)),
 		A3(
 			$author$project$Elm$Review$Vendor$Serialize$field,
 			function ($) {
-				return $.ew;
+				return $.e2;
 			},
 			$author$project$Elm$Review$Vendor$Serialize$list(
 				$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$declaration)),
 			A3(
 				$author$project$Elm$Review$Vendor$Serialize$field,
 				function ($) {
-					return $.f9;
+					return $.gJ;
 				},
 				$author$project$Elm$Review$Vendor$Serialize$list(
 					$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$import_)),
 				A3(
 					$author$project$Elm$Review$Vendor$Serialize$field,
 					function ($) {
-						return $.gj;
+						return $.gT;
 					},
 					$author$project$Elm$Review$AstCodec$node($author$project$Elm$Review$AstCodec$module_),
 					$author$project$Elm$Review$Vendor$Serialize$record($stil4m$elm_syntax$Elm$Syntax$File$File))))));
@@ -30347,18 +32008,18 @@ var $author$project$Elm$Review$Main$find = F2(
 	});
 var $jfmengels$elm_review$Review$Project$modules = function (_v0) {
 	var project = _v0;
-	return $elm$core$Dict$values(project.a3);
+	return $elm$core$Dict$values(project.ba);
 };
 var $author$project$Elm$Review$Main$cacheFileRequest = F2(
 	function (project, source) {
 		var _v0 = A2(
 			$author$project$Elm$Review$Main$find,
 			function (module_) {
-				return _Utils_eq(module_.gK, source);
+				return _Utils_eq(module_.hj, source);
 			},
 			$jfmengels$elm_review$Review$Project$modules(project));
 		if (!_v0.$) {
-			var ast = _v0.a.fI;
+			var ast = _v0.a.gg;
 			return $elm$json$Json$Encode$object(
 				_List_fromArray(
 					[
@@ -30415,7 +32076,7 @@ var $author$project$Elm$Review$File$decode = A4(
 	$elm$json$Json$Decode$map3,
 	F3(
 		function (path, source, ast) {
-			return {fI: ast, gx: path, gK: source};
+			return {gg: ast, g5: path, hj: source};
 		}),
 	A2($elm$json$Json$Decode$field, 'path', $elm$json$Json$Decode$string),
 	A2($elm$json$Json$Decode$field, 'source', $elm$json$Json$Decode$string),
@@ -30443,15 +32104,15 @@ var $author$project$Elm$Review$Main$confirmationDecoder = A2(
 var $jfmengels$elm_review$Review$Project$Dependency$Dependency = $elm$core$Basics$identity;
 var $jfmengels$elm_review$Review$Project$Dependency$create = F3(
 	function (name_, elmJson_, modules_) {
-		return {c5: elmJson_, a3: modules_, bT: name_};
+		return {dz: elmJson_, ba: modules_, b5: name_};
 	});
 var $elm$project_metadata_utils$Elm$Docs$Module = F6(
 	function (name, comment, unions, aliases, values, binops) {
-		return {ej: aliases, ep: binops, b0: comment, bT: name, fA: unions, fB: values};
+		return {eR: aliases, eX: binops, ci: comment, b5: name, f8: unions, f9: values};
 	});
 var $elm$project_metadata_utils$Elm$Docs$Alias = F4(
 	function (name, comment, args, tipe) {
-		return {fG: args, b0: comment, bT: name, eg: tipe};
+		return {ge: args, ci: comment, b5: name, eO: tipe};
 	});
 var $elm$parser$Parser$Forbidden = 0;
 var $elm$project_metadata_utils$Elm$Type$arrow = $elm$parser$Parser$symbol('->');
@@ -30461,7 +32122,7 @@ var $elm$project_metadata_utils$Elm$Type$isInnerVarChar = function (_char) {
 };
 var $elm$project_metadata_utils$Elm$Type$var = function (isFirst) {
 	return $elm$parser$Parser$variable(
-		{eW: $elm$project_metadata_utils$Elm$Type$isInnerVarChar, ff: $elm$core$Set$empty, cm: isFirst});
+		{fs: $elm$project_metadata_utils$Elm$Type$isInnerVarChar, fP: $elm$core$Set$empty, cN: isFirst});
 };
 var $elm$project_metadata_utils$Elm$Type$lowVar = $elm$project_metadata_utils$Elm$Type$var($elm$core$Char$isLower);
 var $elm$project_metadata_utils$Elm$Type$spaces = $elm$parser$Parser$chompWhile(
@@ -30661,17 +32322,17 @@ var $elm$parser$Parser$Advanced$sequenceEnd = F5(
 var $elm$parser$Parser$Advanced$sequence = function (i) {
 	return A2(
 		$elm$parser$Parser$Advanced$skip,
-		$elm$parser$Parser$Advanced$token(i.cm),
+		$elm$parser$Parser$Advanced$token(i.cN),
 		A2(
 			$elm$parser$Parser$Advanced$skip,
-			i.fm,
+			i.fW,
 			A5(
 				$elm$parser$Parser$Advanced$sequenceEnd,
-				$elm$parser$Parser$Advanced$token(i.b6),
-				i.fm,
-				i.e_,
-				$elm$parser$Parser$Advanced$token(i.fk),
-				i.fy)));
+				$elm$parser$Parser$Advanced$token(i.cp),
+				i.fW,
+				i.fw,
+				$elm$parser$Parser$Advanced$token(i.fU),
+				i.f6)));
 };
 var $elm$parser$Parser$Advanced$Forbidden = 0;
 var $elm$parser$Parser$Advanced$Mandatory = 2;
@@ -30689,12 +32350,12 @@ var $elm$parser$Parser$toAdvancedTrailing = function (trailing) {
 var $elm$parser$Parser$sequence = function (i) {
 	return $elm$parser$Parser$Advanced$sequence(
 		{
-			b6: $elm$parser$Parser$toToken(i.b6),
-			e_: i.e_,
-			fk: $elm$parser$Parser$toToken(i.fk),
-			fm: i.fm,
-			cm: $elm$parser$Parser$toToken(i.cm),
-			fy: $elm$parser$Parser$toAdvancedTrailing(i.fy)
+			cp: $elm$parser$Parser$toToken(i.cp),
+			fw: i.fw,
+			fU: $elm$parser$Parser$toToken(i.fU),
+			fW: i.fW,
+			cN: $elm$parser$Parser$toToken(i.cN),
+			f6: $elm$parser$Parser$toAdvancedTrailing(i.f6)
 		});
 };
 var $elm$project_metadata_utils$Elm$Type$tuplize = function (args) {
@@ -30882,12 +32543,12 @@ function $elm$project_metadata_utils$Elm$Type$cyclic$tuple() {
 		$elm$project_metadata_utils$Elm$Type$tuplize,
 		$elm$parser$Parser$sequence(
 			{
-				b6: ')',
-				e_: $elm$project_metadata_utils$Elm$Type$cyclic$tipe(),
-				fk: ',',
-				fm: $elm$project_metadata_utils$Elm$Type$spaces,
-				cm: '(',
-				fy: 0
+				cp: ')',
+				fw: $elm$project_metadata_utils$Elm$Type$cyclic$tipe(),
+				fU: ',',
+				fW: $elm$project_metadata_utils$Elm$Type$spaces,
+				cN: '(',
+				f6: 0
 			}));
 }
 function $elm$project_metadata_utils$Elm$Type$cyclic$tipe() {
@@ -30957,7 +32618,7 @@ var $elm$project_metadata_utils$Elm$Docs$aliasDecoder = A5(
 	A2($elm$json$Json$Decode$field, 'type', $elm$project_metadata_utils$Elm$Type$decoder));
 var $elm$project_metadata_utils$Elm$Docs$Binop = F5(
 	function (name, comment, tipe, associativity, precedence) {
-		return {fH: associativity, b0: comment, bT: name, gz: precedence, eg: tipe};
+		return {gf: associativity, ci: comment, b5: name, g7: precedence, eO: tipe};
 	});
 var $elm$project_metadata_utils$Elm$Docs$Left = 0;
 var $elm$project_metadata_utils$Elm$Docs$None = 1;
@@ -30986,7 +32647,7 @@ var $elm$project_metadata_utils$Elm$Docs$binopDecoder = A6(
 	A2($elm$json$Json$Decode$field, 'precedence', $elm$json$Json$Decode$int));
 var $elm$project_metadata_utils$Elm$Docs$Union = F4(
 	function (name, comment, args, tags) {
-		return {fG: args, b0: comment, bT: name, gS: tags};
+		return {ge: args, ci: comment, b5: name, hr: tags};
 	});
 var $elm$project_metadata_utils$Elm$Docs$tagDecoder = A3(
 	$elm$json$Json$Decode$map2,
@@ -31014,7 +32675,7 @@ var $elm$project_metadata_utils$Elm$Docs$unionDecoder = A5(
 		$elm$json$Json$Decode$list($elm$project_metadata_utils$Elm$Docs$tagDecoder)));
 var $elm$project_metadata_utils$Elm$Docs$Value = F3(
 	function (name, comment, tipe) {
-		return {b0: comment, bT: name, eg: tipe};
+		return {ci: comment, b5: name, eO: tipe};
 	});
 var $elm$project_metadata_utils$Elm$Docs$valueDecoder = A4(
 	$elm$json$Json$Decode$map3,
@@ -31085,7 +32746,7 @@ var $author$project$Elm$Review$Main$elmJsonDecoder = A4(
 	$elm$json$Json$Decode$map3,
 	F3(
 		function (path, raw, project) {
-			return {gx: path, e: project, ck: raw};
+			return {g5: path, e: project, cL: raw};
 		}),
 	A2($elm$json$Json$Decode$field, 'path', $elm$json$Json$Decode$string),
 	A2($elm$json$Json$Decode$field, 'raw', $elm$json$Json$Decode$string),
@@ -31183,14 +32844,14 @@ var $author$project$Elm$Review$Reporter$FilePath = function (a) {
 };
 var $author$project$Elm$Review$Main$askConfirmationToFix = _Platform_outgoingPort('askConfirmationToFix', $elm$core$Basics$identity);
 var $author$project$Elm$Review$Main$encodeChangedFile = function (changedFile) {
-	var _v0 = changedFile.gK;
+	var _v0 = changedFile.hj;
 	var source = _v0;
 	return $elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
 				'path',
-				$author$project$Elm$Review$Main$encodeFilePath(changedFile.gx)),
+				$author$project$Elm$Review$Main$encodeFilePath(changedFile.g5)),
 				_Utils_Tuple2(
 				'source',
 				$elm$json$Json$Encode$string(source))
@@ -31198,11 +32859,11 @@ var $author$project$Elm$Review$Main$encodeChangedFile = function (changedFile) {
 };
 var $jfmengels$elm_review$Review$Rule$errorFixes = function (_v0) {
 	var err = _v0;
-	return err.dP;
+	return err.ek;
 };
 var $jfmengels$elm_review$Review$Rule$errorTarget = function (_v0) {
 	var err = _v0;
-	return err.ft;
+	return err.f1;
 };
 var $jfmengels$elm_review$Review$Fix$Errored = function (a) {
 	return {$: 1, a: a};
@@ -31288,11 +32949,11 @@ var $author$project$Elm$Review$Reporter$hashRange = function (range) {
 			$elm$core$List$map,
 			$elm$core$String$fromInt,
 			_List_fromArray(
-				[range.cm.bs, range.cm.bb, range.b6.bs, range.b6.bb])));
+				[range.cN.bD, range.cN.bh, range.cp.bD, range.cp.bh])));
 };
 var $author$project$Elm$Review$Reporter$hashFix = function (_v0) {
-	var range = _v0.d6;
-	var replacement = _v0.gG;
+	var range = _v0.eD;
+	var replacement = _v0.he;
 	return $author$project$Elm$Review$Reporter$hashRange(range) + ('-' + replacement);
 };
 var $jfmengels$elm_review$Review$Fix$toRecord = function (fix_) {
@@ -31300,16 +32961,16 @@ var $jfmengels$elm_review$Review$Fix$toRecord = function (fix_) {
 		case 1:
 			var range = fix_.a;
 			var replacement = fix_.b;
-			return {d6: range, gG: replacement};
+			return {eD: range, he: replacement};
 		case 0:
 			var range = fix_.a;
-			return {d6: range, gG: ''};
+			return {eD: range, he: ''};
 		default:
 			var position = fix_.a;
 			var replacement = fix_.b;
 			return {
-				d6: {b6: position, cm: position},
-				gG: replacement
+				eD: {cp: position, cN: position},
+				he: replacement
 			};
 	}
 };
@@ -31324,15 +32985,15 @@ var $author$project$Elm$Review$Reporter$hashFixes = function (fixes) {
 };
 var $jfmengels$elm_review$Review$Rule$errorDetails = function (_v0) {
 	var err = _v0;
-	return err.c2;
+	return err.dx;
 };
 var $jfmengels$elm_review$Review$Rule$errorMessage = function (_v0) {
 	var err = _v0;
-	return err.a2;
+	return err.a8;
 };
 var $jfmengels$elm_review$Review$Rule$errorRange = function (_v0) {
 	var err = _v0;
-	return err.d6;
+	return err.eD;
 };
 var $author$project$Elm$Review$RefusedErrorFixes$errorKey = function (error) {
 	var range = $jfmengels$elm_review$Review$Rule$errorRange(error);
@@ -31355,7 +33016,7 @@ var $author$project$Elm$Review$RefusedErrorFixes$errorKey = function (error) {
 					$elm$core$List$map,
 					$elm$core$String$fromInt,
 					_List_fromArray(
-						[range.cm.bs, range.cm.bb, range.b6.bs, range.b6.bb])))
+						[range.cN.bD, range.cN.bh, range.cp.bD, range.cp.bh])))
 			]));
 };
 var $author$project$Elm$Review$RefusedErrorFixes$member = F2(
@@ -31409,7 +33070,7 @@ var $author$project$Elm$Review$Main$findFix = F4(
 								$jfmengels$elm_review$Review$Fix$fix,
 								$jfmengels$elm_review$Review$Rule$errorTarget(error),
 								fixes,
-								file.gK);
+								file.hj);
 							if (_v3.$ === 1) {
 								var problem = _v3.a;
 								var $temp$failedFixesDict = A3(
@@ -31431,9 +33092,9 @@ var $author$project$Elm$Review$Main$findFix = F4(
 									failedFixesDict,
 									$elm$core$Maybe$Just(
 										{
-											dI: error,
-											dN: {gx: file.gx, gK: file.gK},
-											a1: fixedSource
+											ee: error,
+											ej: {g5: file.g5, hj: file.hj},
+											a7: fixedSource
 										}));
 							}
 						}
@@ -31455,37 +33116,37 @@ var $author$project$Elm$Review$Main$findFix = F4(
 var $author$project$Elm$Review$Main$fixableFilesInProject = function (project) {
 	var readme = A2(
 		$elm$core$Maybe$withDefault,
-		{gx: '$$Not a valid module name$$', gK: ''},
+		{g5: '$$Not a valid module name$$', hj: ''},
 		A2(
 			$elm$core$Maybe$map,
 			function (r) {
-				return {gx: r.gx, gK: r.b1};
+				return {g5: r.g5, hj: r.cj};
 			},
 			$jfmengels$elm_review$Review$Project$readme(project)));
 	var moduleFiles = A2(
 		$elm$core$List$map,
 		function (module_) {
 			return _Utils_Tuple2(
-				module_.gx,
-				{gx: module_.gx, gK: module_.gK});
+				module_.g5,
+				{g5: module_.g5, hj: module_.hj});
 		},
 		$jfmengels$elm_review$Review$Project$modules(project));
 	var elmJson = A2(
 		$elm$core$Maybe$withDefault,
-		{gx: '$$Not a valid module name$$', gK: ''},
+		{g5: '$$Not a valid module name$$', hj: ''},
 		A2(
 			$elm$core$Maybe$map,
 			function (r) {
-				return {gx: r.gx, gK: r.ck};
+				return {g5: r.g5, hj: r.cL};
 			},
 			$jfmengels$elm_review$Review$Project$elmJson(project)));
 	return $elm$core$Dict$fromList(
 		A2(
 			$elm$core$List$cons,
-			_Utils_Tuple2(elmJson.gx, elmJson),
+			_Utils_Tuple2(elmJson.g5, elmJson),
 			A2(
 				$elm$core$List$cons,
-				_Utils_Tuple2(readme.gx, readme),
+				_Utils_Tuple2(readme.g5, readme),
 				moduleFiles)));
 };
 var $author$project$Elm$Review$Reporter$Fixing = 1;
@@ -32013,17 +33674,17 @@ var $author$project$Elm$Review$Reporter$formatFixProposal = F4(
 								detailsMode,
 								1,
 								{
-									bf: _List_fromArray(
+									bo: _List_fromArray(
 										[error]),
-									gx: file.gx,
-									gK: file.gK
+									g5: file.g5,
+									hj: file.hj
 								}),
 								_List_fromArray(
 								[
 									$author$project$Elm$Review$Text$inBlue(
 									$author$project$Elm$Review$Text$from('I think I can fix this. Here is my proposal:'))
 								]),
-								A2($author$project$Elm$Review$Reporter$diff, file.gK, fixedSource)
+								A2($author$project$Elm$Review$Reporter$diff, file.hj, fixedSource)
 							])),
 						_List_fromArray(
 						[
@@ -32051,16 +33712,16 @@ var $author$project$Elm$Review$SuppressedErrors$member = F2(
 var $author$project$Elm$Review$Main$fromReviewError = F3(
 	function (suppressedErrors, links, error) {
 		return {
-			c2: $jfmengels$elm_review$Review$Rule$errorDetails(error),
-			eM: A2(
+			dx: $jfmengels$elm_review$Review$Rule$errorDetails(error),
+			fi: A2(
 				$elm$core$Maybe$map,
 				$author$project$Elm$Review$Reporter$hashFixes,
 				$jfmengels$elm_review$Review$Rule$errorFixes(error)),
-			a2: $jfmengels$elm_review$Review$Rule$errorMessage(error),
-			d6: $jfmengels$elm_review$Review$Rule$errorRange(error),
-			fg: A2($author$project$Elm$Review$Main$linkToRule, links, error),
-			ea: $jfmengels$elm_review$Review$Rule$errorRuleName(error),
-			fq: A2($author$project$Elm$Review$SuppressedErrors$member, error, suppressedErrors)
+			a8: $jfmengels$elm_review$Review$Rule$errorMessage(error),
+			eD: $jfmengels$elm_review$Review$Rule$errorRange(error),
+			fQ: A2($author$project$Elm$Review$Main$linkToRule, links, error),
+			eH: $jfmengels$elm_review$Review$Rule$errorRuleName(error),
+			f_: A2($author$project$Elm$Review$SuppressedErrors$member, error, suppressedErrors)
 		};
 	});
 var $elm$json$Json$Encode$dict = F3(
@@ -32080,8 +33741,8 @@ var $elm$json$Json$Encode$dict = F3(
 				dictionary));
 	});
 var $author$project$Elm$Review$Main$encodeFix = function (_v0) {
-	var range = _v0.d6;
-	var replacement = _v0.gG;
+	var range = _v0.eD;
+	var replacement = _v0.he;
 	return $elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
@@ -32101,8 +33762,8 @@ var $author$project$Elm$Review$Main$encodeFixes = function (fixes) {
 };
 var $author$project$Elm$Review$Main$encodeError = F5(
 	function (_v0, links, detailsMode, source, error) {
-		var suppressedErrors = _v0.B;
-		var reviewErrorsAfterSuppression = _v0.an;
+		var suppressedErrors = _v0.F;
+		var reviewErrorsAfterSuppression = _v0.au;
 		var originallySuppressed = A2($author$project$Elm$Review$SuppressedErrors$member, error, suppressedErrors);
 		return $elm$json$Json$Encode$object(
 			A2(
@@ -32174,13 +33835,13 @@ var $author$project$Elm$Review$Main$encodeErrorByFile = F4(
 				[
 					_Utils_Tuple2(
 					'path',
-					$author$project$Elm$Review$Main$encodeFilePath(file.gx)),
+					$author$project$Elm$Review$Main$encodeFilePath(file.g5)),
 					_Utils_Tuple2(
 					'errors',
 					A2(
 						$elm$json$Json$Encode$list,
-						A4($author$project$Elm$Review$Main$encodeError, suppressedErrorsData, links, detailsMode, file.gK),
-						file.bf))
+						A4($author$project$Elm$Review$Main$encodeError, suppressedErrorsData, links, detailsMode, file.hj),
+						file.bo))
 				]));
 	});
 var $author$project$Elm$Review$SuppressedErrors$fromReviewErrors = function (reviewErrors) {
@@ -32208,7 +33869,7 @@ var $author$project$Elm$Review$SuppressedErrors$fromReviewErrors = function (rev
 var $author$project$Elm$Review$Reporter$Global = {$: 1};
 var $jfmengels$elm_review$Review$Project$modulesThatFailedToParse = function (_v0) {
 	var project = _v0;
-	return project.ch;
+	return project.cH;
 };
 var $author$project$Elm$Review$Main$groupErrorsByFile = F2(
 	function (project, errors) {
@@ -32218,22 +33879,22 @@ var $author$project$Elm$Review$Main$groupErrorsByFile = F2(
 					A2(
 					$elm$core$List$map,
 					function (file) {
-						return {gx: file.gx, gK: file.gK};
+						return {g5: file.g5, hj: file.hj};
 					},
 					$jfmengels$elm_review$Review$Project$modules(project)),
 					_List_fromArray(
 					[
-						{gx: 'GLOBAL ERROR', gK: ''},
-						{gx: 'CONFIGURATION ERROR', gK: ''}
+						{g5: 'GLOBAL ERROR', hj: ''},
+						{g5: 'CONFIGURATION ERROR', hj: ''}
 					]),
 					function () {
 					var _v0 = $jfmengels$elm_review$Review$Project$elmJson(project);
 					if (!_v0.$) {
-						var path = _v0.a.gx;
-						var raw = _v0.a.ck;
+						var path = _v0.a.g5;
+						var raw = _v0.a.cL;
 						return _List_fromArray(
 							[
-								{gx: path, gK: raw}
+								{g5: path, hj: raw}
 							]);
 					} else {
 						return _List_Nil;
@@ -32242,11 +33903,11 @@ var $author$project$Elm$Review$Main$groupErrorsByFile = F2(
 					function () {
 					var _v1 = $jfmengels$elm_review$Review$Project$readme(project);
 					if (!_v1.$) {
-						var path = _v1.a.gx;
-						var content = _v1.a.b1;
+						var path = _v1.a.g5;
+						var content = _v1.a.cj;
 						return _List_fromArray(
 							[
-								{gx: path, gK: content}
+								{g5: path, hj: content}
 							]);
 					} else {
 						return _List_Nil;
@@ -32257,22 +33918,22 @@ var $author$project$Elm$Review$Main$groupErrorsByFile = F2(
 		return A2(
 			$elm$core$List$filter,
 			function (file) {
-				return !$elm$core$List$isEmpty(file.bf);
+				return !$elm$core$List$isEmpty(file.bo);
 			},
 			A2(
 				$elm$core$List$map,
 				function (file) {
 					return {
-						bf: A2(
+						bo: A2(
 							$elm$core$List$filter,
 							function (error) {
 								return _Utils_eq(
-									file.gx,
+									file.g5,
 									$jfmengels$elm_review$Review$Rule$errorFilePath(error));
 							},
 							errors),
-						gx: (file.gx === 'GLOBAL ERROR') ? $author$project$Elm$Review$Reporter$Global : ((file.gx === 'CONFIGURATION ERROR') ? $author$project$Elm$Review$Reporter$ConfigurationError : $author$project$Elm$Review$Reporter$FilePath(file.gx)),
-						gK: file.gK
+						g5: (file.g5 === 'GLOBAL ERROR') ? $author$project$Elm$Review$Reporter$Global : ((file.g5 === 'CONFIGURATION ERROR') ? $author$project$Elm$Review$Reporter$ConfigurationError : $author$project$Elm$Review$Reporter$FilePath(file.g5)),
+						hj: file.hj
 					};
 				},
 				files));
@@ -32281,18 +33942,22 @@ var $author$project$Elm$Review$Main$reviewReport = _Platform_outgoingPort('revie
 var $author$project$Elm$Review$Main$makeReport = F2(
 	function (failedFixesDict, model) {
 		var _v0 = function () {
-			if ($elm$core$List$isEmpty(model.an) && model.cq) {
-				var suppressedErrors = $author$project$Elm$Review$SuppressedErrors$fromReviewErrors(model.bW);
+			if ($elm$core$List$isEmpty(model.au) && model.cR) {
+				var suppressedErrors = $author$project$Elm$Review$SuppressedErrors$fromReviewErrors(model.b9);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{B: suppressedErrors}),
+						{a_: model.ct, F: suppressedErrors}),
 					A2(
 						$author$project$Elm$Review$SuppressedErrors$encode,
-						A2($elm$core$List$map, $jfmengels$elm_review$Review$Rule$ruleName, model.bt),
+						A2($elm$core$List$map, $jfmengels$elm_review$Review$Rule$ruleName, model.a_),
 						suppressedErrors));
 			} else {
-				return _Utils_Tuple2(model, $elm$json$Json$Encode$null);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{a_: model.ct}),
+					$elm$json$Json$Encode$null);
 			}
 		}();
 		var newModel = _v0.a;
@@ -32306,46 +33971,46 @@ var $author$project$Elm$Review$Main$makeReport = F2(
 							_Utils_Tuple2(
 							'success',
 							$elm$json$Json$Encode$bool(
-								$elm$core$List$isEmpty(model.an))),
+								$elm$core$List$isEmpty(model.au))),
 							_Utils_Tuple2(
 							'errors',
 							function () {
-								var _v1 = newModel.br;
+								var _v1 = newModel.bC;
 								if (!_v1) {
-									var errorsByFile = A2($author$project$Elm$Review$Main$groupErrorsByFile, model.e, model.an);
+									var errorsByFile = A2($author$project$Elm$Review$Main$groupErrorsByFile, model.e, model.au);
 									var filesWithError = A2(
 										$elm$core$List$map,
 										function (file) {
 											return {
-												bf: A2(
+												bo: A2(
 													$elm$core$List$map,
-													A2($author$project$Elm$Review$Main$fromReviewError, newModel.B, newModel.bn),
-													file.bf),
-												gx: file.gx,
-												gK: file.gK
+													A2($author$project$Elm$Review$Main$fromReviewError, newModel.F, newModel.bx),
+													file.bo),
+												g5: file.g5,
+												hj: file.hj
 											};
 										},
 										errorsByFile);
 									return $author$project$Elm$Review$Main$encodeReport(
 										A2(
 											$author$project$Elm$Review$Reporter$formatReport,
-											{ab: newModel.ab, b7: newModel.b7, eL: failedFixesDict, ci: newModel.ci, B: newModel.B, aC: newModel.aC},
+											{ai: newModel.ai, cq: newModel.cq, fh: failedFixesDict, cI: newModel.cI, F: newModel.F, aH: newModel.aH},
 											filesWithError));
 								} else {
-									var errorsByFile = A2($author$project$Elm$Review$Main$groupErrorsByFile, model.e, model.bW);
+									var errorsByFile = A2($author$project$Elm$Review$Main$groupErrorsByFile, model.e, model.b9);
 									return A2(
 										$elm$json$Json$Encode$list,
 										A3(
 											$author$project$Elm$Review$Main$encodeErrorByFile,
-											{an: model.an, B: newModel.B},
-											newModel.bn,
-											newModel.ab),
+											{au: model.au, F: newModel.F},
+											newModel.bx,
+											newModel.ai),
 										errorsByFile);
 								}
 							}()),
 							_Utils_Tuple2(
 							'extracts',
-							A3($elm$json$Json$Encode$dict, $elm$core$Basics$identity, $elm$core$Basics$identity, newModel.cE)),
+							A3($elm$json$Json$Encode$dict, $elm$core$Basics$identity, $elm$core$Basics$identity, newModel.c7)),
 							_Utils_Tuple2('suppressedErrors', suppressedErrorsForJson)
 						]))));
 	});
@@ -32353,18 +34018,18 @@ var $author$project$Elm$Review$Main$fixOneByOne = function (model) {
 	var _v0 = A4(
 		$author$project$Elm$Review$Main$findFix,
 		$elm$core$Dict$empty,
-		model.bV,
+		model.b8,
 		$author$project$Elm$Review$Main$fixableFilesInProject(model.e),
-		model.an).b;
+		model.au).b;
 	if (!_v0.$) {
-		var file = _v0.a.dN;
-		var error = _v0.a.dI;
-		var fixedSource = _v0.a.a1;
+		var file = _v0.a.ej;
+		var error = _v0.a.ee;
+		var fixedSource = _v0.a.a7;
 		return _Utils_Tuple2(
 			_Utils_update(
 				model,
 				{
-					at: $author$project$Elm$Review$Main$AwaitingError(error)
+					aA: $author$project$Elm$Review$Main$AwaitingError(error)
 				}),
 			$author$project$Elm$Review$Main$askConfirmationToFix(
 				$elm$json$Json$Encode$object(
@@ -32375,12 +34040,12 @@ var $author$project$Elm$Review$Main$fixOneByOne = function (model) {
 							$author$project$Elm$Review$Main$encodeReport(
 								A4(
 									$author$project$Elm$Review$Reporter$formatFixProposal,
-									model.ab,
+									model.ai,
 									{
-										gx: $author$project$Elm$Review$Reporter$FilePath(file.gx),
-										gK: file.gK
+										g5: $author$project$Elm$Review$Reporter$FilePath(file.g5),
+										hj: file.hj
 									},
-									A3($author$project$Elm$Review$Main$fromReviewError, model.B, model.bn, error),
+									A3($author$project$Elm$Review$Main$fromReviewError, model.F, model.bx, error),
 									fixedSource))),
 							_Utils_Tuple2(
 							'changedFiles',
@@ -32390,8 +34055,8 @@ var $author$project$Elm$Review$Main$fixOneByOne = function (model) {
 								_List_fromArray(
 									[
 										{
-										gx: $author$project$Elm$Review$Reporter$FilePath(file.gx),
-										gK: fixedSource
+										g5: $author$project$Elm$Review$Reporter$FilePath(file.g5),
+										hj: fixedSource
 									}
 									]))),
 							_Utils_Tuple2(
@@ -32418,14 +34083,14 @@ var $author$project$Elm$Review$Main$refuseError = F2(
 		return _Utils_update(
 			model,
 			{
-				bV: A2($author$project$Elm$Review$RefusedErrorFixes$insert, error, model.bV)
+				b8: A2($author$project$Elm$Review$RefusedErrorFixes$insert, error, model.b8)
 			});
 	});
 var $jfmengels$elm_review$Review$Project$removeDependencies = function (_v0) {
 	var project = _v0;
 	return _Utils_update(
 		project,
-		{aM: $elm$core$Dict$empty});
+		{aR: $elm$core$Dict$empty});
 };
 var $jfmengels$elm_review$Review$Project$removeModule = F2(
 	function (path, project) {
@@ -32497,17 +34162,17 @@ var $author$project$Elm$Review$Main$addFixedErrorForFile = F3(
 			$elm$core$List$cons,
 			A3(
 				$author$project$Elm$Review$CliCommunication$appliedFix,
-				model.aG,
-				$author$project$Elm$Review$Main$countErrors(model.ad),
+				model.aL,
+				$author$project$Elm$Review$Main$countErrors(model.ak),
 				error),
 			A2(
 				$elm$core$Maybe$withDefault,
 				_List_Nil,
-				A2($elm$core$Dict$get, path, model.ad)));
+				A2($elm$core$Dict$get, path, model.ak)));
 		return _Utils_update(
 			model,
 			{
-				ad: A3($elm$core$Dict$insert, path, errorsForFile, model.ad)
+				ak: A3($elm$core$Dict$insert, path, errorsForFile, model.ak)
 			});
 	});
 var $author$project$Elm$Review$Main$DependenciesChanged = 1;
@@ -32525,7 +34190,7 @@ var $author$project$Elm$Review$Main$normalizeApplicationDeps = function (applica
 						$elm$project_metadata_utils$Elm$Package$toString(name),
 						version);
 				},
-				application.eA)),
+				application.e6)),
 			$elm$core$Dict$fromList(
 			A2(
 				$elm$core$List$map,
@@ -32536,7 +34201,7 @@ var $author$project$Elm$Review$Main$normalizeApplicationDeps = function (applica
 						$elm$project_metadata_utils$Elm$Package$toString(name),
 						version);
 				},
-				application.eB)),
+				application.e7)),
 			$elm$core$Dict$fromList(
 			A2(
 				$elm$core$List$map,
@@ -32547,7 +34212,7 @@ var $author$project$Elm$Review$Main$normalizeApplicationDeps = function (applica
 						$elm$project_metadata_utils$Elm$Package$toString(name),
 						version);
 				},
-				application.fv)),
+				application.f3)),
 			$elm$core$Dict$fromList(
 			A2(
 				$elm$core$List$map,
@@ -32558,7 +34223,7 @@ var $author$project$Elm$Review$Main$normalizeApplicationDeps = function (applica
 						$elm$project_metadata_utils$Elm$Package$toString(name),
 						version);
 				},
-				application.fw))
+				application.f4))
 		]);
 };
 var $author$project$Elm$Review$Main$normalizePackageDeps = function (application) {
@@ -32574,7 +34239,7 @@ var $author$project$Elm$Review$Main$normalizePackageDeps = function (application
 						$elm$project_metadata_utils$Elm$Package$toString(name),
 						constraint);
 				},
-				application.ez)),
+				application.e5)),
 			$elm$core$Dict$fromList(
 			A2(
 				$elm$core$List$map,
@@ -32585,7 +34250,7 @@ var $author$project$Elm$Review$Main$normalizePackageDeps = function (application
 						$elm$project_metadata_utils$Elm$Package$toString(name),
 						constraint);
 				},
-				application.fu))
+				application.f2))
 		]);
 };
 var $author$project$Elm$Review$Main$changesToElm = F2(
@@ -32615,8 +34280,8 @@ var $author$project$Elm$Review$Main$changesToElm = F2(
 								_List_fromArray(
 									[
 										_Utils_eq(
-										$elm$core$Set$fromList(oldApp.eC),
-										$elm$core$Set$fromList(newApp.eC)) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(0),
+										$elm$core$Set$fromList(oldApp.e8),
+										$elm$core$Set$fromList(newApp.e8)) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(0),
 										_Utils_eq(
 										$author$project$Elm$Review$Main$normalizeApplicationDeps(oldApp),
 										$author$project$Elm$Review$Main$normalizeApplicationDeps(newApp)) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(1)
@@ -32655,7 +34320,7 @@ var $jfmengels$elm_review$Review$Options$withSuppressedErrors = F2(
 		var reviewOptions = _v0;
 		return _Utils_update(
 			reviewOptions,
-			{fr: suppressions});
+			{f$: suppressions});
 	});
 var $author$project$Elm$Review$SuppressedErrors$addToReviewOptions = F2(
 	function (_v0, reviewOptions) {
@@ -32666,11 +34331,11 @@ var $jfmengels$elm_review$Review$Options$Internal$Disabled = {$: 0};
 var $jfmengels$elm_review$Review$Logger$Logger = $elm$core$Basics$identity;
 var $jfmengels$elm_review$Review$Logger$none = $elm$core$Basics$identity;
 var $jfmengels$elm_review$Review$Options$defaults = {
-	eJ: false,
-	a0: $jfmengels$elm_review$Review$Options$Internal$Disabled,
-	eU: $elm$core$Basics$always(false),
-	dZ: $jfmengels$elm_review$Review$Logger$none,
-	fr: $elm$core$Dict$empty
+	ff: false,
+	aS: $jfmengels$elm_review$Review$Options$Internal$Disabled,
+	fq: $elm$core$Basics$always(false),
+	eu: $jfmengels$elm_review$Review$Logger$none,
+	f$: $elm$core$Dict$empty
 };
 var $author$project$Elm$Review$RefusedErrorFixes$errorKeyUsingRecord = function (error) {
 	return A2(
@@ -32678,10 +34343,10 @@ var $author$project$Elm$Review$RefusedErrorFixes$errorKeyUsingRecord = function 
 		'###',
 		_List_fromArray(
 			[
-				error.ea,
-				error.f3,
-				error.a2,
-				A2($elm$core$String$join, '\n', error.c2),
+				error.eH,
+				error.gD,
+				error.a8,
+				A2($elm$core$String$join, '\n', error.dx),
 				A2(
 				$elm$core$String$join,
 				'-',
@@ -32689,7 +34354,7 @@ var $author$project$Elm$Review$RefusedErrorFixes$errorKeyUsingRecord = function 
 					$elm$core$List$map,
 					$elm$core$String$fromInt,
 					_List_fromArray(
-						[error.d6.cm.bs, error.d6.cm.bb, error.d6.b6.bs, error.d6.b6.bb])))
+						[error.eD.cN.bD, error.eD.cN.bh, error.eD.cp.bD, error.eD.cp.bh])))
 			]));
 };
 var $author$project$Elm$Review$RefusedErrorFixes$memberUsingRecord = F2(
@@ -32708,17 +34373,17 @@ var $jfmengels$elm_review$Review$Rule$checkForConfigurationErrors = function (ru
 			return A2(
 				$elm$core$Maybe$map,
 				function (_v0) {
-					var message = _v0.a2;
-					var details = _v0.c2;
+					var message = _v0.a8;
+					var details = _v0.dx;
 					return {
-						c2: details,
-						f3: 'CONFIGURATION ERROR',
-						dP: $elm$core$Maybe$Nothing,
-						a2: message,
-						$7: false,
-						d6: $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
-						ea: $jfmengels$elm_review$Review$Rule$ruleName(rule),
-						ft: 3
+						dx: details,
+						gD: 'CONFIGURATION ERROR',
+						ek: $elm$core$Maybe$Nothing,
+						a8: message,
+						dU: false,
+						eD: $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
+						eH: $jfmengels$elm_review$Review$Rule$ruleName(rule),
+						f1: 3
 					};
 				},
 				$jfmengels$elm_review$Review$Rule$getConfigurationError(rule));
@@ -32727,9 +34392,9 @@ var $jfmengels$elm_review$Review$Rule$checkForConfigurationErrors = function (ru
 	return $elm$core$List$isEmpty(errors) ? $elm$core$Result$Ok(0) : $elm$core$Result$Err(errors);
 };
 var $jfmengels$elm_review$Review$Rule$elmReviewGlobalError = function (_v0) {
-	var message = _v0.a2;
-	var details = _v0.c2;
-	return {c2: details, f3: 'GLOBAL ERROR', dP: $elm$core$Maybe$Nothing, a2: message, $7: false, d6: $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, ea: '', ft: 3};
+	var message = _v0.a8;
+	var details = _v0.dx;
+	return {dx: details, gD: 'GLOBAL ERROR', ek: $elm$core$Maybe$Nothing, a8: message, dU: false, eD: $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange, eH: '', f1: 3};
 };
 var $elm$core$List$sort = function (xs) {
 	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
@@ -32741,17 +34406,17 @@ var $jfmengels$elm_review$Review$Rule$duplicateModulesGlobalError = function (du
 			function (s) {
 				return '\n  - ' + s;
 			},
-			$elm$core$List$sort(duplicate.gy)));
+			$elm$core$List$sort(duplicate.g6)));
 	return $jfmengels$elm_review$Review$Rule$errorToReviewError(
 		$jfmengels$elm_review$Review$Rule$elmReviewGlobalError(
 			{
-				c2: _List_fromArray(
+				dx: _List_fromArray(
 					[
-						'I found several modules with the name `' + (A2($elm$core$String$join, '.', duplicate.dn) + '`. Depending on how I choose to resolve this, I might give you different reports. Since this is a compiler error anyway, I require this problem to be solved. Please fix this then try running `elm-review` again.'),
+						'I found several modules with the name `' + (A2($elm$core$String$join, '.', duplicate.dR) + '`. Depending on how I choose to resolve this, I might give you different reports. Since this is a compiler error anyway, I require this problem to be solved. Please fix this then try running `elm-review` again.'),
 						'Here are the paths to some of the files that share a module name:' + paths,
 						'It is possible that you requested me to look at several projects, and that modules from each project share the same name. I don\'t recommend reviewing several projects at the same time, as I can only handle one `elm.json`. I instead suggest running `elm-review` twice, once for each project.'
 					]),
-				a2: 'Found several modules named `' + (A2($elm$core$String$join, '.', duplicate.dn) + '`')
+				a8: 'Found several modules named `' + (A2($elm$core$String$join, '.', duplicate.dR) + '`')
 			}));
 };
 var $jfmengels$elm_review$Review$ImportCycle$wrapInCycle = function (string) {
@@ -32780,12 +34445,12 @@ var $jfmengels$elm_review$Review$ImportCycle$printCycle = function (moduleNames)
 };
 var $jfmengels$elm_review$Review$ImportCycle$error = function (cycle) {
 	return {
-		c2: _List_fromArray(
+		dx: _List_fromArray(
 			[
 				$jfmengels$elm_review$Review$ImportCycle$printCycle(cycle),
 				'Learn more about why this is disallowed and how to break cycles here:<https://elm-lang.org/0.19.1/import-cycles>'
 			]),
-		a2: 'Your module imports form a cycle'
+		a8: 'Your module imports form a cycle'
 	};
 };
 var $jfmengels$elm_review$Review$Rule$importCycleError = function (cycle) {
@@ -32818,7 +34483,7 @@ var $jfmengels$elm_review$Review$Project$Valid$duplicateModuleNames = F2(
 				var moduleName = $jfmengels$elm_review$Review$Project$Valid$getModuleName(projectModule);
 				var _v1 = A2($elm$core$Dict$get, moduleName, visitedModules);
 				if (_v1.$ === 1) {
-					var $temp$visitedModules = A3($elm$core$Dict$insert, moduleName, projectModule.gx, visitedModules),
+					var $temp$visitedModules = A3($elm$core$Dict$insert, moduleName, projectModule.g5, visitedModules),
 						$temp$projectModules = restOfModules;
 					visitedModules = $temp$visitedModules;
 					projectModules = $temp$projectModules;
@@ -32827,17 +34492,17 @@ var $jfmengels$elm_review$Review$Project$Valid$duplicateModuleNames = F2(
 					var path = _v1.a;
 					return $elm$core$Maybe$Just(
 						{
-							dn: moduleName,
-							gy: A2(
+							dR: moduleName,
+							g6: A2(
 								$elm$core$List$cons,
 								path,
 								A2(
 									$elm$core$List$cons,
-									projectModule.gx,
+									projectModule.g5,
 									A2(
 										$elm$core$List$map,
 										function ($) {
-											return $.gx;
+											return $.g5;
 										},
 										A2(
 											$elm$core$List$filter,
@@ -32853,7 +34518,7 @@ var $jfmengels$elm_review$Review$Project$Valid$duplicateModuleNames = F2(
 		}
 	});
 var $jfmengels$elm_review$Vendor$Graph$alongIncomingEdges = function (ctx) {
-	return $jfmengels$elm_review$Vendor$IntDict$keys(ctx.ga);
+	return $jfmengels$elm_review$Vendor$IntDict$keys(ctx.gK);
 };
 var $jfmengels$elm_review$Vendor$Fifo$Fifo = F2(
 	function (a, b) {
@@ -32961,7 +34626,7 @@ var $jfmengels$elm_review$Review$ImportCycle$reachedTarget = F2(
 		var _v0 = $elm$core$List$head(path);
 		if (!_v0.$) {
 			var node = _v0.a;
-			return _Utils_eq(node.e8.df, targetNode);
+			return _Utils_eq(node.fG.dH, targetNode);
 		} else {
 			return false;
 		}
@@ -32973,8 +34638,8 @@ var $jfmengels$elm_review$Review$ImportCycle$visitorDiscoverCycle = F4(
 				var _v0 = $elm$core$List$head(path);
 				if (!_v0.$) {
 					var head = _v0.a;
-					return A2($jfmengels$elm_review$Vendor$IntDict$member, head.e8.df, head.ga) ? _List_fromArray(
-						[head.e8]) : acc;
+					return A2($jfmengels$elm_review$Vendor$IntDict$member, head.fG.dH, head.gK) ? _List_fromArray(
+						[head.fG]) : acc;
 				} else {
 					return acc;
 				}
@@ -32983,7 +34648,7 @@ var $jfmengels$elm_review$Review$ImportCycle$visitorDiscoverCycle = F4(
 					return A2(
 						$elm$core$List$map,
 						function ($) {
-							return $.e8;
+							return $.fG;
 						},
 						path);
 				} else {
@@ -33006,9 +34671,9 @@ var $jfmengels$elm_review$Review$ImportCycle$findSmallerCycle = F3(
 				var cycle = A5(
 					$jfmengels$elm_review$Vendor$Graph$guidedBfs,
 					$jfmengels$elm_review$Vendor$Graph$alongIncomingEdges,
-					$jfmengels$elm_review$Review$ImportCycle$visitorDiscoverCycle(startingNode.df),
+					$jfmengels$elm_review$Review$ImportCycle$visitorDiscoverCycle(startingNode.dH),
 					_List_fromArray(
-						[startingNode.df]),
+						[startingNode.dH]),
 					_List_Nil,
 					graph).a;
 				var newBest = (($elm$core$List$length(cycle) > 0) && (_Utils_cmp(
@@ -33033,15 +34698,15 @@ var $jfmengels$elm_review$Review$ImportCycle$findCycle = F2(
 		var initialCycle = A5(
 			$jfmengels$elm_review$Vendor$Graph$guidedBfs,
 			$jfmengels$elm_review$Vendor$Graph$alongIncomingEdges,
-			$jfmengels$elm_review$Review$ImportCycle$visitorDiscoverCycle(edge.gT),
+			$jfmengels$elm_review$Review$ImportCycle$visitorDiscoverCycle(edge.hs),
 			_List_fromArray(
-				[edge.f5]),
+				[edge.gF]),
 			_List_Nil,
 			graph).a;
 		return A2(
 			$elm$core$List$map,
 			function ($) {
-				return $.cO;
+				return $.dh;
 			},
 			A3($jfmengels$elm_review$Review$ImportCycle$findSmallerCycle, graph, initialCycle, initialCycle));
 	});
@@ -33050,59 +34715,54 @@ var $jfmengels$elm_review$Review$Project$Valid$fromProjectAndGraph = F3(
 		var project = _v0;
 		var directDependencies_ = $jfmengels$elm_review$Review$Project$Valid$computeDirectDependencies(project);
 		return {
-			aM: project.aM,
-			aZ: $jfmengels$elm_review$Review$Project$Valid$computeDependencyModules(directDependencies_),
-			be: directDependencies_,
-			c5: project.c5,
-			e2: moduleGraph_,
-			cg: A3(
-				$elm$core$Dict$foldl,
-				F3(
-					function (_v1, module_, dict) {
-						return A3(
-							$elm$core$Dict$insert,
-							$jfmengels$elm_review$Review$Project$Valid$getModuleName(module_),
-							module_,
-							dict);
-					}),
-				$elm$core$Dict$empty,
-				project.a3),
-			bS: project.a3,
-			cR: project.fO,
-			d9: project.d9,
-			cT: $jfmengels$elm_review$Vendor$Graph$topologicalSort(acyclicGraph),
-			ec: project.ec
+			aR: project.aR,
+			a3: $jfmengels$elm_review$Review$Project$Valid$computeDependencyModules(directDependencies_),
+			bk: directDependencies_,
+			dz: project.dz,
+			fA: moduleGraph_,
+			bb: project.ba,
+			dl: project.gm,
+			eG: project.eG,
+			$7: $jfmengels$elm_review$Vendor$Graph$topologicalSort(acyclicGraph),
+			eK: project.eK
 		};
 	});
 var $jfmengels$elm_review$Review$Project$Valid$parse = function (project) {
 	var p = project;
-	if (!$elm$core$List$isEmpty(p.ch)) {
+	if (!$elm$core$List$isEmpty(p.cH)) {
 		return $elm$core$Result$Err(
 			$jfmengels$elm_review$Review$Project$InvalidProjectError$SomeModulesFailedToParse(
 				A2(
 					$elm$core$List$map,
 					function ($) {
-						return $.gx;
+						return $.g5;
 					},
-					p.ch)));
+					p.cH)));
 	} else {
-		if ($elm$core$Dict$isEmpty(p.a3)) {
+		if ($elm$core$Dict$isEmpty(p.ba)) {
 			return $elm$core$Result$Err($jfmengels$elm_review$Review$Project$InvalidProjectError$NoModulesError);
 		} else {
-			var projectModules = $elm$core$Dict$values(p.a3);
+			var projectModules = $elm$core$Dict$values(p.ba);
 			var _v0 = A2($jfmengels$elm_review$Review$Project$Valid$duplicateModuleNames, $elm$core$Dict$empty, projectModules);
 			if (!_v0.$) {
 				var duplicate = _v0.a;
 				return $elm$core$Result$Err(
 					$jfmengels$elm_review$Review$Project$InvalidProjectError$DuplicateModuleNames(duplicate));
 			} else {
-				var graph = $jfmengels$elm_review$Review$Project$Valid$buildModuleGraph(p.a3);
+				var graph = $jfmengels$elm_review$Review$Project$Valid$buildModuleGraph(p.ba);
 				var _v1 = $jfmengels$elm_review$Vendor$Graph$checkAcyclic(graph);
 				if (_v1.$ === 1) {
 					var edge = _v1.a;
 					return $elm$core$Result$Err(
 						$jfmengels$elm_review$Review$Project$InvalidProjectError$ImportCycleError(
-							$elm$core$List$reverse(
+							A2(
+								$elm$core$List$filterMap,
+								function (path) {
+									return A2(
+										$elm$core$Maybe$map,
+										$jfmengels$elm_review$Review$Project$Valid$getModuleName,
+										A2($elm$core$Dict$get, path, p.ba));
+								},
 								A2($jfmengels$elm_review$Review$ImportCycle$findCycle, graph, edge))));
 				} else {
 					var acyclicGraph = _v1.a;
@@ -33124,15 +34784,15 @@ var $jfmengels$elm_review$Review$Project$Valid$parse = function (project) {
 };
 var $jfmengels$elm_review$Review$Rule$parsingError = function (path) {
 	return {
-		c2: _List_fromArray(
+		dx: _List_fromArray(
 			['I could not understand the content of this file, and this prevents me from analyzing it. It is highly likely that the contents of the file is not correct Elm code.', 'I need this file to be fixed before analyzing the rest of the project. If I didn\'t, I would potentially report incorrect things.', 'Hint: Try running `elm make`. The compiler should give you better hints on how to resolve the problem.']),
-		f3: path,
-		dP: $elm$core$Maybe$Nothing,
-		a2: path + ' is not a correct Elm module',
-		$7: false,
-		d6: $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
-		ea: 'ParsingError',
-		ft: 0
+		gD: path,
+		ek: $elm$core$Maybe$Nothing,
+		a8: path + ' is not a correct Elm module',
+		dU: false,
+		eD: $stil4m$elm_syntax$Elm$Syntax$Range$emptyRange,
+		eH: 'ParsingError',
+		f1: 0
 	};
 };
 var $jfmengels$elm_review$Review$Rule$getModulesSortedByImport = function (project) {
@@ -33168,9 +34828,9 @@ var $jfmengels$elm_review$Review$Rule$getModulesSortedByImport = function (proje
 								'Incorrect project',
 								$jfmengels$elm_review$Review$Rule$elmReviewGlobalError(
 									{
-										c2: _List_fromArray(
+										dx: _List_fromArray(
 											['I need to look at some Elm modules. Maybe you have specified folders that do not exist?']),
-										a2: 'This project does not contain any Elm modules'
+										a8: 'This project does not contain any Elm modules'
 									})))
 						]));
 		}
@@ -33185,7 +34845,7 @@ var $jfmengels$elm_review$Review$Rule$moveFixableRulesFirst = function (rules) {
 		$elm$core$List$sortBy,
 		function (_v0) {
 			var rule = _v0;
-			return (rule.bT === 'NoUnused.Variables') ? 0 : ((rule.bT === 'NoUnused.Exports') ? 1 : (rule.gB ? 2 : 3));
+			return (rule.b5 === 'NoUnused.Variables') ? 0 : ((rule.b5 === 'NoUnused.Exports') ? 1 : (rule.g9 ? 2 : 3));
 		},
 		rules);
 };
@@ -33202,35 +34862,36 @@ var $jfmengels$elm_review$Review$Rule$runRulesHelp = F3(
 			if (!remainingRules.b) {
 				return acc;
 			} else {
-				var name = remainingRules.a.bT;
-				var exceptions = remainingRules.a.q;
-				var ruleImplementation = remainingRules.a.aV;
+				var name = remainingRules.a.b5;
+				var id = remainingRules.a.dH;
+				var exceptions = remainingRules.a.p;
+				var ruleImplementation = remainingRules.a.aZ;
 				var restOfRules = remainingRules.b;
-				var result = A4(ruleImplementation, reviewOptions, exceptions, acc.f4, acc.e);
-				var errors = A3($jfmengels$elm_review$Vendor$ListExtra$orderIndependentMapAppend, $jfmengels$elm_review$Review$Rule$errorToReviewError, result.bf, acc.bf);
-				if (A2($jfmengels$elm_review$Review$Options$Internal$shouldAbort, reviewOptions, result.f4)) {
+				var result = A5(ruleImplementation, reviewOptions, id, exceptions, acc.gE, acc.e);
+				var errors = A3($jfmengels$elm_review$Vendor$ListExtra$orderIndependentMapAppend, $jfmengels$elm_review$Review$Rule$errorToReviewError, result.bo, acc.bo);
+				if (A2($jfmengels$elm_review$Review$Options$Internal$shouldAbort, reviewOptions, result.gE)) {
 					return {
-						bf: errors,
-						cE: acc.cE,
-						f4: result.f4,
+						bo: errors,
+						c7: acc.c7,
+						gE: result.gE,
 						e: result.e,
-						bt: _Utils_ap(
+						a_: _Utils_ap(
 							restOfRules,
-							A2($elm$core$List$cons, result.cS, acc.bt))
+							A2($elm$core$List$cons, result.dn, acc.a_))
 					};
 				} else {
-					if (A2($jfmengels$elm_review$Review$Fix$FixedErrors$hasChanged, result.f4, acc.f4)) {
+					if (A2($jfmengels$elm_review$Review$Fix$FixedErrors$hasChanged, result.gE, acc.gE)) {
 						var $temp$reviewOptions = reviewOptions,
 							$temp$remainingRules = _Utils_ap(
-							$elm$core$List$reverse(acc.bt),
+							$elm$core$List$reverse(acc.a_),
 							restOfRules),
 							$temp$acc = {
-							bf: errors,
-							cE: acc.cE,
-							f4: result.f4,
+							bo: errors,
+							c7: acc.c7,
+							gE: result.gE,
 							e: result.e,
-							bt: _List_fromArray(
-								[result.cS])
+							a_: _List_fromArray(
+								[result.dn])
 						};
 						reviewOptions = $temp$reviewOptions;
 						remainingRules = $temp$remainingRules;
@@ -33240,19 +34901,19 @@ var $jfmengels$elm_review$Review$Rule$runRulesHelp = F3(
 						var $temp$reviewOptions = reviewOptions,
 							$temp$remainingRules = restOfRules,
 							$temp$acc = {
-							bf: errors,
-							cE: function () {
-								var _v1 = result.eJ;
+							bo: errors,
+							c7: function () {
+								var _v1 = result.ff;
 								if (!_v1.$) {
 									var extract = _v1.a;
-									return A3($elm$core$Dict$insert, name, extract, acc.cE);
+									return A3($elm$core$Dict$insert, name, extract, acc.c7);
 								} else {
-									return acc.cE;
+									return acc.c7;
 								}
 							}(),
-							f4: result.f4,
+							gE: result.gE,
 							e: result.e,
-							bt: A2($elm$core$List$cons, result.cS, acc.bt)
+							a_: A2($elm$core$List$cons, result.dn, acc.a_)
 						};
 						reviewOptions = $temp$reviewOptions;
 						remainingRules = $temp$remainingRules;
@@ -33270,7 +34931,7 @@ var $jfmengels$elm_review$Review$Rule$runRules = F3(
 			$jfmengels$elm_review$Review$Rule$runRulesHelp,
 			reviewOptions,
 			$jfmengels$elm_review$Review$Rule$moveFixableRulesFirst(rules),
-			{bf: _List_Nil, cE: $elm$core$Dict$empty, f4: $jfmengels$elm_review$Review$Fix$FixedErrors$empty, e: project, bt: _List_Nil});
+			{bo: _List_Nil, c7: $elm$core$Dict$empty, gE: $jfmengels$elm_review$Review$Fix$FixedErrors$empty, e: project, a_: _List_Nil});
 	});
 var $jfmengels$elm_review$Review$Fix$FixedErrors$toDict = function (_v0) {
 	var dict = _v0.b;
@@ -33279,14 +34940,14 @@ var $jfmengels$elm_review$Review$Fix$FixedErrors$toDict = function (_v0) {
 var $jfmengels$elm_review$Review$Project$Valid$toRegularProject = function (_v0) {
 	var validProject = _v0;
 	return {
-		fO: validProject.cR,
-		aM: validProject.aM,
-		c5: validProject.c5,
-		e2: $elm$core$Maybe$Just(validProject.e2),
-		a3: validProject.bS,
-		ch: _List_Nil,
-		d9: validProject.d9,
-		ec: validProject.ec
+		gm: validProject.dl,
+		aR: validProject.aR,
+		dz: validProject.dz,
+		fA: $elm$core$Maybe$Just(validProject.fA),
+		ba: validProject.bb,
+		cH: _List_Nil,
+		eG: validProject.eG,
+		eK: validProject.eK
 	};
 };
 var $jfmengels$elm_review$Review$Rule$reviewV3 = F3(
@@ -33302,15 +34963,15 @@ var $jfmengels$elm_review$Review$Rule$reviewV3 = F3(
 			var validProject = _v2.a;
 			var result = A3($jfmengels$elm_review$Review$Rule$runRules, reviewOptions, rules, validProject);
 			return {
-				bf: result.bf,
-				cE: result.cE,
-				f4: $jfmengels$elm_review$Review$Fix$FixedErrors$toDict(result.f4),
+				bo: result.bo,
+				c7: result.c7,
+				gE: $jfmengels$elm_review$Review$Fix$FixedErrors$toDict(result.gE),
 				e: $jfmengels$elm_review$Review$Project$Valid$toRegularProject(result.e),
-				bt: result.bt
+				a_: result.a_
 			};
 		} else {
 			var errors = _v0.a;
-			return {bf: errors, cE: $elm$core$Dict$empty, f4: $elm$core$Dict$empty, e: project, bt: rules};
+			return {bo: errors, c7: $elm$core$Dict$empty, gE: $elm$core$Dict$empty, e: project, a_: rules};
 		}
 	});
 var $author$project$Elm$Review$CliCommunication$send = function (key) {
@@ -33373,12 +35034,12 @@ var $author$project$Elm$Review$Main$toReviewOptionsFixMode = F2(
 		if (!fixAllAllowed) {
 			return $jfmengels$elm_review$Review$Options$fixedDisabled;
 		} else {
-			var _v0 = model.a0;
+			var _v0 = model.aS;
 			switch (_v0) {
 				case 0:
 					return $jfmengels$elm_review$Review$Options$fixedDisabled;
 				case 1:
-					var _v1 = model.bD;
+					var _v1 = model.bP;
 					if (!_v1.$) {
 						var fixLimit = _v1.a;
 						return $jfmengels$elm_review$Review$Options$fixesEnabledWithLimit(fixLimit);
@@ -33386,7 +35047,7 @@ var $author$project$Elm$Review$Main$toReviewOptionsFixMode = F2(
 						return $jfmengels$elm_review$Review$Options$fixesEnabledWithLimit(1);
 					}
 				default:
-					var _v2 = model.bD;
+					var _v2 = model.bP;
 					if (!_v2.$) {
 						var fixLimit = _v2.a;
 						return $jfmengels$elm_review$Review$Options$fixesEnabledWithLimit(fixLimit);
@@ -33401,21 +35062,21 @@ var $jfmengels$elm_review$Review$Options$withDataExtraction = F2(
 		var reviewOptions = _v0;
 		return _Utils_update(
 			reviewOptions,
-			{eJ: extract});
+			{ff: extract});
 	});
 var $jfmengels$elm_review$Review$Options$withFixes = F2(
 	function (fixMode, _v0) {
 		var reviewOptions = _v0;
 		return _Utils_update(
 			reviewOptions,
-			{a0: fixMode});
+			{aS: fixMode});
 	});
 var $jfmengels$elm_review$Review$Options$withIgnoredFixes = F2(
 	function (ignoreFix, _v0) {
 		var reviewOptions = _v0;
 		return _Utils_update(
 			reviewOptions,
-			{eU: ignoreFix});
+			{fq: ignoreFix});
 	});
 var $jfmengels$elm_review$Review$Logger$fromFn = $elm$core$Basics$identity;
 var $jfmengels$elm_review$Review$Options$withLogger = F2(
@@ -33424,7 +35085,7 @@ var $jfmengels$elm_review$Review$Options$withLogger = F2(
 		return _Utils_update(
 			reviewOptions,
 			{
-				dZ: function () {
+				eu: function () {
 					if (!maybeLogger.$) {
 						var fn = maybeLogger.a;
 						return $jfmengels$elm_review$Review$Logger$fromFn(fn);
@@ -33436,20 +35097,20 @@ var $jfmengels$elm_review$Review$Options$withLogger = F2(
 	});
 var $author$project$Elm$Review$Main$runReview = F3(
 	function (_v0, initialProject, model) {
-		var fixesAllowed = _v0.bF;
+		var fixesAllowed = _v0.bR;
 		var _v1 = A3(
 			$author$project$Elm$Review$CliCommunication$timerEnd,
-			model.aG,
+			model.aL,
 			'run-review',
 			A3(
 				$jfmengels$elm_review$Review$Rule$reviewV3,
 				A2(
 					$author$project$Elm$Review$SuppressedErrors$addToReviewOptions,
-					model.B,
+					model.F,
 					A2(
 						$jfmengels$elm_review$Review$Options$withIgnoredFixes,
 						function (error) {
-							return A2($author$project$Elm$Review$RefusedErrorFixes$memberUsingRecord, error, model.bV);
+							return A2($author$project$Elm$Review$RefusedErrorFixes$memberUsingRecord, error, model.b8);
 						},
 						A2(
 							$jfmengels$elm_review$Review$Options$withFixes,
@@ -33457,35 +35118,36 @@ var $author$project$Elm$Review$Main$runReview = F3(
 							A2(
 								$jfmengels$elm_review$Review$Options$withLogger,
 								$elm$core$Maybe$Just(
-									$author$project$Elm$Review$CliCommunication$send(model.aG)),
-								A2($jfmengels$elm_review$Review$Options$withDataExtraction, model.b5 && (model.br === 1), $jfmengels$elm_review$Review$Options$defaults))))),
-				model.bt,
-				A3($author$project$Elm$Review$CliCommunication$timerStart, model.aG, 'run-review', initialProject)));
-		var errors = _v1.bf;
-		var rules = _v1.bt;
+									$author$project$Elm$Review$CliCommunication$send(model.aL)),
+								A2($jfmengels$elm_review$Review$Options$withDataExtraction, model.co && (model.bC === 1), $jfmengels$elm_review$Review$Options$defaults))))),
+				model.a_,
+				A3($author$project$Elm$Review$CliCommunication$timerStart, model.aL, 'run-review', initialProject)));
+		var errors = _v1.bo;
+		var rules = _v1.a_;
 		var project = _v1.e;
-		var extracts = _v1.cE;
-		var fixedErrors = _v1.f4;
+		var extracts = _v1.c7;
+		var fixedErrors = _v1.gE;
 		return _Utils_update(
 			model,
 			{
-				at: $author$project$Elm$Review$Main$NotAwaiting,
-				cE: extracts,
-				ad: fixedErrors,
-				ae: project,
-				de: rules,
-				dg: false,
-				bW: errors,
-				an: A3(
+				aA: $author$project$Elm$Review$Main$NotAwaiting,
+				c7: extracts,
+				ak: fixedErrors,
+				al: project,
+				ct: rules,
+				dK: false,
+				e: (!model.aS) ? project : model.e,
+				b9: errors,
+				au: A3(
 					$author$project$Elm$Review$CliCommunication$timerEnd,
-					model.aG,
+					model.aL,
 					'apply-suppressions',
 					A3(
 						$author$project$Elm$Review$SuppressedErrors$apply,
-						model.aC,
-						model.B,
-						A3($author$project$Elm$Review$CliCommunication$timerStart, model.aG, 'apply-suppressions', errors))),
-				bt: (model.dg || (!model.a0)) ? rules : model.bt
+						model.aH,
+						model.F,
+						A3($author$project$Elm$Review$CliCommunication$timerStart, model.aL, 'apply-suppressions', errors))),
+				a_: (model.dK || (!model.aS)) ? rules : model.a_
 			});
 	});
 var $author$project$Elm$Review$Main$applyAllFixes = F2(
@@ -33495,53 +35157,53 @@ var $author$project$Elm$Review$Main$applyAllFixes = F2(
 			var _v0 = A4(
 				$author$project$Elm$Review$Main$findFix,
 				failedFixesDict,
-				model.bV,
-				$author$project$Elm$Review$Main$fixableFilesInProject(model.ae),
-				model.an);
+				model.b8,
+				$author$project$Elm$Review$Main$fixableFilesInProject(model.al),
+				model.au);
 			if (!_v0.b.$) {
 				var newFailedFixesDict = _v0.a;
-				var file = _v0.b.a.dN;
-				var error = _v0.b.a.dI;
-				var fixedSource = _v0.b.a.a1;
+				var file = _v0.b.a.ej;
+				var error = _v0.b.a.ee;
+				var fixedSource = _v0.b.a.a7;
 				var newProject = A2(
 					$author$project$Elm$Review$Main$addUpdatedFileToProject,
 					_Utils_update(
 						file,
-						{gK: fixedSource}),
-					model.ae);
+						{hj: fixedSource}),
+					model.al);
 				if (_Utils_cmp(
 					$elm$core$List$length(
 						$jfmengels$elm_review$Review$Project$modulesThatFailedToParse(newProject)),
 					$elm$core$List$length(
-						$jfmengels$elm_review$Review$Project$modulesThatFailedToParse(model.ae))) > 0) {
+						$jfmengels$elm_review$Review$Project$modulesThatFailedToParse(model.al))) > 0) {
 					return $elm$core$Maybe$Nothing;
 				} else {
 					if (!$elm$core$List$isEmpty(
-						A2($author$project$Elm$Review$Main$changesToElm, model.ae, newProject))) {
+						A2($author$project$Elm$Review$Main$changesToElm, model.al, newProject))) {
 						return $elm$core$Maybe$Just(
 							{
-								dL: newFailedFixesDict,
-								d3: A3(
+								eh: newFailedFixesDict,
+								eA: A3(
 									$author$project$Elm$Review$Main$addFixedErrorForFile,
-									file.gx,
+									file.g5,
 									error,
 									_Utils_update(
 										model,
-										{ae: newProject}))
+										{al: newProject}))
 							});
 					} else {
 						var $temp$failedFixesDict = newFailedFixesDict,
 							$temp$model = A3(
 							$author$project$Elm$Review$Main$runReview,
-							{bF: true},
+							{bR: true},
 							newProject,
 							A3(
 								$author$project$Elm$Review$Main$addFixedErrorForFile,
-								file.gx,
+								file.g5,
 								error,
 								_Utils_update(
 									model,
-									{ae: newProject})));
+									{al: newProject})));
 						failedFixesDict = $temp$failedFixesDict;
 						model = $temp$model;
 						continue applyAllFixes;
@@ -33551,7 +35213,7 @@ var $author$project$Elm$Review$Main$applyAllFixes = F2(
 				var newFailedFixesDict = _v0.a;
 				var _v1 = _v0.b;
 				return $elm$core$Maybe$Just(
-					{dL: newFailedFixesDict, d3: model});
+					{eh: newFailedFixesDict, eA: model});
 			}
 		}
 	});
@@ -33564,8 +35226,8 @@ var $author$project$Elm$Review$Main$diff = F2(
 				return _List_fromArray(
 					[
 						_Utils_Tuple2(
-						readme.gx,
-						{gx: readme.gx, gK: readme.b1})
+						readme.g5,
+						{g5: readme.g5, hj: readme.cj})
 					]);
 			} else {
 				return _List_Nil;
@@ -33578,8 +35240,8 @@ var $author$project$Elm$Review$Main$diff = F2(
 				return _List_fromArray(
 					[
 						_Utils_Tuple2(
-						readme.gx,
-						{gx: readme.gx, gK: readme.ck})
+						readme.g5,
+						{g5: readme.g5, hj: readme.cL})
 					]);
 			} else {
 				return _List_Nil;
@@ -33595,8 +35257,8 @@ var $author$project$Elm$Review$Main$diff = F2(
 						$elm$core$List$map,
 						function (mod) {
 							return _Utils_Tuple2(
-								mod.gx,
-								{gx: mod.gx, gK: mod.gK});
+								mod.g5,
+								{g5: mod.g5, hj: mod.hj});
 						},
 						$jfmengels$elm_review$Review$Project$modules(before))
 					])));
@@ -33606,7 +35268,7 @@ var $author$project$Elm$Review$Main$diff = F2(
 				var readme = _v6.a;
 				return _List_fromArray(
 					[
-						_Utils_Tuple2(readme.gx, readme.b1)
+						_Utils_Tuple2(readme.g5, readme.cj)
 					]);
 			} else {
 				return _List_Nil;
@@ -33618,7 +35280,7 @@ var $author$project$Elm$Review$Main$diff = F2(
 				var elmJson = _v5.a;
 				return _List_fromArray(
 					[
-						_Utils_Tuple2(elmJson.gx, elmJson.ck)
+						_Utils_Tuple2(elmJson.g5, elmJson.cL)
 					]);
 			} else {
 				return _List_Nil;
@@ -33633,7 +35295,7 @@ var $author$project$Elm$Review$Main$diff = F2(
 						A2(
 						$elm$core$List$map,
 						function (mod) {
-							return _Utils_Tuple2(mod.gx, mod.gK);
+							return _Utils_Tuple2(mod.g5, mod.hj);
 						},
 						$jfmengels$elm_review$Review$Project$modules(after))
 					])));
@@ -33645,9 +35307,9 @@ var $author$project$Elm$Review$Main$diff = F2(
 				}),
 			F4(
 				function (_v2, beforeModule, fixedSource, acc) {
-					return (!_Utils_eq(beforeModule.gK, fixedSource)) ? A2(
+					return (!_Utils_eq(beforeModule.hj, fixedSource)) ? A2(
 						$elm$core$List$cons,
-						{a1: fixedSource, gx: beforeModule.gx, gK: beforeModule.gK},
+						{a7: fixedSource, g5: beforeModule.g5, hj: beforeModule.hj},
 						acc) : acc;
 				}),
 			F3(
@@ -33698,7 +35360,7 @@ var $author$project$Elm$Review$Reporter$formatFileDiff = function (file) {
 							$elm$core$String$padLeft,
 							80,
 							'-',
-							' ' + $author$project$Elm$Review$Reporter$filePath(file.gx))))
+							' ' + $author$project$Elm$Review$Reporter$filePath(file.g5))))
 				]),
 				A2(
 				$elm$core$List$cons,
@@ -33711,8 +35373,8 @@ var $author$project$Elm$Review$Reporter$formatFileDiff = function (file) {
 							$author$project$Elm$Review$Text$from('\n  '),
 							A3($author$project$Elm$Review$Reporter$formatErrorTitle, $elm$core$Dict$empty, 1, error));
 					},
-					$elm$core$List$reverse(file.bf))),
-				A2($author$project$Elm$Review$Reporter$diff, file.gK, file.a1)
+					$elm$core$List$reverse(file.bo))),
+				A2($author$project$Elm$Review$Reporter$diff, file.hj, file.a7)
 			]));
 };
 var $author$project$Elm$Review$Reporter$formatFileDiffs = function (changedFiles) {
@@ -33735,7 +35397,7 @@ var $author$project$Elm$Review$Reporter$formatFileDiffs = function (changedFiles
 						[
 							$author$project$Elm$Review$Text$from('\n')
 						]),
-						A2($author$project$Elm$Review$Reporter$fileSeparator, firstFile.gx, secondFile.gx),
+						A2($author$project$Elm$Review$Reporter$fileSeparator, firstFile.g5, secondFile.g5),
 						$author$project$Elm$Review$Reporter$formatFileDiffs(
 						A2($elm$core$List$cons, secondFile, restOfFiles))
 					]));
@@ -33767,7 +35429,7 @@ var $author$project$Elm$Review$Reporter$formatFixProposals = function (changedFi
 						$author$project$Elm$Review$Text$from('\n  '),
 						$author$project$Elm$Review$Text$inYellow(
 						$author$project$Elm$Review$Text$from(
-							'- ' + $author$project$Elm$Review$Reporter$filePath(file.gx)))
+							'- ' + $author$project$Elm$Review$Reporter$filePath(file.g5)))
 					]);
 			},
 			changedFiles));
@@ -33800,20 +35462,20 @@ var $author$project$Elm$Review$Main$sendFixPromptForMultipleFixes = F3(
 		var changedFiles = A2(
 			$elm$core$List$map,
 			function (_v0) {
-				var path = _v0.gx;
-				var source = _v0.gK;
-				var fixedSource = _v0.a1;
+				var path = _v0.g5;
+				var source = _v0.hj;
+				var fixedSource = _v0.a7;
 				return {
-					bf: A2(
+					bo: A2(
 						$elm$core$List$map,
-						A2($author$project$Elm$Review$Main$fromReviewError, model.B, model.bn),
+						A2($author$project$Elm$Review$Main$fromReviewError, model.F, model.bx),
 						A2(
 							$elm$core$Maybe$withDefault,
 							_List_Nil,
-							A2($elm$core$Dict$get, path, model.ad))),
-					a1: fixedSource,
-					gx: (path === 'GLOBAL ERROR') ? $author$project$Elm$Review$Reporter$Global : $author$project$Elm$Review$Reporter$FilePath(path),
-					gK: source
+							A2($elm$core$Dict$get, path, model.ak))),
+					a7: fixedSource,
+					g5: (path === 'GLOBAL ERROR') ? $author$project$Elm$Review$Reporter$Global : $author$project$Elm$Review$Reporter$FilePath(path),
+					hj: source
 				};
 			},
 			diffs);
@@ -33832,7 +35494,7 @@ var $author$project$Elm$Review$Main$sendFixPromptForMultipleFixes = F3(
 							A2(
 								$elm$core$List$map,
 								function (file) {
-									return {gx: file.gx, gK: file.a1};
+									return {g5: file.g5, hj: file.a7};
 								},
 								changedFiles))),
 						_Utils_Tuple2(
@@ -33840,12 +35502,12 @@ var $author$project$Elm$Review$Main$sendFixPromptForMultipleFixes = F3(
 						$elm$json$Json$Encode$int(numberOfFixedErrors)),
 						_Utils_Tuple2(
 						'clearFixLine',
-						$elm$json$Json$Encode$bool(model.a0 === 2))
+						$elm$json$Json$Encode$bool(model.aS === 2))
 					])));
 	});
 var $author$project$Elm$Review$Main$sendFixPrompt = F2(
 	function (model, diffs) {
-		var _v0 = $author$project$Elm$Review$Main$numberOfErrors(model.ad);
+		var _v0 = $author$project$Elm$Review$Main$numberOfErrors(model.ak);
 		switch (_v0.$) {
 			case 0:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -33855,17 +35517,17 @@ var $author$project$Elm$Review$Main$sendFixPrompt = F2(
 				var _v1 = A2(
 					$author$project$Elm$Review$Main$find,
 					function (diff_) {
-						return _Utils_eq(diff_.gx, filePath);
+						return _Utils_eq(diff_.g5, filePath);
 					},
 					diffs);
 				if (!_v1.$) {
-					var source = _v1.a.gK;
-					var fixedSource = _v1.a.a1;
+					var source = _v1.a.hj;
+					var fixedSource = _v1.a.a7;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								at: $author$project$Elm$Review$Main$AwaitingError(error)
+								aA: $author$project$Elm$Review$Main$AwaitingError(error)
 							}),
 						$author$project$Elm$Review$Main$askConfirmationToFix(
 							$elm$json$Json$Encode$object(
@@ -33876,12 +35538,12 @@ var $author$project$Elm$Review$Main$sendFixPrompt = F2(
 										$author$project$Elm$Review$Main$encodeReport(
 											A4(
 												$author$project$Elm$Review$Reporter$formatFixProposal,
-												model.ab,
+												model.ai,
 												{
-													gx: $author$project$Elm$Review$Reporter$FilePath(filePath),
-													gK: source
+													g5: $author$project$Elm$Review$Reporter$FilePath(filePath),
+													hj: source
 												},
-												A3($author$project$Elm$Review$Main$fromReviewError, model.B, model.bn, error),
+												A3($author$project$Elm$Review$Main$fromReviewError, model.F, model.bx, error),
 												fixedSource))),
 										_Utils_Tuple2(
 										'changedFiles',
@@ -33891,8 +35553,8 @@ var $author$project$Elm$Review$Main$sendFixPrompt = F2(
 											_List_fromArray(
 												[
 													{
-													gx: $author$project$Elm$Review$Reporter$FilePath(filePath),
-													gK: fixedSource
+													g5: $author$project$Elm$Review$Reporter$FilePath(filePath),
+													hj: fixedSource
 												}
 												]))),
 										_Utils_Tuple2(
@@ -33907,7 +35569,7 @@ var $author$project$Elm$Review$Main$sendFixPrompt = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{at: $author$project$Elm$Review$Main$AwaitingFixAll}),
+						{aA: $author$project$Elm$Review$Main$AwaitingFixAll}),
 					A3($author$project$Elm$Review$Main$sendFixPromptForMultipleFixes, model, diffs, numberOfFixedErrors));
 		}
 	});
@@ -33915,9 +35577,9 @@ var $author$project$Elm$Review$Main$applyFixesAfterReview = F2(
 	function (model, allowPrintingSingleFix) {
 		var _v0 = A2($author$project$Elm$Review$Main$applyAllFixes, $elm$core$Dict$empty, model);
 		if (!_v0.$) {
-			var failedFixesDict = _v0.a.dL;
-			var newModel = _v0.a.d3;
-			var _v1 = A2($author$project$Elm$Review$Main$diff, model.e, newModel.ae);
+			var failedFixesDict = _v0.a.eh;
+			var newModel = _v0.a.eA;
+			var _v1 = A2($author$project$Elm$Review$Main$diff, model.e, newModel.al);
 			if (!_v1.b) {
 				return A2($author$project$Elm$Review$Main$makeReport, failedFixesDict, newModel);
 			} else {
@@ -33928,12 +35590,12 @@ var $author$project$Elm$Review$Main$applyFixesAfterReview = F2(
 				return allowPrintingSingleFix ? A2($author$project$Elm$Review$Main$sendFixPrompt, modelWithOldProject, diffs) : _Utils_Tuple2(
 					_Utils_update(
 						modelWithOldProject,
-						{at: $author$project$Elm$Review$Main$AwaitingFixAll}),
+						{aA: $author$project$Elm$Review$Main$AwaitingFixAll}),
 					A3(
 						$author$project$Elm$Review$Main$sendFixPromptForMultipleFixes,
 						modelWithOldProject,
 						diffs,
-						$author$project$Elm$Review$Main$countErrors(modelWithOldProject.ad)));
+						$author$project$Elm$Review$Main$countErrors(modelWithOldProject.ak)));
 			}
 		} else {
 			return _Utils_Tuple2(
@@ -33942,17 +35604,17 @@ var $author$project$Elm$Review$Main$applyFixesAfterReview = F2(
 		}
 	});
 var $author$project$Elm$Review$Main$reportOrFix = function (model) {
-	var _v0 = model.a0;
+	var _v0 = model.aS;
 	switch (_v0) {
 		case 0:
 			return A3(
 				$author$project$Elm$Review$CliCommunication$timerEnd,
-				model.aG,
+				model.aL,
 				'process-errors',
 				A2(
 					$author$project$Elm$Review$Main$makeReport,
 					$elm$core$Dict$empty,
-					A3($author$project$Elm$Review$CliCommunication$timerStart, model.aG, 'process-errors', model)));
+					A3($author$project$Elm$Review$CliCommunication$timerStart, model.aL, 'process-errors', model)));
 		case 1:
 			return A2($author$project$Elm$Review$Main$applyFixesAfterReview, model, true);
 		default:
@@ -33965,11 +35627,11 @@ var $author$project$Elm$Review$Main$sendFileToBeCached = F2(
 		var _v0 = A2(
 			$author$project$Elm$Review$Main$find,
 			function (module_) {
-				return _Utils_eq(module_.gK, source);
+				return _Utils_eq(module_.hj, source);
 			},
 			$jfmengels$elm_review$Review$Project$modules(project));
 		if (!_v0.$) {
-			var ast = _v0.a.fI;
+			var ast = _v0.a.gg;
 			return $author$project$Elm$Review$Main$cacheFile(
 				$elm$json$Json$Encode$object(
 					_List_fromArray(
@@ -33994,11 +35656,11 @@ var $author$project$Elm$Review$Main$update = F2(
 				var _v1 = A2($elm$json$Json$Decode$decodeValue, $author$project$Elm$Review$File$decode, value);
 				if (!_v1.$) {
 					var rawFile = _v1.a;
-					var _v2 = rawFile.fI;
+					var _v2 = rawFile.gg;
 					if (_v2.$ === 1) {
 						var project = A2(
 							$jfmengels$elm_review$Review$Project$addModule,
-							{gx: rawFile.gx, gK: rawFile.gK},
+							{g5: rawFile.g5, hj: rawFile.hj},
 							model.e);
 						return _Utils_Tuple2(
 							_Utils_update(
@@ -34010,10 +35672,10 @@ var $author$project$Elm$Review$Main$update = F2(
 										[
 											_Utils_Tuple2(
 											'path',
-											$elm$json$Json$Encode$string(rawFile.gx)),
+											$elm$json$Json$Encode$string(rawFile.g5)),
 											_Utils_Tuple2(
 											'cacheRequest',
-											A2($author$project$Elm$Review$Main$cacheFileRequest, project, rawFile.gK))
+											A2($author$project$Elm$Review$Main$cacheFileRequest, project, rawFile.hj))
 										]))));
 					} else {
 						var ast = _v2.a;
@@ -34023,7 +35685,7 @@ var $author$project$Elm$Review$Main$update = F2(
 								{
 									e: A2(
 										$jfmengels$elm_review$Review$Project$addParsedModule,
-										{fI: ast, gx: rawFile.gx, gK: rawFile.gK},
+										{gg: ast, g5: rawFile.g5, hj: rawFile.hj},
 										model.e)
 								}),
 							$author$project$Elm$Review$Main$acknowledgeFileReceipt(
@@ -34032,7 +35694,7 @@ var $author$project$Elm$Review$Main$update = F2(
 										[
 											_Utils_Tuple2(
 											'path',
-											$elm$json$Json$Encode$string(rawFile.gx)),
+											$elm$json$Json$Encode$string(rawFile.g5)),
 											_Utils_Tuple2('cacheRequest', $elm$json$Json$Encode$null)
 										]))));
 					}
@@ -34073,7 +35735,7 @@ var $author$project$Elm$Review$Main$update = F2(
 					$elm$json$Json$Decode$map2,
 					F2(
 						function (path, content) {
-							return {b1: content, gx: path};
+							return {cj: content, g5: path};
 						}),
 					A2($elm$json$Json$Decode$field, 'path', $elm$json$Json$Decode$string),
 					A2($elm$json$Json$Decode$field, 'content', $elm$json$Json$Decode$string));
@@ -34101,7 +35763,7 @@ var $author$project$Elm$Review$Main$update = F2(
 						$elm$json$Json$Decode$field,
 						'docsJson',
 						$elm$json$Json$Decode$list($elm$project_metadata_utils$Elm$Docs$decoder)));
-				var dependenciesDecoder = model.cb ? A2(
+				var dependenciesDecoder = model.cz ? A2(
 					$elm$json$Json$Decode$map,
 					$elm$core$List$filterMap($elm$core$Basics$identity),
 					$elm$json$Json$Decode$list(
@@ -34121,12 +35783,12 @@ var $author$project$Elm$Review$Main$update = F2(
 							'I need a valid module name like',
 							$elm$json$Json$Decode$errorToString(decodeError)) ? $author$project$Elm$Review$Main$abortWithDetails(
 							{
-								a2: 'I encountered an error when reading the dependencies of the project. It seems due to dependencies with modules containing `_` in their names. Unfortunately, this is an error I have no control over and I am waiting in one of the libraries I depend on. What I propose you do, is to re-run elm-review like this:\n\n    elm-review --ignore-problematic-dependencies\n\nThis will ignore the problematic dependencies, and can GIVE YOU INCORRECT RESULTS! This is a temporary measure.\n\nIf I am mistaken about the nature of problem, please open a bug report at https://github.com/jfmengels/node-elm-review/issues:\n\n' + $elm$json$Json$Decode$errorToString(decodeError),
-								cU: 'FOUND PROBLEMATIC DEPENDENCIES'
+								a8: 'I encountered an error when reading the dependencies of the project. It seems due to dependencies with modules containing `_` in their names. Unfortunately, this is an error I have no control over and I am waiting in one of the libraries I depend on. What I propose you do, is to re-run elm-review like this:\n\n    elm-review --ignore-problematic-dependencies\n\nThis will ignore the problematic dependencies, and can GIVE YOU INCORRECT RESULTS! This is a temporary measure.\n\nIf I am mistaken about the nature of problem, please open a bug report at https://github.com/jfmengels/node-elm-review/issues:\n\n' + $elm$json$Json$Decode$errorToString(decodeError),
+								dp: 'FOUND PROBLEMATIC DEPENDENCIES'
 							}) : $author$project$Elm$Review$Main$abortWithDetails(
 							{
-								a2: 'I encountered an error when reading the dependencies of the project. I suggest opening a bug report at https://github.com/jfmengels/node-elm-review/issues.' + $elm$json$Json$Decode$errorToString(decodeError),
-								cU: 'PROBLEM READING DEPENDENCIES'
+								a8: 'I encountered an error when reading the dependencies of the project. I suggest opening a bug report at https://github.com/jfmengels/node-elm-review/issues.' + $elm$json$Json$Decode$errorToString(decodeError),
+								dp: 'PROBLEM READING DEPENDENCIES'
 							}));
 				} else {
 					var dependencies = _v5.a;
@@ -34153,8 +35815,8 @@ var $author$project$Elm$Review$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								ci: $author$project$Elm$Review$SuppressedErrors$count(suppressedErrors),
-								B: suppressedErrors
+								cI: $author$project$Elm$Review$SuppressedErrors$count(suppressedErrors),
+								F: suppressedErrors
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
@@ -34165,14 +35827,14 @@ var $author$project$Elm$Review$Main$update = F2(
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				} else {
 					var suppressedErrors = _v7.a;
-					return _Utils_eq(suppressedErrors, model.B) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : A2(
+					return _Utils_eq(suppressedErrors, model.F) ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : A2(
 						$author$project$Elm$Review$Main$makeReport,
 						$elm$core$Dict$empty,
 						_Utils_update(
 							model,
 							{
-								an: A3($author$project$Elm$Review$SuppressedErrors$apply, model.aC, suppressedErrors, model.bW),
-								B: suppressedErrors
+								au: A3($author$project$Elm$Review$SuppressedErrors$apply, model.aH, suppressedErrors, model.b9),
+								F: suppressedErrors
 							}));
 				}
 			case 7:
@@ -34188,42 +35850,41 @@ var $author$project$Elm$Review$Main$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{bn: links}),
+							{bx: links}),
 						$elm$core$Platform$Cmd$none);
 				}
 			case 8:
-				var project = $jfmengels$elm_review$Review$Project$precomputeModuleGraph(model.e);
 				return $author$project$Elm$Review$Main$reportOrFix(
 					A3(
 						$author$project$Elm$Review$Main$runReview,
-						{bF: true},
-						project,
+						{bR: true},
+						model.e,
 						_Utils_update(
 							model,
-							{ad: $elm$core$Dict$empty, e: project})));
+							{ak: $elm$core$Dict$empty})));
 			case 9:
 				var project = $jfmengels$elm_review$Review$Project$precomputeModuleGraph(model.e);
 				var newModel = A3(
 					$author$project$Elm$Review$Main$runReview,
-					{bF: false},
+					{bR: false},
 					project,
 					_Utils_update(
 						model,
-						{ad: $elm$core$Dict$empty, e: project}));
+						{ak: $elm$core$Dict$empty, e: project}));
 				return _Utils_Tuple2(
 					newModel,
 					$author$project$Elm$Review$Main$suppressionsResponse(
 						A2(
 							$author$project$Elm$Review$SuppressedErrors$encode,
 							_List_Nil,
-							$author$project$Elm$Review$SuppressedErrors$fromReviewErrors(newModel.bW))));
+							$author$project$Elm$Review$SuppressedErrors$fromReviewErrors(newModel.b9))));
 			case 10:
 				var confirmation = msg.a;
 				var _v9 = A2($elm$json$Json$Decode$decodeValue, $author$project$Elm$Review$Main$confirmationDecoder, confirmation);
 				if (!_v9.$) {
 					if (!_v9.a.$) {
 						var rawFiles = _v9.a.a;
-						var previousProject = model.ae;
+						var previousProject = model.al;
 						var newProject = A3($elm$core$List$foldl, $author$project$Elm$Review$Main$addUpdatedFileToProject, previousProject, rawFiles);
 						return (_Utils_cmp(
 							$elm$core$List$length(
@@ -34238,7 +35899,7 @@ var $author$project$Elm$Review$Main$update = F2(
 									A2(
 										$elm$core$List$map,
 										function ($) {
-											return $.gx;
+											return $.g5;
 										},
 										rawFiles)) + ' could not be read. An incorrect fix may have been introduced into one of these files...'))) : A2(
 							$elm$core$Tuple$mapSecond,
@@ -34252,7 +35913,7 @@ var $author$project$Elm$Review$Main$update = F2(
 											A2(
 												$elm$core$Basics$composeR,
 												function ($) {
-													return $.gK;
+													return $.hj;
 												},
 												$author$project$Elm$Review$Main$sendFileToBeCached(newProject)),
 											rawFiles)));
@@ -34260,39 +35921,39 @@ var $author$project$Elm$Review$Main$update = F2(
 							$author$project$Elm$Review$Main$reportOrFix(
 								A3(
 									$author$project$Elm$Review$Main$runReview,
-									{bF: true},
+									{bR: true},
 									newProject,
 									_Utils_update(
 										model,
-										{b7: true, ad: $elm$core$Dict$empty, e: newProject, bt: model.de}))));
+										{cq: true, ak: $elm$core$Dict$empty, e: newProject, a_: model.ct}))));
 					} else {
 						var _v10 = _v9.a;
-						var _v11 = model.at;
+						var _v11 = model.aA;
 						switch (_v11.$) {
 							case 1:
 								var error = _v11.a;
 								return $author$project$Elm$Review$Main$reportOrFix(
 									A3(
 										$author$project$Elm$Review$Main$runReview,
-										{bF: true},
+										{bR: true},
 										model.e,
 										A2(
 											$author$project$Elm$Review$Main$refuseError,
 											error,
 											_Utils_update(
 												model,
-												{at: $author$project$Elm$Review$Main$NotAwaiting, ae: model.e}))));
+												{aA: $author$project$Elm$Review$Main$NotAwaiting, al: model.e}))));
 							case 2:
 								return A2(
 									$author$project$Elm$Review$Main$makeReport,
 									$elm$core$Dict$empty,
 									A3(
 										$author$project$Elm$Review$Main$runReview,
-										{bF: false},
+										{bR: false},
 										model.e,
 										_Utils_update(
 											model,
-											{at: $author$project$Elm$Review$Main$NotAwaiting, ae: model.e})));
+											{aA: $author$project$Elm$Review$Main$NotAwaiting, al: model.e})));
 							default:
 								return $author$project$Elm$Review$Main$fixOneByOne(model);
 						}
@@ -34308,16 +35969,16 @@ var $author$project$Elm$Review$Main$update = F2(
 				return _Utils_Tuple2(
 					model,
 					$author$project$Elm$Review$Main$fixConfirmationStatus(
-						!_Utils_eq(model.at, $author$project$Elm$Review$Main$NotAwaiting)));
+						!_Utils_eq(model.aA, $author$project$Elm$Review$Main$NotAwaiting)));
 		}
 	});
 var $elm$core$Platform$worker = _Platform_worker;
 var $author$project$Elm$Review$Main$main = $elm$core$Platform$worker(
 	{
-		gc: $author$project$Elm$Review$Main$init,
-		gP: function (_v0) {
+		gM: $author$project$Elm$Review$Main$init,
+		ho: function (_v0) {
 			return $author$project$Elm$Review$Main$subscriptions;
 		},
-		gY: $author$project$Elm$Review$Main$update
+		hx: $author$project$Elm$Review$Main$update
 	});
 _Platform_export({'Elm':{'Review':{'Main':{'init':$author$project$Elm$Review$Main$main($elm$json$Json$Decode$value)(0)}}}});}(this));
