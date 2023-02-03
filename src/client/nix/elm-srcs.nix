@@ -92,8 +92,8 @@
     sha256 = "1y0aa16asvwdqmgbskh5iba6psp43lkcjjw9mgzj3gsrg33lp00d";
   };
   "elm-explorations/test" = {
-    version = "2.1.0";
-    sha256 = "sha256-mvDYLeeucu9t+4IRHbi5Hmv9H1BZE4Ae+czwqMKZl5o=";
+    version = "2.1.1";
+    sha256 = "sha256-4ZnqoOoxthzzzlIbOzTpqU2MzmWGIGK5GkhNyyiTW3Q=";
   };
   "elm/random" = {
     version = "1.0.0";
