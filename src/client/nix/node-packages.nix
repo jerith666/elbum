@@ -373,13 +373,13 @@ let
         sha512 = "qnwo7RO9IO7jd9SLHvIy0rSOEIlc/tNMTE9Cras0kl+b161PVidW4FvXo0MtXU8GAKi/2s/HYvhcnpR/NNQ1zw==";
       };
     };
-    "elm-test-0.19.1-revision11" = {
+    "elm-test-0.19.1-revision12" = {
       name = "elm-test";
       packageName = "elm-test";
-      version = "0.19.1-revision11";
+      version = "0.19.1-revision12";
       src = fetchurl {
-        url = "https://registry.npmjs.org/elm-test/-/elm-test-0.19.1-revision11.tgz";
-        sha512 = "ZUCE+YM3zNzADtZNZpm+swcL7NEJm68vEqRb+cENOp+ndQbG9nBWjSpVfpAo5Ha3rEmj/KdxjiWf2kMUCggnmQ==";
+        url = "https://registry.npmjs.org/elm-test/-/elm-test-0.19.1-revision12.tgz";
+        sha512 = "5GV3WkJ8R/faOP1hwElQdNuCt8tKx2+1lsMrdeIYWSFz01Kp9gJl/R6zGtp4QUyrUtO8KnHsxjHrQNUf2CHkrg==";
       };
     };
     "elm-tooling-1.8.0" = {
@@ -1256,7 +1256,7 @@ let
       sources."defer-to-connect-2.0.1"
       sources."elm-review-2.9.1"
       sources."elm-solve-deps-wasm-1.0.2"
-      (sources."elm-test-0.19.1-revision11" // {
+      (sources."elm-test-0.19.1-revision12" // {
         dependencies = [
           sources."brace-expansion-2.0.1"
           sources."glob-8.0.3"

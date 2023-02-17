@@ -5,7 +5,7 @@
   "main": "elbum.js",
   "devDependencies": {
     "elm-review": "^2.9.1",
-    "elm-test": "^0.19.1-revision11"
+    "elm-test": "^0.19.1-revision12"
   },
   "scripts": {
     "test": "./node_modules/.bin/elm-review && ./node_modules/.bin/elm-test"
