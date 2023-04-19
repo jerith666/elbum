@@ -355,13 +355,13 @@ let
         sha512 = "4tvttepXG1VaYGrRibk5EwJd1t4udunSOVMdLSAL6mId1ix438oPwPZMALY41FCijukO1L0twNcGsdzS7dHgDg==";
       };
     };
-    "elm-review-2.10.0" = {
+    "elm-review-2.10.1" = {
       name = "elm-review";
       packageName = "elm-review";
-      version = "2.10.0";
+      version = "2.10.1";
       src = fetchurl {
-        url = "https://registry.npmjs.org/elm-review/-/elm-review-2.10.0.tgz";
-        sha512 = "Lum155yNir0OCWSKVqBxv9hn3xW+YmkWGkkuVQPLpRF6VDwofmP6VvU1kWnuwecLebahDvVcAhkpFzZ6QUd0NQ==";
+        url = "https://registry.npmjs.org/elm-review/-/elm-review-2.10.1.tgz";
+        sha512 = "uEc4McppMqmWEaRo+jo5RowbDyfcBr0MTFN0kZt9gWrmmK6hPilTJJGtRmoH+K/aJtq4ZPDDF97oAFdkylD1gg==";
       };
     };
     "elm-solve-deps-wasm-1.0.2" = {
@@ -1254,7 +1254,7 @@ let
       })
       sources."defaults-1.0.3"
       sources."defer-to-connect-2.0.1"
-      sources."elm-review-2.10.0"
+      sources."elm-review-2.10.1"
       sources."elm-solve-deps-wasm-1.0.2"
       (sources."elm-test-0.19.1-revision12" // {
         dependencies = [
