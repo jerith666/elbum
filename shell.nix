@@ -41,7 +41,9 @@ pkgs.stdenv.mkDerivation {
                   olderIdea
                   lamdera
                   
-                  pkgs.vscodium ];
+                  pkgs.vscodium
+
+                  niv ];
 
   shellHook = "echo elm plugin: ${elmPlugin}; eval $(egrep ^export ${ghc}/bin/ghc)";
 }
