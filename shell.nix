@@ -1,4 +1,9 @@
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc902" }:
+{ sources ? import nix/sources.nix, compiler ? "ghc902" }:
+
+let
+  nixpkgs = import sources.nixpkgs {};
+in
+
 let
   inherit (nixpkgs) pkgs;
   ghc = pkgs.haskell.packages.${compiler}.ghcWithPackages (ps: with ps; [
