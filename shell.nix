@@ -14,14 +14,9 @@ let
 
   lamdera = with nixpkgs.pkgs; import ./lamdera.nix {inherit fetchurl stdenv lib ncurses5 gmp5 zlib autoPatchelfHook;};
 
-  olderIdeaPkgs = nixpkgs.pkgs.fetchFromGitHub {
-    owner = "NixOS";
-    repo = "nixpkgs";
-    # parent of dadc08be jetbrains.idea-{community,ultimate}: 2021.3.2 → 2022.1
-    rev = "764c88feaca0b3768176ae907740a53f7ac42af6";
-    hash = "sha256-OS4ISDQokcxaSW0ywnq2Q3nZ93UaaT73t2iYunRdBzE=";
-  };
-  olderIdea = (import olderIdeaPkgs {}).jetbrains.idea-community;
+  # pinned to recent (but cached) ancestor of
+  # dadc08be jetbrains.idea-{community,ultimate}: 2021.3.2 → 2022.1
+  olderIdea = (import sources.olderIdeaNixpkgs {}).jetbrains.idea-community;
 
   elmPlugin = pkgs.fetchurl {
     url = "https://github.com/utiliteez/intellij-elm/releases/download/v5.0.0-beta21/Elm.IntelliJ-5.0.0-beta21.zip";
