@@ -1,0 +1,22 @@
+name: "Niv Update"
+on:
+  workflow_dispatch:
+  schedule:
+    # at 17:26 ET (21:26 UTC) every day
+    - cron: '26 21 * * *'
+jobs:
+  niv-update:
+    name: run niv update and create PR with results
+    runs-on: ubuntu-latest
+    env:
+      # lamdera is unfree
+      NIXPKGS_ALLOW_UNFREE: 1
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - uses: cachix/install-nix-action@v18
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+    - run: nix-shell --run 'niv update'
+    - uses: peter-evans/create-pull-request@v5
