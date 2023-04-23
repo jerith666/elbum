@@ -1,9 +1,10 @@
-name: "Build"
+name: "Nix Checks"
 on:
   pull_request:
   push:
 jobs:
   build:
+    name: nix-build can build the project
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -13,3 +14,17 @@ jobs:
       with:
         nix_path: nixpkgs=channel:nixos-unstable
     - run: nix-build
+  shell:
+    name: nix-shell can produce a working shell environment
+    runs-on: ubuntu-latest
+    env:
+      # lamdera is unfree
+      NIXPKGS_ALLOW_UNFREE: 1
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - uses: cachix/install-nix-action@v18
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+    - run: nix-shell --run true
