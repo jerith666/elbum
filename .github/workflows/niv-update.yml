@@ -20,3 +20,7 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
     - run: nix-shell --run 'niv update'
     - uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.ELBUM_BRANCHES_PRS_WRITE }}
+        commit-message: update nix dependencies with niv-update
+        branch: niv/auto-update
