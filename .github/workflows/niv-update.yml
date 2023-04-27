@@ -25,3 +25,4 @@ jobs:
         branch: niv/auto-update
         commit-message: update nix dependencies with niv-update
         title: update nix dependencies with niv-update
+        reviewers: jerith666
