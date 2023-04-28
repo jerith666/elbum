@@ -12,7 +12,7 @@ let
           tasty tasty-golden
         ]);
 
-  lamdera = with nixpkgs.pkgs; import ./lamdera.nix {inherit fetchurl stdenv lib ncurses5 gmp5 zlib autoPatchelfHook;};
+  lamdera = with nixpkgs.pkgs; import ./nix/lamdera.nix {inherit fetchurl stdenv lib ncurses5 gmp5 zlib autoPatchelfHook;};
 
   # pinned to recent (but cached) ancestor of
   # dadc08be jetbrains.idea-{community,ultimate}: 2021.3.2 → 2022.1
