@@ -34,9 +34,9 @@ When copying `/path/to/generated/album` to your hosting provider, be sure that s
 
 Elbum's front-end is written in [Elm](https://www.elm-lang.org). The code that generates the album is written in [Haskell](https://www.haskell.org).
 
-Run [`nix-shell`](https://nixos.org/guides/ad-hoc-developer-environments.html) to get all the tools you need to hack on Elbum. In particular, this provides `idea-community` with the Elm plugin for editing the Elm code and `vscodium` for with the Haskell Language Server for editing the Haskell code.
+Use [`nix-shell`](https://nixos.org/guides/ad-hoc-developer-environments.html) (ideally via [`direnv`](https://direnv.net/) and [`lorri`](https://github.com/nix-community/lorri)) to get all the tools you need to hack on Elbum. In particular, this provides `idea-community` with the Elm plugin for editing the Elm code and `vscodium` with the Haskell Language Server for editing the Haskell code.
 
-The first thing to look at is [`AlbumTypes.hs`](./src/generator/AlbumTypes.hs), which defines the basic datatypes at the core of Elbum. `elm-bridge` is used to derive Elm types and JSON codecs for these types.
+The first thing to look at is [`AlbumTypes.hs`](./src/generator/AlbumTypes.hs), which defines the basic datatypes at the core of Elbum. [`elm-bridge`](https://hackage.haskell.org/package/elm-bridge) is used to derive Elm types and JSON codecs for these types.
 
 ## Generator
 
@@ -48,7 +48,7 @@ The code lives in [`src/generator/`](./src/generator/).
 
 The code lives in [`src/client/`](./src/client/).
 
-Before hacking on the Elm code, you must run `nix-build -o Album.elm.dir album-types-gen.nix` in the `src/client/` directory. This derives `Album.elm` from [`AlbumTypes.hs`](./src/generator/AlbumTypes.hs).
+Before hacking on the Elm code, you must run `nix-build -o Album.elm.dir album-types-gen.nix` in the `src/client/` directory. This generates `Album.elm` from [`AlbumTypes.hs`](./src/generator/AlbumTypes.hs).
 
 # Credits
 
