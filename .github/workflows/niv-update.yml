@@ -23,6 +23,6 @@ jobs:
       with:
         token: ${{ secrets.ELBUM_BRANCHES_PRS_WRITE }}
         branch: niv/auto-update
+        author: Elbum Nix Updater Bot <noreply@github.com>
         commit-message: update nix dependencies with niv-update
         title: update nix dependencies with niv-update
-        reviewers: jerith666
