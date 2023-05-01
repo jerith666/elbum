@@ -60,8 +60,8 @@
     sha256 = "1sph37fji07dl40rvpgbnij01zg4h7ywapxar433cdh0lay26xhb";
   };
   "mpizenberg/elm-pointer-events" = {
-    version = "4.0.2";
-    sha256 = "16s14sh01g6ssabwkf2k1xdxnahnkn0s7603cg87wd0h4myg15da";
+    version = "5.0.0";
+    sha256 = "sha256-ANFpZfsKjm0JFXUz9kEtHx8JEfhu4r3FimKBf9N/uG0=";
   };
   "rtfeldman/elm-css" = {
     version = "18.0.0";
