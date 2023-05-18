@@ -235,7 +235,7 @@ findThumb srcRoot src dest images = do
                   thumb = find isThumb images
               case thumb of
                 Nothing ->
-                  return $ Left $ src ++ " thumbnail '" ++ thumbLink ++"' -> '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ concatMap (\i -> dest </> url (srcSetFirst i)) images
+                  return $ Left $ src ++ " thumbnail '" ++ thumbLink ++ "' -> '" ++ thumbPath ++ "' (" ++ thumbDest ++ ") does not point to any images in this album: " ++ concatMap (\i -> dest </> url (srcSetFirst i)) images
                 Just t ->
                   return $ Right t
         else return $ Left $ thumbLink ++ " is not a symbolic link"
@@ -397,10 +397,10 @@ imageNewerThanSrc mImageModTime src = do
     Just (image, modTime) ->
       case modTime >= srcModTime of
         True ->
-          --putStrLn $ "found image in album metadata @ " ++ (show modTime) ++ " newer than src " ++ src ++ " @ " ++ (show srcModTime) ++ ": " ++ (show image)
+          -- putStrLn $ "found image in album metadata @ " ++ (show modTime) ++ " newer than src " ++ src ++ " @ " ++ (show srcModTime) ++ ": " ++ (show image)
           return $ Right image
         False ->
-          --putStrLn $ "found image in album metadata @ " ++ (show modTime) ++ " older than src " ++ src ++ " @ " ++ (show srcModTime) ++ ": " ++ (show image)
+          -- putStrLn $ "found image in album metadata @ " ++ (show modTime) ++ " older than src " ++ src ++ " @ " ++ (show srcModTime) ++ ": " ++ (show image)
           return $ Left srcModTime
 
 createImageWithMetadataSize :: FilePath -> FilePath -> FilePath -> FilePath -> (FilePath, (DynamicImage, Metadatas)) -> IO (Maybe Image)
@@ -444,7 +444,7 @@ imgOnly f = do
     Left _ -> return Nothing
     Right img ->
       do
-        --putStrSameLn $ "loaded " ++ show f
+        -- putStrSameLn $ "loaded " ++ show f
         return $ Just (f, img)
 
 procImage :: FilePath -> FilePath -> (FilePath, (DynamicImage, Metadatas)) -> IO (Either String Image)
@@ -476,7 +476,7 @@ procSrcSet s d f i w h = do
   let shrunkenSrcs = map (shrinkImgSrc s d f i w h) (sizes w) `using` parList rdeepseq
       shrunken = map third shrunkenSrcs
   rawImg <- copyRawImgSrc s d f w h
-  --putStrSameLn $ "processing " ++ show f ++ " "
+  -- putStrSameLn $ "processing " ++ show f ++ " "
   mapM_ (writeShrunkenImgSrc . fstSnd) shrunkenSrcs
   return (rawImg, shrunken)
 
@@ -507,7 +507,7 @@ copyRawImgSrc s d fpath w h = do
   createDirectoryIfMissing True $ takeDirectory dest
   copyFile fpath dest
   setFileMode dest $ foldl unionFileModes ownerReadMode [groupReadMode, otherReadMode]
-  --putStrSameLn $ "copied " ++ f
+  -- putStrSameLn $ "copied " ++ f
   return
     ImgSrc
       { url = makeRelative d dest,
