@@ -1,4 +1,4 @@
-{ sources ? import nix/sources.nix, compiler ? "ghc902" }:
+{ sources ? import nix/sources.nix, compiler ? "ghc927" }:
 
 let
   nixpkgs = import sources.nixpkgs {};

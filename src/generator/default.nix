@@ -1,2 +1,2 @@
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc902" }:
+{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc927" }:
 nixpkgs.pkgs.haskell.packages.${compiler}.callPackage ./gen-album.nix { }
