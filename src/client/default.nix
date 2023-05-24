@@ -28,7 +28,7 @@ let
 
       buildInputs = [
         elmPackages.elm
-        nodejs-16_x
+        nodejs-18_x
       ];
 
       postUnpack = (elmPackages.fetchElmDeps {
