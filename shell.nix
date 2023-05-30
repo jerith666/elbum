@@ -6,8 +6,8 @@ in
 
 let
   inherit (nixpkgs) pkgs;
-  ghc = pkgs.haskell.packages.${compiler}.ghcWithPackages (ps: with ps; [
-  #ghc = pkgs.haskellPackages.ghcWithPackages (ps: with ps; [
+  haskellPkgs = pkgs.haskell.packages.${compiler};
+  ghc = haskellPkgs.ghcWithPackages (ps: with ps; [
           async JuicyPixels elm-bridge regex-compat parallel extra safe
           tasty tasty-golden
         ]);
@@ -26,7 +26,7 @@ let
 in
 pkgs.stdenv.mkDerivation {
   name = "elbum-haskell-env-0";
-  buildInputs = with pkgs.haskellPackages;
+  buildInputs = with haskellPkgs;
                 [ ghc
                   pkgs.elmPackages.elm
 
