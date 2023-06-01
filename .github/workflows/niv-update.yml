@@ -21,9 +21,9 @@ jobs:
     - run: nix-shell --run 'niv update'
     - uses: peter-evans/create-pull-request@v5
       with:
-        token: ${{ secrets.ELBUM_BRANCHES_PRS_WRITE }}
+        token: ${{ secrets.ELBUM_BOT_REPOS_WORKFLOWS }}
+        push-to-fork: Elbum-Bot/elbum
         branch: niv/auto-update
         author: Nix Updater Bot <noreply@github.com>
         commit-message: update nix dependencies with niv-update
         title: update nix dependencies with niv-update
-        assignees: jerith666
