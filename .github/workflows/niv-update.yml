@@ -2,8 +2,8 @@ name: "Niv Update"
 on:
   workflow_dispatch:
   schedule:
-    # at 17:26 ET (21:26 UTC) every day
-    - cron: '26 21 * * *'
+    # at 17:26 ET (21:26 UTC) every Sunday
+    - cron: '26 21 * * 0'
 jobs:
   niv-update:
     name: run niv update and create PR with results
