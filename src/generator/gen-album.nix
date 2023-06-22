@@ -1,18 +1,18 @@
 { mkDerivation
+, lib
 , aeson
 , async
 , base
 , bytestring
 , elm-bridge
+, extra
 , filepath
 , JuicyPixels
-, regex-compat
 , parallel
-, extra
+, regex-compat
 , safe
 , tasty
 , tasty-golden
-, lib
 }:
 mkDerivation {
   pname = "elbum";
@@ -26,11 +26,11 @@ mkDerivation {
     base
     bytestring
     elm-bridge
+    extra
     filepath
     JuicyPixels
-    regex-compat
     parallel
-    extra
+    regex-compat
     safe
     tasty
     tasty-golden

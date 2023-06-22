@@ -9,11 +9,11 @@ let
   haskellPkgs = pkgs.haskell.packages.${compiler};
   ghc = haskellPkgs.ghcWithPackages (ps: with ps; [
     async
-    JuicyPixels
     elm-bridge
-    regex-compat
-    parallel
     extra
+    JuicyPixels
+    parallel
+    regex-compat
     safe
     tasty
     tasty-golden
@@ -35,10 +35,8 @@ pkgs.stdenv.mkDerivation {
   name = "elbum-haskell-env-0";
   buildInputs = with pkgs; with haskellPkgs;
     [
+      # haskell
       ghc
-      elmPackages.elm
-
-      ormolu
 
       ghcide
       haskell-language-server
@@ -46,11 +44,17 @@ pkgs.stdenv.mkDerivation {
       ghci-dap
       haskell-debug-adapter
 
-      olderIdea
-      lamdera
+      ormolu
 
       vscodium
 
+      # elm
+      elmPackages.elm
+
+      olderIdea
+      lamdera
+
+      # nix
       niv
       nixpkgs-fmt
       nixd
