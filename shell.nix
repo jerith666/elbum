@@ -33,10 +33,10 @@ let
 in
 pkgs.stdenv.mkDerivation {
   name = "elbum-haskell-env-0";
-  buildInputs = with haskellPkgs;
+  buildInputs = with pkgs; with haskellPkgs;
     [
       ghc
-      pkgs.elmPackages.elm
+      elmPackages.elm
 
       ormolu
 
@@ -49,9 +49,11 @@ pkgs.stdenv.mkDerivation {
       olderIdea
       lamdera
 
-      pkgs.vscodium
+      vscodium
 
       niv
+      nixpkgs-fmt
+      nixd
     ];
 
   shellHook = "echo elm plugin: ${elmPlugin}; eval $(egrep ^export ${ghc}/bin/ghc)";
