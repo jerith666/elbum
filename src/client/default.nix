@@ -1,12 +1,13 @@
-{ config ? {}
-, nixpkgs ? import <nixpkgs> config }:
+{ config ? { }
+, nixpkgs ? import <nixpkgs> config
+}:
 
 with nixpkgs;
 
 let
   albumTypes = import ./album-types-gen.nix { inherit nixpkgs; };
 
-  nodePackagesRaw = (pkgs.callPackage ./nix/package.nix {});
+  nodePackagesRaw = (pkgs.callPackage ./nix/package.nix { });
   nodeDependencies = (nodePackagesRaw // {
     nodeDependencies = nodePackagesRaw.nodeDependencies.override {
       npmFlags = "--ignore-scripts";
@@ -21,7 +22,7 @@ let
     , src
     , name
     , srcdir ? "./src"
-    , targets ? []
+    , targets ? [ ]
     }:
     stdenv.mkDerivation rec {
       inherit name src;
@@ -37,15 +38,17 @@ let
         registryDat = ./nix/registry.dat;
       });
 
-      buildPhase = let
-        elmfile = module: "${srcdir}/${builtins.replaceStrings ["."] ["/"] module}.elm";
-      in ''
-        mkdir -p $out/share/doc
-        cp -iv ${albumTypes}/Album.elm src;
-        ${lib.concatStrings (map (module: ''
-          elm make ${elmfile module} --output $out/${module}.js --docs $out/share/doc/${module}.json --optimize
-        '') targets)}
-      '';
+      buildPhase =
+        let
+          elmfile = module: "${srcdir}/${builtins.replaceStrings ["."] ["/"] module}.elm";
+        in
+        ''
+          mkdir -p $out/share/doc
+          cp -iv ${albumTypes}/Album.elm src;
+          ${lib.concatStrings (map (module: ''
+            elm make ${elmfile module} --output $out/${module}.js --docs $out/share/doc/${module}.json --optimize
+          '') targets)}
+        '';
 
       installPhase = ''
         mv -iv $out/src/Main.js $out/elbum.js;
@@ -91,7 +94,8 @@ let
         ./node_modules/.bin/elm-test --seed 20221126
       '';
     };
-in mkDerivation {
+in
+mkDerivation {
   name = "jerith666-elbum-0.1.0";
   srcs = ./elm-srcs.nix;
   src = lib.cleanSourceWith {

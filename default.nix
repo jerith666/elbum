@@ -1,7 +1,7 @@
 { sources ? import nix/sources.nix }:
 
 let
-  nixpkgs = import sources.nixpkgs {};
+  nixpkgs = import sources.nixpkgs { };
 in
 with nixpkgs;
 

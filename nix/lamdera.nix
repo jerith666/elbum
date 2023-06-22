@@ -1,6 +1,7 @@
 # from https://gist.githubusercontent.com/supermario/e34de4ee5b37c54041320be7dd252e6b/raw/333def480d6dba5bce7f65f03d608311118a961c/default.nix
 
-{ stdenv, lib
+{ stdenv
+, lib
 , fetchurl
 , ncurses5
 , gmp5
