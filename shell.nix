@@ -38,6 +38,7 @@ pkgs.stdenv.mkDerivation {
       # haskell
       ghc
 
+      cabal-install
       ghcide
       haskell-language-server
       haskell-dap
