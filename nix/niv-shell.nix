@@ -9,5 +9,7 @@ nixpkgs.pkgs.stdenv.mkDerivation {
   buildInputs = with nixpkgs.pkgs;
     [
       niv
+      nix
+      nvd
     ];
 }

@@ -18,12 +18,31 @@ jobs:
     - uses: cachix/install-nix-action@v18
       with:
         nix_path: nixpkgs=channel:nixos-unstable
-    - run: nix-shell nix/niv-shell.nix --run 'niv update'
+    - run: |
+        nix-build -o old
+        nix-build shell.nix -A inputDerivation -o shell-old
+        nix-shell nix/niv-shell.nix --run 'niv update'
+        nix-build -o new
+        nix-build shell.nix -A inputDerivation -o shell-new
+        echo "update nix dependencies with niv-update" >> msg
+        echo >> msg
+        echo "* changes to nix-build output:" >> msg
+        echo >> msg
+        nix-shell nix/niv-shell.nix --run 'nvd diff old new' | tail +3 >> msg
+        echo >> msg
+        echo "* changes to nix-shell output:" >> msg
+        echo >> msg
+        nix-shell nix/niv-shell.nix --run 'nvd diff shell-old shell-new' | tail +3 >> msg
+        echo "COMMIT_MSG<<COMMIT_EOF" >> "$GITHUB_ENV"
+        cat msg >> "$GITHUB_ENV"
+        echo "COMMIT_EOF" >> "$GITHUB_ENV"
+        rm msg old new shell-old shell-new
     - uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ secrets.ELBUM_BOT_REPOS_WORKFLOWS }}
         push-to-fork: Elbum-Bot/elbum
         branch: niv/auto-update
         author: Nix Updater Bot <noreply@github.com>
-        commit-message: update nix dependencies with niv-update
+        commit-message: "${{ env.COMMIT_MSG }}"
+        body: "${{ env.COMMIT_MSG }}"
         title: update nix dependencies with niv-update
