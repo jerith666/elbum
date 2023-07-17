@@ -24,11 +24,11 @@ jobs:
       with:
         nix_path: nixpkgs=channel:nixos-unstable
     - run: |
-        nix-build -o old
-        nix-build shell.nix -A inputDerivation -o shell-old
+        nix-build --max-jobs 1 -o old
+        nix-build --max-jobs 1 shell.nix -A inputDerivation -o shell-old
         nix-shell nix/niv-shell.nix --run 'niv update'
-        nix-build -o new
-        nix-build shell.nix -A inputDerivation -o shell-new
+        nix-build --max-jobs 1 -o new
+        nix-build --max-jobs 1 shell.nix -A inputDerivation -o shell-new
         echo "update nix dependencies with niv-update" >> msg
         echo >> msg
         echo "* changes to nix-build output:" >> msg
