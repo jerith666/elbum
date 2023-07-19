@@ -13,6 +13,7 @@ jobs:
     - uses: cachix/install-nix-action@v18
       with:
         nix_path: nixpkgs=channel:nixos-unstable
+    - uses: DeterminateSystems/magic-nix-cache-action@main
     - run: nix-build
   shell:
     name: nix-shell can produce a working shell environment
@@ -27,4 +28,5 @@ jobs:
     - uses: cachix/install-nix-action@v18
       with:
         nix_path: nixpkgs=channel:nixos-unstable
+    - uses: DeterminateSystems/magic-nix-cache-action@main
     - run: nix-shell --run true
