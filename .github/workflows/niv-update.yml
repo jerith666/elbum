@@ -34,11 +34,11 @@ jobs:
         echo >> msg
         echo "* changes to nix-build output:" >> msg
         echo >> msg
-        nix-shell nix/niv-shell.nix --run 'nvd diff old new' | tail +3 >> msg
+        nix-shell nix/niv-shell.nix --run 'nvd diff old new' | sed -E 's/#[0-9]+//' | tail +3 >> msg
         echo >> msg
         echo "* changes to nix-shell output:" >> msg
         echo >> msg
-        nix-shell nix/niv-shell.nix --run 'nvd diff shell-old shell-new' | tail +3 >> msg
+        nix-shell nix/niv-shell.nix --run 'nvd diff shell-old shell-new' | sed -E 's/#[0-9]+//' | tail +3 >> msg
         echo "COMMIT_MSG<<COMMIT_EOF" >> "$GITHUB_ENV"
         cat msg >> "$GITHUB_ENV"
         echo "COMMIT_EOF" >> "$GITHUB_ENV"
