@@ -1,4 +1,4 @@
-{ sources ? import nix/sources.nix, compiler ? "ghc927" }:
+{ sources ? import nix/sources.nix }:
 
 let
   nixpkgs = import sources.nixpkgs { };
@@ -6,7 +6,7 @@ in
 
 let
   inherit (nixpkgs) pkgs;
-  haskellPkgs = pkgs.haskell.packages.${compiler};
+  haskellPkgs = pkgs.haskellPackages;
   ghc = haskellPkgs.ghcWithPackages (ps: with ps; [
     async
     elm-bridge
