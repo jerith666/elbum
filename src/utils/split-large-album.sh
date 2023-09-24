@@ -64,14 +64,14 @@ fi
     if [ $n -lt 30 ]; then
         # ensure thumbnail.orig is in the correct right or left subdir
         if [ -L left/thumbnail.orig ]; then
-            if [ -e left/$(readlink left/thumbnail.orig) ]; then
+            if [ -e "left/$(readlink left/thumbnail.orig)" ]; then
                 true;
             else
                 mv -iv left/thumbnail.orig right/;
             fi
         fi
         if [ -L right/thumbnail.orig ]; then
-            if [ -e right/$(readlink right/thumbnail.orig) ]; then
+            if [ -e "right/$(readlink right/thumbnail.orig)" ]; then
                 true;
             else
                 mv -iv right/thumbnail.orig left/;
