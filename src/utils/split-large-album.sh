@@ -61,7 +61,7 @@ fi
 
     #see if we're small enough yet
     n=$(ls left | wc -l);
-    if [ $n -lt 30 ]; then
+    if [ $n -lt 12 ]; then
         # ensure thumbnail.orig is in the correct right or left subdir
         if [ -L left/thumbnail.orig ]; then
             if [ -e "left/$(readlink left/thumbnail.orig)" ]; then
@@ -112,11 +112,11 @@ fi
 
     #move results up
     cd "$dest";
-    mv -v left/* .;
+    mv -v left/* . || echo nothing to remove in dest left;
     echo "about to remove left in $(pwd)"
     ls -a left/
     rmdir left;
-    mv -v right/* .;
+    mv -v right/* . || echo nothing to remove in dest right;
     echo "about to remove right in $(pwd)"
     ls -a right/
     rmdir right;
