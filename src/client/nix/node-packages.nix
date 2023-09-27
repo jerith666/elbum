@@ -400,13 +400,13 @@ let
         sha512 = "I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==";
       };
     };
-    "elm-review-2.10.2" = {
+    "elm-review-2.10.3" = {
       name = "elm-review";
       packageName = "elm-review";
-      version = "2.10.2";
+      version = "2.10.3";
       src = fetchurl {
-        url = "https://registry.npmjs.org/elm-review/-/elm-review-2.10.2.tgz";
-        sha512 = "9cgv3ILetV/Gb/cr42ZHYWHK5hrnl1UsGuxah1DL/NI6EZlu+GrwaSng4DvYsETrccaoNzRJMuhfv7JoPCdK/A==";
+        url = "https://registry.npmjs.org/elm-review/-/elm-review-2.10.3.tgz";
+        sha512 = "9gBqLc5Xm3v9Ncpf8y2haEaBZZyMX25vmwQkrNqSIaNYQ2vdGOIx1eyqRtt1xwX5O8pZdqU8IWC/ENyTrOTKbw==";
       };
     };
     "elm-solve-deps-wasm-1.0.2" = {
@@ -427,13 +427,13 @@ let
         sha512 = "5GV3WkJ8R/faOP1hwElQdNuCt8tKx2+1lsMrdeIYWSFz01Kp9gJl/R6zGtp4QUyrUtO8KnHsxjHrQNUf2CHkrg==";
       };
     };
-    "elm-tooling-1.8.0" = {
+    "elm-tooling-1.14.1" = {
       name = "elm-tooling";
       packageName = "elm-tooling";
-      version = "1.8.0";
+      version = "1.14.1";
       src = fetchurl {
-        url = "https://registry.npmjs.org/elm-tooling/-/elm-tooling-1.8.0.tgz";
-        sha512 = "IjMvW/VHqxLidlJSAocBGDBmqiZ1NS0lK/UCMRU4ULEEaTVjpSd/9Dv0mH2ok0H0egSTYx19GnrdL4Lq9h+z+A==";
+        url = "https://registry.npmjs.org/elm-tooling/-/elm-tooling-1.14.1.tgz";
+        sha512 = "3LjMe2WXdH/0swZsWT6R9RS73NhsqqLjbwS2PF0QmFauCII/9nomOtFFv/DIPOJ3oxbKFltBgvDELMCMdV+Bww==";
       };
     };
     "emoji-regex-8.0.0" = {
@@ -463,22 +463,13 @@ let
         sha512 = "+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==";
       };
     };
-    "fast-levenshtein-3.0.0" = {
-      name = "fast-levenshtein";
-      packageName = "fast-levenshtein";
-      version = "3.0.0";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-3.0.0.tgz";
-        sha512 = "hKKNajm46uNmTlhHSyZkmToAc56uZJwYq7yrciZjqOxnlfQwERDQJmHPUp7m1m9wx8vgOe8IaCKZ5Kv2k1DdCQ==";
-      };
-    };
-    "fastest-levenshtein-1.0.12" = {
+    "fastest-levenshtein-1.0.16" = {
       name = "fastest-levenshtein";
       packageName = "fastest-levenshtein";
-      version = "1.0.12";
+      version = "1.0.16";
       src = fetchurl {
-        url = "https://registry.npmjs.org/fastest-levenshtein/-/fastest-levenshtein-1.0.12.tgz";
-        sha512 = "On2N+BpYJ15xIC974QNVuYGMOlEVt4s0EOI3wwMqOmK1fdDY+FN/zltPV8vosq4ad4c/gJ1KHScUn/6AWIgiow==";
+        url = "https://registry.npmjs.org/fastest-levenshtein/-/fastest-levenshtein-1.0.16.tgz";
+        sha512 = "eRnCtTTtGZFpQCwhJiUOuxPQWRXVKYDn0b2PeHfXL6/Zi53SLAzAHfVhVWK2AryC/WH05kGfxhFIPvTF0SXQzg==";
       };
     };
     "fill-range-7.0.1" = {
@@ -1437,7 +1428,7 @@ let
       sources."defaults-1.0.3"
       sources."defer-to-connect-2.0.1"
       sources."eastasianwidth-0.2.0"
-      sources."elm-review-2.10.2"
+      sources."elm-review-2.10.3"
       sources."elm-solve-deps-wasm-1.0.2"
       (sources."elm-test-0.19.1-revision12" // {
         dependencies = [
@@ -1446,11 +1437,10 @@ let
           sources."minimatch-5.1.0"
         ];
       })
-      sources."elm-tooling-1.8.0"
+      sources."elm-tooling-1.14.1"
       sources."emoji-regex-8.0.0"
       sources."end-of-stream-1.4.4"
-      sources."fast-levenshtein-3.0.0"
-      sources."fastest-levenshtein-1.0.12"
+      sources."fastest-levenshtein-1.0.16"
       sources."fill-range-7.0.1"
       sources."find-up-4.1.0"
       sources."folder-hash-3.3.3"
