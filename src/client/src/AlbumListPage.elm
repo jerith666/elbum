@@ -5,6 +5,7 @@ import AlbumStyles exposing (..)
 import Browser.Dom exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
+import Html.Styled.Keyed
 import ImageViews exposing (..)
 import ThumbPage exposing (albumTitle)
 import Utils.AlbumUtils exposing (..)
@@ -26,14 +27,25 @@ view (AlbumListPage alp) a viewList viewAlbum scrollMsgMaker flags =
     <|
         [ albumTitle a alp.albumList.listTitle (List.map Tuple.first alp.parents) viewList [] [ position fixed ]
         , albumTitle a alp.albumList.listTitle (List.map Tuple.first alp.parents) viewList [] [ visibility hidden ]
+        , viewAlbumOrLists a viewList viewAlbum alp.albumList
         ]
-            ++ (List.reverse <|
-                    [ viewAlbumOrList a viewList viewAlbum alp.albumList.childFirst ]
-                        ++ List.map (viewAlbumOrList a viewList viewAlbum) alp.albumList.childRest
-               )
 
 
-viewAlbumOrList : AnchorFunction msg -> (AlbumList -> msg) -> (Album -> msg) -> AlbumOrList -> Html msg
+viewAlbumOrLists : AnchorFunction msg -> (AlbumList -> msg) -> (Album -> msg) -> AlbumList -> Html msg
+viewAlbumOrLists a viewList viewAlbum albumList =
+    {- we use keyed nodes for the thumbnails so that we don't see "stale" thumbnails
+       when navigating between parent and child lists
+    -}
+    Html.Styled.Keyed.node "div" [] <|
+        List.reverse <|
+            [ viewAlbumOrList a viewList viewAlbum albumList.childFirst ]
+                ++ List.map (viewAlbumOrList a viewList viewAlbum) albumList.childRest
+
+
+{-| creates a renderListImage for the given album or list's thumbnail, combined with
+a key for use in a keyed div. the key is the thumbnail's url.
+-}
+viewAlbumOrList : AnchorFunction msg -> (AlbumList -> msg) -> (Album -> msg) -> AlbumOrList -> ( String, Html msg )
 viewAlbumOrList a viewList viewAlbum albumOrList =
     let
         childStyles =
@@ -47,7 +59,8 @@ viewAlbumOrList a viewList viewAlbum albumOrList =
     in
     case albumOrList of
         List albumList ->
-            a (viewList albumList)
+            ( albumList.listThumbnail.srcSetFirst.url
+            , a (viewList albumList)
                 [ styles [ textDecoration none ] ]
                 [ div
                     [ childStyles ]
@@ -55,9 +68,11 @@ viewAlbumOrList a viewList viewAlbum albumOrList =
                     , span [ styles [ flexShrink <| int 1 ] ] [ Html.Styled.text albumList.listTitle ]
                     ]
                 ]
+            )
 
         Leaf album ->
-            a (viewAlbum album)
+            ( album.thumbnail.srcSetFirst.url
+            , a (viewAlbum album)
                 [ styles [ textDecoration none ] ]
                 [ div
                     [ childStyles ]
@@ -65,6 +80,7 @@ viewAlbumOrList a viewList viewAlbum albumOrList =
                     , span [ styles [ flexShrink <| int 1 ] ] [ Html.Styled.text album.title ]
                     ]
                 ]
+            )
 
 
 renderListImage : Image -> Html msg
