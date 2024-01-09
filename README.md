@@ -20,7 +20,7 @@ Create a symlink named `thumbnail` in each directory, pointing to the thumbnail 
 
 ### Build the Code
 
-Clone this repository and run [`nix-build`](https://nixos.org/download.html).
+Clone this repository with `--recurse-submodules` and run [`nix-build`](https://nixos.org/download.html).
 
 ### Run the Generator
 
