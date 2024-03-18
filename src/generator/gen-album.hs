@@ -14,7 +14,6 @@ import Codec.Picture (DynamicImage (ImageRGBF), PixelRGBF, convertRGB8, dynamicM
 import Codec.Picture.Metadata
 import qualified Codec.Picture.Types
 import qualified Codec.Picture.Types as M
-import Control.Applicative
 import Control.Concurrent.Async
 import Control.Monad
 import Control.Parallel.Strategies
