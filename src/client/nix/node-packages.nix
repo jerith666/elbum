@@ -400,13 +400,13 @@ let
         sha512 = "I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==";
       };
     };
-    "elm-review-2.10.3" = {
+    "elm-review-2.11.1" = {
       name = "elm-review";
       packageName = "elm-review";
-      version = "2.10.3";
+      version = "2.11.1";
       src = fetchurl {
-        url = "https://registry.npmjs.org/elm-review/-/elm-review-2.10.3.tgz";
-        sha512 = "9gBqLc5Xm3v9Ncpf8y2haEaBZZyMX25vmwQkrNqSIaNYQ2vdGOIx1eyqRtt1xwX5O8pZdqU8IWC/ENyTrOTKbw==";
+        url = "https://registry.npmjs.org/elm-review/-/elm-review-2.11.1.tgz";
+        sha512 = "mJJN7QmqlV7HcaLigsiap6X3/7o9idA3bg3h7228iokUmBccpBquakPaShM8BZ/wDYtWg53sevSaFpGniEujFA==";
       };
     };
     "elm-solve-deps-wasm-1.0.2" = {
@@ -425,15 +425,6 @@ let
       src = fetchurl {
         url = "https://registry.npmjs.org/elm-test/-/elm-test-0.19.1-revision12.tgz";
         sha512 = "5GV3WkJ8R/faOP1hwElQdNuCt8tKx2+1lsMrdeIYWSFz01Kp9gJl/R6zGtp4QUyrUtO8KnHsxjHrQNUf2CHkrg==";
-      };
-    };
-    "elm-tooling-1.14.1" = {
-      name = "elm-tooling";
-      packageName = "elm-tooling";
-      version = "1.14.1";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/elm-tooling/-/elm-tooling-1.14.1.tgz";
-        sha512 = "3LjMe2WXdH/0swZsWT6R9RS73NhsqqLjbwS2PF0QmFauCII/9nomOtFFv/DIPOJ3oxbKFltBgvDELMCMdV+Bww==";
       };
     };
     "emoji-regex-8.0.0" = {
@@ -1318,13 +1309,13 @@ let
         sha512 = "BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==";
       };
     };
-    "wrap-ansi-6.2.0" = {
+    "wrap-ansi-7.0.0" = {
       name = "wrap-ansi";
       packageName = "wrap-ansi";
-      version = "6.2.0";
+      version = "7.0.0";
       src = fetchurl {
-        url = "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-6.2.0.tgz";
-        sha512 = "r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==";
+        url = "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-7.0.0.tgz";
+        sha512 = "YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==";
       };
     };
     "wrap-ansi-8.1.0" = {
@@ -1428,7 +1419,7 @@ let
       sources."defaults-1.0.3"
       sources."defer-to-connect-2.0.1"
       sources."eastasianwidth-0.2.0"
-      sources."elm-review-2.10.3"
+      sources."elm-review-2.11.1"
       sources."elm-solve-deps-wasm-1.0.2"
       (sources."elm-test-0.19.1-revision12" // {
         dependencies = [
@@ -1437,7 +1428,6 @@ let
           sources."minimatch-5.1.0"
         ];
       })
-      sources."elm-tooling-1.14.1"
       sources."emoji-regex-8.0.0"
       sources."end-of-stream-1.4.4"
       sources."fastest-levenshtein-1.0.16"
@@ -1539,7 +1529,7 @@ let
       sources."util-deprecate-1.0.2"
       sources."wcwidth-1.0.1"
       sources."which-2.0.2"
-      sources."wrap-ansi-6.2.0"
+      sources."wrap-ansi-7.0.0"
       sources."wrap-ansi-cjs-npm:wrap-ansi@7.0.0"
       sources."wrappy-1.0.2"
       sources."xmlbuilder-15.1.1"
