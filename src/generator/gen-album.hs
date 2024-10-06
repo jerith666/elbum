@@ -15,8 +15,8 @@ import Codec.Picture.Metadata
 import qualified Codec.Picture.Types
 import qualified Codec.Picture.Types as M
 import Control.Concurrent.Async
+import Control.Concurrent.ParallelIO (parallel)
 import Control.Monad
-import Control.Parallel.Strategies
 import Data.Aeson (decode, encode)
 import qualified Data.ByteString.Lazy.Char8 as C
 import Data.Either
@@ -472,12 +472,19 @@ procImage s d (f, i) = do
 
 procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
 procSrcSet s d f i w h = do
-  let shrunkenSrcs = map (shrinkImgSrc s d f i w h) (sizes w) `using` parList rdeepseq
-      shrunken = map third shrunkenSrcs
   rawImg <- copyRawImgSrc s d f w h
-  -- putStrSameLn $ "processing " ++ show f ++ " "
-  mapM_ (writeShrunkenImgSrc . fstSnd) shrunkenSrcs
+  {- note: we combine shrinking the image and writing it out to disk as a single
+  parallelizable operation.  if instead we parallelize all the shrinking
+  operations first, then parallelize all the writing, we keep all the shrunken
+  images in memory at once -}
+  shrunken <- parallel $ map (shrinkAndWrite s d f i w h) (sizes w)
   return (rawImg, shrunken)
+
+shrinkAndWrite :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> IO ImgSrc
+shrinkAndWrite s d f i w h maxwidth = do
+  let (rgbfImgSmall, fsmpath, imgSrc) = shrinkImgSrc s d f i w h maxwidth
+  writeShrunkenImgSrc (rgbfImgSmall, fsmpath)
+  return imgSrc
 
 writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGBF, FilePath) -> IO ()
 writeShrunkenImgSrc (ism, fsmpath) = do
@@ -580,11 +587,3 @@ maybeTuple (ma, mb) =
           Nothing
     Nothing ->
       Nothing
-
-fstSnd :: (a, b, c) -> (a, b)
-fstSnd (a, b, _) =
-  (a, b)
-
-third :: (a, b, c) -> c
-third (_, _, c) =
-  c

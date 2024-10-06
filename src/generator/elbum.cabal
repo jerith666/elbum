@@ -71,6 +71,7 @@ executable elbum
                      , unix
                      , bytestring
                      , parallel
+                     , parallel-io
                      , extra
                      , safe
                      , base >=4.10

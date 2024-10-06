@@ -9,6 +9,7 @@
 , filepath
 , JuicyPixels
 , parallel
+, parallel-io
 , regex-compat
 , safe
 , tasty
@@ -30,6 +31,7 @@ mkDerivation {
     filepath
     JuicyPixels
     parallel
+    parallel-io
     regex-compat
     safe
     tasty
