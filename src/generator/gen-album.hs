@@ -470,13 +470,23 @@ procImage s d (f, i) = do
                 }
         else return $ Left $ "image " ++ f ++ " has intrinsic w*h of " ++ show w ++ "*" ++ show h ++ " but metadata w*h of " ++ show ww ++ "*" ++ show hh ++ "; to repair, load in The Gimp, then choose file -> overwrite"
 
-procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
-procSrcSet s d f i w h = do
+procSrcSet' :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
+procSrcSet' s d f i w h = do
   let shrunkenSrcs = map (shrinkImgSrc s d f i w h) (sizes w) `using` parList rdeepseq
       shrunken = map third shrunkenSrcs
   rawImg <- copyRawImgSrc s d f w h
   -- putStrSameLn $ "processing " ++ show f ++ " "
   mapM_ (writeShrunkenImgSrc . fstSnd) shrunkenSrcs
+  return (rawImg, shrunken)
+
+procSrcSet :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> IO (ImgSrc, [ImgSrc])
+procSrcSet s d f i w h = do
+  rawImg <- copyRawImgSrc s d f w h
+  shrunken <- forM (sizes w) $ \size -> do
+    let (scaled, path, src) = shrinkImgSrc s d f i w h size
+    writeShrunkenImgSrc (scaled, path)
+    -- scaled `deepseq` return src -- Force evaluation before next iteration
+    return src
   return (rawImg, shrunken)
 
 writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGBF, FilePath) -> IO ()
