@@ -13,6 +13,7 @@ let
     extra
     JuicyPixels
     parallel
+    parallel-io
     regex-compat
     safe
     tasty
