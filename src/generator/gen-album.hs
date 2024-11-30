@@ -89,8 +89,44 @@ writeAlbumOrList src dest = do
       putStrLn ""
       putStrLn $ intercalate "\n" errs
       exitWith $ ExitFailure 1
-    Right albumOrList ->
+    Right albumOrList -> do
+      writeIndexLinks dest dest albumOrList
       C.writeFile (dest </> "album.json") $ encode albumOrList
+
+codeFiles :: [String]
+codeFiles = ["index.html", "elbum.js"]
+
+symlinkOverwrite :: FilePath -> FilePath -> IO ()
+symlinkOverwrite target linkName = do
+  removePathForcibly linkName
+  createFileLink target linkName
+
+linkCode :: FilePath -> FilePath -> IO ()
+linkCode targetDir linkDir =
+  mapM_ (\f -> symlinkOverwrite (targetDir </> f) (linkDir </> f)) codeFiles
+
+writeIndexLinks :: String -> String -> AlbumOrList -> IO ()
+writeIndexLinks destRoot dest albumOrList =
+  let linkToRealIndex linkName =
+        let relLinkName = makeRelative destRoot linkName
+            relLinkWithoutTopLevelAlbumName = joinPath $ drop 1 $ splitDirectories relLinkName
+            relLinkDepth = length $ splitPath $ takeDirectory relLinkName
+            relRealCodePath = joinPath $ replicate relLinkDepth ".."
+            finalLinkPath = destRoot </> relLinkWithoutTopLevelAlbumName
+         in case relLinkWithoutTopLevelAlbumName == "" of
+              True -> pure ()
+              False -> do
+                createDirectoryIfMissing True finalLinkPath
+                linkCode relRealCodePath finalLinkPath
+      linkIndexForImage albumTitle i =
+        linkToRealIndex $ dest </> albumTitle </> altText i
+   in case albumOrList of
+        Leaf l -> do
+          linkToRealIndex $ dest </> title l
+          mapM_ (linkIndexForImage $ title l) $ imageFirst l : imageRest l
+        List l -> do
+          linkToRealIndex $ dest </> listTitle l
+          mapM_ (writeIndexLinks destRoot (dest </> listTitle l)) $ childFirst l : childRest l
 
 findExistingAlbumData :: FilePath -> String -> IO (Maybe (AlbumOrList, UTCTime))
 findExistingAlbumData d albumFile = do
