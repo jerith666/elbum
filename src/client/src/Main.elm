@@ -184,7 +184,7 @@ updateGeneral generalMsg model =
                         , flags = sz.flags
                         , albumPathsAfterLoad = sz.albumPathsAfterLoad
                         }
-                    , Cmd.map Bootstrap <| Http.get { url = "home", expect = expectString <| either (\_ -> NoHome) YesHome }
+                    , getHomeCmd
                     )
 
                 LoadingHomeLink lh ->
@@ -529,7 +529,18 @@ gotHome lh home =
         , home = home
         , albumPathsAfterLoad = lh.albumPathsAfterLoad
         }
-    , Cmd.map Bootstrap <|
+    , getAlbumDataCmd
+    )
+
+
+getHomeCmd : Cmd MainAlbumMsg
+getHomeCmd =
+    Cmd.map Bootstrap <| Http.get { url = "home", expect = expectString <| either (\_ -> NoHome) YesHome }
+
+
+getAlbumDataCmd : Cmd MainAlbumMsg
+getAlbumDataCmd =
+    Cmd.map Bootstrap <|
         Http.request
             { method = "GET"
             , headers = []
@@ -539,7 +550,6 @@ gotHome lh home =
             , timeout = Nothing
             , tracker = Just albumJson
             }
-    )
 
 
 navToMsg : MainAlbumModel -> Url -> Cmd MainAlbumMsg
