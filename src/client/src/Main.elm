@@ -40,12 +40,6 @@ type MainAlbumModel
         , flags : MainAlbumFlags
         , albumPathsAfterLoad : Maybe (List String)
         }
-    | LoadingHomeLink
-        { baseUrl : Url
-        , bodyViewport : Viewport
-        , flags : MainAlbumFlags
-        , albumPathsAfterLoad : Maybe (List String)
-        }
     | Loading
         { baseUrl : Url
         , bodyViewport : Viewport
@@ -98,7 +92,6 @@ type MetaMsg
 type BootstrapMsg
     = GotBaseUrl Url
     | YesHome String
-    | NoHome
     | LoadAlbumProgress Progress
     | YesAlbum AlbumOrList
     | NoAlbum Http.Error
@@ -178,18 +171,15 @@ updateGeneral generalMsg model =
                     ( model, Cmd.none )
 
                 Sizing sz ->
-                    ( LoadingHomeLink
+                    ( Loading
                         { baseUrl = sz.baseUrl
                         , bodyViewport = log "window size set" viewport
+                        , progress = Nothing
                         , flags = sz.flags
+                        , home = Nothing
                         , albumPathsAfterLoad = sz.albumPathsAfterLoad
                         }
-                    , getHomeCmd
-                    )
-
-                LoadingHomeLink lh ->
-                    ( LoadingHomeLink { lh | bodyViewport = viewport }
-                    , Cmd.none
+                    , Cmd.batch [ getHomeCmd, getAlbumDataCmd ]
                     )
 
                 Loading ld ->
@@ -264,16 +254,14 @@ updateBootstrap bootstrapMsg model =
 
         YesHome home ->
             case model of
-                LoadingHomeLink lh ->
-                    gotHome lh <| Just <| String.trim home
+                Loading l ->
+                    ( Loading { l | home = Just home }, Cmd.none )
 
-                _ ->
-                    ( model, Cmd.none )
+                LoadedList ll ->
+                    ( LoadedList { ll | home = Just home }, Cmd.none )
 
-        NoHome ->
-            case model of
-                LoadingHomeLink lh ->
-                    gotHome lh Nothing
+                LoadedAlbum la ->
+                    ( LoadedAlbum { la | home = Just home }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
@@ -459,9 +447,6 @@ cancelFullImageLoadCmd model =
         Sizing _ ->
             Cmd.none
 
-        LoadingHomeLink _ ->
-            Cmd.none
-
         Loading _ ->
             Cmd.none
 
@@ -519,23 +504,15 @@ updateMeta albumMetaMsg model =
             ( model, Cmd.none )
 
 
-gotHome : { baseUrl : Url, bodyViewport : Viewport, flags : MainAlbumFlags, albumPathsAfterLoad : Maybe (List String) } -> Maybe String -> ( MainAlbumModel, Cmd MainAlbumMsg )
-gotHome lh home =
-    ( Loading
-        { baseUrl = lh.baseUrl
-        , bodyViewport = lh.bodyViewport
-        , progress = Nothing
-        , flags = lh.flags
-        , home = home
-        , albumPathsAfterLoad = lh.albumPathsAfterLoad
-        }
-    , getAlbumDataCmd
-    )
-
-
 getHomeCmd : Cmd MainAlbumMsg
 getHomeCmd =
-    Cmd.map Bootstrap <| Http.get { url = "home", expect = expectString <| either (\_ -> NoHome) YesHome }
+    Http.get
+        { url = "home"
+        , expect =
+            expectString <|
+                either (\_ -> Meta NoBootstrap)
+                    (Bootstrap << YesHome)
+        }
 
 
 getAlbumDataCmd : Cmd MainAlbumMsg
@@ -606,9 +583,6 @@ flagsOf model =
         Sizing sz ->
             sz.flags
 
-        LoadingHomeLink lh ->
-            lh.flags
-
         Loading ld ->
             ld.flags
 
@@ -629,9 +603,6 @@ homeOf model =
             Nothing
 
         Sizing _ ->
-            Nothing
-
-        LoadingHomeLink _ ->
             Nothing
 
         Loading ld ->
@@ -656,9 +627,6 @@ baseUrlOf model =
         Sizing sz ->
             Just sz.baseUrl
 
-        LoadingHomeLink lhl ->
-            Just lhl.baseUrl
-
         Loading l ->
             Just l.baseUrl
 
@@ -679,9 +647,6 @@ withScrollPos rootDivViewport model =
             model
 
         Sizing _ ->
-            model
-
-        LoadingHomeLink _ ->
             model
 
         Loading _ ->
@@ -727,9 +692,6 @@ withAlbumPathsAfterLoad model albumPathsAfterLoad =
         Sizing sz ->
             Sizing { sz | albumPathsAfterLoad = Just albumPathsAfterLoad }
 
-        LoadingHomeLink lh ->
-            LoadingHomeLink { lh | albumPathsAfterLoad = Just albumPathsAfterLoad }
-
         Loading ld ->
             Loading { ld | albumPathsAfterLoad = Just albumPathsAfterLoad }
 
@@ -750,9 +712,6 @@ withNavComplete model =
             model
 
         Sizing _ ->
-            model
-
-        LoadingHomeLink _ ->
             model
 
         Loading _ ->
@@ -780,9 +739,6 @@ pathsToCmd model mPaths =
                     Nothing
 
                 Sizing _ ->
-                    Nothing
-
-                LoadingHomeLink _ ->
                     Nothing
 
                 Loading _ ->
@@ -1170,9 +1126,6 @@ rootViewStateOf model =
         Sizing _ ->
             NotFullyLoaded
 
-        LoadingHomeLink _ ->
-            NotFullyLoaded
-
         Loading _ ->
             NotFullyLoaded
 
@@ -1338,9 +1291,6 @@ subscriptions model =
                             in
                             Sub.batch [ upParent, onResize <| newSize alp.bodyViewport ]
 
-        LoadingHomeLink lh ->
-            onResize <| newSize lh.bodyViewport
-
         Loading ld ->
             Sub.batch
                 [ onResize <| newSize ld.bodyViewport
@@ -1373,9 +1323,6 @@ view albumBootstrap a =
                 Sizing _ ->
                     "Album Starting"
 
-                LoadingHomeLink _ ->
-                    "Home Loading ..."
-
                 Loading ld ->
                     viewProgress "Album Loading" ld.progress
 
@@ -1403,9 +1350,6 @@ viewImpl albumBootstrap a =
 
         Sizing _ ->
             text "Album Starting"
-
-        LoadingHomeLink _ ->
-            text "Home Loading ..."
 
         Loading ld ->
             text <| viewProgress "Album Loading" ld.progress
