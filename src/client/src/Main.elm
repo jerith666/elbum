@@ -578,24 +578,13 @@ navToMsgInternal loc =
     let
         parsedHash =
             log ("parsedHash from " ++ Maybe.withDefault "<no fragment>" loc.fragment) <| parseHash <| Maybe.withDefault "" loc.fragment
-
-        hashMsgs =
-            case parsedHash of
-                Err _ ->
-                    []
-
-                Ok paths ->
-                    [ Album_ <| SetAlbumPathFromUrl paths ]
     in
-    case hashMsgs of
-        [] ->
+    case parsedHash of
+        Err _ ->
             Cmd.none
 
-        [ c ] ->
-            Task.perform identity <| Task.succeed c
-
-        c1 :: cs ->
-            Task.perform identity <| Task.succeed <| Meta <| Sequence c1 cs
+        Ok paths ->
+            toCmd <| Album_ <| SetAlbumPathFromUrl paths
 
 
 flagsOf : MainAlbumModel -> MainAlbumFlags
