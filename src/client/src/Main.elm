@@ -179,7 +179,7 @@ updateGeneral generalMsg model =
                         , home = Nothing
                         , albumPathsAfterLoad = sz.albumPathsAfterLoad
                         }
-                    , Cmd.batch [ getHomeCmd, getAlbumDataCmd ]
+                    , getAlbumDataCmd
                     )
 
                 Loading ld ->
@@ -296,9 +296,12 @@ updateBootstrap bootstrapMsg model =
                                         }
                             in
                             ( newModel
-                            , Maybe.withDefault Cmd.none <|
-                                Maybe.map toCmd <|
-                                    pathsToCmd newModel ld.albumPathsAfterLoad
+                            , Cmd.batch
+                                [ getHomeCmd ld.baseUrl
+                                , Maybe.withDefault Cmd.none <|
+                                    Maybe.map toCmd <|
+                                        pathsToCmd newModel ld.albumPathsAfterLoad
+                                ]
                             )
 
                         Leaf album ->
@@ -319,7 +322,8 @@ updateBootstrap bootstrapMsg model =
                             in
                             ( newModel
                             , Cmd.batch
-                                [ Cmd.map (Album_ << PageMsg) albumPageCmd
+                                [ getHomeCmd ld.baseUrl
+                                , Cmd.map (Album_ << PageMsg) albumPageCmd
                                 , Maybe.withDefault Cmd.none <|
                                     Maybe.map toCmd <|
                                         pathsToCmd newModel ld.albumPathsAfterLoad
@@ -504,10 +508,10 @@ updateMeta albumMetaMsg model =
             ( model, Cmd.none )
 
 
-getHomeCmd : Cmd MainAlbumMsg
-getHomeCmd =
+getHomeCmd : Url -> Cmd MainAlbumMsg
+getHomeCmd baseUrl =
     Http.get
-        { url = "home"
+        { url = toString <| appendPath baseUrl "home"
         , expect =
             expectString <|
                 either (\_ -> Meta NoBootstrap)
