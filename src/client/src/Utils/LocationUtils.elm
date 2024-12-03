@@ -1,4 +1,4 @@
-module Utils.LocationUtils exposing (AnchorFunction, parseHash, parseOriginRelativeUrl)
+module Utils.LocationUtils exposing (AnchorFunction, parseOriginRelativeUrl, parsePath)
 
 import Html.Styled exposing (Attribute, Html)
 import Parser exposing (..)
@@ -9,10 +9,10 @@ type alias AnchorFunction msg =
     msg -> List (Attribute msg) -> List (Html msg) -> Html msg
 
 
-parseHash : String -> Result (List DeadEnd) (List String)
-parseHash href =
+parsePath : String -> Result (List DeadEnd) (List String)
+parsePath path =
     let
-        hashParser =
+        pathParser =
             oneOf
                 [ succeed [] |. end
                 , succeed identity
@@ -31,7 +31,8 @@ parseHash href =
                     |. end
                 ]
     in
-    run hashParser href
+    Result.map (List.filter (not << String.isEmpty)) <|
+        run pathParser path
 
 
 {-| Url.fromString doesn't support origin-relative URLs:

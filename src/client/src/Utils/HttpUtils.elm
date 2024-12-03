@@ -1,7 +1,8 @@
-module Utils.HttpUtils exposing (appendPath, viewProgress)
+module Utils.HttpUtils exposing (appendPath, parentUrlPath, viewProgress)
 
 import Http exposing (..)
-import String exposing (endsWith, startsWith)
+import List exposing (reverse)
+import String exposing (endsWith, join, split, startsWith)
 import Url exposing (Url)
 
 
@@ -44,3 +45,24 @@ appendPath baseUrl relativePath =
             baseUrl.path ++ sep ++ relativePath
     in
     { baseUrl | path = newPath, query = Nothing, fragment = Nothing }
+
+
+parentUrlPath : Url -> Maybe ( String, Url )
+parentUrlPath url =
+    let
+        pathSegments =
+            List.filter ((/=) "") <| split "/" url.path
+    in
+    case reverse pathSegments of
+        [ "", "" ] ->
+            -- result of split "/" "/"
+            Nothing
+
+        [ "" ] ->
+            Nothing
+
+        [] ->
+            Nothing
+
+        first :: rest ->
+            Just ( first, { url | path = "/" ++ (join "/" <| reverse rest), query = Nothing, fragment = Nothing } )
