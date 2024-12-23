@@ -439,6 +439,7 @@ view albumPage a scrollMsgMaker showList wrapMsg parents flags =
                 , offset = getOffset fi.touchState
                 , imgPosition = fi.imgPosition
                 }
+                fi.baseUrl
                 parents
                 flags
 

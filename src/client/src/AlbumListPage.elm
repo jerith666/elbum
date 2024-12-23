@@ -8,6 +8,7 @@ import Html.Styled exposing (..)
 import Html.Styled.Keyed
 import ImageViews exposing (..)
 import ThumbPage exposing (albumTitle)
+import Url exposing (Url)
 import Utils.AlbumUtils exposing (..)
 import Utils.LocationUtils exposing (AnchorFunction)
 
@@ -16,8 +17,8 @@ type AlbumListPage
     = AlbumListPage { albumList : AlbumList, bodyViewport : Viewport, parents : List ( AlbumList, Maybe Float ) }
 
 
-view : AlbumListPage -> AnchorFunction msg -> (AlbumList -> msg) -> (Album -> msg) -> (Viewport -> msg) -> MainAlbumFlags -> Html msg
-view (AlbumListPage alp) a viewList viewAlbum scrollMsgMaker flags =
+view : Url -> AlbumListPage -> AnchorFunction msg -> (AlbumList -> msg) -> (Album -> msg) -> (Viewport -> msg) -> MainAlbumFlags -> Html msg
+view baseUrl (AlbumListPage alp) a viewList viewAlbum scrollMsgMaker flags =
     rootDivFlex
         flags
         column
@@ -27,26 +28,26 @@ view (AlbumListPage alp) a viewList viewAlbum scrollMsgMaker flags =
     <|
         [ albumTitle a alp.albumList.listTitle (List.map Tuple.first alp.parents) viewList [] [ position fixed ]
         , albumTitle a alp.albumList.listTitle (List.map Tuple.first alp.parents) viewList [] [ visibility hidden ]
-        , viewAlbumOrLists a viewList viewAlbum alp.albumList
+        , viewAlbumOrLists a viewList viewAlbum baseUrl alp.albumList
         ]
 
 
-viewAlbumOrLists : AnchorFunction msg -> (AlbumList -> msg) -> (Album -> msg) -> AlbumList -> Html msg
-viewAlbumOrLists a viewList viewAlbum albumList =
+viewAlbumOrLists : AnchorFunction msg -> (AlbumList -> msg) -> (Album -> msg) -> Url -> AlbumList -> Html msg
+viewAlbumOrLists a viewList viewAlbum baseUrl albumList =
     {- we use keyed nodes for the thumbnails so that we don't see "stale" thumbnails
        when navigating between parent and child lists
     -}
     Html.Styled.Keyed.node "div" [] <|
         List.reverse <|
-            [ viewAlbumOrList a viewList viewAlbum albumList.childFirst ]
-                ++ List.map (viewAlbumOrList a viewList viewAlbum) albumList.childRest
+            [ viewAlbumOrList a viewList viewAlbum baseUrl albumList.childFirst ]
+                ++ List.map (viewAlbumOrList a viewList viewAlbum baseUrl) albumList.childRest
 
 
 {-| creates a renderListImage for the given album or list's thumbnail, combined with
 a key for use in a keyed div. the key is the thumbnail's url.
 -}
-viewAlbumOrList : AnchorFunction msg -> (AlbumList -> msg) -> (Album -> msg) -> AlbumOrList -> ( String, Html msg )
-viewAlbumOrList a viewList viewAlbum albumOrList =
+viewAlbumOrList : AnchorFunction msg -> (AlbumList -> msg) -> (Album -> msg) -> Url -> AlbumOrList -> ( String, Html msg )
+viewAlbumOrList a viewList viewAlbum baseUrl albumOrList =
     let
         childStyles =
             styles
@@ -64,7 +65,7 @@ viewAlbumOrList a viewList viewAlbum albumOrList =
                 [ styles [ textDecoration none ] ]
                 [ div
                     [ childStyles ]
-                    [ renderListImage albumList.listThumbnail
+                    [ renderListImage baseUrl albumList.listThumbnail
                     , span [ styles [ flexShrink <| int 1 ] ] [ Html.Styled.text albumList.listTitle ]
                     ]
                 ]
@@ -76,15 +77,15 @@ viewAlbumOrList a viewList viewAlbum albumOrList =
                 [ styles [ textDecoration none ] ]
                 [ div
                     [ childStyles ]
-                    [ renderListImage album.thumbnail
+                    [ renderListImage baseUrl album.thumbnail
                     , span [ styles [ flexShrink <| int 1 ] ] [ Html.Styled.text album.title ]
                     ]
                 ]
             )
 
 
-renderListImage : Image -> Html msg
-renderListImage img =
+renderListImage : Url -> Image -> Html msg
+renderListImage baseUrl img =
     let
         ( xScaled, yScaled ) =
             if img.srcSetFirst.x > img.srcSetFirst.y then
@@ -103,6 +104,7 @@ renderListImage img =
                   )
     in
     renderPresized
+        baseUrl
         10
         xScaled
         yScaled

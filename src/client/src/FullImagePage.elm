@@ -11,6 +11,8 @@ import Html.Styled.Attributes exposing (..)
 import Http exposing (Progress(..))
 import ProgressiveImage exposing (..)
 import ThumbPage exposing (..)
+import Url exposing (Url, toString)
+import Utils.HttpUtils exposing (appendPath)
 import Utils.ListUtils exposing (..)
 import Utils.LocationUtils exposing (AnchorFunction)
 import Utils.TouchUtils exposing (..)
@@ -46,8 +48,8 @@ imgTitleHeight =
     5
 
 
-view : AnchorFunction msg -> NavMsgs msg -> TouchMsgs msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> List AlbumList -> MainAlbumFlags -> Html msg
-view a navMsgs touchMsgs wrapProgMsg fullImagePageModel parents flags =
+view : AnchorFunction msg -> NavMsgs msg -> TouchMsgs msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> Url -> List AlbumList -> MainAlbumFlags -> Html msg
+view a navMsgs touchMsgs wrapProgMsg fullImagePageModel baseUrl parents flags =
     let
         xOfY =
             " ("
@@ -57,7 +59,7 @@ view a navMsgs touchMsgs wrapProgMsg fullImagePageModel parents flags =
                 ++ ")"
 
         ( imgView, progress ) =
-            viewImg a navMsgs.nextMsg touchMsgs wrapProgMsg fullImagePageModel
+            viewImg baseUrl a navMsgs.nextMsg touchMsgs wrapProgMsg fullImagePageModel
     in
     rootDivFlex
         flags
@@ -99,7 +101,7 @@ view a navMsgs touchMsgs wrapProgMsg fullImagePageModel parents flags =
                     [ Html.Styled.text "x" ]
                , Html.Styled.a
                     [ styles <| navBoxStyles ++ [ top (px <| fullImagePageModel.viewport.viewport.height - navEltSize - 5), right (px 5), textDecoration none ]
-                    , href <| encodePath fullImagePageModel.album.imageFirst.srcSetFirst.url
+                    , href <| toString <| appendPath baseUrl <| encodePath fullImagePageModel.album.imageFirst.srcSetFirst.url
                     , Html.Styled.Attributes.target "_blank"
                     ]
                     [ Html.Styled.text "⤓" ]
@@ -147,8 +149,8 @@ navEltIf a lst navMsg navTxt navAlign =
         [ navElement a navMsg navTxt navAlign ]
 
 
-viewImg : AnchorFunction msg -> msg -> TouchMsgs msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> ( Html msg, Maybe Progress )
-viewImg a clickMsg touchMsgs wrapProgMsg fullImagePageModel =
+viewImg : Url -> AnchorFunction msg -> msg -> TouchMsgs msg -> (ProgressiveImageMsg -> msg) -> FullImagePageModel -> ( Html msg, Maybe Progress )
+viewImg baseUrl a clickMsg touchMsgs wrapProgMsg fullImagePageModel =
     let
         img =
             fullImagePageModel.album.imageFirst
@@ -179,7 +181,7 @@ viewImg a clickMsg touchMsgs wrapProgMsg fullImagePageModel =
                             NeitherLimit
 
         ( piView, progress ) =
-            ProgressiveImage.view <| withWidthHeight w h fullImagePageModel.progImgModel
+            ProgressiveImage.view baseUrl <| withWidthHeight w h fullImagePageModel.progImgModel
     in
     ( a clickMsg
         (offsetStyles edgeBehaviour fullImagePageModel.imgPosition fullImagePageModel.offset

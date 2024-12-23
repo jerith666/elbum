@@ -1442,6 +1442,7 @@ viewImpl albumBootstrap a =
                 AlbumListPage alp ->
                     withHomeLink ll.home ll.flags <|
                         AlbumListPage.view
+                            ll.baseUrl
                             (AlbumListPage alp)
                             a
                             (viewList

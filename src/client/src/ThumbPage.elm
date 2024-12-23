@@ -295,7 +295,7 @@ viewThumbColumn a thumbWidth imgChosenMsgr loadedMsg imageLoader baseUrl images 
             in
             case srcLoadState of
                 Just opacity ->
-                    viewThumb a thumbWidth opacity [] (imgChosenMsgr i) (loadedMsg srcUrl) img
+                    viewThumb baseUrl a thumbWidth opacity [] (imgChosenMsgr i) (loadedMsg srcUrl) img
 
                 Nothing ->
                     stubThumb thumbWidth img loadState
@@ -391,8 +391,8 @@ srcForWidth width img =
     smallestImageBiggerThan xScaled yScaled img.srcSetFirst img.srcSetRest
 
 
-viewThumb : AnchorFunction msg -> Int -> ImgLoadState -> List Style -> msg -> msg -> Image -> Html msg
-viewThumb a width opasity extraStyles selectedMsg loadedMsg img =
+viewThumb : Url -> AnchorFunction msg -> Int -> ImgLoadState -> List Style -> msg -> msg -> Image -> Html msg
+viewThumb baseUrl a width opasity extraStyles selectedMsg loadedMsg img =
     let
         ( xScaled, yScaled ) =
             sizeForWidth width img
@@ -407,7 +407,8 @@ viewThumb a width opasity extraStyles selectedMsg loadedMsg img =
     in
     a selectedMsg
         []
-        [ renderPresized 10
+        [ renderPresized baseUrl
+            10
             xScaled
             yScaled
             img.srcSetFirst
