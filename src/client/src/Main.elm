@@ -546,7 +546,7 @@ navToMsg : MainAlbumModel -> Url -> Cmd MainAlbumMsg
 navToMsg model loc =
     case model of
         AwaitingBaseUrl _ ->
-            Task.perform identity <| Task.succeed <| Bootstrap <| GotBaseUrl loc
+            toCmd <| Bootstrap <| GotBaseUrl loc
 
         _ ->
             --home link might count as internal if it's on the same domain
