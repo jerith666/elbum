@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, baseAlbumOf, cmdFor, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, initThumbsFullVp, pageSize, progInit, subscriptions, titleOf, update, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, baseAlbumOf, cmdFor, eqIgnoringVpInfo, getImgPosition, initThumbs, initThumbsFullVp, pageSize, pathForAlbum, progInit, subscriptions, titleOf, update, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -527,8 +527,8 @@ pageSize albumPage =
             fi.vpInfo
 
 
-hashForAlbum : AlbumPage -> List AlbumList -> String
-hashForAlbum albumPage parents =
+pathForAlbum : AlbumPage -> List AlbumList -> String
+pathForAlbum albumPage parents =
     let
         titles =
             case albumPage of
@@ -538,7 +538,7 @@ hashForAlbum albumPage parents =
                 FullImage fi ->
                     [ fi.album.title, fi.album.imageFirst.altText ]
     in
-    hashFromAlbumPath titles parents
+    pathFromAlbumPath titles parents
 
 
 eqIgnoringVpInfo : AlbumPage -> AlbumPage -> Bool

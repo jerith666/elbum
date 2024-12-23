@@ -1,4 +1,4 @@
-module AlbumListPage exposing (AlbumListPage(..), hashForList, view)
+module AlbumListPage exposing (AlbumListPage(..), pathForList, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -120,10 +120,10 @@ renderListImage baseUrl img =
         []
 
 
-hashForList : AlbumListPage -> String
-hashForList (AlbumListPage alp) =
+pathForList : AlbumListPage -> String
+pathForList (AlbumListPage alp) =
     if List.isEmpty alp.parents then
-        hashFromAlbumPath [ "" ] []
+        pathFromAlbumPath [ "" ] []
 
     else
-        hashFromAlbumPath [ alp.albumList.listTitle ] <| List.map Tuple.first alp.parents
+        pathFromAlbumPath [ alp.albumList.listTitle ] <| List.map Tuple.first alp.parents

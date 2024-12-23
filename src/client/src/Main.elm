@@ -1237,6 +1237,15 @@ rootViewStateOf model =
 locFor : MainAlbumModel -> MainAlbumModel -> Maybe UrlChange
 locFor oldModel newModel =
     let
+        baseUrlPlus : String -> Maybe String
+        baseUrlPlus path =
+            case baseUrlOf newModel of
+                Nothing ->
+                    Nothing
+
+                Just bUrl ->
+                    Just (appendPath bUrl path).path
+
         entry =
             case oldModel of
                 LoadedList ll ->
@@ -1276,55 +1285,56 @@ locFor oldModel newModel =
                 NavInactive ->
                     Just nav
 
-        rawFragment : Maybe String
-        rawFragment =
-            log "rawFragment" <|
+        rawPath : Maybe String
+        rawPath =
+            log "rawPath" <|
                 case newModel of
                     LoadedAlbum la ->
                         checkNavState la.navState <|
-                            hashForAlbum la.albumPage <|
+                            pathForAlbum la.albumPage <|
                                 List.map Tuple.first la.parents
 
                     LoadedList ll ->
                         checkNavState ll.navState <|
-                            hashForList ll.listPage
+                            pathForList ll.listPage
 
                     _ ->
                         Nothing
 
         {- prevent spurious url change from / to /# at album load time, but permit changes to /# on navigating back out from somewhere inside the album -}
         noChangeRootToRoot : String -> Maybe String
-        noChangeRootToRoot rf =
+        noChangeRootToRoot rp =
             case rootViewStateOf newModel of
                 ViewingRoot ->
                     let
-                        emptyRfToNothing =
-                            case rf of
+                        emptyRpToNothing =
+                            case rp of
                                 "" ->
                                     Nothing
 
                                 _ ->
-                                    Just rf
+                                    Just rp
                     in
                     case rootViewStateOf oldModel of
                         ViewingRoot ->
-                            emptyRfToNothing
+                            emptyRpToNothing
 
                         NotFullyLoaded ->
-                            emptyRfToNothing
+                            emptyRpToNothing
 
                         ViewingChild ->
-                            Just rf
+                            Just rp
 
                 NotFullyLoaded ->
-                    Just rf
+                    Just rp
 
                 ViewingChild ->
-                    Just rf
+                    Just rp
     in
-    rawFragment
+    rawPath
         |> Maybe.andThen noChangeRootToRoot
-        |> Maybe.map (NewFragment entry)
+        |> Maybe.andThen baseUrlPlus
+        |> Maybe.map (\p -> NewPath entry { path = p, query = Nothing, fragment = Nothing })
         |> log "logFor"
 
 
