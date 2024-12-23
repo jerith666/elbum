@@ -1241,6 +1241,7 @@ locFor oldModel newModel =
                 NavInactive ->
                     Just nav
 
+        rawFragment : Maybe String
         rawFragment =
             log "rawFragment" <|
                 case newModel of
@@ -1257,6 +1258,7 @@ locFor oldModel newModel =
                         Nothing
 
         {- prevent spurious url change from / to /# at album load time, but permit changes to /# on navigating back out from somewhere inside the album -}
+        noChangeRootToRoot : String -> Maybe String
         noChangeRootToRoot rf =
             case rootViewStateOf newModel of
                 ViewingRoot ->
