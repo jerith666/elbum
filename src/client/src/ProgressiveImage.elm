@@ -13,8 +13,7 @@ import Http exposing (Progress)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)
 import Url exposing (Url)
-import Utils.HttpUtils exposing (appendPath)
-import Utils.ListUtils exposing (encodePath)
+import Utils.HttpUtils exposing (appendPath, encodeImgUrl)
 import Utils.Loading as Loading exposing (LoadState, LoadingMsg, OneModel, cmdFor, getState)
 import Utils.ResultUtils exposing (..)
 
@@ -182,7 +181,7 @@ updateModel msg ((ProgImgModel piModel) as model) =
                                 piModel.animState
 
                             ( loadingModel, _ ) =
-                                Loading.init NestedLoadingMsg <| appendPath piModel.data.baseUrl <| encodePath piModel.data.mainImg.url
+                                Loading.init NestedLoadingMsg <| appendPath piModel.data.baseUrl <| encodeImgUrl piModel.data.mainImg
                         in
                         ProgImgModel
                             { piModel
@@ -201,7 +200,7 @@ updateModel msg ((ProgImgModel piModel) as model) =
                                 piModel.animState
 
                             ( loadingModel, _ ) =
-                                Loading.init NestedLoadingMsg <| appendPath piModel.data.baseUrl <| encodePath piModel.data.mainImg.url
+                                Loading.init NestedLoadingMsg <| appendPath piModel.data.baseUrl <| encodeImgUrl piModel.data.mainImg
                         in
                         ProgImgModel
                             { piModel

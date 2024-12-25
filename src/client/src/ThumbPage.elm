@@ -11,7 +11,7 @@ import ImageViews exposing (..)
 import Json.Decode as Decoder
 import Progress.Ring
 import Url exposing (Url)
-import Utils.HttpUtils exposing (appendPath)
+import Utils.HttpUtils exposing (appendPath, encodeImgUrl)
 import Utils.ListUtils exposing (..)
 import Utils.Loading exposing (LoadState(..), ManyModel, getOneState)
 import Utils.LocationUtils exposing (AnchorFunction)
@@ -142,7 +142,7 @@ albumParent a getTitle showList albumList =
 allUrls : Url -> ThumbPageModel msg -> List Url
 allUrls baseUrl =
     allImgSrcs
-        >> List.map .url
+        >> List.map encodeImgUrl
         >> List.map (appendPath baseUrl)
 
 
@@ -211,7 +211,7 @@ urlsToGet thumbPageModel =
                         False
         )
     <|
-        List.map (.url >> encodePath >> appendPath thumbPageModel.baseUrl) prioritySrcs
+        List.map (encodeImgUrl >> appendPath thumbPageModel.baseUrl) prioritySrcs
 
 
 viewThumbs : AnchorFunction msg -> (List Image -> Image -> List Image -> msg) -> (Url -> msg) -> ThumbPageModel msgB -> List (Html msg)
@@ -277,7 +277,7 @@ viewThumbColumn a thumbWidth imgChosenMsgr loadedMsg imageLoader baseUrl images 
                     srcForWidth thumbWidth img
 
                 srcUrl =
-                    appendPath baseUrl <| encodePath src.url
+                    appendPath baseUrl <| encodeImgUrl src
 
                 loadState =
                     getOneState imageLoader srcUrl

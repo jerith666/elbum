@@ -10,6 +10,7 @@ import ImageViews exposing (..)
 import ThumbPage exposing (albumTitle)
 import Url exposing (Url)
 import Utils.AlbumUtils exposing (..)
+import Utils.HttpUtils exposing (PercentEncoded)
 import Utils.LocationUtils exposing (AnchorFunction)
 
 
@@ -120,7 +121,7 @@ renderListImage baseUrl img =
         []
 
 
-pathForList : AlbumListPage -> String
+pathForList : AlbumListPage -> List PercentEncoded
 pathForList (AlbumListPage alp) =
     if List.isEmpty alp.parents then
         pathFromAlbumPath [ "" ] []

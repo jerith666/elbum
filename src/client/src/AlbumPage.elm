@@ -15,6 +15,7 @@ import Task
 import ThumbPage exposing (..)
 import Url exposing (Url)
 import Utils.AlbumUtils exposing (..)
+import Utils.HttpUtils exposing (PercentEncoded)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
 import Utils.Loading exposing (ManyModel, ManyMsg, cmdForMany, initMany, markOne, subscriptionsMany, updateMany, updatePending)
@@ -527,7 +528,7 @@ pageSize albumPage =
             fi.vpInfo
 
 
-pathForAlbum : AlbumPage -> List AlbumList -> String
+pathForAlbum : AlbumPage -> List AlbumList -> List PercentEncoded
 pathForAlbum albumPage parents =
     let
         titles =

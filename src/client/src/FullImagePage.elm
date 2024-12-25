@@ -12,8 +12,7 @@ import Http exposing (Progress(..))
 import ProgressiveImage exposing (..)
 import ThumbPage exposing (..)
 import Url exposing (Url, toString)
-import Utils.HttpUtils exposing (appendPath)
-import Utils.ListUtils exposing (..)
+import Utils.HttpUtils exposing (appendPath, encodeImgUrl)
 import Utils.LocationUtils exposing (AnchorFunction)
 import Utils.TouchUtils exposing (..)
 
@@ -101,7 +100,7 @@ view a navMsgs touchMsgs wrapProgMsg fullImagePageModel baseUrl parents flags =
                     [ Html.Styled.text "x" ]
                , Html.Styled.a
                     [ styles <| navBoxStyles ++ [ top (px <| fullImagePageModel.viewport.viewport.height - navEltSize - 5), right (px 5), textDecoration none ]
-                    , href <| toString <| appendPath baseUrl <| encodePath fullImagePageModel.album.imageFirst.srcSetFirst.url
+                    , href <| toString <| appendPath baseUrl <| encodeImgUrl fullImagePageModel.album.imageFirst.srcSetFirst
                     , Html.Styled.Attributes.target "_blank"
                     ]
                     [ Html.Styled.text "⤓" ]

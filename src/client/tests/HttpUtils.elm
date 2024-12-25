@@ -3,7 +3,7 @@ module HttpUtils exposing (suite)
 import Expect
 import Test exposing (Test, describe, test)
 import Url exposing (Protocol(..), Url)
-import Utils.HttpUtils exposing (parentUrlPath)
+import Utils.HttpUtils exposing (parentUrlPath, percentDecode, percentEncode)
 
 
 exampleDotComPath : String -> Url
@@ -32,17 +32,17 @@ suite =
                         exampleDotComPath "/"
         , test "one path returns no path" <|
             \_ ->
-                Expect.equal (Just <| ( "foo", exampleDotComPath "/" )) <|
+                Expect.equal (Just <| ( percentEncode "foo", exampleDotComPath "/" )) <|
                     parentUrlPath <|
                         exampleDotComPath "/foo"
         , test "two paths returns one path" <|
             \_ ->
-                Expect.equal (Just <| ( "bar", exampleDotComPath "/foo" )) <|
+                Expect.equal (Just <| ( percentEncode "bar", exampleDotComPath "/foo" )) <|
                     parentUrlPath <|
                         exampleDotComPath "/foo/bar"
         , test "two paths with trailing slash returns one path" <|
             \_ ->
-                Expect.equal (Just <| ( "bar", exampleDotComPath "/foo" )) <|
+                Expect.equal (Just <| ( percentEncode "bar", exampleDotComPath "/foo" )) <|
                     parentUrlPath <|
                         exampleDotComPath "/foo/bar/"
         , test "two paths with query and fragment drops query and fragment" <|
@@ -54,6 +54,12 @@ suite =
                     y =
                         { x | query = Just "q", fragment = Just "f" }
                 in
-                Expect.equal (Just <| ( "bar", exampleDotComPath "/foo" )) <|
+                Expect.equal (Just <| ( percentEncode "bar", exampleDotComPath "/foo" )) <|
                     parentUrlPath y
+        , test "two paths with spaces returns one path, percent-encoded" <|
+            \_ ->
+                Expect.equal (Just <| ( "baz quux", exampleDotComPath "/foo%20bar" )) <|
+                    Maybe.map (Tuple.mapFirst percentDecode) <|
+                        parentUrlPath <|
+                            exampleDotComPath "/foo%20bar/baz%20quux"
         ]

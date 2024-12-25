@@ -6,8 +6,7 @@ import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
 import Url exposing (Url, toString)
-import Utils.HttpUtils exposing (appendPath)
-import Utils.ListUtils exposing (..)
+import Utils.HttpUtils exposing (appendPath, encodeImgUrl)
 
 
 renderPresized : Url -> Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Style -> List (Html.Styled.Attribute msg) -> Html msg
@@ -48,7 +47,7 @@ render baseUrl idefault is s otherAttrs =
 
         baseAttrs =
             [ styles s
-            , Html.Styled.Attributes.src <| toString <| appendPath baseUrl <| encodePath idefault.url
+            , Html.Styled.Attributes.src <| toString <| appendPath baseUrl <| encodeImgUrl idefault
             , Html.Styled.Attributes.width idefault.x
             , Html.Styled.Attributes.height idefault.y
             ]
@@ -65,4 +64,4 @@ encodeSrcSet baseUrl is =
 
 encodeSrc : Url -> ImgSrc -> String
 encodeSrc baseUrl is =
-    encodePath <| (toString <| appendPath baseUrl <| is.url) ++ " " ++ String.fromInt is.x ++ "w"
+    (toString <| appendPath baseUrl <| encodeImgUrl is) ++ " " ++ String.fromInt is.x ++ "w"

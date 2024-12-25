@@ -18,7 +18,7 @@ import ProgressiveImage
 import RouteUrl exposing (..)
 import String.Extra exposing (rightOf)
 import Task
-import Url exposing (..)
+import Url exposing (Url, toString)
 import Utils.AlbumUtils exposing (..)
 import Utils.DebugSupport exposing (debugString, log)
 import Utils.HttpUtils exposing (..)
@@ -72,6 +72,8 @@ type MainAlbumModel
         }
 
 
+{-| the path segments here are already percent-decoded
+-}
 type AlbumPath
     = NoPath
     | HashPath (List String)
@@ -363,13 +365,13 @@ updateBootstrap bootstrapMsg model =
                                         albumPathsAfterLoad =
                                             case l.albumPathsAfterLoad of
                                                 NoPath ->
-                                                    Path [ lastPathSegment ]
+                                                    Path [ percentDecode lastPathSegment ]
 
                                                 HashPath _ ->
-                                                    Path [ lastPathSegment ]
+                                                    Path [ percentDecode lastPathSegment ]
 
                                                 Path paths ->
-                                                    Path <| lastPathSegment :: paths
+                                                    Path <| percentDecode lastPathSegment :: paths
                                     in
                                     ( Loading { l | baseUrl = parentUrl, albumPathsAfterLoad = albumPathsAfterLoad }
                                     , getAlbumDataCmd parentUrl
@@ -567,7 +569,7 @@ updateMeta albumMetaMsg model =
 getHomeCmd : Url -> Cmd MainAlbumMsg
 getHomeCmd baseUrl =
     Http.get
-        { url = toString <| appendPath baseUrl "home"
+        { url = toString <| appendPath baseUrl <| [ percentEncode "home" ]
         , expect =
             expectString <|
                 either (\_ -> Meta NoBootstrap)
@@ -581,7 +583,7 @@ getAlbumDataCmd baseUrl =
         Http.request
             { method = "GET"
             , headers = []
-            , url = toString <| appendPath baseUrl albumJson
+            , url = toString <| appendPath baseUrl [ percentEncode albumJson ]
             , body = emptyBody
             , expect = expectJson (either NoAlbum YesAlbum) jsonDecAlbumOrList
             , timeout = Nothing
@@ -632,8 +634,11 @@ navToMsgBaseUrl model baseUrl loc =
 navToMsgInternal : Url -> Url -> Cmd MainAlbumMsg
 navToMsgInternal baseUrl loc =
     let
+        subPath url =
+            Ok <| rightOf baseUrl.path url.path
+
         parsedPath =
-            log ("parsedPath from " ++ loc.path) <| parsePath <| rightOf baseUrl.path loc.path
+            log ("parsedPath from " ++ loc.path) <| parsePath subPath loc
 
         parsedHash =
             case loc.fragment of
@@ -642,7 +647,7 @@ navToMsgInternal baseUrl loc =
                     log "parsedHash from <no fragment>" Err []
 
                 Just f ->
-                    log ("parsedHash from " ++ f) <| parsePath f
+                    log ("parsedHash from " ++ f) <| parsePath getFragment loc
     in
     case parsedHash of
         Err _ ->
@@ -651,10 +656,10 @@ navToMsgInternal baseUrl loc =
                     Cmd.none
 
                 Ok paths ->
-                    toCmd <| Album_ <| SetAlbumPathFromUrl <| Path paths
+                    toCmd <| Album_ <| SetAlbumPathFromUrl <| Path <| List.map percentDecode paths
 
         Ok paths ->
-            toCmd <| Album_ <| SetAlbumPathFromUrl <| HashPath paths
+            toCmd <| Album_ <| SetAlbumPathFromUrl <| HashPath <| List.map percentDecode paths
 
 
 flagsOf : MainAlbumModel -> MainAlbumFlags
@@ -1237,7 +1242,7 @@ rootViewStateOf model =
 locFor : MainAlbumModel -> MainAlbumModel -> Maybe UrlChange
 locFor oldModel newModel =
     let
-        baseUrlPlus : String -> Maybe String
+        baseUrlPlus : List PercentEncoded -> Maybe String
         baseUrlPlus path =
             case baseUrlOf newModel of
                 Nothing ->
@@ -1285,7 +1290,7 @@ locFor oldModel newModel =
                 NavInactive ->
                     Just nav
 
-        rawPath : Maybe String
+        rawPath : Maybe (List PercentEncoded)
         rawPath =
             log "rawPath" <|
                 case newModel of
@@ -1302,18 +1307,28 @@ locFor oldModel newModel =
                         Nothing
 
         {- prevent spurious url change from / to /# at album load time, but permit changes to /# on navigating back out from somewhere inside the album -}
-        noChangeRootToRoot : String -> Maybe String
+        noChangeRootToRoot : List PercentEncoded -> Maybe (List PercentEncoded)
         noChangeRootToRoot rp =
             case rootViewStateOf newModel of
                 ViewingRoot ->
                     let
                         emptyRpToNothing =
                             case rp of
-                                "" ->
+                                [] ->
                                     Nothing
 
                                 _ ->
-                                    Just rp
+                                    case List.head rp of
+                                        Just pe ->
+                                            case pctString pe of
+                                                "" ->
+                                                    Nothing
+
+                                                _ ->
+                                                    Just rp
+
+                                        Nothing ->
+                                            Just rp
                     in
                     case rootViewStateOf oldModel of
                         ViewingRoot ->

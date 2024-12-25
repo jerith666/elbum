@@ -1,38 +1,11 @@
-module Utils.LocationUtils exposing (AnchorFunction, parseOriginRelativeUrl, parsePath)
+module Utils.LocationUtils exposing (AnchorFunction, parseOriginRelativeUrl)
 
 import Html.Styled exposing (Attribute, Html)
-import Parser exposing (..)
 import Url exposing (..)
 
 
 type alias AnchorFunction msg =
     msg -> List (Attribute msg) -> List (Html msg) -> Html msg
-
-
-parsePath : String -> Result (List DeadEnd) (List String)
-parsePath path =
-    let
-        pathParser =
-            oneOf
-                [ succeed [] |. end
-                , succeed identity
-                    |= sequence
-                        { start = ""
-                        , separator = "/"
-                        , end = ""
-                        , spaces = succeed ()
-                        , item =
-                            map (\p -> Maybe.withDefault p <| percentDecode p) <|
-                                getChompedString <|
-                                    succeed ()
-                                        |. chompWhile (\c -> c /= '/')
-                        , trailing = Optional
-                        }
-                    |. end
-                ]
-    in
-    Result.map (List.filter (not << String.isEmpty)) <|
-        run pathParser path
 
 
 {-| Url.fromString doesn't support origin-relative URLs:
