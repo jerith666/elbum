@@ -1,4 +1,6 @@
-{ sources ? import nix/sources.nix }:
+{
+  sources ? import nix/sources.nix,
+}:
 
 let
   nixpkgs = import sources.nixpkgs { };
@@ -14,7 +16,10 @@ in
 stdenv.mkDerivation {
   name = "elbum";
   src = ./src/elbum;
-  buildInputs = [ client generator ];
+  buildInputs = [
+    client
+    generator
+  ];
   installPhase = ''
     mkdir -p $out/bin;
     cp -v elbum $out/bin

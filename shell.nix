@@ -1,4 +1,6 @@
-{ sources ? import nix/sources.nix }:
+{
+  sources ? import nix/sources.nix,
+}:
 
 let
   nixpkgs = import sources.nixpkgs { };
@@ -7,18 +9,20 @@ in
 let
   inherit (nixpkgs) pkgs;
   haskellPkgs = pkgs.haskellPackages;
-  ghc = haskellPkgs.ghcWithPackages (ps: with ps; [
-    async
-    elm-bridge
-    extra
-    JuicyPixels
-    parallel
-    parallel-io
-    regex-compat
-    safe
-    tasty
-    tasty-golden
-  ]);
+  ghc = haskellPkgs.ghcWithPackages (
+    ps: with ps; [
+      async
+      elm-bridge
+      extra
+      JuicyPixels
+      parallel
+      parallel-io
+      regex-compat
+      safe
+      tasty
+      tasty-golden
+    ]
+  );
 
   lamdera = with nixpkgs.pkgs; import ./nix/lamdera.nix { inherit fetchurl stdenv lib; };
 
@@ -34,7 +38,9 @@ let
 in
 pkgs.stdenv.mkDerivation {
   name = "elbum-haskell-env-0";
-  buildInputs = with pkgs; with haskellPkgs;
+  buildInputs =
+    with pkgs;
+    with haskellPkgs;
     [
       # haskell
       ghc

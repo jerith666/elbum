@@ -1,5 +1,6 @@
-{ config ? { }
-, nixpkgs ? import <nixpkgs> config
+{
+  config ? { },
+  nixpkgs ? import <nixpkgs> config,
 }:
 
 with nixpkgs;
@@ -8,21 +9,26 @@ let
   albumTypes = import ./album-types-gen.nix { inherit nixpkgs; };
 
   nodePackagesRaw = (pkgs.callPackage ./nix/package.nix { });
-  nodeDependencies = (nodePackagesRaw // {
-    nodeDependencies = nodePackagesRaw.nodeDependencies.override {
-      npmFlags = "--ignore-scripts";
-    };
-  }).nodeDependencies;
+  nodeDependencies =
+    (
+      nodePackagesRaw
+      // {
+        nodeDependencies = nodePackagesRaw.nodeDependencies.override {
+          npmFlags = "--ignore-scripts";
+        };
+      }
+    ).nodeDependencies;
 
   versionsDat = ./nix/versions.dat;
   elmStuffElmReview = ./nix/elm-stuff/generated-code/jfmengels/elm-review;
 
   mkDerivation =
-    { srcs ? ./nix/elm-srcs.nix
-    , src
-    , name
-    , srcdir ? "./src"
-    , targets ? [ ]
+    {
+      srcs ? ./nix/elm-srcs.nix,
+      src,
+      name,
+      srcdir ? "./src",
+      targets ? [ ],
     }:
     stdenv.mkDerivation rec {
       inherit name src;
@@ -32,22 +38,26 @@ let
         nodejs-18_x
       ];
 
-      postUnpack = (elmPackages.fetchElmDeps {
-        elmVersion = "0.19.1";
-        elmPackages = import ./nix/elm-srcs.nix;
-        registryDat = ./nix/registry.dat;
-      });
+      postUnpack = (
+        elmPackages.fetchElmDeps {
+          elmVersion = "0.19.1";
+          elmPackages = import ./nix/elm-srcs.nix;
+          registryDat = ./nix/registry.dat;
+        }
+      );
 
       buildPhase =
         let
-          elmfile = module: "${srcdir}/${builtins.replaceStrings ["."] ["/"] module}.elm";
+          elmfile = module: "${srcdir}/${builtins.replaceStrings [ "." ] [ "/" ] module}.elm";
         in
         ''
           mkdir -p $out/share/doc
           cp -iv ${albumTypes}/Album.elm src;
-          ${lib.concatStrings (map (module: ''
-            elm make ${elmfile module} --output $out/${module}.js --docs $out/share/doc/${module}.json --optimize
-          '') targets)}
+          ${lib.concatStrings (
+            map (module: ''
+              elm make ${elmfile module} --output $out/${module}.js --docs $out/share/doc/${module}.json --optimize
+            '') targets
+          )}
         '';
 
       installPhase = ''
@@ -80,25 +90,32 @@ mkDerivation {
   srcs = ./elm-srcs.nix;
   src = lib.cleanSourceWith {
     src = ./.;
-    filter = path: type:
-      (type == "regular" && (
-        pkgs.lib.hasSuffix ".elm" path ||
-        pkgs.lib.hasSuffix "elm.json" path ||
-        pkgs.lib.hasSuffix "index.html" path ||
-        pkgs.lib.hasSuffix "package.json" path ||
-        pkgs.lib.hasSuffix "package-lock.json" path ||
-        pkgs.lib.hasSuffix ".htaccess" path
-      )) ||
-      (type == "directory" && (
-        pkgs.lib.hasSuffix "vendor" path ||
-        pkgs.lib.hasSuffix "elm-route-url" path ||
-        pkgs.lib.hasSuffix "touch-events" path ||
-        pkgs.lib.hasSuffix "src" path ||
-        pkgs.lib.hasSuffix "tests" path ||
-        pkgs.lib.hasSuffix "review" path ||
-        pkgs.lib.hasSuffix "Sandbox" path ||
-        pkgs.lib.hasSuffix "Utils" path
-      ));
+    filter =
+      path: type:
+      (
+        type == "regular"
+        && (
+          pkgs.lib.hasSuffix ".elm" path
+          || pkgs.lib.hasSuffix "elm.json" path
+          || pkgs.lib.hasSuffix "index.html" path
+          || pkgs.lib.hasSuffix "package.json" path
+          || pkgs.lib.hasSuffix "package-lock.json" path
+          || pkgs.lib.hasSuffix ".htaccess" path
+        )
+      )
+      || (
+        type == "directory"
+        && (
+          pkgs.lib.hasSuffix "vendor" path
+          || pkgs.lib.hasSuffix "elm-route-url" path
+          || pkgs.lib.hasSuffix "touch-events" path
+          || pkgs.lib.hasSuffix "src" path
+          || pkgs.lib.hasSuffix "tests" path
+          || pkgs.lib.hasSuffix "review" path
+          || pkgs.lib.hasSuffix "Sandbox" path
+          || pkgs.lib.hasSuffix "Utils" path
+        )
+      );
   };
   srcdir = ".";
   targets = [ "src/Main" ];
