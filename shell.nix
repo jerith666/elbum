@@ -24,8 +24,6 @@ let
     ]
   );
 
-  lamdera = with nixpkgs.pkgs; import ./nix/lamdera.nix { inherit fetchurl stdenv lib; };
-
   # pinned to recent (but cached) ancestor of
   # dadc08be jetbrains.idea-{community,ultimate}: 2021.3.2 → 2022.1
   olderIdea = (import sources.olderIdeaNixpkgs { }).jetbrains.idea-community;
@@ -63,7 +61,7 @@ pkgs.stdenv.mkDerivation {
       elmPackages.elm
 
       olderIdea
-      lamdera
+      elmPackages.lamdera
 
       # nix
       niv
