@@ -1,0 +1,7 @@
+#!/usr/bin/env nix-shell
+#! nix-shell --pure -i bash ../shell.nix
+
+nixfmt ${1:-verify} \
+    $( git ls-tree -r --name-only HEAD | \
+           grep '\.nix$' | \
+           egrep -v 'nix/sources.nix|src/client/nix/node-(env|packages).nix|src/client/nix/package.nix' )

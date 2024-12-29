@@ -42,6 +42,9 @@ pkgs.stdenv.mkDerivation {
     with pkgs;
     with haskellPkgs;
     [
+      # basic tooling
+      pkgs.git # disambiguates from haskellPackages.git
+
       # haskell
       ghc
 
@@ -64,7 +67,7 @@ pkgs.stdenv.mkDerivation {
 
       # nix
       niv
-      nixpkgs-fmt
+      nixfmt-rfc-style
       nixd
     ];
 

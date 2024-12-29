@@ -1,0 +1,17 @@
+name: "Nix Format Check"
+on:
+  pull_request:
+jobs:
+  format-check:
+    name: nix code is properly formatted
+    runs-on: ubuntu-latest
+    env:
+      # lamdera is unfree
+      NIXPKGS_ALLOW_UNFREE: 1
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v18
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - run: ./nix/format-check
