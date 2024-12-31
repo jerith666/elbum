@@ -1,0 +1,86 @@
+name: Regenerate GitHub Pages Site
+on:
+  workflow_run:
+    workflows: ["Nix Checks"]
+    types:
+      - completed
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: jerith666/elbum-demo
+          submodules: true
+          token: ${{ secrets.ELBUM_DEMO_CONTENTS_WRITE }}
+      - uses: cachix/install-nix-action@v18
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Download elbum closure artifact
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ${{ github.event.workflow_run.workflow_id }}
+          run_id: ${{ github.event.workflow_run.id }}
+          name: elbum.nar
+          path: ./
+      - name: Import elbum closure into nix store
+        run: |
+          ln -s $(nix-store --import < elbum.nar | tail -1) elbum
+          rm elbum.nar
+      - name: Regenerate site
+        run: |
+          # decide how to behave based on whether triggered by
+          # a PR or a push to the main branch:
+          if [[ "${{ github.event.workflow_run.event }}" == "pull_request" ]]; then
+            PR_NUMBER=$(echo "${{ github.event.workflow_run.pull_requests[0].number }}" || echo "")
+            if [ -n "$PR_NUMBER" ]; then
+              TARGET="pr/${PR_NUMBER}"
+              HOME="https://github.com/jerith666/elbum/pull/${PR_NUMBER}"
+            else
+              echo "Error: Could not extract PR number from event data ${{ toJSON(github.event) }}"
+              exit 1
+            fi
+          else
+            TARGET=.
+            HOME="https://github.com/jerith666/elbum"
+          fi
+
+          # generate album
+          echo "generating album in ${TARGET}"
+          ./elbum/bin/elbum "test-albums/gh-pages-src/Elbum Demo Album/" "${TARGET}"
+
+          # resolve symlinks into the nix store
+          (
+            cd "${TARGET}";
+            rm -v elbum.js; cp -v elbum/elbum.js .;
+            rm -v index.html; cp -v elbum/index.html .;
+            rm -v .htaccess; cp -v elbum/.htaccess .;
+            echo "${HOME}" > home;
+            rm -v elbum;
+          )
+
+          # commit generated album
+          git config user.name "Elbum Site Updater Bot"
+          git config user.email "noreply@github.com"
+          git add "${TARGET}"
+          git commit -m "regenerate album in ${TARGET} using code from ${{ github.event.workflow_run.head_sha }}" || echo "No changes to commit"
+
+          # push generated album
+          git push
+      - name: Link from PR to generated site
+        if: github.event.workflow_run.event == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=$(echo "${{ github.event.workflow_run.pull_requests[0].number }}" || echo "")
+          if [ -n "$PR_NUMBER" ]; then
+            gh repo clone jerith666/elbum elbum-repo
+            cd elbum-repo
+            gh pr comment "${PR_NUMBER}" --body "[Elbum Demo Site using this PR's code](https://jerith666.github.io/elbum-demo/pr/${PR_NUMBER})"
+          else
+            echo "Error: Could not extract PR number from branch name ${{ github.event.workflow_run.head_branch }}"
+          fi
