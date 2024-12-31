@@ -1,0 +1,38 @@
+name: Regenerate GitHub Pages Site
+on:
+  workflow_run:
+    workflows: ["Nix Checks"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: jerith666/elbum-demo
+          submodules: true
+      - uses: cachix/install-nix-action@v18
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Download elbum closure artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: ${{ github.event.workflow_run.workflow_id }}
+          run_id: ${{ github.event.workflow_run.id }}
+          name: elbum.nar
+          path: ./
+      - name: Import elbum closure into nix store
+        run: ln -s $(nix-store --import < elbum.nar | tail -1) elbum
+      - name: Regenerate site
+        run: |
+          ./elbum/bin/elbum "test-albums/gh-pages-src/Elbum Demo Album/" "workflow-test"
+          git config user.name "Elbum Site Updater Bot"
+          git config user.email "noreply@github.com"
+          git add workflow-test
+          git commit -m "Update generated website" || echo "No changes to commit"
+          git push
