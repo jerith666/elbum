@@ -16,7 +16,13 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
       - uses: DeterminateSystems/magic-nix-cache-action@main
-      - run: nix-build
+      - run: |
+          nix-build
+          nix-store --export $(nix-store --query --requisites result) > elbum.nar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: elbum.nar
+          path: elbum.nar
   shell:
     name: nix-shell can produce a working shell environment
     runs-on: ubuntu-latest
