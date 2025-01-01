@@ -13,8 +13,7 @@ import Http exposing (Progress)
 import ImageViews exposing (..)
 import Json.Decode exposing (..)
 import Url exposing (Url)
-import Utils.HttpUtils exposing (appendPath)
-import Utils.ListUtils exposing (encodePath)
+import Utils.HttpUtils exposing (appendPath, encodeImgUrl)
 import Utils.Loading as Loading exposing (LoadState, LoadingMsg, OneModel, cmdFor, getState)
 import Utils.ResultUtils exposing (..)
 
@@ -182,7 +181,7 @@ updateModel msg ((ProgImgModel piModel) as model) =
                                 piModel.animState
 
                             ( loadingModel, _ ) =
-                                Loading.init NestedLoadingMsg <| appendPath piModel.data.baseUrl <| encodePath piModel.data.mainImg.url
+                                Loading.init NestedLoadingMsg <| appendPath piModel.data.baseUrl <| encodeImgUrl piModel.data.mainImg
                         in
                         ProgImgModel
                             { piModel
@@ -201,7 +200,7 @@ updateModel msg ((ProgImgModel piModel) as model) =
                                 piModel.animState
 
                             ( loadingModel, _ ) =
-                                Loading.init NestedLoadingMsg <| appendPath piModel.data.baseUrl <| encodePath piModel.data.mainImg.url
+                                Loading.init NestedLoadingMsg <| appendPath piModel.data.baseUrl <| encodeImgUrl piModel.data.mainImg
                         in
                         ProgImgModel
                             { piModel
@@ -413,23 +412,23 @@ cancel (ProgImgModel m) =
             Cmd.none
 
 
-view : ProgressiveImageModel -> ( Html ProgressiveImageMsg, Maybe Progress )
-view (ProgImgModel piModel) =
+view : Url -> ProgressiveImageModel -> ( Html ProgressiveImageMsg, Maybe Progress )
+view baseUrl (ProgImgModel piModel) =
     case piModel.status of
         TryingCached _ trying _ ->
-            ( viewImg trying piModel.data (styledAnimation piModel.animState.placeholder) [], Nothing )
+            ( viewImg baseUrl trying piModel.data (styledAnimation piModel.animState.placeholder) [], Nothing )
 
         LoadingFallback ->
-            ( viewImg piModel.data.fallback piModel.data (styledAnimation piModel.animState.placeholder) [], Nothing )
+            ( viewImg baseUrl piModel.data.fallback piModel.data (styledAnimation piModel.animState.placeholder) [], Nothing )
 
         LoadingMain placeholder loadingState ->
-            ( viewImg placeholder piModel.data (styledAnimation piModel.animState.placeholder) [], getProgress loadingState )
+            ( viewImg baseUrl placeholder piModel.data (styledAnimation piModel.animState.placeholder) [], getProgress loadingState )
 
         MainLoaded oldPlaceholder ->
-            ( viewMainLoaded piModel.data oldPlaceholder piModel.animState.placeholder piModel.animState.main, Nothing )
+            ( viewMainLoaded baseUrl piModel.data oldPlaceholder piModel.animState.placeholder piModel.animState.main, Nothing )
 
         MainOnly ->
-            ( viewImg piModel.data.mainImg piModel.data (styledMsgAnimation piModel.animState.main) [], Nothing )
+            ( viewImg baseUrl piModel.data.mainImg piModel.data (styledMsgAnimation piModel.animState.main) [], Nothing )
 
 
 getProgress : OneModel msg -> Maybe Progress
@@ -459,16 +458,18 @@ getProgressImpl loadState =
             Nothing
 
 
-viewMainLoaded : ProgressiveImageData -> ImgSrc -> Animation.State -> Animation.Messenger.State ProgressiveImageMsg -> Html ProgressiveImageMsg
-viewMainLoaded data imgSrc imgSrcAnimState mainAnimState =
+viewMainLoaded : Url -> ProgressiveImageData -> ImgSrc -> Animation.State -> Animation.Messenger.State ProgressiveImageMsg -> Html ProgressiveImageMsg
+viewMainLoaded baseUrl data imgSrc imgSrcAnimState mainAnimState =
     div
         [ styles [ position relative ] ]
         [ viewImg
+            baseUrl
             data.mainImg
             data
             (styledMsgAnimation mainAnimState)
             [ position absolute, Css.top zero, Css.left zero, zIndex (Css.int 1) ]
         , viewImg
+            baseUrl
             imgSrc
             data
             (styledAnimation imgSrcAnimState)
@@ -476,9 +477,10 @@ viewMainLoaded data imgSrc imgSrcAnimState mainAnimState =
         ]
 
 
-viewImg : ImgSrc -> ProgressiveImageData -> List (Attribute ProgressiveImageMsg) -> List Style -> Html ProgressiveImageMsg
-viewImg imgSrc data animStyle styles =
+viewImg : Url -> ImgSrc -> ProgressiveImageData -> List (Attribute ProgressiveImageMsg) -> List Style -> Html ProgressiveImageMsg
+viewImg baseUrl imgSrc data animStyle styles =
     renderPresized
+        baseUrl
         0
         data.width
         data.height

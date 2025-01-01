@@ -39,6 +39,10 @@
     version = "1.1.0";
     sha256 = "0a3cxrvbm7mwg9ykynhp7vjid58zsw03r63qxipxp3z09qks7512";
   };
+  "elm/regex" = {
+    version = "1.0.0";
+    sha256 = "sha256-QumNZXBAM5wFxAAeoPdGnsKb7KXMPFlPscEeDsrVMlI=";
+  };
   "elm/time" = {
     version = "1.0.0";
     sha256 = "0vch7i86vn0x8b850w1p69vplll1bnbkp8s383z7pinyg94cm2z1";
@@ -50,6 +54,10 @@
   "elm-community/basics-extra" = {
     version = "4.1.0";
     sha256 = "0safacqk5dkcb0rdafdq1yhsch7dki26jjplbsgvfrm1j8klvjhn";
+  };
+  "elm-community/string-extra" = {
+    version = "4.0.1";
+    sha256 = "sha256-bgimRrktk+ZdbG7cC3C8YK3zSVz4lrz5j9Eq+iYdlAQ=";
   };
   "elm-explorations/linear-algebra" = {
     version = "1.0.3";

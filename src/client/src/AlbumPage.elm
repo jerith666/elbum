@@ -1,4 +1,4 @@
-module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, baseAlbumOf, cmdFor, eqIgnoringVpInfo, getImgPosition, hashForAlbum, initThumbs, initThumbsFullVp, pageSize, progInit, subscriptions, titleOf, update, view)
+module AlbumPage exposing (AlbumPage(..), AlbumPageMsg(..), ViewportInfo, baseAlbumOf, cmdFor, eqIgnoringVpInfo, getImgPosition, initThumbs, initThumbsFullVp, pageSize, pathForAlbum, progInit, subscriptions, titleOf, update, view)
 
 import Album exposing (..)
 import AlbumStyles exposing (..)
@@ -15,6 +15,7 @@ import Task
 import ThumbPage exposing (..)
 import Url exposing (Url)
 import Utils.AlbumUtils exposing (..)
+import Utils.HttpUtils exposing (PercentEncoded)
 import Utils.KeyboardUtils exposing (onEscape)
 import Utils.ListUtils exposing (..)
 import Utils.Loading exposing (ManyModel, ManyMsg, cmdForMany, initMany, markOne, subscriptionsMany, updateMany, updatePending)
@@ -439,6 +440,7 @@ view albumPage a scrollMsgMaker showList wrapMsg parents flags =
                 , offset = getOffset fi.touchState
                 , imgPosition = fi.imgPosition
                 }
+                fi.baseUrl
                 parents
                 flags
 
@@ -526,8 +528,8 @@ pageSize albumPage =
             fi.vpInfo
 
 
-hashForAlbum : AlbumPage -> List AlbumList -> String
-hashForAlbum albumPage parents =
+pathForAlbum : AlbumPage -> List AlbumList -> List PercentEncoded
+pathForAlbum albumPage parents =
     let
         titles =
             case albumPage of
@@ -537,7 +539,7 @@ hashForAlbum albumPage parents =
                 FullImage fi ->
                     [ fi.album.title, fi.album.imageFirst.altText ]
     in
-    hashFromAlbumPath titles parents
+    pathFromAlbumPath titles parents
 
 
 eqIgnoringVpInfo : AlbumPage -> AlbumPage -> Bool

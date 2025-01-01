@@ -5,12 +5,14 @@ import AlbumStyles exposing (..)
 import Css exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes exposing (..)
-import Utils.ListUtils exposing (..)
+import Url exposing (Url, toString)
+import Utils.HttpUtils exposing (appendPath, encodeImgUrl)
 
 
-renderPresized : Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Style -> List (Html.Styled.Attribute msg) -> Html msg
-renderPresized margin w h i iRest s otherAttrs =
-    render (smallestImageBiggerThan w h i iRest)
+renderPresized : Url -> Int -> Int -> Int -> ImgSrc -> List ImgSrc -> List Style -> List (Html.Styled.Attribute msg) -> Html msg
+renderPresized baseUrl margin w h i iRest s otherAttrs =
+    render baseUrl
+        (smallestImageBiggerThan w h i iRest)
         --empty list disables use of srcsets; experiments indicate they don't really work
         []
         ([ Css.margin (px <| toFloat margin)
@@ -32,8 +34,8 @@ smallestImageBiggerThan w h i iRest =
             sizedIs
 
 
-render : ImgSrc -> List ImgSrc -> List Style -> List (Html.Styled.Attribute msg) -> Html msg
-render idefault is s otherAttrs =
+render : Url -> ImgSrc -> List ImgSrc -> List Style -> List (Html.Styled.Attribute msg) -> Html msg
+render baseUrl idefault is s otherAttrs =
     let
         srcset =
             case is of
@@ -41,11 +43,11 @@ render idefault is s otherAttrs =
                     []
 
                 _ ->
-                    [ attribute "srcset" (encodeSrcSet is) ]
+                    [ attribute "srcset" (encodeSrcSet baseUrl is) ]
 
         baseAttrs =
             [ styles s
-            , Html.Styled.Attributes.src <| encodePath idefault.url
+            , Html.Styled.Attributes.src <| toString <| appendPath baseUrl <| encodeImgUrl idefault
             , Html.Styled.Attributes.width idefault.x
             , Html.Styled.Attributes.height idefault.y
             ]
@@ -55,11 +57,11 @@ render idefault is s otherAttrs =
         []
 
 
-encodeSrcSet : List ImgSrc -> String
-encodeSrcSet is =
-    String.join ", " (List.map encodeSrc is)
+encodeSrcSet : Url -> List ImgSrc -> String
+encodeSrcSet baseUrl is =
+    String.join ", " (List.map (encodeSrc baseUrl) is)
 
 
-encodeSrc : ImgSrc -> String
-encodeSrc is =
-    encodePath is.url ++ " " ++ String.fromInt is.x ++ "w"
+encodeSrc : Url -> ImgSrc -> String
+encodeSrc baseUrl is =
+    (toString <| appendPath baseUrl <| encodeImgUrl is) ++ " " ++ String.fromInt is.x ++ "w"

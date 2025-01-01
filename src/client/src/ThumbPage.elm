@@ -11,7 +11,7 @@ import ImageViews exposing (..)
 import Json.Decode as Decoder
 import Progress.Ring
 import Url exposing (Url)
-import Utils.HttpUtils exposing (appendPath)
+import Utils.HttpUtils exposing (appendPath, encodeImgUrl)
 import Utils.ListUtils exposing (..)
 import Utils.Loading exposing (LoadState(..), ManyModel, getOneState)
 import Utils.LocationUtils exposing (AnchorFunction)
@@ -142,7 +142,7 @@ albumParent a getTitle showList albumList =
 allUrls : Url -> ThumbPageModel msg -> List Url
 allUrls baseUrl =
     allImgSrcs
-        >> List.map .url
+        >> List.map encodeImgUrl
         >> List.map (appendPath baseUrl)
 
 
@@ -211,7 +211,7 @@ urlsToGet thumbPageModel =
                         False
         )
     <|
-        List.map (.url >> encodePath >> appendPath thumbPageModel.baseUrl) prioritySrcs
+        List.map (encodeImgUrl >> appendPath thumbPageModel.baseUrl) prioritySrcs
 
 
 viewThumbs : AnchorFunction msg -> (List Image -> Image -> List Image -> msg) -> (Url -> msg) -> ThumbPageModel msgB -> List (Html msg)
@@ -277,7 +277,7 @@ viewThumbColumn a thumbWidth imgChosenMsgr loadedMsg imageLoader baseUrl images 
                     srcForWidth thumbWidth img
 
                 srcUrl =
-                    appendPath baseUrl <| encodePath src.url
+                    appendPath baseUrl <| encodeImgUrl src
 
                 loadState =
                     getOneState imageLoader srcUrl
@@ -295,7 +295,7 @@ viewThumbColumn a thumbWidth imgChosenMsgr loadedMsg imageLoader baseUrl images 
             in
             case srcLoadState of
                 Just opacity ->
-                    viewThumb a thumbWidth opacity [] (imgChosenMsgr i) (loadedMsg srcUrl) img
+                    viewThumb baseUrl a thumbWidth opacity [] (imgChosenMsgr i) (loadedMsg srcUrl) img
 
                 Nothing ->
                     stubThumb thumbWidth img loadState
@@ -391,8 +391,8 @@ srcForWidth width img =
     smallestImageBiggerThan xScaled yScaled img.srcSetFirst img.srcSetRest
 
 
-viewThumb : AnchorFunction msg -> Int -> ImgLoadState -> List Style -> msg -> msg -> Image -> Html msg
-viewThumb a width opasity extraStyles selectedMsg loadedMsg img =
+viewThumb : Url -> AnchorFunction msg -> Int -> ImgLoadState -> List Style -> msg -> msg -> Image -> Html msg
+viewThumb baseUrl a width opasity extraStyles selectedMsg loadedMsg img =
     let
         ( xScaled, yScaled ) =
             sizeForWidth width img
@@ -407,7 +407,8 @@ viewThumb a width opasity extraStyles selectedMsg loadedMsg img =
     in
     a selectedMsg
         []
-        [ renderPresized 10
+        [ renderPresized baseUrl
+            10
             xScaled
             yScaled
             img.srcSetFirst

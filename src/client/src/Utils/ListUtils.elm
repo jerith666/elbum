@@ -1,13 +1,4 @@
-module Utils.ListUtils exposing (dropThroughPred, encodePath, fromMaybe, mapI, shiftLeft, shiftRight, shiftToBeginning)
-
-import Url exposing (percentEncode)
-
-
-{-| splits the path on "/"s, calls encodeUri on each path segment, then reassembles it.
--}
-encodePath : String -> String
-encodePath =
-    String.split "/" >> List.map percentEncode >> String.join "/"
+module Utils.ListUtils exposing (dropThroughPred, fromMaybe, mapI, shiftLeft, shiftRight, shiftToBeginning)
 
 
 shiftToBeginning : List a -> a -> List a -> ( a, List a )

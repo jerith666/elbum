@@ -16,8 +16,9 @@ import Html.Styled.Events
 import Http exposing (..)
 import ProgressiveImage
 import RouteUrl exposing (..)
+import String.Extra exposing (rightOf)
 import Task
-import Url exposing (..)
+import Url exposing (Url, toString)
 import Utils.AlbumUtils exposing (..)
 import Utils.DebugSupport exposing (debugString, log)
 import Utils.HttpUtils exposing (..)
@@ -33,18 +34,12 @@ import Utils.ViewportUtils exposing (..)
 type MainAlbumModel
     = AwaitingBaseUrl
         { flags : MainAlbumFlags
-        , albumPathsAfterLoad : Maybe (List String)
+        , albumPathsAfterLoad : AlbumPath
         }
     | Sizing
         { baseUrl : Url
         , flags : MainAlbumFlags
-        , albumPathsAfterLoad : Maybe (List String)
-        }
-    | LoadingHomeLink
-        { baseUrl : Url
-        , bodyViewport : Viewport
-        , flags : MainAlbumFlags
-        , albumPathsAfterLoad : Maybe (List String)
+        , albumPathsAfterLoad : AlbumPath
         }
     | Loading
         { baseUrl : Url
@@ -52,7 +47,7 @@ type MainAlbumModel
         , progress : Maybe Progress
         , flags : MainAlbumFlags
         , home : Maybe String
-        , albumPathsAfterLoad : Maybe (List String)
+        , albumPathsAfterLoad : AlbumPath
         }
     | LoadError
         { flags : MainAlbumFlags
@@ -77,6 +72,14 @@ type MainAlbumModel
         }
 
 
+{-| the path segments here are already percent-decoded
+-}
+type AlbumPath
+    = NoPath
+    | HashPath (List String)
+    | Path (List String)
+
+
 type PostLoadNavState
     = NavInProgress
     | NavInactive
@@ -98,14 +101,13 @@ type MetaMsg
 type BootstrapMsg
     = GotBaseUrl Url
     | YesHome String
-    | NoHome
     | LoadAlbumProgress Progress
     | YesAlbum AlbumOrList
     | NoAlbum Http.Error
 
 
 type AlbumMsg
-    = SetAlbumPathFromUrl (List String)
+    = SetAlbumPathFromUrl AlbumPath
     | PageMsg AlbumPage.AlbumPageMsg
     | ViewList AlbumListPage (Maybe Float)
     | ViewAlbum AlbumPage (List ( AlbumList, Maybe Float ))
@@ -148,7 +150,7 @@ makeAnchor url onClickMsg attrs =
 
 init : MainAlbumFlags -> Key -> ( MainAlbumModel, Cmd MainAlbumMsg )
 init flags _ =
-    ( AwaitingBaseUrl { flags = flags, albumPathsAfterLoad = Nothing }
+    ( AwaitingBaseUrl { flags = flags, albumPathsAfterLoad = NoPath }
     , Cmd.none
     )
 
@@ -178,18 +180,15 @@ updateGeneral generalMsg model =
                     ( model, Cmd.none )
 
                 Sizing sz ->
-                    ( LoadingHomeLink
+                    ( Loading
                         { baseUrl = sz.baseUrl
                         , bodyViewport = log "window size set" viewport
+                        , progress = Nothing
                         , flags = sz.flags
+                        , home = Nothing
                         , albumPathsAfterLoad = sz.albumPathsAfterLoad
                         }
-                    , Cmd.map Bootstrap <| Http.get { url = "home", expect = expectString <| either (\_ -> NoHome) YesHome }
-                    )
-
-                LoadingHomeLink lh ->
-                    ( LoadingHomeLink { lh | bodyViewport = viewport }
-                    , Cmd.none
+                    , getAlbumDataCmd sz.baseUrl
                     )
 
                 Loading ld ->
@@ -264,16 +263,14 @@ updateBootstrap bootstrapMsg model =
 
         YesHome home ->
             case model of
-                LoadingHomeLink lh ->
-                    gotHome lh <| Just <| String.trim home
+                Loading l ->
+                    ( Loading { l | home = Just home }, Cmd.none )
 
-                _ ->
-                    ( model, Cmd.none )
+                LoadedList ll ->
+                    ( LoadedList { ll | home = Just home }, Cmd.none )
 
-        NoHome ->
-            case model of
-                LoadingHomeLink lh ->
-                    gotHome lh Nothing
+                LoadedAlbum la ->
+                    ( LoadedAlbum { la | home = Just home }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
@@ -289,6 +286,13 @@ updateBootstrap bootstrapMsg model =
         YesAlbum albumOrList ->
             case model of
                 Loading ld ->
+                    let
+                        cmdForPaths newModel =
+                            Maybe.withDefault Cmd.none <|
+                                Maybe.map toCmd <|
+                                    pathsToCmd newModel <|
+                                        albumPathToMaybe ld.albumPathsAfterLoad
+                    in
                     case albumOrList of
                         List albumList ->
                             let
@@ -308,9 +312,10 @@ updateBootstrap bootstrapMsg model =
                                         }
                             in
                             ( newModel
-                            , Maybe.withDefault Cmd.none <|
-                                Maybe.map toCmd <|
-                                    pathsToCmd newModel ld.albumPathsAfterLoad
+                            , Cmd.batch
+                                [ getHomeCmd ld.baseUrl
+                                , cmdForPaths newModel
+                                ]
                             )
 
                         Leaf album ->
@@ -331,10 +336,9 @@ updateBootstrap bootstrapMsg model =
                             in
                             ( newModel
                             , Cmd.batch
-                                [ Cmd.map (Album_ << PageMsg) albumPageCmd
-                                , Maybe.withDefault Cmd.none <|
-                                    Maybe.map toCmd <|
-                                        pathsToCmd newModel ld.albumPathsAfterLoad
+                                [ getHomeCmd ld.baseUrl
+                                , Cmd.map (Album_ << PageMsg) albumPageCmd
+                                , cmdForPaths newModel
                                 ]
                             )
 
@@ -342,9 +346,42 @@ updateBootstrap bootstrapMsg model =
                     ( model, Cmd.none )
 
         NoAlbum err ->
-            ( LoadError { flags = flagsOf model, error = err }
-            , Cmd.none
-            )
+            let
+                fatal =
+                    ( LoadError { flags = flagsOf model, error = err }
+                    , Cmd.none
+                    )
+            in
+            case err of
+                BadStatus 404 ->
+                    case model of
+                        Loading l ->
+                            case parentUrlPath l.baseUrl of
+                                Nothing ->
+                                    fatal
+
+                                Just ( lastPathSegment, parentUrl ) ->
+                                    let
+                                        albumPathsAfterLoad =
+                                            case l.albumPathsAfterLoad of
+                                                NoPath ->
+                                                    Path [ percentDecode lastPathSegment ]
+
+                                                HashPath _ ->
+                                                    Path [ percentDecode lastPathSegment ]
+
+                                                Path paths ->
+                                                    Path <| percentDecode lastPathSegment :: paths
+                                    in
+                                    ( Loading { l | baseUrl = parentUrl, albumPathsAfterLoad = albumPathsAfterLoad }
+                                    , getAlbumDataCmd parentUrl
+                                    )
+
+                        _ ->
+                            fatal
+
+                _ ->
+                    fatal
 
 
 updateAlbum : AlbumMsg -> MainAlbumModel -> ( MainAlbumModel, Cmd MainAlbumMsg )
@@ -435,11 +472,24 @@ updateAlbum albumMsg model =
             -- as with SetScrollFromUrl, 2 cases: early loading, save for later; and already loaded, apply now
             -- but no hacky delay here
             ( withAlbumPathsAfterLoad model paths
-            , toCmd <| Maybe.withDefault (Meta NoBootstrap) <| pathsToCmd model <| Just paths
+            , toCmd <| Maybe.withDefault (Meta NoBootstrap) <| pathsToCmd model <| albumPathToMaybe paths
             )
 
         NavCompletedLocally ->
             ( withNavComplete model, Cmd.none )
+
+
+albumPathToMaybe : AlbumPath -> Maybe (List String)
+albumPathToMaybe albumPath =
+    case albumPath of
+        NoPath ->
+            Nothing
+
+        HashPath p ->
+            Just p
+
+        Path p ->
+            Just p
 
 
 cancelFullImageLoadCmd : MainAlbumModel -> Cmd msg
@@ -457,9 +507,6 @@ cancelFullImageLoadCmd model =
             Cmd.none
 
         Sizing _ ->
-            Cmd.none
-
-        LoadingHomeLink _ ->
             Cmd.none
 
         Loading _ ->
@@ -519,27 +566,29 @@ updateMeta albumMetaMsg model =
             ( model, Cmd.none )
 
 
-gotHome : { baseUrl : Url, bodyViewport : Viewport, flags : MainAlbumFlags, albumPathsAfterLoad : Maybe (List String) } -> Maybe String -> ( MainAlbumModel, Cmd MainAlbumMsg )
-gotHome lh home =
-    ( Loading
-        { baseUrl = lh.baseUrl
-        , bodyViewport = lh.bodyViewport
-        , progress = Nothing
-        , flags = lh.flags
-        , home = home
-        , albumPathsAfterLoad = lh.albumPathsAfterLoad
+getHomeCmd : Url -> Cmd MainAlbumMsg
+getHomeCmd baseUrl =
+    Http.get
+        { url = toString <| appendPath baseUrl <| [ percentEncode "home" ]
+        , expect =
+            expectString <|
+                either (\_ -> Meta NoBootstrap)
+                    (Bootstrap << YesHome)
         }
-    , Cmd.map Bootstrap <|
+
+
+getAlbumDataCmd : Url -> Cmd MainAlbumMsg
+getAlbumDataCmd baseUrl =
+    Cmd.map Bootstrap <|
         Http.request
             { method = "GET"
             , headers = []
-            , url = albumJson
+            , url = toString <| appendPath baseUrl [ percentEncode albumJson ]
             , body = emptyBody
             , expect = expectJson (either NoAlbum YesAlbum) jsonDecAlbumOrList
             , timeout = Nothing
             , tracker = Just albumJson
             }
-    )
 
 
 navToMsg : MainAlbumModel -> Url -> Cmd MainAlbumMsg
@@ -548,43 +597,69 @@ navToMsg model loc =
         AwaitingBaseUrl _ ->
             toCmd <| Bootstrap <| GotBaseUrl loc
 
-        _ ->
-            --home link might count as internal if it's on the same domain
-            let
-                parseUrl =
-                    case baseUrlOf model of
-                        Just bUrl ->
-                            parseOriginRelativeUrl bUrl
+        LoadError _ ->
+            Cmd.none
 
-                        Nothing ->
-                            Url.fromString
+        Sizing s ->
+            navToMsgBaseUrl model s.baseUrl loc
 
-                hUrl =
-                    Maybe.andThen parseUrl <| homeOf model
+        Loading l ->
+            navToMsgBaseUrl model l.baseUrl loc
 
-                locIsHome =
-                    Maybe.withDefault False <| Maybe.map (\h -> h == loc) <| hUrl
-            in
-            case locIsHome of
-                True ->
-                    load <| toString <| log "loading internal home url" loc
+        LoadedList ll ->
+            navToMsgBaseUrl model ll.baseUrl loc
 
-                False ->
-                    navToMsgInternal <| log "navToMsgInternal for non-home internal url" loc
+        LoadedAlbum la ->
+            navToMsgBaseUrl model la.baseUrl loc
 
 
-navToMsgInternal : Url -> Cmd MainAlbumMsg
-navToMsgInternal loc =
+navToMsgBaseUrl : MainAlbumModel -> Url -> Url -> Cmd MainAlbumMsg
+navToMsgBaseUrl model baseUrl loc =
+    --home link might count as internal if it's on the same domain
     let
+        hUrl =
+            Maybe.andThen (parseOriginRelativeUrl baseUrl) <| homeOf model
+
+        locIsHome =
+            Maybe.withDefault False <| Maybe.map (\h -> h == loc) <| hUrl
+    in
+    case locIsHome of
+        True ->
+            load <| toString <| log "loading internal home url" loc
+
+        False ->
+            navToMsgInternal baseUrl <| log "navToMsgInternal for non-home internal url" loc
+
+
+navToMsgInternal : Url -> Url -> Cmd MainAlbumMsg
+navToMsgInternal baseUrl loc =
+    let
+        subPath url =
+            Ok <| rightOf baseUrl.path url.path
+
+        parsedPath =
+            log ("parsedPath from " ++ loc.path) <| parsePath subPath loc
+
         parsedHash =
-            log ("parsedHash from " ++ Maybe.withDefault "<no fragment>" loc.fragment) <| parseHash <| Maybe.withDefault "" loc.fragment
+            case loc.fragment of
+                Nothing ->
+                    -- if fragment is missing, treat it as an error so we use the path instead
+                    log "parsedHash from <no fragment>" Err []
+
+                Just f ->
+                    log ("parsedHash from " ++ f) <| parsePath getFragment loc
     in
     case parsedHash of
         Err _ ->
-            Cmd.none
+            case parsedPath of
+                Err _ ->
+                    Cmd.none
+
+                Ok paths ->
+                    toCmd <| Album_ <| SetAlbumPathFromUrl <| Path <| List.map percentDecode paths
 
         Ok paths ->
-            toCmd <| Album_ <| SetAlbumPathFromUrl paths
+            toCmd <| Album_ <| SetAlbumPathFromUrl <| HashPath <| List.map percentDecode paths
 
 
 flagsOf : MainAlbumModel -> MainAlbumFlags
@@ -595,9 +670,6 @@ flagsOf model =
 
         Sizing sz ->
             sz.flags
-
-        LoadingHomeLink lh ->
-            lh.flags
 
         Loading ld ->
             ld.flags
@@ -619,9 +691,6 @@ homeOf model =
             Nothing
 
         Sizing _ ->
-            Nothing
-
-        LoadingHomeLink _ ->
             Nothing
 
         Loading ld ->
@@ -646,9 +715,6 @@ baseUrlOf model =
         Sizing sz ->
             Just sz.baseUrl
 
-        LoadingHomeLink lhl ->
-            Just lhl.baseUrl
-
         Loading l ->
             Just l.baseUrl
 
@@ -669,9 +735,6 @@ withScrollPos rootDivViewport model =
             model
 
         Sizing _ ->
-            model
-
-        LoadingHomeLink _ ->
             model
 
         Loading _ ->
@@ -708,20 +771,17 @@ withScrollPos rootDivViewport model =
             LoadedList { ll | rootDivViewport = Just rootDivViewport }
 
 
-withAlbumPathsAfterLoad : MainAlbumModel -> List String -> MainAlbumModel
+withAlbumPathsAfterLoad : MainAlbumModel -> AlbumPath -> MainAlbumModel
 withAlbumPathsAfterLoad model albumPathsAfterLoad =
     case model of
         AwaitingBaseUrl abu ->
-            AwaitingBaseUrl { abu | albumPathsAfterLoad = Just albumPathsAfterLoad }
+            AwaitingBaseUrl { abu | albumPathsAfterLoad = albumPathsAfterLoad }
 
         Sizing sz ->
-            Sizing { sz | albumPathsAfterLoad = Just albumPathsAfterLoad }
-
-        LoadingHomeLink lh ->
-            LoadingHomeLink { lh | albumPathsAfterLoad = Just albumPathsAfterLoad }
+            Sizing { sz | albumPathsAfterLoad = albumPathsAfterLoad }
 
         Loading ld ->
-            Loading { ld | albumPathsAfterLoad = Just albumPathsAfterLoad }
+            Loading { ld | albumPathsAfterLoad = albumPathsAfterLoad }
 
         LoadError _ ->
             model
@@ -740,9 +800,6 @@ withNavComplete model =
             model
 
         Sizing _ ->
-            model
-
-        LoadingHomeLink _ ->
             model
 
         Loading _ ->
@@ -770,9 +827,6 @@ pathsToCmd model mPaths =
                     Nothing
 
                 Sizing _ ->
-                    Nothing
-
-                LoadingHomeLink _ ->
                     Nothing
 
                 Loading _ ->
@@ -1160,9 +1214,6 @@ rootViewStateOf model =
         Sizing _ ->
             NotFullyLoaded
 
-        LoadingHomeLink _ ->
-            NotFullyLoaded
-
         Loading _ ->
             NotFullyLoaded
 
@@ -1191,6 +1242,15 @@ rootViewStateOf model =
 locFor : MainAlbumModel -> MainAlbumModel -> Maybe UrlChange
 locFor oldModel newModel =
     let
+        baseUrlPlus : List PercentEncoded -> Maybe String
+        baseUrlPlus path =
+            case baseUrlOf newModel of
+                Nothing ->
+                    Nothing
+
+                Just bUrl ->
+                    Just (appendPath bUrl path).path
+
         entry =
             case oldModel of
                 LoadedList ll ->
@@ -1230,55 +1290,66 @@ locFor oldModel newModel =
                 NavInactive ->
                     Just nav
 
-        rawFragment : Maybe String
-        rawFragment =
-            log "rawFragment" <|
+        rawPath : Maybe (List PercentEncoded)
+        rawPath =
+            log "rawPath" <|
                 case newModel of
                     LoadedAlbum la ->
                         checkNavState la.navState <|
-                            hashForAlbum la.albumPage <|
+                            pathForAlbum la.albumPage <|
                                 List.map Tuple.first la.parents
 
                     LoadedList ll ->
                         checkNavState ll.navState <|
-                            hashForList ll.listPage
+                            pathForList ll.listPage
 
                     _ ->
                         Nothing
 
         {- prevent spurious url change from / to /# at album load time, but permit changes to /# on navigating back out from somewhere inside the album -}
-        noChangeRootToRoot : String -> Maybe String
-        noChangeRootToRoot rf =
+        noChangeRootToRoot : List PercentEncoded -> Maybe (List PercentEncoded)
+        noChangeRootToRoot rp =
             case rootViewStateOf newModel of
                 ViewingRoot ->
                     let
-                        emptyRfToNothing =
-                            case rf of
-                                "" ->
+                        emptyRpToNothing =
+                            case rp of
+                                [] ->
                                     Nothing
 
                                 _ ->
-                                    Just rf
+                                    case List.head rp of
+                                        Just pe ->
+                                            case pctString pe of
+                                                "" ->
+                                                    Nothing
+
+                                                _ ->
+                                                    Just rp
+
+                                        Nothing ->
+                                            Just rp
                     in
                     case rootViewStateOf oldModel of
                         ViewingRoot ->
-                            emptyRfToNothing
+                            emptyRpToNothing
 
                         NotFullyLoaded ->
-                            emptyRfToNothing
+                            emptyRpToNothing
 
                         ViewingChild ->
-                            Just rf
+                            Just rp
 
                 NotFullyLoaded ->
-                    Just rf
+                    Just rp
 
                 ViewingChild ->
-                    Just rf
+                    Just rp
     in
-    rawFragment
+    rawPath
         |> Maybe.andThen noChangeRootToRoot
-        |> Maybe.map (NewFragment entry)
+        |> Maybe.andThen baseUrlPlus
+        |> Maybe.map (\p -> NewPath entry { path = p, query = Nothing, fragment = Nothing })
         |> log "logFor"
 
 
@@ -1328,9 +1399,6 @@ subscriptions model =
                             in
                             Sub.batch [ upParent, onResize <| newSize alp.bodyViewport ]
 
-        LoadingHomeLink lh ->
-            onResize <| newSize lh.bodyViewport
-
         Loading ld ->
             Sub.batch
                 [ onResize <| newSize ld.bodyViewport
@@ -1363,9 +1431,6 @@ view albumBootstrap a =
                 Sizing _ ->
                     "Album Starting"
 
-                LoadingHomeLink _ ->
-                    "Home Loading ..."
-
                 Loading ld ->
                     viewProgress "Album Loading" ld.progress
 
@@ -1393,9 +1458,6 @@ viewImpl albumBootstrap a =
 
         Sizing _ ->
             text "Album Starting"
-
-        LoadingHomeLink _ ->
-            text "Home Loading ..."
 
         Loading ld ->
             text <| viewProgress "Album Loading" ld.progress
@@ -1442,6 +1504,7 @@ viewImpl albumBootstrap a =
                 AlbumListPage alp ->
                     withHomeLink ll.home ll.flags <|
                         AlbumListPage.view
+                            ll.baseUrl
                             (AlbumListPage alp)
                             a
                             (viewList
