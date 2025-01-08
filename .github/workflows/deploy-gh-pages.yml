@@ -31,6 +31,11 @@ jobs:
         run: |
           ln -s $(nix-store --import < elbum.nar | tail -1) elbum
           rm elbum.nar
+      - name: Dump Event for Debugging
+        run: |
+          cat <<EOF
+            ${{ toJSON(github.event) }}
+          EOF
       - name: Regenerate site
         run: |
           # decide how to behave based on whether triggered by
