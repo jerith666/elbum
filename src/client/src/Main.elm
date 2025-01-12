@@ -264,13 +264,13 @@ updateBootstrap bootstrapMsg model =
         YesHome home ->
             case model of
                 Loading l ->
-                    ( Loading { l | home = Just home }, Cmd.none )
+                    ( Loading { l | home = Just <| String.trim home }, Cmd.none )
 
                 LoadedList ll ->
-                    ( LoadedList { ll | home = Just home }, Cmd.none )
+                    ( LoadedList { ll | home = Just <| String.trim home }, Cmd.none )
 
                 LoadedAlbum la ->
-                    ( LoadedAlbum { la | home = Just home }, Cmd.none )
+                    ( LoadedAlbum { la | home = Just <| String.trim home }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
