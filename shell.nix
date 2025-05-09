@@ -58,6 +58,7 @@ pkgs.stdenv.mkDerivation {
       vscodium
 
       # elm
+      nodejs_22
       elmPackages.elm
 
       olderIdea

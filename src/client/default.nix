@@ -35,7 +35,7 @@ let
 
       buildInputs = [
         elmPackages.elm
-        nodejs-18_x
+        nodejs_22
       ];
 
       postUnpack = (
