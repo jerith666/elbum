@@ -31,6 +31,7 @@ import System.Environment
 import System.Exit
 import System.FilePath
 import System.IO
+import System.IO.Temp (emptyTempFile)
 import System.Posix.Files
 import Text.Regex
 
@@ -526,7 +527,8 @@ writeShrunkenImgSrc :: (Codec.Picture.Types.Image PixelRGBF, FilePath) -> IO ()
 writeShrunkenImgSrc (ism, fsmpath) = do
   createDirectoryIfMissing True $ takeDirectory fsmpath
   hFlush stdout
-  savePngImage fsmpath $ ImageRGBF ism
+  withTempFileCopiedTo fsmpath $ \tmpFile ->
+    savePngImage tmpFile $ ImageRGBF ism
 
 shrinkImgSrc :: FilePath -> FilePath -> FilePath -> DynamicImage -> Int -> Int -> Int -> (Codec.Picture.Types.Image PixelRGBF, FilePath, ImgSrc)
 shrinkImgSrc s d f i w h maxwidth =
@@ -547,8 +549,7 @@ copyRawImgSrc :: FilePath -> FilePath -> FilePath -> Int -> Int -> IO ImgSrc
 copyRawImgSrc s d fpath w h = do
   let (dest, _) = destForRaw s d fpath
   createDirectoryIfMissing True $ takeDirectory dest
-  copyFile fpath dest
-  setFileMode dest $ foldl unionFileModes ownerReadMode [groupReadMode, otherReadMode]
+  withTempFileCopiedTo dest $ copyFile fpath
   -- putStrSameLn $ "copied " ++ f
   return
     ImgSrc
@@ -596,6 +597,13 @@ readLink f = do
           let ftgt = takeDirectory f </> target
           readLink ftgt
     else return f
+
+withTempFileCopiedTo :: FilePath -> (FilePath -> IO ()) -> IO ()
+withTempFileCopiedTo dest operation = do
+  tmpFile <- emptyTempFile (takeDirectory dest) "elbum.tmp"
+  operation tmpFile
+  renameFile tmpFile dest
+  setFileMode dest $ foldl unionFileModes ownerReadMode [groupReadMode, otherReadMode]
 
 --
 -- I/O utilities
