@@ -337,13 +337,13 @@ let
         sha512 = "4tvttepXG1VaYGrRibk5EwJd1t4udunSOVMdLSAL6mId1ix438oPwPZMALY41FCijukO1L0twNcGsdzS7dHgDg==";
       };
     };
-    "elm-review-2.13.2" = {
+    "elm-review-2.13.3" = {
       name = "elm-review";
       packageName = "elm-review";
-      version = "2.13.2";
+      version = "2.13.3";
       src = fetchurl {
-        url = "https://registry.npmjs.org/elm-review/-/elm-review-2.13.2.tgz";
-        sha512 = "kI34BQ/EN1NC4KUcdZWAGNbaxWmR80kqJQRjT1ZmC0AyZRiJqdylhANucyzhPKEz60VGAkqau5axpySWXbdPLg==";
+        url = "https://registry.npmjs.org/elm-review/-/elm-review-2.13.3.tgz";
+        sha512 = "iEUihHeqTv0Xr5CVcUf1hDPxypXNtFPVunyEpn2LKAaa/FtEfTHKOVeBYfFNnt+bIDHbGA+hkWPv1qfzxEDH8Q==";
       };
     };
     "elm-solve-deps-wasm-1.0.2" = {
@@ -1136,7 +1136,7 @@ let
       })
       sources."defaults-1.0.3"
       sources."defer-to-connect-2.0.1"
-      sources."elm-review-2.13.2"
+      sources."elm-review-2.13.3"
       sources."elm-solve-deps-wasm-1.0.2"
       sources."elm-test-0.19.1-revision15"
       sources."emoji-regex-8.0.0"
