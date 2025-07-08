@@ -92,8 +92,8 @@
     sha256 = "1cwcj73p61q45wqwgqvrvz3aypjyy3fw732xyxdyj6s256hwkn0k";
   };
   "elm/virtual-dom" = {
-    version = "1.0.2";
-    sha256 = "0q1v5gi4g336bzz1lgwpn5b1639lrn63d8y6k6pimcyismp2i1yg";
+    version = "1.0.4";
+    sha256 = "sha256-9IQCjQA306KlxqSgBJ/N/VXyfHi7ULnBaAvRgwCDMa8=";
   };
   "rtfeldman/elm-hex" = {
     version = "1.0.0";
