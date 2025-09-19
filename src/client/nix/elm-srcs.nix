@@ -32,8 +32,8 @@
     sha256 = "008bs76mnp48b4dw8qwjj4fyvzbxvlrl4xpa2qh1gg2kfwyw56v1";
   };
   "elm/json" = {
-    version = "1.1.3";
-    sha256 = "0kjwrz195z84kwywaxhhlnpl3p251qlbm5iz6byd6jky2crmyqyh";
+    version = "1.1.4";
+    sha256 = "sha256-i6oOLWfzbVshwjcLUWc1xuN3ctzwo+7D5eunJWowNnA=";
   };
   "elm/parser" = {
     version = "1.1.0";
