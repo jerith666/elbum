@@ -24,8 +24,8 @@
     sha256 = "19w0iisdd66ywjayyga4kv2p1v9rxzqjaxhckp8ni6n8i0fb2dvf";
   };
   "elm/html" = {
-    version = "1.0.0";
-    sha256 = "1n3gpzmpqqdsldys4ipgyl1zacn0kbpc3g4v3hdpiyfjlgh8bf3k";
+    version = "1.0.1";
+    sha256 = "sha256-iJrfUOivgBNJql5HCoUfW7uxNnFLNz5rxAKZ6UejXFI=";
   };
   "elm/http" = {
     version = "2.0.0";
