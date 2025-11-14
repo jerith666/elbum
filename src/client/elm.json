@@ -31,7 +31,7 @@
             "elm/file": "1.0.5",
             "elm/regex": "1.0.0",
             "elm/time": "1.0.0",
-            "elm/virtual-dom": "1.0.4",
+            "elm/virtual-dom": "1.0.5",
             "robinheghan/murmur3": "1.0.0",
             "rtfeldman/elm-hex": "1.0.0"
         }
