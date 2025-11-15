@@ -119,7 +119,7 @@ jobs:
           if [ -n "$PR_NUMBER" ]; then
             gh repo clone jerith666/elbum elbum-repo
             cd elbum-repo
-            gh pr comment "${PR_NUMBER}" --body "[Elbum Demo Site using this PR's code](https://jerith666.github.io/elbum-demo/pr/${PR_NUMBER})"
+            gh pr comment "${PR_NUMBER}" --body "I have prepared an [Elbum Demo Site using this PR's code](https://jerith666.github.io/elbum-demo/pr/${PR_NUMBER})"
           else
             echo "Error: Could not extract PR number from event data."
           fi
