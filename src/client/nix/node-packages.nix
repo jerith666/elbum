@@ -355,13 +355,13 @@ let
         sha512 = "qnwo7RO9IO7jd9SLHvIy0rSOEIlc/tNMTE9Cras0kl+b161PVidW4FvXo0MtXU8GAKi/2s/HYvhcnpR/NNQ1zw==";
       };
     };
-    "elm-test-0.19.1-revision16" = {
+    "elm-test-0.19.1-revision17" = {
       name = "elm-test";
       packageName = "elm-test";
-      version = "0.19.1-revision16";
+      version = "0.19.1-revision17";
       src = fetchurl {
-        url = "https://registry.npmjs.org/elm-test/-/elm-test-0.19.1-revision16.tgz";
-        sha512 = "t4SCY3Vq2KUuUX9LpqmITroutY/l5hjLeQ8Hpc1bUdzqzTifxVs76omjfdHHZJGUCLPVUN0VktCNsNr36IUcaw==";
+        url = "https://registry.npmjs.org/elm-test/-/elm-test-0.19.1-revision17.tgz";
+        sha512 = "P9J8tXdLXmqgIMlSozfcb/KCORq4GuxfwBbzqFLMss8KlGmUKonOJwseRX6xVkdU5xgGVA/mz9rfMTNomIbwng==";
       };
     };
     "emoji-regex-8.0.0" = {
@@ -1138,7 +1138,7 @@ let
       sources."defer-to-connect-2.0.1"
       sources."elm-review-2.13.4"
       sources."elm-solve-deps-wasm-1.0.2"
-      sources."elm-test-0.19.1-revision16"
+      sources."elm-test-0.19.1-revision17"
       sources."emoji-regex-8.0.0"
       sources."end-of-stream-1.4.4"
       sources."fastest-levenshtein-1.0.16"
