@@ -8,19 +8,10 @@ with nixpkgs;
 let
   albumTypes = import ./album-types-gen.nix { inherit nixpkgs; };
 
-  nodePackagesRaw = (pkgs.callPackage ./nix/package.nix { });
-  nodeDependencies =
-    (
-      nodePackagesRaw
-      // {
-        nodeDependencies = nodePackagesRaw.nodeDependencies.override {
-          npmFlags = "--ignore-scripts";
-        };
-      }
-    ).nodeDependencies;
-
   versionsDat = ./nix/versions.dat;
   elmStuffElmReview = ./nix/elm-stuff/generated-code/jfmengels/elm-review;
+
+  nodejs = nodejs_22;
 
   mkDerivation =
     {
@@ -33,9 +24,15 @@ let
     stdenv.mkDerivation rec {
       inherit name src;
 
+      npmDeps = importNpmLock.buildNodeModules {
+        npmRoot = ./.;
+        inherit nodejs;
+      };
+
       buildInputs = [
         elmPackages.elm
-        nodejs_22
+        importNpmLock.hooks.linkNodeModulesHook
+        nodejs
       ];
 
       postUnpack = (
@@ -68,8 +65,6 @@ let
 
       doCheck = true;
       checkPhase = ''
-        ln -vs ${nodeDependencies}/lib/node_modules ./node_modules
-
         # pre-populate the generated elm-review application.
         # use 'elm-review prepare-offline' to generate new versions
         # of these caches
