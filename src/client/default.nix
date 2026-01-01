@@ -11,7 +11,7 @@ let
   versionsDat = ./nix/versions.dat;
   elmStuffElmReview = ./nix/elm-stuff/generated-code/jfmengels/elm-review;
 
-  nodejs = nodejs_22;
+  nodejs = nodejs_24;
 
   mkDerivation =
     {
