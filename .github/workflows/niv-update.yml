@@ -43,7 +43,7 @@ jobs:
         cat msg >> "$GITHUB_ENV"
         echo "COMMIT_EOF" >> "$GITHUB_ENV"
         rm msg old new shell-old shell-new
-    - uses: peter-evans/create-pull-request@v5
+    - uses: peter-evans/create-pull-request@v8
       with:
         token: ${{ secrets.ELBUM_BOT_REPOS_WORKFLOWS }}
         push-to-fork: Elbum-Bot/elbum
