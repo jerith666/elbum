@@ -19,7 +19,7 @@ jobs:
       - run: |
           nix-build
           nix-store --export $(nix-store --query --requisites result) > elbum.nar
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: elbum.nar
           path: elbum.nar
