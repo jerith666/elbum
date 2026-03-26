@@ -20,7 +20,7 @@ jobs:
         tool-cache: true
         # https://github.com/jlumbroso/free-disk-space/issues/4
         large-packages: false
-    - uses: cachix/install-nix-action@v18
+    - uses: cachix/install-nix-action@v31
       with:
         nix_path: nixpkgs=channel:nixos-unstable
     - uses: DeterminateSystems/magic-nix-cache-action@main
