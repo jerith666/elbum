@@ -45,7 +45,7 @@ jobs:
       PR_HEADSHA: ${{ needs.pr-context.outputs.PR_HEADSHA }}
       PR_NUMBER:  ${{ needs.pr-context.outputs.PR_NUMBER  }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           repository: jerith666/elbum-demo
           submodules: true
