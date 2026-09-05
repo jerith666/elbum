@@ -1,20 +1,5 @@
-{
-  mkDerivation,
-  lib,
-  aeson,
-  async,
-  base,
-  bytestring,
-  elm-bridge,
-  extra,
-  filepath,
-  JuicyPixels,
-  parallel,
-  parallel-io,
-  regex-compat,
-  safe,
-  tasty,
-  tasty-golden,
+{ mkDerivation, lib, aeson, async, base, bytestring, elm-bridge, extra, filepath
+, JuicyPixels, parallel, parallel-io, regex-compat, safe, tasty, tasty-golden,
 }:
 mkDerivation {
   pname = "elbum";
