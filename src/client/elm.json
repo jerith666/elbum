@@ -4,7 +4,7 @@
         "src",
         "vendor/elm-route-url/src"
     ],
-    "elm-version": "0.19.1",
+    "elm-version": "0.19.2",
     "dependencies": {
         "direct": {
             "andrewMacmurray/elm-delay": "4.0.0",

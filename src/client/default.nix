@@ -36,7 +36,7 @@ let
 
       postUnpack = (
         elmPackages.fetchElmDeps {
-          elmVersion = "0.19.1";
+          elmVersion = "0.19.2";
           elmPackages = import ./nix/elm-srcs.nix;
           registryDat = ./nix/registry.dat;
         }
