@@ -8,7 +8,6 @@ with nixpkgs;
 let
   albumTypes = import ./album-types-gen.nix { inherit nixpkgs; };
 
-  versionsDat = ./nix/versions.dat;
   elmStuffElmReview = ./nix/elm-stuff/generated-code/jfmengels/elm-review;
 
   nodejs = nodejs_24;
