@@ -1,12 +1,16 @@
-{ sources ? import nix/sources.nix, }:
+{
+  sources ? import nix/sources.nix,
+}:
 
-let nixpkgs = import sources.nixpkgs { };
+let
+  nixpkgs = import sources.nixpkgs { };
 
-in let
+in
+let
   inherit (nixpkgs) pkgs;
   haskellPkgs = pkgs.haskellPackages;
-  ghc = haskellPkgs.ghcWithPackages (ps:
-    with ps; [
+  ghc = haskellPkgs.ghcWithPackages (
+    ps: with ps; [
       async
       elm-bridge
       extra
@@ -17,22 +21,25 @@ in let
       safe
       tasty
       tasty-golden
-    ]);
+    ]
+  );
 
   # pinned to recent (but cached) ancestor of
   # dadc08be jetbrains.idea-{community,ultimate}: 2021.3.2 → 2022.1
   olderIdea = (import sources.olderIdeaNixpkgs { }).jetbrains.idea-community;
 
   elmPlugin = pkgs.fetchurl {
-    url =
-      "https://github.com/utiliteez/intellij-elm/releases/download/v5.0.0-beta21/Elm.IntelliJ-5.0.0-beta21.zip";
+    url = "https://github.com/utiliteez/intellij-elm/releases/download/v5.0.0-beta21/Elm.IntelliJ-5.0.0-beta21.zip";
     hash = "sha256-JkYNZG/H4BMxJDBxlZ14BB7I92qqDo2zcbd90/kILIg=";
   };
 
-in pkgs.stdenv.mkDerivation {
+in
+pkgs.stdenv.mkDerivation {
   name = "elbum-haskell-env-0";
-  buildInputs = with pkgs;
-    with haskellPkgs; [
+  buildInputs =
+    with pkgs;
+    with haskellPkgs;
+    [
       # basic tooling
       pkgs.git # disambiguates from haskellPackages.git
 
@@ -59,10 +66,9 @@ in pkgs.stdenv.mkDerivation {
 
       # nix
       niv
-      nixfmt
+      pkgs.nixfmt # there is an older one in haskellPackages, avoid it
       nixd
     ];
 
-  shellHook =
-    "echo elm plugin: ${elmPlugin}; eval $(egrep ^export ${ghc}/bin/ghc)";
+  shellHook = "echo elm plugin: ${elmPlugin}; eval $(egrep ^export ${ghc}/bin/ghc)";
 }

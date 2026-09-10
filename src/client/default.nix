@@ -1,4 +1,7 @@
-{ config ? { }, nixpkgs ? import <nixpkgs> config, }:
+{
+  config ? { },
+  nixpkgs ? import <nixpkgs> config,
+}:
 
 with nixpkgs;
 
@@ -11,7 +14,13 @@ let
   nodejs = nodejs_24;
 
   mkDerivation =
-    { srcs ? ./nix/elm-srcs.nix, src, name, srcdir ? "./src", targets ? [ ], }:
+    {
+      srcs ? ./nix/elm-srcs.nix,
+      src,
+      name,
+      srcdir ? "./src",
+      targets ? [ ],
+    }:
     stdenv.mkDerivation rec {
       inherit name src;
 
@@ -20,27 +29,33 @@ let
         inherit nodejs;
       };
 
-      buildInputs =
-        [ elmPackages.elm importNpmLock.hooks.linkNodeModulesHook nodejs ];
+      buildInputs = [
+        elmPackages.elm
+        importNpmLock.hooks.linkNodeModulesHook
+        nodejs
+      ];
 
-      postUnpack = (elmPackages.fetchElmDeps {
-        elmVersion = "0.19.1";
-        elmPackages = import ./nix/elm-srcs.nix;
-        registryDat = ./nix/registry.dat;
-      });
+      postUnpack = (
+        elmPackages.fetchElmDeps {
+          elmVersion = "0.19.1";
+          elmPackages = import ./nix/elm-srcs.nix;
+          registryDat = ./nix/registry.dat;
+        }
+      );
 
-      buildPhase = let
-        elmfile = module:
-          "${srcdir}/${builtins.replaceStrings [ "." ] [ "/" ] module}.elm";
-      in ''
-        mkdir -p $out/share/doc
-        cp -iv ${albumTypes}/Album.elm src;
-        ${lib.concatStrings (map (module: ''
-          elm make ${
-            elmfile module
-          } --output $out/${module}.js --docs $out/share/doc/${module}.json --optimize
-        '') targets)}
-      '';
+      buildPhase =
+        let
+          elmfile = module: "${srcdir}/${builtins.replaceStrings [ "." ] [ "/" ] module}.elm";
+        in
+        ''
+          mkdir -p $out/share/doc
+          cp -iv ${albumTypes}/Album.elm src;
+          ${lib.concatStrings (
+            map (module: ''
+              elm make ${elmfile module} --output $out/${module}.js --docs $out/share/doc/${module}.json --optimize
+            '') targets
+          )}
+        '';
 
       installPhase = ''
         mv -iv $out/src/Main.js $out/elbum.js;
@@ -64,25 +79,38 @@ let
         ./node_modules/.bin/elm-test --seed 20221126
       '';
     };
-in mkDerivation {
+in
+mkDerivation {
   name = "jerith666-elbum-0.1.0";
   srcs = ./elm-srcs.nix;
   src = lib.cleanSourceWith {
     src = ./.;
-    filter = path: type:
-      (type == "regular" && (pkgs.lib.hasSuffix ".elm" path
-        || pkgs.lib.hasSuffix "elm.json" path
-        || pkgs.lib.hasSuffix "index.html" path
-        || pkgs.lib.hasSuffix "package.json" path
-        || pkgs.lib.hasSuffix "package-lock.json" path
-        || pkgs.lib.hasSuffix ".htaccess" path)) || (type == "directory"
-          && (pkgs.lib.hasSuffix "vendor" path
-            || pkgs.lib.hasSuffix "elm-route-url" path
-            || pkgs.lib.hasSuffix "touch-events" path
-            || pkgs.lib.hasSuffix "src" path || pkgs.lib.hasSuffix "tests" path
-            || pkgs.lib.hasSuffix "review" path
-            || pkgs.lib.hasSuffix "Sandbox" path
-            || pkgs.lib.hasSuffix "Utils" path));
+    filter =
+      path: type:
+      (
+        type == "regular"
+        && (
+          pkgs.lib.hasSuffix ".elm" path
+          || pkgs.lib.hasSuffix "elm.json" path
+          || pkgs.lib.hasSuffix "index.html" path
+          || pkgs.lib.hasSuffix "package.json" path
+          || pkgs.lib.hasSuffix "package-lock.json" path
+          || pkgs.lib.hasSuffix ".htaccess" path
+        )
+      )
+      || (
+        type == "directory"
+        && (
+          pkgs.lib.hasSuffix "vendor" path
+          || pkgs.lib.hasSuffix "elm-route-url" path
+          || pkgs.lib.hasSuffix "touch-events" path
+          || pkgs.lib.hasSuffix "src" path
+          || pkgs.lib.hasSuffix "tests" path
+          || pkgs.lib.hasSuffix "review" path
+          || pkgs.lib.hasSuffix "Sandbox" path
+          || pkgs.lib.hasSuffix "Utils" path
+        )
+      );
   };
   srcdir = ".";
   targets = [ "src/Main" ];
