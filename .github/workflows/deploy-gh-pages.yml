@@ -55,7 +55,7 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Download elbum closure artifact
-        uses: actions/download-artifact@v8.0.1
+        uses: actions/download-artifact@v8.0.2
         with:
           github-token: ${{ github.token }}
           run-id: ${{ github.event.workflow_run.id }}
